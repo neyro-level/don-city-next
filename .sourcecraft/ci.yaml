@@ -1,0 +1,36 @@
+on:
+  push:
+    - workflows: [merge-standard, merge-risky]
+      filter:
+        branches: []
+
+workflows:
+  merge-standard:
+    inputs:
+      expected_commit_sha:
+        type: string
+        required: true
+        description: Full lowercase SHA of the Pull Request head to attest.
+    tasks:
+      - name: attest-exact-head
+        env:
+          EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}
+        cubes:
+          - name: verify-sourcecraft-commit
+            script:
+              - sh scripts/verify-sourcecraft-gate.sh
+
+  merge-risky:
+    inputs:
+      expected_commit_sha:
+        type: string
+        required: true
+        description: Full lowercase SHA of the Pull Request head to attest.
+    tasks:
+      - name: attest-exact-head
+        env:
+          EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}
+        cubes:
+          - name: verify-sourcecraft-commit
+            script:
+              - sh scripts/verify-sourcecraft-gate.sh

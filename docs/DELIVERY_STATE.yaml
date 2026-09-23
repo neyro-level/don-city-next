@@ -1,0 +1,28 @@
+schema_version: 1
+program: AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO
+plan_version: v6
+plan_status: APPROVED
+current_wave: W0
+current_epic: EPIC-00
+next_action: create-epic-00-delivery-candidate
+repository:
+  key: don-city-next
+  remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
+  default_branch: main
+  base_sha: 3114f510f9e5885aa573dbecb601f6360ff48bf2
+  active_branch: codex/epic-00-governance
+task_manager:
+  initialized: true
+  reconciliation: CLEAN
+  current_task: dcn-task-00-evidence
+  reason: evidence-complete; private-repository-and-registered-worktree-ready; manual-exact-head-gate-bootstrap-complete; starter-untouched
+evidence:
+  epic_00:
+    verification: PASS
+    branch: codex/epic-00-governance
+    verified_head: 3914a39ba39db45c959be2b295aac43192427318
+    scope: private-repository-and-workspace; starter-untouched
+    ci_gate: manual-exact-head-bootstrap
+production:
+  authorized: false
+  gate: explicit-owner-release-command
