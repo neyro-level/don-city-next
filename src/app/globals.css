@@ -2,7 +2,7 @@
 @import "@ams/realtbase-ui/styles.css";
 @source "../../packages/ui/src";
 
-/* Atlas visual baseline: main@4fc5d8a2cfcd29b1431ce9541db72ba0280a4cbe. */
+/* DON CITY project visual token baseline. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
@@ -63,10 +63,13 @@
   --text-dark-muted: rgba(255, 255, 255, 0.42);
   --border: #e3e3e1;
   --dark-border: rgba(255, 255, 255, 0.1);
-  --accent: #8a1515;
-  --accent-hover: #630e0e;
-  --accent-soft: #f7f2f2;
-  --accent-border: rgba(138, 21, 21, 0.15);
+  --brand-primary: #1f6b4f;
+  --brand-primary-hover: #155039;
+  --brand-primary-soft: #edf6f0;
+  --accent: var(--brand-primary);
+  --accent-hover: var(--brand-primary-hover);
+  --accent-soft: var(--brand-primary-soft);
+  --accent-border: color-mix(in srgb, var(--accent) 15%, transparent);
   --warning: #996000;
   --error: #9e1c1c;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.04);
@@ -256,11 +259,11 @@
   --site-tracking-emphasis: 0.16em;
   --site-tracking-spaced: 0.18em;
   --site-tracking-expanded: 0.19em;
-  --primary: #8a1515;
-  --primary-hover: #630e0e;
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
   --primary-foreground: #ffffff;
-  --primary-soft: #f7f2f2;
-  --primary-border: rgba(138, 21, 21, 0.15);
+  --primary-soft: var(--accent-soft);
+  --primary-border: var(--accent-border);
   --secondary: #ebebe9;
   --secondary-foreground: #17161a;
   --muted: #f4f4f3;
@@ -269,10 +272,10 @@
   --card-foreground: #17161a;
   --popover: #ffffff;
   --popover-foreground: #17161a;
-  --accent-foreground: #630e0e;
+  --accent-foreground: var(--accent-hover);
   --destructive: #9e1c1c;
   --input: #d8d8d5;
-  --ring: #8a1515;
+  --ring: var(--accent);
   --surface-page: var(--background);
   --surface-raised: var(--surface);
   --surface-subtle: var(--surface-muted);
@@ -431,7 +434,7 @@
   --sheet-surface-secondary: #ecebe8;
   --catalog-controls-shadow-panel: 0 1px 2px rgba(0,0,0,0.02),0 8px 24px rgba(0,0,0,0.04);
   --catalog-controls-shadow-action: 0 10px 22px rgba(24,24,26,0.14);
-  --catalog-controls-shadow-action-hover: 0 14px 30px rgba(138,21,21,0.18);
+  --catalog-controls-shadow-action-hover: 0 14px 30px color-mix(in srgb, var(--accent) 18%, transparent);
   --catalog-hero-shadow-panel: 0 1px 2px rgba(0,0,0,0.02),0 18px 44px rgba(0,0,0,0.10);
   --catalog-mortgage-help-card-shadow-feature: 0 4px 8px rgba(0,0,0,0.02),0 22px 52px rgba(0,0,0,0.09);
   --catalog-mortgage-help-card-shadow-card: 0 1px 2px rgba(0,0,0,0.03),0 18px 42px rgba(0,0,0,0.08);
@@ -455,7 +458,7 @@
   --property-card-shadow-media-rest: 0 1px 2px rgba(0,0,0,0.02);
   --property-card-shadow-media-hover: 0 8px 22px rgba(0,0,0,0.09);
   --property-card-shadow-badge: 0 5px 14px rgba(0,0,0,0.10);
-  --property-card-shadow-sales-badge: 0 5px 14px rgba(138,21,21,0.20);
+  --property-card-shadow-sales-badge: 0 5px 14px color-mix(in srgb, var(--accent) 20%, transparent);
   --property-detail-sections-shadow-subtle: 0 1px 2px rgba(0,0,0,0.02);
   --property-gallery-shadow-panel: 0 1px 2px rgba(0,0,0,0.03),0 18px 42px rgba(23,22,26,0.08);
   --property-gallery-shadow-control: 0 12px 30px rgba(0,0,0,0.14);
@@ -478,8 +481,8 @@
   --catalog-hero-overlay-vertical-soft: rgba(16,16,17,0.08);
   --catalog-hero-overlay-vertical-transparent: rgba(16,16,17,0);
   --dialog-effect-primary: rgba(23,22,26,0.18);
-  --home-action-shadow: rgba(138, 21, 21, 0.2);
-  --home-action-shadow-hover: rgba(138, 21, 21, 0.3);
+  --home-action-shadow: color-mix(in srgb, var(--accent) 20%, transparent);
+  --home-action-shadow-hover: color-mix(in srgb, var(--accent) 30%, transparent);
   --sheet-effect-primary: rgba(23,22,26,0.2);
   --shell-effect-secondary: rgba(16, 16, 17, 0.24);
   --shell-effect-tertiary: rgba(227, 227, 225, 0.88);
@@ -487,11 +490,11 @@
   --shell-effect-muted: rgba(255, 255, 255, 0.78);
   --shell-effect-strong: rgba(23, 22, 26, 0.14);
   --shell-effect-inverse: rgba(255, 255, 255, 0.72);
-  --shell-effect-selected: rgba(138, 21, 21, 0.12);
-  --shell-effect-disabled: rgba(158, 28, 28, 0.24);
-  --shell-effect-overlay: rgba(158, 28, 28, 0.06);
-  --shell-effect-emphasis: rgba(138, 21, 21, 0.2);
-  --shell-effect-contrast: rgba(138, 21, 21, 0.3);
+  --shell-effect-selected: color-mix(in srgb, var(--accent) 12%, transparent);
+  --shell-effect-disabled: color-mix(in srgb, var(--error) 24%, transparent);
+  --shell-effect-overlay: color-mix(in srgb, var(--error) 6%, transparent);
+  --shell-effect-emphasis: color-mix(in srgb, var(--accent) 20%, transparent);
+  --shell-effect-contrast: color-mix(in srgb, var(--accent) 30%, transparent);
   --shell-effect-elevated: rgba(255, 255, 255, 0.68);
   --shell-effect-floating: rgba(255, 255, 255, 0.52);
   --shell-effect-backdrop: rgba(255, 255, 255, 0.88);
@@ -673,9 +676,9 @@
   --radius-floating-header: var(--site-radius-floating-header);
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --color-site-burgundy: var(--accent);
-  --color-site-burgundy-dark: var(--accent-hover);
-  --color-site-milk: var(--accent-soft);
+  --color-site-brand: var(--accent);
+  --color-site-brand-hover: var(--accent-hover);
+  --color-site-brand-soft: var(--accent-soft);
   --color-site-graphite: var(--foreground);
   --color-site-muted: var(--text-muted);
   --color-site-border: var(--border);
@@ -685,5 +688,4 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
 }
-
 

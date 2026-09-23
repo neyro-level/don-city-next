@@ -8,14 +8,36 @@ import { Container, Section, SectionHeader } from "../../components/ui/layout";
 import { StarterPropertyCard } from "../property/StarterPropertyCardView";
 import { LeadFormView } from "../starter/LeadFormView";
 
+export type CatalogPageCopy = {
+	eyebrow: string;
+	title: string;
+	description: string;
+	emptyMessage: string;
+	ctaTitle: string;
+	ctaDescription?: string;
+	ctaSubmitLabel?: string;
+};
+
+const defaultCopy: CatalogPageCopy = {
+	eyebrow: "Каталог",
+	title: "Недвижимость",
+	description:
+		"Актуальные объекты агентства. Фильтры и карточки отражают опубликованный каталог.",
+	emptyMessage:
+		"Подходящих объектов пока нет. Измените запрос или оставьте заявку — подберём варианты.",
+	ctaTitle: "Нужна помощь с подбором?",
+};
+
 export function CatalogPageView({
 	list,
 	filters,
 	leadContext,
+	copy = defaultCopy,
 }: {
 	list: PropertyListDTO;
 	filters: PropertyFilterDTO;
 	leadContext: LeadFormContext;
+	copy?: CatalogPageCopy;
 }) {
 	return (
 		<>
@@ -25,14 +47,13 @@ export function CatalogPageView({
 			>
 				<Container>
 					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
-						Каталог
+						{copy.eyebrow}
 					</p>
 					<h1 className="mt-4 text-display font-extrabold tracking-display">
-						Недвижимость
+						{copy.title}
 					</h1>
 					<p className="mt-4 max-w-2xl text-body-large text-content-default">
-						Актуальные объекты агентства. Фильтры и карточки отражают
-						опубликованный каталог.
+						{copy.description}
 					</p>
 				</Container>
 			</section>
@@ -73,8 +94,7 @@ export function CatalogPageView({
 								id="section-catalog-empty"
 								className="text-body-large text-content-default"
 							>
-								Подходящих объектов пока нет. Измените запрос или оставьте
-								заявку — подберём варианты.
+								{copy.emptyMessage}
 							</p>
 						)}
 					</Container>
@@ -85,7 +105,9 @@ export function CatalogPageView({
 					<Container size="narrow">
 						<LeadFormView
 							context={leadContext}
-							title="Нужна помощь с подбором?"
+							title={copy.ctaTitle}
+							description={copy.ctaDescription}
+							submitLabel={copy.ctaSubmitLabel}
 						/>
 					</Container>
 				</Section>
