@@ -1,3 +1,4 @@
+.beads/
 .env
 .env.*
 !.env.example
@@ -5,5 +6,8 @@ node_modules/
 .next/
 dist/
 coverage/
-.beads/
+.release/
 *.log
+next-env.d.ts
+*.tsbuildinfo
+docs/proofs/epic-9/captures/

@@ -3,19 +3,20 @@ program: AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO
 plan_version: v6
 plan_status: APPROVED
 current_wave: W0
-current_epic: EPIC-00
-next_action: create-epic-00-delivery-candidate
+current_epic: EPIC-01
+current_task: dcn-task-01-evidence
+next_action: create-epic-01-delivery-candidate
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 3114f510f9e5885aa573dbecb601f6360ff48bf2
-  active_branch: codex/epic-00-governance
+  base_sha: d751d93ad175fa492f4ed8a20fb2cbd24ede4358
+  active_branch: codex/epic-01-starter-baseline
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcn-task-00-evidence
-  reason: evidence-complete; private-repository-and-registered-worktree-ready; manual-exact-head-gate-bootstrap-complete; starter-untouched
+  current_task: dcn-task-01-preflight
+  reason: EPIC-00 merged through SourceCraft RISKY gate run 2; EPIC-01 starter baseline preflight started
 evidence:
   epic_00:
     verification: PASS
@@ -23,6 +24,28 @@ evidence:
     verified_head: 3914a39ba39db45c959be2b295aac43192427318
     scope: private-repository-and-workspace; starter-untouched
     ci_gate: manual-exact-head-bootstrap
+  epic_01:
+    starter_source_sha: ca1b884d43e808d17e1eb18b05bad70ea358dd1c
+    imported_head: 3a855cc0d42d8a84ae3b02d0f487a16a2a389650
+    status: baseline-import-and-targeted-verification-pass
+    reports:
+      - docs/research/EPIC-01_STARTER_PREFLIGHT.md
+      - docs/research/EPIC-01_BASELINE_MANIFEST.md
+      - docs/research/EPIC-01_VERIFICATION.md
+task_contract:
+  goal: "Верифицировать и импортировать exact starter baseline без изменения production."
+  non_goals: "Server/DB/DNS discovery, migrations, production rollout и обновление зависимостей вне verified starter."
+  platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
+  delivery_profile: CRITICAL
+  realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
+  ux_scope: PUBLIC_COMMERCIAL
+  boundaries: "starter reference -> isolated DON CITY worktree; public data and runtime remain untouched."
+  data_changes: none
+  auth_pii: "No secrets, credentials or PII may be read into repository, logs or docs."
+  integrations: "Read-only SourceCraft donor access only; no server or database connection."
+  proof: "Exact source SHA, tracked-tree manifest, license/lockfile/runtime inventory and baseline command results."
+  gate: RISKY
+  done_state: "A reviewed and pushed starter-baseline checkpoint; no merge or production."
 production:
   authorized: false
   gate: explicit-owner-release-command
