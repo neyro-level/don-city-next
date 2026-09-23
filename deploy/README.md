@@ -1,28 +1,15 @@
-# Internal production deploy
+# DON CITY deployment boundary
 
-Target: `start-baza.ams24.ru`.
+This directory contains no active DON CITY deployment configuration. The starter
+demo's host-specific Compose and Nginx files were removed during client
+activation so they cannot be mistaken for the DON CITY production contour.
 
-This folder contains only non-secret deployment templates. Runtime values must be
-materialized into `/etc/ams/realtbase/start-baza.env` on the server. Do not
-commit or paste secret values. For this starter deployment, the owner-approved
-database is local PostgreSQL on AMS Server, not a paid Timeweb Managed
-PostgreSQL instance.
+The non-secret future-client reference is
+[`clients/timeweb/README.md`](clients/timeweb/README.md). It is a static
+blueprint only: it does not authorize provisioning, server access, database
+changes, DNS changes, migrations or deployment.
 
-Release shape:
-
-1. Build immutable image from exact SourceCraft `main` SHA outside the production
-   host.
-2. Run Payload migrations from the same image before rollout.
-3. Start one runtime through `deploy/compose/start-baza.compose.yml`.
-4. Keep `JOBS_AUTORUN=false` during initial smoke; enable exactly one jobs owner
-   only after the old owner is confirmed inactive.
-5. Proxy `start-baza.ams24.ru` through the Nginx template with `X-Robots-Tag:
-   noindex, nofollow` until the owner promotes the instance.
-
-Rollback: switch `AMS_REALTBASE_IMAGE` back to the previous known-good immutable
-tag and restart the compose project. Database rollback is separate and requires
-restore evidence before destructive changes. Local PostgreSQL backups live
-outside the app container and must be protected by server backup policy.
-
-The client clone reference is separate: `deploy/clients/timeweb/README.md`.
-It does not change this starter demo topology and contains no live credentials.
+The existing DON CITY Timeweb server and its actual database/storage topology
+will be discovered read-only in the approved later epics. A deployment requires
+an explicit owner release command, an exact `main` SHA and the applicable
+CRITICAL delivery evidence.

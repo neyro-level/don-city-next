@@ -3,20 +3,20 @@ program: AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO
 plan_version: v6
 plan_status: APPROVED
 current_wave: W0
-current_epic: EPIC-01
-current_task: dcn-task-01-evidence
-next_action: create-epic-01-delivery-candidate
+current_epic: EPIC-02
+current_task: dcn-task-02-evidence
+next_action: deliver-epic-02-through-risky-gate
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: d751d93ad175fa492f4ed8a20fb2cbd24ede4358
-  active_branch: codex/epic-01-starter-baseline
+  base_sha: 1d0e229dc5db701acb4a9db5bd40248d9e48c63a
+  active_branch: codex/epic-02-client-activation
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcn-task-01-preflight
-  reason: EPIC-00 merged through SourceCraft RISKY gate run 2; EPIC-01 starter baseline preflight started
+  current_task: dcn-task-02-evidence
+  reason: EPIC-02 implementation and targeted verification PASS; delivery gate pending
 evidence:
   epic_00:
     verification: PASS
@@ -32,20 +32,27 @@ evidence:
       - docs/research/EPIC-01_STARTER_PREFLIGHT.md
       - docs/research/EPIC-01_BASELINE_MANIFEST.md
       - docs/research/EPIC-01_VERIFICATION.md
+  epic_02:
+    activated_head: 310cbf9a06292f3b86e57987ea54590e16ca3d7b
+    status: client-activation-targeted-verification-pass
+    reports:
+      - docs/research/EPIC-02_CLIENT_ACTIVATION_PREFLIGHT.md
+      - docs/CLONE_PROVENANCE.md
+      - docs/research/EPIC-02_VERIFICATION.md
 task_contract:
-  goal: "Верифицировать и импортировать exact starter baseline без изменения production."
-  non_goals: "Server/DB/DNS discovery, migrations, production rollout и обновление зависимостей вне verified starter."
+  goal: "Активировать идентичность DON CITY в verified starter clone без изменения production."
+  non_goals: "Server/DB/DNS/Secret Master discovery or mutation, migrations, imports, deployment, UI redesign and infrastructure decisions."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
   ux_scope: PUBLIC_COMMERCIAL
-  boundaries: "starter reference -> isolated DON CITY worktree; public data and runtime remain untouched."
+  boundaries: "approved starter baseline -> isolated DON CITY worktree; clone cleanup uses its repository-pinned allowlist only."
   data_changes: none
   auth_pii: "No secrets, credentials or PII may be read into repository, logs or docs."
-  integrations: "Read-only SourceCraft donor access only; no server or database connection."
-  proof: "Exact source SHA, tracked-tree manifest, license/lockfile/runtime inventory and baseline command results."
+  integrations: "SourceCraft repository only; no server, database, DNS or Secret Master connection."
+  proof: "DON CITY config diff, clone-provenance record, targeted verification and changed-path review."
   gate: RISKY
-  done_state: "A reviewed and pushed starter-baseline checkpoint; no merge or production."
+  done_state: "A reviewed and pushed client-activation checkpoint with retained guards/packages; no production."
 production:
   authorized: false
   gate: explicit-owner-release-command

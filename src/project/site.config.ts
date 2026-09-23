@@ -10,10 +10,10 @@ export type SiteConfig = {
 };
 
 export const siteConfig = {
-	brandName: "AMS Realty Baza Starter",
-	defaultTitle: "AMS Realty Baza Starter",
-	defaultDescription: "Базовая платформа AMS для сайтов агентств недвижимости.",
+	brandName: "ДОН СИТИ",
+	defaultTitle: "ДОН СИТИ",
+	defaultDescription: "Агентство недвижимости «ДОН СИТИ».",
 	locale: "ru-RU",
 	currency: "RUB",
-	projectKind: "starter-demo",
+	projectKind: "client",
 } as const satisfies SiteConfig;

@@ -8,6 +8,9 @@ import rawRestBoundary from "../config/raw-rest-boundary.json" with {
 const root = process.cwd();
 const codeExtensions = /\.(?:js|mjs|cjs|ts|tsx)$/;
 const violations = [];
+const isClientProject = read("src/project/site.config.ts").includes(
+	'projectKind: "client"',
+);
 
 function normalize(file) {
 	return file.replaceAll("\\", "/");
@@ -158,11 +161,13 @@ requireIncludes(
 	"mediaOverwriteDisabled",
 	"local media overwrite must stay disabled",
 );
-requireIncludes(
-	"deploy/nginx/start-baza.ams24.ru.conf",
-	"location /media/",
-	"nginx must alias persistent MEDIA_DIR",
-);
+if (!isClientProject) {
+	requireIncludes(
+		"deploy/nginx/start-baza.ams24.ru.conf",
+		"location /media/",
+		"nginx must alias persistent MEDIA_DIR",
+	);
+}
 requireIncludes(
 	"instrumentation.ts",
 	"assertRuntimeEnvOrThrow",
@@ -258,10 +263,13 @@ for (const required of [
 	);
 }
 
-for (const nginxFile of [
-	"deploy/nginx/start-baza.ams24.ru.conf",
-	"deploy/clients/timeweb/nginx/site.conf.example",
-]) {
+const nginxFiles = isClientProject
+	? ["deploy/clients/timeweb/nginx/site.conf.example"]
+	: [
+		"deploy/nginx/start-baza.ams24.ru.conf",
+		"deploy/clients/timeweb/nginx/site.conf.example",
+	];
+for (const nginxFile of nginxFiles) {
 	const nginx = read(nginxFile);
 	assert.ok(
 		nginx.includes("proxy_set_header X-Real-IP $remote_addr;"),

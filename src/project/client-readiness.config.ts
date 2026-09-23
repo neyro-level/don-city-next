@@ -25,7 +25,7 @@ export type ClientReadinessConfig = {
  * staging/release readiness gate.
  */
 export const clientReadinessConfig = {
-	domain: null,
+	domain: "doncity-home.ru",
 	deploymentTarget: null,
 	database: null,
 	mediaStorage: null,
