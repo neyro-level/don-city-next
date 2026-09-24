@@ -365,10 +365,40 @@ export function buildStableFeedSlug(
 	return `feed-${source}-${external}`.slice(0, 96);
 }
 
+const yrlSourceCategoryMap: Readonly<Record<string, FeedPropertyCategory>> = {
+	апартаменты: "apartment",
+	гараж: "garage",
+	гаражи: "garage",
+	дом: "house",
+	дома: "house",
+	"земельный участок": "land",
+	квартира: "apartment",
+	квартиры: "apartment",
+	комната: "room",
+	комнаты: "room",
+	коммерция: "commercial",
+	"коммерческая недвижимость": "commercial",
+	коттедж: "house",
+	паркинг: "garage",
+	таунхаус: "house",
+	участок: "land",
+};
+
+function normalizeSourceValue(value: string | undefined): string {
+	return value?.trim().toLocaleLowerCase("ru-RU") ?? "";
+}
+
 function normalizePropertyCategory(
 	category: string | undefined,
 	propertyType: string | undefined,
 ): FeedPropertyCategory {
+	for (const sourceValue of [category, propertyType]) {
+		const explicit = yrlSourceCategoryMap[normalizeSourceValue(sourceValue)];
+		if (explicit) return explicit;
+	}
+
+	// Compatibility fallback for pre-existing source variants not yet recorded in
+	// the YRL source map. It deliberately preserves the prior ingest behaviour.
 	const value = `${category ?? ""} ${propertyType ?? ""}`.toLowerCase();
 	if (/(дом|коттедж|house)/i.test(value)) {
 		return "house";

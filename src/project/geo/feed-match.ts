@@ -47,6 +47,18 @@ function matchesLabel(
 	);
 }
 
+const textilshchikDistrictSlug = "tekstilshchik";
+
+function isTextilshchikFeedDistrict(
+	city: { slug?: string | null },
+	districtRaw: string,
+): boolean {
+	return (
+		normalizeGeoLabel(city.slug) === "donetsk" &&
+		normalizeGeoLabel(districtRaw).includes("текстильщик")
+	);
+}
+
 export async function resolveFeedGeo(
 	payload: Payload,
 	input: FeedGeoInput,
@@ -57,6 +69,9 @@ export async function resolveFeedGeo(
 	let region: number | null = null;
 	let city: number | null = null;
 	let district: number | null = null;
+	let matchedCity:
+		| { id: unknown; region?: unknown; slug?: string | null }
+		| undefined;
 
 	if (cityRaw) {
 		const cities = await payload.find({
@@ -66,7 +81,7 @@ export async function resolveFeedGeo(
 			depth: 0,
 			...geoMatchSystemAccess,
 		});
-		const matchedCity = cities.docs.find((item) => matchesLabel(cityRaw, item));
+		matchedCity = cities.docs.find((item) => matchesLabel(cityRaw, item));
 		if (matchedCity) {
 			city = numericId(matchedCity.id);
 			region = numericId(matchedCity.region);
@@ -99,9 +114,16 @@ export async function resolveFeedGeo(
 			depth: 0,
 			...geoMatchSystemAccess,
 		});
-		district = numericId(
-			districts.docs.find((item) => matchesLabel(districtRaw, item))?.id,
+		const exactMatch = districts.docs.find((item) =>
+			matchesLabel(districtRaw, item),
 		);
+		const textilshchikMatch =
+			matchedCity && isTextilshchikFeedDistrict(matchedCity, districtRaw)
+				? districts.docs.find(
+						(item) => normalizeGeoLabel(item.slug) === textilshchikDistrictSlug,
+					)
+				: undefined;
+		district = numericId((exactMatch ?? textilshchikMatch)?.id);
 	}
 
 	return {

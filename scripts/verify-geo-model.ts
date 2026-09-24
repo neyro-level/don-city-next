@@ -68,6 +68,35 @@ assert.deepEqual(matched, {
 	needsReview: false,
 });
 
+const containedTextilshchik = await resolveFeedGeo(payload, {
+	locality: "Донецк",
+	district: "мкр. Текстильщик, Донецк",
+});
+assert.equal(containedTextilshchik.district, 11);
+assert.equal(containedTextilshchik.needsReview, false);
+
+const otherCityPayload = {
+	async find(input: Record<string, unknown>) {
+		if (input.collection === "cities") {
+			return {
+				docs: [{ id: 8, name: "Макеевка", slug: "makeyevka", region: 3 }],
+			};
+		}
+		if (input.collection === "districts") {
+			assert.deepEqual(input.where, { city: { equals: 8 } });
+			return { docs: [{ id: 12, name: "Другой район", slug: "other" }] };
+		}
+		if (input.collection === "regions") return { docs: [] };
+		throw new Error(`Unexpected collection: ${String(input.collection)}`);
+	},
+} as unknown as Payload;
+const cityScoped = await resolveFeedGeo(otherCityPayload, {
+	locality: "Макеевка",
+	district: "мкр. Текстильщик",
+});
+assert.equal(cityScoped.district, null);
+assert.equal(cityScoped.needsReview, true);
+
 const unknown = await resolveFeedGeo(payload, {
 	locality: "Донецк",
 	district: "Неизвестный район",

@@ -87,11 +87,15 @@ assert.equal(ambiguousResult.offer.landAreaNeedsReview, true);
 
 for (const [sourceCategory, expectedCategory] of [
 	["квартира", "apartment"],
+	["апартаменты", "apartment"],
 	["дом", "house"],
+	["таунхаус", "house"],
 	["участок", "land"],
+	["земельный участок", "land"],
 	["коммерция", "commercial"],
 	["комната", "room"],
 	["гараж", "garage"],
+	["паркинг", "garage"],
 ]) {
 	const write = buildFeedPropertyWriteData({
 		context,
