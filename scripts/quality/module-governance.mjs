@@ -35,7 +35,7 @@ function parseProjectStates(projectText) {
 	if (!block)
 		return {
 			states: new Map(),
-			violations: ["PROJECT module governance block is missing"],
+			violations: ["Architecture module governance block is missing"],
 		};
 
 	const states = new Map();
@@ -52,7 +52,7 @@ function parseProjectStates(projectText) {
 
 	const violations = modules
 		.filter((module) => !states.has(module))
-		.map((module) => `PROJECT module row is missing: ${module}`);
+		.map((module) => `Architecture module row is missing: ${module}`);
 	return { states, violations };
 }
 
@@ -85,11 +85,11 @@ export function evaluateGovernance({ projectText, manifests, sourceFiles }) {
 	for (const module of modules) {
 		const config = parsed.states.get(module);
 		const manifest = manifests.get(module);
-		if (!manifest) {
+		if (!manifest && config?.state === "enabled") {
 			violations.push(`module manifest is missing: ${module}`);
 			continue;
 		}
-		for (const section of requiredSections) {
+		for (const section of config?.state === "enabled" ? requiredSections : []) {
 			if (!manifest.includes(`## ${section}`)) {
 				violations.push(`${module} manifest section is missing: ${section}`);
 			}
@@ -101,7 +101,10 @@ export function evaluateGovernance({ projectText, manifests, sourceFiles }) {
 				`${module} has runtime markers while disabled: ${markers.join(", ")}`,
 			);
 		}
-		if (config.manifest !== `docs/modules/${module}.md`) {
+		if (
+			config.state === "enabled" &&
+			config.manifest !== `docs/modules/${module}.md`
+		) {
 			violations.push(
 				`${module} manifest mapping is not canonical: ${config.manifest}`,
 			);
@@ -126,7 +129,10 @@ function walkSource(directory) {
 	});
 }
 
-const projectText = fs.readFileSync(path.join(root, "docs/PROJECT.md"), "utf8");
+const projectText = fs.readFileSync(
+	path.join(root, "docs/03_ARCHITECTURE.md"),
+	"utf8",
+);
 const manifests = new Map(
 	modules.map((module) => {
 		const file = path.join(root, "docs/modules", `${module}.md`);
@@ -167,6 +173,4 @@ if (actualViolations.length > 0) {
 	process.exit(1);
 }
 
-console.log(
-	"Module governance: PASS (3 manifests; disabled runtime marker fixture rejected)",
-);
+console.log("Module governance: PASS (registry and disabled runtime fixture)");

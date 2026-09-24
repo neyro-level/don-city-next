@@ -140,8 +140,8 @@ const pageStyleFailures = componentCssFiles.flatMap((path) => {
 	return failures;
 });
 
-const projectDoc = readFileSync(join(root, "docs/PROJECT.md"), "utf8");
-const designDoc = readFileSync(join(root, "docs/DESIGN.md"), "utf8");
+const projectDoc = readFileSync(join(root, "docs/03_ARCHITECTURE.md"), "utf8");
+const designDoc = readFileSync(join(root, "docs/06_DESIGN_SYSTEM.md"), "utf8");
 
 export function resolveModuleTokenReservations({
 	designText,
@@ -170,7 +170,7 @@ export function resolveModuleTokenReservations({
 		const rowFailures = [];
 		if (!projectModules.has(module))
 			rowFailures.push(
-				`reserved token module is not documented in PROJECT.md: ${module}`,
+				`reserved token module is not documented in 03_ARCHITECTURE.md: ${module}`,
 			);
 		if (!manifestExists(module))
 			rowFailures.push(`reserved token module manifest is missing: ${module}`);

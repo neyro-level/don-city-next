@@ -105,6 +105,20 @@ Reason: real leads/PII, production database, owner/editor auth, imports and busi
 
 ## 8. Constraints
 
+### Optional module governance
+
+<!-- MODULE_GOVERNANCE_BEGIN -->
+| Module | State | Manifest |
+|---|---|---|
+| `novostroyki` | `disabled` | `none` |
+| `journal` | `disabled` | `none` |
+| `agents` | `disabled` | `none` |
+<!-- MODULE_GOVERNANCE_END -->
+
+Disabled means no runtime route, collection or Project module may exist. A
+module receives `docs/modules/<module>.md` only when its research/activation
+epic enables it and supplies the complete module contract.
+
 - Production and DNS changes require separate owner command.
 - Dedicated Secret Master scope per project; no cross-project fallback.
 - R2 modules remain prepared-off until research-first contract.

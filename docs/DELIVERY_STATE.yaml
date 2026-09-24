@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
 plan_version: v7
 plan_status: APPROVED
-current_wave: RP01_SOURCE_OF_TRUTH_ADR_ARCHIVE
-current_epic: dcv4-epic-54
-current_task: dcv4-task-54-delivery
-next_action: deliver-rp01-pr-through-standard-exact-head-gate
+current_wave: RP02_PLATFORM_PROJECT_SPLIT
+current_epic: dcv4-epic-55
+current_task: dcv4-task-55-delivery
+next_action: deliver-rp02-pr-through-risky-exact-head-gate
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 2520bdcab19569882de24a308ffffbe92d488602
-  active_branch: codex/rp-01-source-of-truth
+  base_sha: ff2c7498887d3560cd72cfa4a7437e7a9bd5d53c
+  active_branch: codex/rp-02-platform-project-split
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcv4-task-54-delivery
-  reason: exact V4 graph CLEAN; RP-01 preflight, implementation and verification completed with execution ledgers
+  current_task: dcv4-task-55-delivery
+  reason: exact V4 graph CLEAN; RP-02 preflight, implementation and verification completed with execution ledgers
 evidence:
   rp_00:
     status: delivered
@@ -31,8 +31,11 @@ evidence:
       - docs/replan/RP00_INVENTORY.md
       - docs/replan/RP00_VERIFICATION.md
   rp_01:
-    status: verification-pass-delivery-pending
+    status: delivered
     branch: codex/rp-01-source-of-truth
+    pull_request: 9
+    gate_run: 10
+    merge_commit: ff2c7498887d3560cd72cfa4a7437e7a9bd5d53c
     implementation_head: 802e66a2762784e95a5d852f08800288e6d9706d
     verification_head: 5b6a0886ea03ce7a9f6c86933923a4062462bf1a
     reports:
@@ -40,6 +43,17 @@ evidence:
       - docs/replan/RP01_VERIFICATION.md
       - docs/adr/README.md
       - docs/CHANGELOG.md
+  rp_02:
+    status: verification-pass-delivery-pending
+    branch: codex/rp-02-platform-project-split
+    implementation_head: 74735c72d6a691d8b333d7794c72d2e211f5cc02
+    guard_repair_head: eaccaafc6eec9833769385991b55025c5bc6070a
+    verification_head: dd45273a54bf12bec23ea14e44fd584cc8bfe124
+    separate_ci_policy_task: dcn-4ic0
+    reports:
+      - docs/replan/RP02_PREFLIGHT.md
+      - docs/replan/RP02_VERIFICATION.md
+      - docs/UPSTREAM_CANDIDATES.md
   epic_00:
     verification: PASS
     branch: codex/epic-00-governance
@@ -88,19 +102,19 @@ evidence:
       - docs/research/EPIC-06_VERIFICATION.md
       - docs/OPERATIONS.md
 task_contract:
-  goal: "Deliver RP-01 V4 Source of Truth, durable ADRs and archive verification, then continue the approved ready-loop."
-  non_goals: "Runtime implementation, production, DNS/server/secret mutation or destructive database action."
+  goal: "Deliver RP-02 Platform/Project separation and hardcode guards, then continue the approved ready-loop."
+  non_goals: "Unmerged geo/taxonomy/publicUrlId implementation, production, DNS/server/secret mutation or destructive database action."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
   ux_scope: PUBLIC_COMMERCIAL
-  boundaries: "RP-01 documentation governance only; runtime remains unchanged and EPIC-08 WIP remains isolated."
-  data_changes: none
+  boundaries: "RP-02 moves only already merged portable behavior; Core adapters preserve consumers and EPIC-08 WIP remains isolated."
+  data_changes: "No production data change; schema proof uses isolated local PostgreSQL 18.6 database don_city_rp02_test."
   auth_pii: "No auth, PII or secret access; canonical production origin is the owner-confirmed https://doncity-home.ru."
   integrations: "None in WORK; DNS, server, database and production remain untouched."
-  proof: "V4 source hash, finalized V3 archive hash, ADR uniqueness/status, active-owner assertions and Task Manager CLEAN reconciliation."
-  gate: STANDARD
-  done_state: "RP-01 PR merged after one exact-head STANDARD gate; epic ledger closed; RP-02 becomes ready."
+  proof: "Platform literal/import guards, Dependency Cruiser, SEO contracts, schema verification, typecheck, lint and Task Manager CLEAN reconciliation."
+  gate: RISKY
+  done_state: "RP-02 PR merged after one exact-head RISKY gate; epic ledger closed; next approved task becomes ready."
 production:
   authorized: false
   gate: explicit-owner-release-command

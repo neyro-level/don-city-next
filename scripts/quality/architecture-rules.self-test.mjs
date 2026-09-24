@@ -9,6 +9,7 @@ import {
 } from "./architecture-rules.mjs";
 import { findMissingLocalApiModes } from "./local-api-mode-rule.mjs";
 import { findSqlGovernanceViolations } from "./sql-governance.mjs";
+import { findPlatformBoundaryViolations } from "./platform-boundary-rules.mjs";
 
 const root = process.cwd();
 const fixtureRoot = path.join(
@@ -133,6 +134,37 @@ assert.equal(
 	"UI browser persistence fixture must fail",
 );
 
+assert.deepEqual(
+	findPlatformBoundaryViolations([
+		{
+			name: "src/platform/seo/site.ts",
+			content: "export const brand = input.brandName;",
+		},
+	]),
+	[],
+	"Platform typed inputs must remain allowed",
+);
+assert.equal(
+	findPlatformBoundaryViolations([
+		{
+			name: "src/platform/seo/site.ts",
+			content: 'export const city = "Донецк";',
+		},
+	]).length,
+	1,
+	"Platform project literal must fail",
+);
+assert.equal(
+	findPlatformBoundaryViolations([
+		{
+			name: "src/platform/seo/site.ts",
+			content: 'import { siteConfig } from "@/project/site.config";',
+		},
+	]).length,
+	1,
+	"Platform to Project import must fail",
+);
+
 const dependencyRules = new Set(
 	dependencyConfig.forbidden.map((rule) => rule.name),
 );
@@ -141,6 +173,7 @@ for (const rule of [
 	"contracts-have-no-runtime-or-persistence-dependencies",
 	"ui-does-not-import-app-persistence",
 	"core-does-not-import-ui",
+	"platform-does-not-import-project",
 ]) {
 	assert.ok(
 		dependencyRules.has(rule),

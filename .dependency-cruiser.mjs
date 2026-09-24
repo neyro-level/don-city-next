@@ -43,6 +43,12 @@ export default {
 			from: { path: "^src/core/" },
 			to: { path: "^packages/ui/" },
 		},
+		{
+			name: "platform-does-not-import-project",
+			severity: "error",
+			from: { path: "^src/platform/" },
+			to: { path: "^src/project/" },
+		},
 	],
 	options: {
 		doNotFollow: { path: ["node_modules"] },

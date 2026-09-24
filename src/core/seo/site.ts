@@ -1,21 +1,13 @@
+import { createSiteSeo, type PublicUrlEntry } from "../../platform/seo/site.ts";
 import { siteConfig } from "../../project/site.config.ts";
 
-export const siteBrandName = siteConfig.brandName;
+export type { PublicUrlEntry } from "../../platform/seo/site.ts";
 
-export type PublicUrlEntry = {
-	path: string;
-	lastModified?: string | Date | null;
-	changeFrequency?:
-		| "always"
-		| "hourly"
-		| "daily"
-		| "weekly"
-		| "monthly"
-		| "yearly"
-		| "never";
-	priority?: number;
-	indexable: boolean;
-};
+const siteSeo = createSiteSeo(siteConfig);
+
+export const siteBrandName = siteSeo.siteBrandName;
+export const getSiteUrl = siteSeo.getSiteUrl;
+export const absoluteUrl = siteSeo.absoluteUrl;
 
 export const staticPublicUrlEntries: readonly PublicUrlEntry[] = [
 	{ path: "/", changeFrequency: "daily", priority: 1, indexable: true },
@@ -69,11 +61,3 @@ export const staticPublicUrlEntries: readonly PublicUrlEntry[] = [
 		indexable: false,
 	},
 ];
-
-export function getSiteUrl(): string {
-	return siteConfig.canonicalOrigin;
-}
-
-export function absoluteUrl(path: string): string {
-	return new URL(path, getSiteUrl()).toString();
-}
