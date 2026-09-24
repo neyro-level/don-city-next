@@ -1,7 +1,7 @@
 import type { CanonicalPath, PageKey, UrlGrammarRegistry } from "./types.ts";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const publicUrlIdPattern = /^[1-9]\d*$/;
+const publicUrlIdPattern = /^\d+$/;
 
 function canonicalSlug(value: string, field: string): string {
 	const normalized = value.trim().toLowerCase();
@@ -14,7 +14,7 @@ function canonicalSlug(value: string, field: string): string {
 function canonicalPublicUrlId(value: string): string {
 	const normalized = value.trim();
 	if (!publicUrlIdPattern.test(normalized)) {
-		throw new Error("publicUrlId must be a positive decimal integer.");
+		throw new Error("publicUrlId must contain decimal digits only.");
 	}
 	return normalized;
 }
@@ -63,6 +63,28 @@ function canonicalRegistry(registry: UrlGrammarRegistry): UrlGrammarRegistry {
 		category: canonicalSlug(category, "facet category"),
 		slug: canonicalSlug(slug, "facet"),
 	}));
+	if (
+		new Set(districts.map((item) => `${item.geo}/${item.slug}`)).size !==
+		districts.length
+	) {
+		throw new Error("URL grammar district keys must be unique per geo.");
+	}
+	if (
+		new Set(facets.map((item) => `${item.category}/${item.slug}`)).size !==
+		facets.length
+	) {
+		throw new Error("URL grammar facet keys must be unique per category.");
+	}
+	if (districts.some((item) => !geoSlugs.includes(item.geo))) {
+		throw new Error(
+			"Every URL grammar district must reference a registered geo.",
+		);
+	}
+	if (facets.some((item) => !categorySlugs.includes(item.category))) {
+		throw new Error(
+			"Every URL grammar facet must reference a registered category.",
+		);
+	}
 	for (const district of districts) {
 		for (const facet of facets) {
 			if (district.slug === facet.slug) {
@@ -112,7 +134,7 @@ export function parseUrl(
 			return { kind: "categoryGeo", geo: first, category: second };
 		}
 		if (!registry.categorySlugs.includes(first)) return null;
-		const property = /^([a-z0-9]+(?:-[a-z0-9]+)*)-([1-9]\d*)$/.exec(second);
+		const property = /^([a-z0-9]+(?:-[a-z0-9]+)*)-(\d+)$/.exec(second);
 		if (!property) return null;
 		return {
 			kind: "property",

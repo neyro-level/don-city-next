@@ -136,7 +136,8 @@ export async function listPublicSitemapPropertiesPage(
 		updatedAt: string;
 	}[] = [];
 	let skipped = 0;
-	for (let page = 1; items.length < limit && page <= 50; page += 1) {
+	const lastPage = Math.ceil((offset + limit) / pageSize);
+	for (let page = 1; items.length < limit && page <= lastPage; page += 1) {
 		const result = await payload.find({
 			collection: "properties",
 			where: publicPropertyPublicationWhere,

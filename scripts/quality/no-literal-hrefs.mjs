@@ -6,6 +6,8 @@ const root = process.cwd();
 const excluded = ["src/platform/grammar/", "src/project/url-grammar.ts"];
 const urlFieldLiteral =
 	/\b(?:href|canonicalPath|sourcePage|path)\s*(?:=|:)\s*\{?\s*(["'`])(\/[a-zа-я0-9_[\]:${}-][^"'`\s<]*)\1/giu;
+const catalogPathLiteral =
+	/(["'`])(\/(?:donetsk|kvartiry|doma|uchastki|kommercheskaya|komnaty|garazhi|novostroyki|arenda|obekty|nedvizhimost)(?:\/[^"'`\s<]*)?)\1/giu;
 const violations = [];
 
 for (const file of filesUnder(root, "src", new Set([".ts", ".tsx"]))) {
@@ -18,6 +20,17 @@ for (const file of filesUnder(root, "src", new Set([".ts", ".tsx"]))) {
 		const line = content.slice(0, match.index).split("\n").length;
 		violations.push(`${relative}:${line}: literal public path ${literal}`);
 	}
+	for (const match of content.matchAll(catalogPathLiteral)) {
+		const context = content.slice(Math.max(0, match.index - 24), match.index);
+		if (/PageProps<\s*$/u.test(context)) continue;
+		const line = content.slice(0, match.index).split("\n").length;
+		const violation = `${relative}:${line}: literal catalog path ${match[2]}`;
+		if (!violations.includes(violation)) violations.push(violation);
+	}
+}
+
+if (!catalogPathLiteral.test('href: "/kvartiry/"')) {
+	throw new Error("guard:no-literal-hrefs self-test failed.");
 }
 
 if (violations.length) {

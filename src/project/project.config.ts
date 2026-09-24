@@ -1,5 +1,12 @@
 import { defineLeadDeliveryPolicy } from "../core/leads/delivery-policy.ts";
 import { clientReadinessConfig } from "./client-readiness.config.ts";
+import { buildProjectUrl } from "./url-grammar.ts";
+
+const reservedNamespaces = [
+	buildProjectUrl({ kind: "categoryRoot", category: "novostroyki" }),
+	buildProjectUrl({ kind: "static", slug: "komplex" }),
+	buildProjectUrl({ kind: "static", slug: "journal" }),
+].map((path) => path.slice(0, -1));
 
 export const projectConfig = {
 	profile: "REALTY_BASE",
@@ -14,7 +21,7 @@ export const projectConfig = {
 	staleDataSlaMinutes: 30,
 	cacheInvalidationMode: "http" as const,
 	cacheProofStatus: "http" as const,
-	reservedNamespaces: ["/novostroyki", "/komplex", "/journal"],
+	reservedNamespaces,
 	indexedCatalogFilterKeys: [
 		"category",
 		"dealType",
