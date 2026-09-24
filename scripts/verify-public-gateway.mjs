@@ -16,11 +16,16 @@ const accessSource = readFileSync(
 	"src/core/data-access/public/access-mode.ts",
 	"utf8",
 );
+const nearbyGeoSource = readFileSync(
+	"src/core/data-access/public/nearby-geo.ts",
+	"utf8",
+);
 const propertiesSource = readFileSync(
 	"src/project/collections/Properties.ts",
 	"utf8",
 );
 const pagesSource = readFileSync("src/project/collections/Pages.ts", "utf8");
+const citiesSource = readFileSync("src/project/collections/Cities.ts", "utf8");
 const redirectsSource = readFileSync(
 	"src/project/collections/Redirects.ts",
 	"utf8",
@@ -81,10 +86,12 @@ if (
 }
 
 if (
-	!accessSource.includes('propertyLifecycleOperation = "property-lifecycle-read"') ||
+	!accessSource.includes(
+		'propertyLifecycleOperation = "property-lifecycle-read"',
+	) ||
 	!accessSource.includes("propertyLifecycleReadAccess") ||
 	!accessSource.includes("isPropertyLifecycleRead") ||
-	!accessSource.includes('{ publishedAt: { exists: true } }')
+	!accessSource.includes("{ publishedAt: { exists: true } }")
 ) {
 	throw new Error(
 		"Published purged properties need a classified lifecycle-only read for 410 resolution",
@@ -92,9 +99,10 @@ if (
 }
 
 if (
-	!readFileSync("src/core/data-access/public/payload-reads.ts", "utf8").includes(
-		"...propertyLifecycleReadAccess()",
-	)
+	!readFileSync(
+		"src/core/data-access/public/payload-reads.ts",
+		"utf8",
+	).includes("...propertyLifecycleReadAccess()")
 ) {
 	throw new Error(
 		"Property lifecycle lookup must use its narrow classified read mode",
@@ -122,12 +130,26 @@ if (
 for (const [file, source, accessName] of [
 	["Properties", propertiesSource, "publicPropertyReadAccess"],
 	["Pages", pagesSource, "publicPageReadAccess"],
+	["Cities", citiesSource, "publicGeoReadAccess"],
 	["Redirects", redirectsSource, "publicRedirectReadAccess"],
 ]) {
 	if (!source.includes(`read: ${accessName}`)) {
 		throw new Error(
 			`${file} must authorize only its context-aware Public Gateway read access`,
 		);
+	}
+}
+
+for (const snippet of [
+	"publicCitySelect",
+	"isPublished: true",
+	"publicPropertyPublicationWhere",
+	"city: { equals: city.id }",
+	"overrideAccess: publicGatewayPolicy.overrideAccess",
+	"context: publicGatewayPolicy.context",
+]) {
+	if (!nearbyGeoSource.includes(snippet)) {
+		throw new Error(`Nearby geo Public Gateway contract missing: ${snippet}`);
 	}
 }
 

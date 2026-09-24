@@ -1,9 +1,11 @@
 import type { PropertyCategory } from "@ams/realtbase-contracts";
+import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-geo.ts";
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import { seoRegistryByCanonicalPath } from "./seo-registry.generated.ts";
 import { siteConfig } from "./site.config.ts";
+import { siteProfile } from "./site.profile.ts";
 import {
 	buildProjectUrl,
 	canonicalPropertySemantic,
@@ -33,6 +35,7 @@ export type ResolvedPublicPage = {
 	h1: string;
 	robots: PublicRobots;
 	catalogQuery?: CatalogQuery;
+	geoLinks?: readonly { href: string; label: string }[];
 	property?: Extract<
 		PublicPropertyPageState,
 		{ property: unknown }
@@ -49,6 +52,7 @@ export type PublicRouteDependencies = {
 	loadProperty: (
 		publicUrlId: string,
 	) => Promise<PublicPropertyPageState | null>;
+	loadNearbyGeo?: (slug: string) => Promise<NearbyGeoAvailability | null>;
 };
 
 function page(
@@ -71,6 +75,27 @@ const domainCategory = {
 	kvartiry: "apartment",
 	doma: "house",
 	uchastki: "land",
+} as const;
+
+const nearbyCategoryCopy = {
+	kvartiry: {
+		category: "apartment",
+		title: "Купить квартиру",
+		h1: "Квартиры",
+		description: "Квартиры на продажу",
+	},
+	doma: {
+		category: "house",
+		title: "Купить дом",
+		h1: "Дома",
+		description: "Дома на продажу",
+	},
+	uchastki: {
+		category: "land",
+		title: "Купить земельный участок",
+		h1: "Земельные участки",
+		description: "Земельные участки на продажу",
+	},
 } as const;
 
 function robotsFromRegistry(entry: SeoRegistryEntry): PublicRobots {
@@ -119,6 +144,85 @@ function resolveRegistryPage(key: Exclude<PageKey, { kind: "property" }>) {
 	});
 }
 
+async function resolveNearbyGeoPage(
+	key: Extract<PageKey, { kind: "geoHub" | "categoryGeo" }>,
+	dependencies: PublicRouteDependencies,
+): Promise<ResolvedPublicRoute> {
+	const availability = await dependencies.loadNearbyGeo?.(key.geo);
+	if (!availability?.activeObjects) {
+		return { kind: "notFound", statusCode: 404 };
+	}
+	if (key.kind === "geoHub") {
+		return page(key, {
+			title: `Недвижимость ${availability.preposition} ${availability.nameLocative}, ДНР | ${siteConfig.brandName}`,
+			description: `Недвижимость ${availability.preposition} ${availability.nameLocative}, ДНР: опубликованные объекты, фото и цены. Подбор и сопровождение сделки в «${siteConfig.brandName}».`,
+			h1: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
+			robots: { indexing: "noindex", following: "follow" },
+			catalogQuery: { city: availability.name },
+		});
+	}
+	const copy =
+		nearbyCategoryCopy[key.category as keyof typeof nearbyCategoryCopy];
+	if (!copy || !availability.activeByCategory[copy.category]) {
+		return { kind: "notFound", statusCode: 404 };
+	}
+	return page(key, {
+		title: `${copy.title} ${availability.preposition} ${availability.nameLocative}, ДНР | ${siteConfig.brandName}`,
+		description: `${copy.description} ${availability.preposition} ${availability.nameLocative}, ДНР: актуальные опубликованные объекты, фото и цены.`,
+		h1: `${copy.h1} ${availability.preposition} ${availability.nameLocative}`,
+		robots: { indexing: "noindex", following: "follow" },
+		catalogQuery: { category: copy.category, city: availability.name },
+	});
+}
+
+function nearbyGeoSlugForCity(city: string): string | null {
+	for (const [slug, aliases] of Object.entries(
+		siteProfile.nearbyGeoAliases ?? {},
+	)) {
+		if (
+			aliases.some(
+				(alias) =>
+					alias.localeCompare(city, "ru", { sensitivity: "base" }) === 0,
+			)
+		) {
+			return slug;
+		}
+	}
+	return null;
+}
+
+async function propertyNearbyGeoLinks(
+	property: ResolvedPublicPage["property"],
+	dependencies: PublicRouteDependencies,
+): Promise<ResolvedPublicPage["geoLinks"]> {
+	if (!property) return undefined;
+	const slug = nearbyGeoSlugForCity(property.city);
+	if (!slug) return undefined;
+	const availability = await dependencies.loadNearbyGeo?.(slug);
+	if (!availability?.activeObjects) return undefined;
+	const categorySlug = propertyCategoryToSlug(
+		property.category as Exclude<PropertyCategory, "other">,
+	);
+	const domain = domainCategory[categorySlug as keyof typeof domainCategory];
+	const links = [
+		{
+			href: buildProjectUrl({ kind: "geoHub", geo: slug }),
+			label: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
+		},
+	];
+	if (domain && availability.activeByCategory[domain]) {
+		links.push({
+			href: buildProjectUrl({
+				kind: "categoryGeo",
+				geo: slug,
+				category: categorySlug,
+			}),
+			label: `${nearbyCategoryCopy[categorySlug as keyof typeof nearbyCategoryCopy]?.h1 ?? "Объекты"} ${availability.preposition} ${availability.nameLocative}`,
+		});
+	}
+	return links;
+}
+
 export async function resolveProjectPublicRoute(
 	segments: readonly string[],
 	dependencies: PublicRouteDependencies,
@@ -127,6 +231,12 @@ export async function resolveProjectPublicRoute(
 		segments.length ? `/${segments.join("/")}/` : "/",
 	);
 	if (!key) return { kind: "notFound", statusCode: 404 };
+	if (
+		(key.kind === "geoHub" || key.kind === "categoryGeo") &&
+		key.geo !== siteProfile.primaryGeo
+	) {
+		return resolveNearbyGeoPage(key, dependencies);
+	}
 	if (key.kind !== "property") return resolveRegistryPage(key);
 
 	const state = await dependencies.loadProperty(key.publicUrlId);
@@ -159,5 +269,6 @@ export async function resolveProjectPublicRoute(
 			? { indexing: "noindex", following: "follow" }
 			: { indexing: "index", following: "follow" },
 		property,
+		geoLinks: await propertyNearbyGeoLinks(property, dependencies),
 	});
 }

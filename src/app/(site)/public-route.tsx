@@ -68,6 +68,7 @@ export async function ResolvedPublicRoutePage({
 			<PropertyPageView
 				property={result.property}
 				leadContext={leadPage.leadContext}
+				geoLinks={result.geoLinks}
 			/>
 		);
 	}

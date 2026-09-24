@@ -16,6 +16,7 @@ export type SiteProfile<
 	marketStatus: Record<Market, ProfileStatus>;
 	categoryStatus: Record<Category, ProfileStatus>;
 	geoCategoryStatus: Record<string, Partial<Record<Category, ProfileStatus>>>;
+	nearbyGeoAliases?: Partial<Record<string, readonly string[]>>;
 	defaultNearbyGeoStatus: ProfileStatus;
 	tiers: Record<string, { minBroad: number }>;
 	inventoryThreshold: Record<string, number>;

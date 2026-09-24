@@ -17,9 +17,11 @@ import { StarterPropertyMediaGallery } from "./StarterPropertyMediaGallery";
 export function PropertyPageView({
 	property,
 	leadContext,
+	geoLinks,
 }: {
 	property: PropertyDetailsDTO;
 	leadContext: MarketingPageDTO["leadContext"];
+	geoLinks?: readonly { href: string; label: string }[];
 }) {
 	return (
 		<>
@@ -27,18 +29,26 @@ export function PropertyPageView({
 				<Section space="hero">
 					<Container>
 						<nav className="mb-6 text-caption text-content-default">
-							<a href="/">Главная</a> / <a href="/nedvizhimost">Недвижимость</a>{" "}
-							/ {property.title}
+							<a href="/">Главная</a>
+							{geoLinks?.map((link) => (
+								<span key={link.href}>
+									{" / "}
+									<a href={link.href}>{link.label}</a>
+								</span>
+							))}
+							{" / "}
+							{property.title}
 						</nav>
 						<div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
 							<div>
 								<div className="relative aspect-[16/9] overflow-hidden rounded-[var(--radius-lg)] bg-surface-subtle">
 									<StarterPropertyMediaGallery
-										images={property.gallery.length
-											? property.gallery
-											: property.primaryMedia
-												? [property.primaryMedia]
-												: []
+										images={
+											property.gallery.length
+												? property.gallery
+												: property.primaryMedia
+													? [property.primaryMedia]
+													: []
 										}
 										title={property.title}
 									/>

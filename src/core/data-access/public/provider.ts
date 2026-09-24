@@ -27,6 +27,10 @@ import {
 import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
 import {
+	findNearbyGeoAvailability,
+	type NearbyGeoAvailability,
+} from "./nearby-geo";
+import {
 	countPublicSitemapPages,
 	countPublicSitemapProperties,
 	listPublicSitemapPagesPage,
@@ -49,6 +53,13 @@ export type PublicPropertyPageState =
 
 const urlsPerShard = projectConfig.sitemapUrlsPerShard;
 const queryPageSize = projectConfig.sitemapQueryPageSize;
+
+export async function getNearbyGeoAvailability(
+	slug: string,
+): Promise<NearbyGeoAvailability | null> {
+	const payload = await getOptionalPublicGatewayPayload();
+	return payload ? findNearbyGeoAvailability(payload, slug) : null;
+}
 
 function emptyCatalog(
 	query: CatalogQueryInput = { limit: 24, page: 1 },

@@ -27,7 +27,9 @@ export const siteProfile = {
 	},
 	geoCategoryStatus: {
 		donetsk: { kvartiry: "ACTIVE", doma: "ACTIVE", uchastki: "ACTIVE" },
+		makeevka: {},
 	},
+	nearbyGeoAliases: { makeevka: ["Макеевка"] },
 	defaultNearbyGeoStatus: "NOINDEX_AUTO",
 	tiers: { P1: { minBroad: 100 }, P2: { minBroad: 50 } },
 	inventoryThreshold: { P1: 5, P2: 5, TEST: 10 },

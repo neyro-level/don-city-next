@@ -136,7 +136,7 @@ if (write) {
 	);
 	const actualModule = await readFile(outputPath, "utf8");
 	assert.equal(
-		actualModule,
+		actualModule.replaceAll("\r\n", "\n"),
 		expectedModule,
 		"Generated SEO runtime registry is stale",
 	);
