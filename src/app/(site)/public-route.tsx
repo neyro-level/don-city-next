@@ -12,6 +12,7 @@ import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
 import { siteConfig } from "@/project/site.config";
+import { buildStaticMarketingPage } from "@/project/static-page-composition";
 
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
@@ -110,11 +111,9 @@ export async function ResolvedPublicRoutePage({
 		);
 	}
 
-	const staticPage: MarketingPageDTO = {
+	const staticPage = buildStaticMarketingPage({
 		slug: result.key.kind === "static" ? result.key.slug : "page",
-		eyebrow: siteConfig.brandName,
 		title: result.h1,
-		lead: result.description,
 		seo: {
 			title: result.title,
 			description: result.description,
@@ -123,12 +122,6 @@ export async function ResolvedPublicRoutePage({
 			following: result.robots.following,
 		},
 		breadcrumbs: { items: result.breadcrumbs },
-		sections: [],
-		leadContext: {
-			formKind: "general",
-			sourcePage: result.canonicalPath,
-			...leadConsentContext(),
-		},
-	};
+	});
 	return <MarketingPageView page={staticPage} />;
 }
