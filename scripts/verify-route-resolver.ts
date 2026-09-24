@@ -126,4 +126,27 @@ assert.deepEqual(await resolve("/kvartiry/neizvestnyy-9999/"), {
 	statusCode: 404,
 });
 
+const gatePassedDistrict = await resolveProjectPublicRoute(
+	["donetsk", "kvartiry", "kalininskiy"],
+	{
+		loadProperty,
+		loadListingContentGateEvidence: async (registryId) =>
+			registryId === "APT_DIST_KALIN"
+				? {
+						activeObjects: 5,
+						introduction: "а".repeat(600),
+						contextFacts: [
+							{ source: "official district register", checkedAt: "2026-09-24" },
+						],
+						serverRendered: true,
+						propertyLinksInHtml: true,
+					}
+				: null,
+	},
+);
+assert.equal(gatePassedDistrict.kind, "page");
+if (gatePassedDistrict.kind === "page") {
+	assert.equal(gatePassedDistrict.robots.indexing, "index");
+}
+
 console.log("RP-06 route resolver matrix: PASS");

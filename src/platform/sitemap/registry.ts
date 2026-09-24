@@ -1,9 +1,16 @@
 import type { SeoRegistryEntry } from "../seo/registry.ts";
+import {
+	isListingSitemapEligible,
+	type ListingContentGateEvidence,
+} from "../seo/content-gate.ts";
+import type { SiteProfile } from "../profile/types.ts";
 import type { PublicUrlEntry } from "../seo/site.ts";
 
 export type RegistrySitemapOptions = {
 	contentUpdatedAt: string;
 	isCanonicalPath: (path: string) => boolean;
+	profile?: Pick<SiteProfile, "inventoryThreshold">;
+	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>;
 };
 
 function sitemapPresentation(
@@ -36,9 +43,11 @@ export function buildRegistrySitemapEntries(
 	return registry
 		.filter(
 			(entry) =>
-				entry.status === "active" &&
-				entry.robots === "index,follow" &&
-				entry.contentGateRequired === "false" &&
+				isListingSitemapEligible(
+					entry,
+					options.profile ?? { inventoryThreshold: {} },
+					options.contentGateEvidence?.[entry.registryId],
+				) &&
 				entry.pageType !== "category_root" &&
 				options.isCanonicalPath(entry.url),
 		)

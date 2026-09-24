@@ -7,6 +7,10 @@ import type { PublicPropertyPageState } from "../core/data-access/public/provide
 import type { PageKey } from "../platform/grammar/types.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import {
+	effectiveListingRobots,
+	type ListingContentGateEvidence,
+} from "../platform/seo/content-gate.ts";
+import {
 	buildCatalogLinks,
 	buildPageBreadcrumbs,
 	buildPropertyNavigation,
@@ -66,6 +70,9 @@ export type PublicRouteDependencies = {
 		publicUrlId: string,
 	) => Promise<PublicPropertyPageState | null>;
 	loadNearbyGeo?: (slug: string) => Promise<NearbyGeoAvailability | null>;
+	loadListingContentGateEvidence?: (
+		registryId: string,
+	) => Promise<ListingContentGateEvidence | null>;
 };
 
 function page(
@@ -126,8 +133,15 @@ const nearbyCategoryCopy = {
 	},
 } as const;
 
-function robotsFromRegistry(entry: SeoRegistryEntry): PublicRobots {
-	const [indexing, following] = entry.robots.split(",");
+function robotsFromRegistry(
+	entry: SeoRegistryEntry,
+	evidence?: ListingContentGateEvidence | null,
+): PublicRobots {
+	const [indexing, following] = effectiveListingRobots(
+		entry,
+		siteProfile,
+		evidence,
+	).split(",");
 	return {
 		indexing: indexing as PublicRobots["indexing"],
 		following: following as PublicRobots["following"],
@@ -160,15 +174,21 @@ function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
 	};
 }
 
-function resolveRegistryPage(key: Exclude<PageKey, { kind: "property" }>) {
+async function resolveRegistryPage(
+	key: Exclude<PageKey, { kind: "property" }>,
+	dependencies: PublicRouteDependencies,
+) {
 	const canonicalPath = buildProjectUrl(key);
 	const contract = seoRegistryByCanonicalPath.get(canonicalPath);
 	if (!contract) return { kind: "notFound", statusCode: 404 } as const;
+	const evidence = await dependencies.loadListingContentGateEvidence?.(
+		contract.registryId,
+	);
 	return page(key, {
 		title: contract.title,
 		description: contract.description,
 		h1: contract.h1,
-		robots: robotsFromRegistry(contract),
+		robots: robotsFromRegistry(contract, evidence),
 		catalogQuery: catalogQueryFor(key),
 	});
 }
@@ -299,7 +319,7 @@ export async function resolveProjectPublicRoute(
 	) {
 		return resolveNearbyGeoPage(key, dependencies);
 	}
-	if (key.kind !== "property") return resolveRegistryPage(key);
+	if (key.kind !== "property") return resolveRegistryPage(key, dependencies);
 
 	const state = await dependencies.loadProperty(key.publicUrlId);
 	if (!state) return { kind: "notFound", statusCode: 404 };
