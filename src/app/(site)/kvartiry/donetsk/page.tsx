@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { CatalogPageView } from "@ams/realtbase-ui";
 import { getPublicCatalog } from "@/core/data-access/public";
 import {
@@ -6,6 +7,8 @@ import {
 	JsonLdScript,
 } from "@/core/seo/structured-data";
 import { leadConsentContext } from "@/project/legal.config";
+import { siteProfile } from "@/project/site.profile";
+import { resolveCategoryRoute } from "@/platform/profile";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +17,17 @@ const title = "Купить квартиру в Донецке, ДНР: цены
 const description =
 	"Квартиры на продажу в Донецке, ДНР: 1-, 2- и 3-комнатные варианты в разных районах. Подбор и сопровождение сделки в «ДОН СИТИ».";
 
+function requireActiveApartments() {
+	if (
+		resolveCategoryRoute(siteProfile, siteProfile.primaryGeo, "kvartiry")
+			.statusCode === 404
+	) {
+		notFound();
+	}
+}
+
 export function generateMetadata(): Metadata {
+	requireActiveApartments();
 	return {
 		title,
 		description,
@@ -25,6 +38,7 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function DonetskApartmentsCatalogPage() {
+	requireActiveApartments();
 	const catalog = await getPublicCatalog({
 		category: "apartment",
 		city: "Донецк",
