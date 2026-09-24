@@ -3,7 +3,12 @@ import path from "node:path";
 import { filesUnder } from "./source-files.mjs";
 
 const root = process.cwd();
-const excluded = ["src/platform/grammar/", "src/project/url-grammar.ts"];
+const excluded = [
+	"src/platform/grammar/",
+	"src/project/url-grammar.ts",
+	// Generated from the reviewed CSV registry; consumers still resolve through grammar.
+	"src/project/seo-registry.generated.ts",
+];
 const urlFieldLiteral =
 	/\b(?:href|canonicalPath|sourcePage|path)\s*(?:=|:)\s*\{?\s*(["'`])(\/[a-zа-я0-9_[\]:${}-][^"'`\s<]*)\1/giu;
 const catalogPathLiteral =

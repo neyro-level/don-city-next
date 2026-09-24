@@ -10,6 +10,7 @@ import type {
 	SiteFooterDTO,
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
+import { buildGeoSwitcher, buildR1Navigation } from "../project/navigation.ts";
 import { siteConfig } from "../project/site.config.ts";
 import {
 	buildProjectUrl,
@@ -26,19 +27,14 @@ const logo = {
 	height: 40,
 };
 
-const navigation = [
-	{ label: "Недвижимость", href: projectUrls.primaryCatalog },
-	{ label: "Услуги", href: projectUrls.services },
-	{ label: "Ипотека", href: projectUrls.mortgage },
-	{ label: "О компании", href: projectUrls.about },
-	{ label: "Контакты", href: projectUrls.contacts },
-] as const;
+const navigation = buildR1Navigation();
 
 export const fixtureHeader: SiteHeaderDTO = {
 	brandName,
 	homeHref: projectUrls.home,
 	logo,
 	navigation,
+	geoSwitcher: buildGeoSwitcher(),
 	phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
 	primaryAction: {
 		label: "Подобрать объект",
@@ -50,12 +46,12 @@ export const fixtureFooter: SiteFooterDTO = {
 	brandName,
 	logo,
 	groups: [
-		{ title: "Недвижимость", links: navigation.slice(0, 3) },
+		{ title: "Недвижимость", links: navigation[0]?.children ?? [] },
 		{
 			title: "Услуги",
 			links: [
 				{ label: "Продать", href: projectUrls.sale },
-				{ label: "Сдать", href: projectUrls.rent },
+				{ label: "Юрист", href: projectUrls.lawyer },
 			],
 		},
 		{ title: "Компания", links: navigation.slice(3) },

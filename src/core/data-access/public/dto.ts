@@ -11,12 +11,13 @@ import type {
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
 import { leadConsentContext } from "../../../project/legal.config.ts";
-import { siteConfig } from "../../../project/site.config.ts";
 import {
-	buildProjectUrl,
-	buildPropertyUrl,
-	projectUrls,
-} from "../../../project/url-grammar.ts";
+	buildGeoSwitcher,
+	buildHomeCatalogLinks,
+	buildR1Navigation,
+} from "../../../project/navigation.ts";
+import { siteConfig } from "../../../project/site.config.ts";
+import { buildPropertyUrl, projectUrls } from "../../../project/url-grammar.ts";
 import type {
 	PublicCatalogFacetsResult,
 	PublicCatalogProperty,
@@ -284,27 +285,16 @@ export function toPropertyFilterDTO(
 	};
 }
 
-export function toShellDTO(pages: readonly PublicPageRecord[]) {
-	const starterNavigation = [
-		{ label: "Недвижимость", href: projectUrls.primaryCatalog },
-		{ label: "Юрист", href: projectUrls.lawyer },
-		{ label: "О компании", href: projectUrls.about },
-		{ label: "Контакты", href: projectUrls.contacts },
-	];
-	const cmsNavigation = pages
-		.filter((page) => page.slug !== "home")
-		.slice(0, 6)
-		.map((page) => ({
-			label: page.title,
-			href: buildProjectUrl({ kind: "static", slug: page.slug }),
-		}));
-	const links = cmsNavigation.length ? cmsNavigation : starterNavigation;
+export function toShellDTO(_pages: readonly PublicPageRecord[]) {
+	const links = buildR1Navigation();
+	const propertyLinks = links[0]?.children ?? [];
 
 	const header: SiteHeaderDTO = {
 		brandName,
 		homeHref: projectUrls.home,
 		logo,
 		navigation: links,
+		geoSwitcher: buildGeoSwitcher(),
 		phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
 		primaryAction: {
 			label: "Подобрать объект",
@@ -315,7 +305,10 @@ export function toShellDTO(pages: readonly PublicPageRecord[]) {
 	const footer: SiteFooterDTO = {
 		brandName,
 		logo,
-		groups: [{ title: "Разделы", links }],
+		groups: [
+			{ title: "Недвижимость", links: propertyLinks },
+			{ title: "Разделы", links: links.slice(1) },
+		],
 		contacts: [{ label: "+7 (000) 000-00-00", href: "tel:+70000000000" }],
 		legalLinks: [
 			{
@@ -367,11 +360,10 @@ export function toHomePageDTO(page: PublicPageRecord | null): HomePageDTO {
 		},
 		featuredPropertyId: "",
 		serviceLinks: [
-			{
-				label: "Купить",
-				href: projectUrls.primaryCatalog,
-				description: "Квартиры и дома в каталоге",
-			},
+			...buildHomeCatalogLinks().map((link) => ({
+				...link,
+				description: "Актуальные объекты и подбор по критериям",
+			})),
 			{
 				label: "Продать",
 				href: projectUrls.sale,

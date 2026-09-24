@@ -1,4 +1,5 @@
 import type {
+	BreadcrumbItemDTO,
 	MarketingPageDTO,
 	PropertyDetailsDTO,
 } from "@ams/realtbase-contracts";
@@ -17,27 +18,33 @@ import { StarterPropertyMediaGallery } from "./StarterPropertyMediaGallery";
 export function PropertyPageView({
 	property,
 	leadContext,
-	geoLinks,
+	breadcrumbs = [],
+	contextLinks = [],
 }: {
 	property: PropertyDetailsDTO;
 	leadContext: MarketingPageDTO["leadContext"];
-	geoLinks?: readonly { href: string; label: string }[];
+	breadcrumbs?: readonly BreadcrumbItemDTO[];
+	contextLinks?: readonly { href: string; label: string }[];
 }) {
 	return (
 		<>
 			<section id="section-property-gallery">
 				<Section space="hero">
 					<Container>
-						<nav className="mb-6 text-caption text-content-default">
-							<a href="/">Главная</a>
-							{geoLinks?.map((link) => (
-								<span key={link.href}>
-									{" / "}
-									<a href={link.href}>{link.label}</a>
+						<nav
+							aria-label="Хлебные крошки"
+							className="mb-6 text-caption text-content-default"
+						>
+							{breadcrumbs.map((item, index) => (
+								<span key={`${item.href ?? "current"}-${item.label}`}>
+									{index ? <span aria-hidden> / </span> : null}
+									{item.href ? (
+										<a href={item.href}>{item.label}</a>
+									) : (
+										item.label
+									)}
 								</span>
 							))}
-							{" / "}
-							{property.title}
 						</nav>
 						<div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
 							<div>
@@ -101,6 +108,24 @@ export function PropertyPageView({
 					</Container>
 				</Section>
 			</section>
+			{contextLinks.length ? (
+				<section
+					id="section-property-context"
+					className="border-y border-border bg-surface-raised"
+				>
+					<Container className="flex flex-wrap gap-3 py-5">
+						{contextLinks.map((link) => (
+							<a
+								key={link.href}
+								href={link.href}
+								className="rounded-md bg-surface-subtle px-3 py-2 text-label font-semibold hover:text-action-primary"
+							>
+								{link.label}
+							</a>
+						))}
+					</Container>
+				</section>
+			) : null}
 			<section id="section-property-related" className="bg-surface-subtle">
 				<Section>
 					<Container>

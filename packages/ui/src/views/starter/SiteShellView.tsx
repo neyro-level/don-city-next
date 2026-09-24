@@ -22,15 +22,34 @@ export function StarterSiteHeader({ header }: { header: SiteHeaderDTO }) {
 					className="ml-auto hidden items-center gap-1 lg:flex"
 					aria-label="Основная навигация"
 				>
-					{header.navigation.map((item) => (
-						<a
-							key={item.href}
-							href={item.href}
-							className="rounded-md px-3 py-2 text-label font-semibold text-content-default transition-colors hover:bg-surface-subtle hover:text-action-primary"
-						>
-							{item.label}
-						</a>
-					))}
+					{header.navigation.map((item) =>
+						item.children?.length ? (
+							<details className="group relative" key={item.href}>
+								<summary className="cursor-pointer list-none rounded-md px-3 py-2 text-label font-semibold text-content-default transition-colors hover:bg-surface-subtle hover:text-action-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary">
+									{item.label} <span aria-hidden>▾</span>
+								</summary>
+								<div className="absolute left-0 top-full z-50 mt-2 grid min-w-64 gap-1 rounded-lg border border-border bg-surface-card p-2 shadow-lg">
+									{item.children.map((child) => (
+										<a
+											key={child.href}
+											href={child.href}
+											className="rounded-md px-3 py-2 text-label font-semibold hover:bg-surface-subtle hover:text-action-primary focus-visible:outline-2 focus-visible:outline-action-primary"
+										>
+											{child.label}
+										</a>
+									))}
+								</div>
+							</details>
+						) : (
+							<a
+								key={item.href}
+								href={item.href}
+								className="rounded-md px-3 py-2 text-label font-semibold text-content-default transition-colors hover:bg-surface-subtle hover:text-action-primary focus-visible:outline-2 focus-visible:outline-action-primary"
+							>
+								{item.label}
+							</a>
+						),
+					)}
 				</nav>
 				{header.phone ? (
 					<a
@@ -50,7 +69,18 @@ export function StarterSiteHeader({ header }: { header: SiteHeaderDTO }) {
 				className="flex gap-2 overflow-x-auto pb-3 lg:hidden"
 				aria-label="Мобильная навигация"
 			>
-				{header.navigation.map((item) => (
+				{header.navigation
+					.flatMap((item) => item.children ?? [item])
+					.map((item) => (
+						<a
+							key={item.href}
+							href={item.href}
+							className="whitespace-nowrap rounded-md bg-surface-subtle px-3 py-2 text-label font-semibold focus-visible:outline-2 focus-visible:outline-action-primary"
+						>
+							{item.label}
+						</a>
+					))}
+				{header.geoSwitcher?.map((item) => (
 					<a
 						key={item.href}
 						href={item.href}
@@ -70,7 +100,9 @@ export function StarterSiteFooter({ footer }: { footer: SiteFooterDTO }) {
 			<Container>
 				<div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
 					<div>
-						<p className="text-body font-extrabold tracking-caps">{footer.brandName}</p>
+						<p className="text-body font-extrabold tracking-caps">
+							{footer.brandName}
+						</p>
 						<p className="mt-3 max-w-sm text-label leading-step-copy text-[var(--text-dark)]">
 							Агентство недвижимости: подбор объектов, проверка документов и
 							сопровождение сделки.
@@ -97,7 +129,10 @@ export function StarterSiteFooter({ footer }: { footer: SiteFooterDTO }) {
 				</div>
 				<div className="mt-10 flex flex-col gap-3 border-t border-[var(--dark-border)] pt-6 text-caption text-[var(--text-dark)] md:flex-row md:items-center md:justify-between">
 					<p>{footer.copyright}</p>
-					<nav className="flex flex-wrap gap-4" aria-label="Правовая информация">
+					<nav
+						className="flex flex-wrap gap-4"
+						aria-label="Правовая информация"
+					>
 						{footer.legalLinks.map((link) => (
 							<a
 								key={link.href}

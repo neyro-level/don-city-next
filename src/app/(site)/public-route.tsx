@@ -68,7 +68,8 @@ export async function ResolvedPublicRoutePage({
 			<PropertyPageView
 				property={result.property}
 				leadContext={leadPage.leadContext}
-				geoLinks={result.geoLinks}
+				breadcrumbs={result.breadcrumbs}
+				contextLinks={result.internalLinks}
 			/>
 		);
 	}
@@ -98,6 +99,8 @@ export async function ResolvedPublicRoutePage({
 						"Расскажите, какой объект нужен. Уточним критерии и предложим доступные варианты.",
 					ctaSubmitLabel: "Получить подборку",
 				}}
+				breadcrumbs={result.breadcrumbs}
+				contextLinks={result.internalLinks}
 			/>
 		);
 	}
@@ -114,7 +117,7 @@ export async function ResolvedPublicRoutePage({
 			indexing: result.robots.indexing,
 			following: result.robots.following,
 		},
-		breadcrumbs: { items: [] },
+		breadcrumbs: { items: result.breadcrumbs },
 		sections: [],
 		leadContext: {
 			formKind: "general",

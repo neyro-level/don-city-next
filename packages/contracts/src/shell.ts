@@ -12,6 +12,7 @@ export type SiteHeaderDTO = {
 	homeHref: string;
 	logo: MediaDTO;
 	navigation: readonly SiteNavItemDTO[];
+	geoSwitcher?: readonly SiteNavItemDTO[];
 	phone?: { label: string; href: string };
 	primaryAction?: { label: string; href: string };
 };

@@ -1,4 +1,5 @@
 import type {
+	BreadcrumbItemDTO,
 	LeadFormContext,
 	PropertyFilterDTO,
 	PropertyListDTO,
@@ -33,11 +34,15 @@ export function CatalogPageView({
 	filters,
 	leadContext,
 	copy = defaultCopy,
+	breadcrumbs = [],
+	contextLinks = [],
 }: {
 	list: PropertyListDTO;
 	filters: PropertyFilterDTO;
 	leadContext: LeadFormContext;
 	copy?: CatalogPageCopy;
+	breadcrumbs?: readonly BreadcrumbItemDTO[];
+	contextLinks?: readonly { label: string; href: string }[];
 }) {
 	return (
 		<>
@@ -46,6 +51,23 @@ export function CatalogPageView({
 				className="border-b border-border bg-surface-raised py-[var(--section-space-md)]"
 			>
 				<Container>
+					{breadcrumbs.length ? (
+						<nav
+							aria-label="Хлебные крошки"
+							className="mb-6 flex flex-wrap gap-2 text-caption text-content-default"
+						>
+							{breadcrumbs.map((item, index) => (
+								<span key={`${item.href ?? "current"}-${item.label}`}>
+									{index ? <span aria-hidden> / </span> : null}
+									{item.href ? (
+										<a href={item.href}>{item.label}</a>
+									) : (
+										item.label
+									)}
+								</span>
+							))}
+						</nav>
+					) : null}
 					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
 						{copy.eyebrow}
 					</p>
@@ -72,6 +94,21 @@ export function CatalogPageView({
 					</Container>
 				</Section>
 			</section>
+			{contextLinks.length ? (
+				<nav aria-label="Разделы каталога" className="border-b border-border">
+					<Container className="flex flex-wrap gap-3 py-5">
+						{contextLinks.map((link) => (
+							<a
+								key={link.href}
+								href={link.href}
+								className="rounded-md bg-surface-subtle px-3 py-2 text-label font-semibold hover:text-action-primary"
+							>
+								{link.label}
+							</a>
+						))}
+					</Container>
+				</nav>
+			) : null}
 			<section id="section-catalog-toolbar" aria-label="Результаты">
 				<Container>
 					<SectionHeader

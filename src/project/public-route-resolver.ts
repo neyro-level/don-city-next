@@ -3,6 +3,12 @@ import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-ge
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
+import {
+	buildCatalogLinks,
+	buildPageBreadcrumbs,
+	buildPropertyNavigation,
+	type InternalLink,
+} from "./navigation.ts";
 import { seoRegistryByCanonicalPath } from "./seo-registry.generated.ts";
 import { siteConfig } from "./site.config.ts";
 import { siteProfile } from "./site.profile.ts";
@@ -36,6 +42,8 @@ export type ResolvedPublicPage = {
 	robots: PublicRobots;
 	catalogQuery?: CatalogQuery;
 	geoLinks?: readonly { href: string; label: string }[];
+	breadcrumbs: readonly { label: string; href?: string }[];
+	internalLinks: readonly InternalLink[];
 	property?: Extract<
 		PublicPropertyPageState,
 		{ property: unknown }
@@ -59,15 +67,26 @@ function page(
 	key: PageKey,
 	input: Omit<
 		ResolvedPublicPage,
-		"kind" | "statusCode" | "key" | "canonicalPath"
-	>,
+		| "kind"
+		| "statusCode"
+		| "key"
+		| "canonicalPath"
+		| "breadcrumbs"
+		| "internalLinks"
+	> &
+		Partial<Pick<ResolvedPublicPage, "breadcrumbs" | "internalLinks">>,
 ): ResolvedPublicPage {
-	return {
-		kind: "page",
-		statusCode: 200,
+	const result = {
+		kind: "page" as const,
+		statusCode: 200 as const,
 		key,
 		canonicalPath: buildProjectUrl(key),
 		...input,
+	};
+	return {
+		...result,
+		breadcrumbs: input.breadcrumbs ?? buildPageBreadcrumbs(key, result.h1),
+		internalLinks: input.internalLinks ?? buildCatalogLinks(key),
 	};
 }
 
@@ -153,12 +172,34 @@ async function resolveNearbyGeoPage(
 		return { kind: "notFound", statusCode: 404 };
 	}
 	if (key.kind === "geoHub") {
+		const internalLinks = Object.entries(nearbyCategoryCopy).flatMap(
+			([category, copy]) =>
+				availability.activeByCategory[copy.category]
+					? [
+							{
+								href: buildProjectUrl({
+									kind: "categoryGeo",
+									geo: key.geo,
+									category,
+								}),
+								label: `${copy.h1} ${availability.preposition} ${availability.nameLocative}`,
+							},
+						]
+					: [],
+		);
 		return page(key, {
 			title: `Недвижимость ${availability.preposition} ${availability.nameLocative}, ДНР | ${siteConfig.brandName}`,
 			description: `Недвижимость ${availability.preposition} ${availability.nameLocative}, ДНР: опубликованные объекты, фото и цены. Подбор и сопровождение сделки в «${siteConfig.brandName}».`,
 			h1: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
 			robots: { indexing: "noindex", following: "follow" },
 			catalogQuery: { city: availability.name },
+			breadcrumbs: [
+				{ label: "Главная", href: buildProjectUrl({ kind: "home" }) },
+				{
+					label: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
+				},
+			],
+			internalLinks,
 		});
 	}
 	const copy =
@@ -172,6 +213,17 @@ async function resolveNearbyGeoPage(
 		h1: `${copy.h1} ${availability.preposition} ${availability.nameLocative}`,
 		robots: { indexing: "noindex", following: "follow" },
 		catalogQuery: { category: copy.category, city: availability.name },
+		breadcrumbs: [
+			{ label: "Главная", href: buildProjectUrl({ kind: "home" }) },
+			{
+				label: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
+				href: buildProjectUrl({ kind: "geoHub", geo: key.geo }),
+			},
+			{
+				label: `${copy.h1} ${availability.preposition} ${availability.nameLocative}`,
+			},
+		],
+		internalLinks: [],
 	});
 }
 
@@ -261,6 +313,8 @@ export async function resolveProjectPublicRoute(
 	) {
 		return { kind: "redirect", statusCode: 301, destination: property.href };
 	}
+	const geoLinks = await propertyNearbyGeoLinks(property, dependencies);
+	const navigation = buildPropertyNavigation(property, geoLinks);
 	return page(key, {
 		title: `${property.title} — ${siteConfig.brandName}`,
 		description: property.description,
@@ -269,6 +323,8 @@ export async function resolveProjectPublicRoute(
 			? { indexing: "noindex", following: "follow" }
 			: { indexing: "index", following: "follow" },
 		property,
-		geoLinks: await propertyNearbyGeoLinks(property, dependencies),
+		geoLinks,
+		breadcrumbs: navigation.breadcrumbs,
+		internalLinks: navigation.links,
 	});
 }
