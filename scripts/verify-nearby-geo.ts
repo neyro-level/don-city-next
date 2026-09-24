@@ -56,8 +56,11 @@ async function resolve(path: string) {
 }
 
 for (const [path, query] of [
-	["/makeevka/", { city: "Макеевка" }],
-	["/makeevka/kvartiry/", { category: "apartment", city: "Макеевка" }],
+	["/makeevka/", { geoSlug: "makeevka" }],
+	[
+		"/makeevka/kvartiry/",
+		{ category: "apartment", geoSlug: "makeevka" },
+	],
 ] as const) {
 	const result = await resolve(path);
 	assert.equal(result.kind, "page", path);

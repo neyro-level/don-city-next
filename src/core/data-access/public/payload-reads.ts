@@ -24,8 +24,9 @@ const publicPropertyPublicationWhere: Where = {
 type FacetRow = {
 	category?: string | null;
 	dealType?: string | null;
-	cityRaw?: string | null;
-	districtRaw?: string | null;
+	region?: unknown;
+	city?: unknown;
+	district?: unknown;
 	rooms?: number | null;
 	priceMinor?: number | null;
 };
@@ -41,8 +42,6 @@ export async function aggregatePublicCatalogFacets(
 ) {
 	const categories = new Map<string, number>();
 	const dealTypes = new Map<string, number>();
-	const cities = new Map<string, number>();
-	const districts = new Map<string, number>();
 	const rooms = new Map<number, number>();
 	let total = 0;
 	let priceMin: number | null = null;
@@ -55,8 +54,9 @@ export async function aggregatePublicCatalogFacets(
 		select: {
 			category: true,
 			dealType: true,
-			cityRaw: true,
-			districtRaw: true,
+			region: true,
+			city: true,
+			district: true,
 			rooms: true,
 			priceMinor: true,
 		},
@@ -67,8 +67,6 @@ export async function aggregatePublicCatalogFacets(
 		total += 1;
 		if (doc.category) bump(categories, doc.category);
 		if (doc.dealType) bump(dealTypes, doc.dealType);
-		if (doc.cityRaw) bump(cities, doc.cityRaw);
-		if (doc.districtRaw) bump(districts, doc.districtRaw);
 		if (typeof doc.rooms === "number" && doc.rooms > 0) {
 			rooms.set(doc.rooms, (rooms.get(doc.rooms) ?? 0) + 1);
 		}
@@ -91,8 +89,7 @@ export async function aggregatePublicCatalogFacets(
 		priceMax,
 		categories: toBuckets(categories),
 		dealTypes: toBuckets(dealTypes),
-		cities: toBuckets(cities),
-		districts: toBuckets(districts),
+		geographyRows: result.docs as FacetRow[],
 		rooms: [...rooms.entries()]
 			.sort(([a], [b]) => a - b)
 			.map(([value, count]) => ({ value, count })),

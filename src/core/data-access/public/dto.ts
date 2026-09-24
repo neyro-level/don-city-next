@@ -92,6 +92,7 @@ export function toPropertyCardDTO(
 		address,
 		city: property.locality || "Город не указан",
 		district: property.district ?? undefined,
+		geo: property.geo,
 		primaryMedia: property.images?.find((image) => image.url)?.url
 			? {
 					kind: "external",

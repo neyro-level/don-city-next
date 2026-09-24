@@ -30,8 +30,8 @@ export type PublicRobots = {
 
 type CatalogQuery = {
 	category?: "apartment" | "house" | "land";
-	city?: string;
-	district?: string;
+	geoSlug?: string;
+	districtSlug?: string;
 	rooms?: number[];
 };
 
@@ -135,7 +135,7 @@ function robotsFromRegistry(entry: SeoRegistryEntry): PublicRobots {
 }
 
 function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
-	if (key.kind === "geoHub") return { city: "Донецк" };
+	if (key.kind === "geoHub") return { geoSlug: key.geo };
 	if (
 		key.kind !== "categoryRoot" &&
 		key.kind !== "categoryGeo" &&
@@ -153,8 +153,9 @@ function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
 			: undefined;
 	return {
 		category,
-		city: key.kind === "categoryRoot" ? undefined : "Донецк",
-		district: key.kind === "categoryGeoDistrict" ? key.district : undefined,
+		geoSlug: key.kind === "categoryRoot" ? undefined : key.geo,
+		districtSlug:
+			key.kind === "categoryGeoDistrict" ? key.district : undefined,
 		rooms,
 	};
 }
@@ -201,7 +202,7 @@ async function resolveNearbyGeoPage(
 			description: `Недвижимость ${availability.preposition} ${availability.nameLocative}, ДНР: опубликованные объекты, фото и цены. Подбор и сопровождение сделки в «${siteConfig.brandName}».`,
 			h1: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
 			robots: { indexing: "noindex", following: "follow" },
-			catalogQuery: { city: availability.name },
+			catalogQuery: { geoSlug: availability.slug },
 			breadcrumbs: [
 				{ label: "Главная", href: buildProjectUrl({ kind: "home" }) },
 				{
@@ -221,7 +222,7 @@ async function resolveNearbyGeoPage(
 		description: `${copy.description} ${availability.preposition} ${availability.nameLocative}, ДНР: актуальные опубликованные объекты, фото и цены.`,
 		h1: `${copy.h1} ${availability.preposition} ${availability.nameLocative}`,
 		robots: { indexing: "noindex", following: "follow" },
-		catalogQuery: { category: copy.category, city: availability.name },
+		catalogQuery: { category: copy.category, geoSlug: availability.slug },
 		breadcrumbs: [
 			{ label: "Главная", href: buildProjectUrl({ kind: "home" }) },
 			{

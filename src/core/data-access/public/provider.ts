@@ -83,8 +83,6 @@ function emptyCatalog(
 			query: parsed.query,
 			category: parsed.category,
 			dealType: parsed.dealType,
-			city: parsed.city,
-			district: parsed.district,
 			rooms: parsed.rooms,
 			priceFromMinor: parsed.priceFromMinor,
 			priceToMinor: parsed.priceToMinor,
@@ -334,7 +332,7 @@ export async function getPublicProperty(
 		limit: 3,
 		page: 1,
 		category: property.category,
-		city: property.locality ?? undefined,
+		geoSlug: property.geo?.city.slug,
 	});
 	const related = relatedResult.items
 		.filter((item) => item.slug !== property.slug)
@@ -364,7 +362,7 @@ export async function getPublicPropertyByPublicUrlId(
 		limit: 3,
 		page: 1,
 		category: property.category,
-		city: property.locality ?? undefined,
+		geoSlug: property.geo?.city.slug,
 	});
 	const related = relatedResult.items
 		.filter((item) => item.id !== property.id)

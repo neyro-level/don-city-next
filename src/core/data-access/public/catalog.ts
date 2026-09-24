@@ -5,11 +5,21 @@ import type {
 	PropertyDealType,
 	PropertySort,
 	PropertyView,
+	PropertyLocationDTO,
 } from "@ams/realtbase-contracts";
 import type { Payload, Where } from "payload";
 import { z } from "zod";
 import { sanitizeExplicitRedirectPath } from "@/core/seo/redirect-path";
-import type { PropertiesSelect, Property } from "@/project/payload-types";
+import type {
+	CitiesSelect,
+	City,
+	District,
+	DistrictsSelect,
+	PropertiesSelect,
+	Property,
+	Region,
+	RegionsSelect,
+} from "@/project/payload-types";
 import { buildPropertyUrl } from "@/project/url-grammar";
 import {
 	aggregatePublicCatalogFacets,
@@ -44,8 +54,9 @@ const publicPropertySelect = {
 	kitchenArea: true,
 	floor: true,
 	floors: true,
-	cityRaw: true,
-	districtRaw: true,
+	region: true,
+	city: true,
+	district: true,
 	publicAddress: true,
 	lat: true,
 	lng: true,
@@ -86,13 +97,21 @@ export const catalogQuerySchema = z.object({
 	query: z.string().trim().min(1).max(120).optional(),
 	category: propertyCategorySchema.optional(),
 	dealType: propertyDealTypeSchema.optional(),
-	city: z.string().trim().min(1).max(80).optional(),
-	district: z.string().trim().min(1).max(80).optional(),
+	geoSlug: z.string().trim().min(1).max(80).optional(),
+	districtSlug: z.string().trim().min(1).max(80).optional(),
 	rooms: z.array(optionalPositiveInt.unwrap()).max(8).optional(),
 	priceFromMinor: optionalPositiveInt,
 	priceToMinor: optionalPositiveInt,
 	areaFrom: optionalNonNegativeNumber,
 	areaTo: optionalNonNegativeNumber,
+}).superRefine((value, context) => {
+	if (value.districtSlug && !value.geoSlug) {
+		context.addIssue({
+			code: "custom",
+			path: ["districtSlug"],
+			message: "districtSlug requires geoSlug.",
+		});
+	}
 });
 
 export type CatalogQueryInput = z.input<typeof catalogQuerySchema>;
@@ -117,8 +136,9 @@ type PublicCatalogSelectedProperty = Omit<
 		| "kitchenArea"
 		| "floor"
 		| "floors"
-		| "cityRaw"
-		| "districtRaw"
+		| "region"
+		| "city"
+		| "district"
 		| "publicAddress"
 		| "lat"
 		| "lng"
@@ -137,10 +157,11 @@ type PublicCatalogSelectedProperty = Omit<
 
 export type PublicCatalogProperty = Omit<
 	PublicCatalogSelectedProperty,
-	"cityRaw" | "districtRaw" | "publishedAt" | "contentPurgedAt"
+	"region" | "city" | "district" | "publishedAt" | "contentPurgedAt"
 > & {
 	locality?: string | null;
 	district?: string | null;
+	geo?: PropertyLocationDTO;
 };
 
 export type PublicPropertyLifecycleLookup =
@@ -174,6 +195,70 @@ export type PublicCatalogResult = {
 		view: PropertyView;
 	};
 };
+
+type PublicRegion = Pick<
+	Region,
+	"id" | "name" | "shortName" | "slug" | "isPublished"
+>;
+type PublicCity = Pick<
+	City,
+	| "id"
+	| "name"
+	| "slug"
+	| "region"
+	| "nameGenitive"
+	| "nameLocative"
+	| "preposition"
+	| "isPublished"
+>;
+type PublicDistrict = Pick<
+	District,
+	| "id"
+	| "name"
+	| "slug"
+	| "type"
+	| "city"
+	| "parent"
+	| "nameLocative"
+	| "preposition"
+	| "isPublished"
+>;
+
+type PublicGeoIndex = {
+	readonly cities: ReadonlyMap<number, PropertyLocationDTO["city"]>;
+	readonly districts: ReadonlyMap<
+		number,
+		NonNullable<PropertyLocationDTO["district"]>
+	>;
+};
+
+const publicRegionSelect = {
+	name: true,
+	shortName: true,
+	slug: true,
+	isPublished: true,
+} satisfies RegionsSelect<true>;
+
+const publicCitySelect = {
+	name: true,
+	slug: true,
+	region: true,
+	nameGenitive: true,
+	nameLocative: true,
+	preposition: true,
+	isPublished: true,
+} satisfies CitiesSelect<true>;
+
+const publicDistrictSelect = {
+	name: true,
+	slug: true,
+	type: true,
+	city: true,
+	parent: true,
+	nameLocative: true,
+	preposition: true,
+	isPublished: true,
+} satisfies DistrictsSelect<true>;
 
 export type PublicCatalogFacetsResult = {
 	source: "payload-aggregate";
@@ -213,7 +298,226 @@ export const publicPropertyDetailsWhere: Where = {
 	or: [publicPropertyPublicationWhere, publicPropertyRetainedArchivedWhere],
 };
 
-function buildCatalogWhere(query: CatalogQuery): Where {
+function relationId(value: unknown): number | null {
+	const raw =
+		typeof value === "object" && value !== null
+			? (value as { id?: unknown }).id
+			: value;
+	if (typeof raw === "number" && Number.isInteger(raw)) return raw;
+	if (typeof raw === "string" && /^\d+$/.test(raw)) return Number(raw);
+	return null;
+}
+
+function relationshipIds(
+	properties: readonly Pick<PublicCatalogSelectedProperty, "region" | "city" | "district">[],
+) {
+	const regions = new Set<number>();
+	const cities = new Set<number>();
+	const districts = new Set<number>();
+	for (const property of properties) {
+		const region = relationId(property.region);
+		const city = relationId(property.city);
+		const district = relationId(property.district);
+		if (region != null) regions.add(region);
+		if (city != null) cities.add(city);
+		if (district != null) districts.add(district);
+	}
+	return { regions, cities, districts };
+}
+
+async function loadPublicGeoIndex(
+	payload: Payload,
+	properties: readonly Pick<PublicCatalogSelectedProperty, "region" | "city" | "district">[],
+): Promise<PublicGeoIndex> {
+	const ids = relationshipIds(properties);
+	if (!ids.cities.size) {
+		return { cities: new Map(), districts: new Map() };
+	}
+
+	const citiesResult = await payload.find({
+		collection: "cities",
+		where: { and: [{ id: { in: [...ids.cities] } }, { isPublished: { equals: true } }] },
+		limit: ids.cities.size,
+		pagination: false,
+		depth: 0,
+		select: publicCitySelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	const cityRows = citiesResult.docs as PublicCity[];
+	for (const city of cityRows) {
+		const region = relationId(city.region);
+		if (region != null) ids.regions.add(region);
+	}
+	const [regionsResult, districtsResult] = await Promise.all([
+		payload.find({
+			collection: "regions",
+			where: { and: [{ id: { in: [...ids.regions] } }, { isPublished: { equals: true } }] },
+			limit: ids.regions.size,
+			pagination: false,
+			depth: 0,
+			select: publicRegionSelect,
+			overrideAccess: publicGatewayPolicy.overrideAccess,
+			context: publicGatewayPolicy.context,
+		}),
+		ids.districts.size
+			? payload.find({
+					collection: "districts",
+					where: {
+						and: [
+							{ id: { in: [...ids.districts] } },
+							{ isPublished: { equals: true } },
+						],
+					},
+					limit: ids.districts.size,
+					pagination: false,
+					depth: 0,
+					select: publicDistrictSelect,
+					overrideAccess: publicGatewayPolicy.overrideAccess,
+					context: publicGatewayPolicy.context,
+				})
+			: null,
+	]);
+
+	const regions = new Map<number, PropertyLocationDTO["region"]>();
+	for (const region of regionsResult.docs as PublicRegion[]) {
+		if (!region.isPublished) continue;
+		regions.set(region.id, {
+			id: String(region.id),
+			slug: region.slug,
+			name: region.name,
+			shortName: region.shortName,
+			isPublished: true,
+		});
+	}
+	const cities = new Map<number, PropertyLocationDTO["city"]>();
+	for (const city of cityRows) {
+		const region = regions.get(relationId(city.region) ?? -1);
+		if (!city.isPublished || !region) continue;
+		cities.set(city.id, {
+			id: String(city.id),
+			slug: city.slug,
+			name: city.name,
+			region,
+			nameGenitive: city.nameGenitive,
+			nameLocative: city.nameLocative,
+			preposition: city.preposition,
+			isPublished: true,
+		});
+	}
+	const districts = new Map<
+		number,
+		NonNullable<PropertyLocationDTO["district"]>
+	>();
+	for (const district of (districtsResult?.docs ?? []) as PublicDistrict[]) {
+		const city = cities.get(relationId(district.city) ?? -1);
+		if (!district.isPublished || !city) continue;
+		districts.set(district.id, {
+			id: String(district.id),
+			slug: district.slug,
+			name: district.name,
+			type: district.type,
+			city: { id: city.id, slug: city.slug, name: city.name },
+			...(district.nameLocative ? { nameLocative: district.nameLocative } : {}),
+			...(district.preposition ? { preposition: district.preposition } : {}),
+			isPublished: true,
+		});
+	}
+	return { cities, districts };
+}
+
+function publicGeoForProperty(
+	property: Pick<PublicCatalogSelectedProperty, "city" | "district">,
+	index: PublicGeoIndex,
+): PropertyLocationDTO | undefined {
+	const city = index.cities.get(relationId(property.city) ?? -1);
+	if (!city) return undefined;
+	const district = index.districts.get(relationId(property.district) ?? -1);
+	return {
+		region: city.region,
+		city,
+		...(district && district.city.id === city.id ? { district } : {}),
+	};
+}
+
+async function resolvePublishedCatalogGeo(
+	payload: Payload,
+	query: CatalogQuery,
+): Promise<
+	| { city?: PropertyLocationDTO["city"]; district?: NonNullable<PropertyLocationDTO["district"]> }
+	| null
+> {
+	if (!query.geoSlug) return {};
+	const cityResult = await payload.find({
+		collection: "cities",
+		where: {
+			and: [
+				{ slug: { equals: query.geoSlug } },
+				{ isPublished: { equals: true } },
+			],
+		},
+		limit: 1,
+		depth: 0,
+		select: publicCitySelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	const city = cityResult.docs[0] as PublicCity | undefined;
+	if (!city?.isPublished) return null;
+	const regionId = relationId(city.region);
+	if (regionId == null) return null;
+	const regionResult = await payload.find({
+		collection: "regions",
+		where: { and: [{ id: { equals: regionId } }, { isPublished: { equals: true } }] },
+		limit: 1,
+		depth: 0,
+		select: publicRegionSelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	const region = regionResult.docs[0] as PublicRegion | undefined;
+	if (!region?.isPublished) return null;
+	const publicCity: PropertyLocationDTO["city"] = {
+		id: String(city.id), slug: city.slug, name: city.name,
+		region: { id: String(region.id), slug: region.slug, name: region.name, shortName: region.shortName, isPublished: true },
+		nameGenitive: city.nameGenitive, nameLocative: city.nameLocative,
+		preposition: city.preposition, isPublished: true,
+	};
+	if (!query.districtSlug) return { city: publicCity };
+	const districtResult = await payload.find({
+		collection: "districts",
+		where: {
+			and: [
+				{ slug: { equals: query.districtSlug } },
+				{ city: { equals: city.id } },
+				{ isPublished: { equals: true } },
+			],
+		},
+		limit: 1,
+		depth: 0,
+		select: publicDistrictSelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	const district = districtResult.docs[0] as PublicDistrict | undefined;
+	if (!district?.isPublished || relationId(district.city) !== city.id) return null;
+	return {
+		city: publicCity,
+		district: {
+			id: String(district.id), slug: district.slug, name: district.name,
+			type: district.type,
+			city: { id: publicCity.id, slug: publicCity.slug, name: publicCity.name },
+			...(district.nameLocative ? { nameLocative: district.nameLocative } : {}),
+			...(district.preposition ? { preposition: district.preposition } : {}),
+			isPublished: true,
+		},
+	};
+}
+
+function buildCatalogWhere(
+	query: CatalogQuery,
+	geo: { city?: PropertyLocationDTO["city"]; district?: NonNullable<PropertyLocationDTO["district"]> },
+): Where {
 	const and: Where[] = [publicPropertyPublicationWhere];
 
 	if (query.query) {
@@ -221,16 +525,14 @@ function buildCatalogWhere(query: CatalogQuery): Where {
 			or: [
 				{ title: { contains: query.query } },
 				{ publicAddress: { contains: query.query } },
-				{ cityRaw: { contains: query.query } },
-				{ districtRaw: { contains: query.query } },
 			],
 		});
 	}
 
 	if (query.category) and.push({ category: { equals: query.category } });
 	if (query.dealType) and.push({ dealType: { equals: query.dealType } });
-	if (query.city) and.push({ cityRaw: { equals: query.city } });
-	if (query.district) and.push({ districtRaw: { equals: query.district } });
+	if (geo.city) and.push({ city: { equals: Number(geo.city.id) } });
+	if (geo.district) and.push({ district: { equals: Number(geo.district.id) } });
 	if (query.rooms?.length) and.push({ rooms: { in: query.rooms } });
 	if (query.priceFromMinor)
 		and.push({ priceMinor: { greater_than_equal: query.priceFromMinor } });
@@ -256,8 +558,44 @@ function sortForCatalog(sort: PropertySort): string {
 	}
 }
 
+function emptyCatalogResult(query: CatalogQuery): PublicCatalogResult {
+	return {
+		items: [],
+		total: 0,
+		page: query.page,
+		pageSize: query.limit,
+		totalPages: 0,
+		applied: {
+			query: query.query,
+			category: query.category,
+			dealType: query.dealType,
+			rooms: query.rooms,
+			priceFromMinor: query.priceFromMinor,
+			priceToMinor: query.priceToMinor,
+			areaFrom: query.areaFrom,
+			areaTo: query.areaTo,
+			sort: query.sort,
+			view: query.view,
+		},
+	};
+}
+
+function emptyCatalogFacetsResult(): PublicCatalogFacetsResult {
+	return {
+		source: "payload-aggregate",
+		total: 0,
+		categories: [],
+		dealTypes: [],
+		cities: [],
+		districts: [],
+		rooms: [],
+		priceMinor: { min: null, max: null },
+	};
+}
+
 function toPublicCatalogProperty(
 	property: PublicCatalogSelectedProperty,
+	geo: PropertyLocationDTO | undefined,
 ): PublicCatalogProperty {
 	return {
 		id: property.id,
@@ -276,8 +614,9 @@ function toPublicCatalogProperty(
 		kitchenArea: property.kitchenArea,
 		floor: property.floor,
 		floors: property.floors,
-		locality: property.cityRaw,
-		district: property.districtRaw,
+		locality: geo?.city.name,
+		district: geo?.district?.name,
+		geo,
 		publicAddress: property.publicAddress,
 		lat: property.lat,
 		lng: property.lng,
@@ -327,7 +666,9 @@ export async function findPublicCatalogProperties(
 	input: CatalogQueryInput,
 ): Promise<PublicCatalogResult> {
 	const query = catalogQuerySchema.parse(input);
-	const where = buildCatalogWhere(query);
+	const resolvedGeo = await resolvePublishedCatalogGeo(payload, query);
+	if (resolvedGeo === null) return emptyCatalogResult(query);
+	const where = buildCatalogWhere(query, resolvedGeo);
 
 	const result = await payload.find({
 		collection: "properties",
@@ -341,9 +682,11 @@ export async function findPublicCatalogProperties(
 		context: publicGatewayPolicy.context,
 	});
 
+	const properties = result.docs as PublicCatalogSelectedProperty[];
+	const geoIndex = await loadPublicGeoIndex(payload, properties);
 	return {
-		items: result.docs.map((property) =>
-			toPublicCatalogProperty(property as PublicCatalogSelectedProperty),
+		items: properties.map((property) =>
+			toPublicCatalogProperty(property, publicGeoForProperty(property, geoIndex)),
 		),
 		total: result.totalDocs,
 		page: result.page ?? query.page,
@@ -353,8 +696,8 @@ export async function findPublicCatalogProperties(
 			query: query.query,
 			category: query.category,
 			dealType: query.dealType,
-			city: query.city,
-			district: query.district,
+			city: resolvedGeo.city?.name,
+			district: resolvedGeo.district?.name,
 			rooms: query.rooms,
 			priceFromMinor: query.priceFromMinor,
 			priceToMinor: query.priceToMinor,
@@ -383,7 +726,9 @@ export async function findPublicPropertyBySlug(payload: Payload, slug: string) {
 	const property = result.docs[0];
 	if (!property) return null;
 
-	return toPublicCatalogProperty(property as PublicCatalogSelectedProperty);
+	const selected = property as PublicCatalogSelectedProperty;
+	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
+	return toPublicCatalogProperty(selected, publicGeoForProperty(selected, geoIndex));
 }
 
 export async function findPublicPropertyByPublicUrlId(
@@ -408,9 +753,10 @@ export async function findPublicPropertyByPublicUrlId(
 	});
 
 	const property = result.docs[0];
-	return property
-		? toPublicCatalogProperty(property as PublicCatalogSelectedProperty)
-		: null;
+	if (!property) return null;
+	const selected = property as PublicCatalogSelectedProperty;
+	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
+	return toPublicCatalogProperty(selected, publicGeoForProperty(selected, geoIndex));
 }
 
 export async function findPublicPropertyLifecycleByPublicUrlId(
@@ -469,8 +815,32 @@ export async function findPublicCatalogFacets(
 	input: CatalogQueryInput,
 ): Promise<PublicCatalogFacetsResult> {
 	const query = catalogQuerySchema.parse(input);
-	const where = buildCatalogWhere(query);
+	const resolvedGeo = await resolvePublishedCatalogGeo(payload, query);
+	if (resolvedGeo === null) return emptyCatalogFacetsResult();
+	const where = buildCatalogWhere(query, resolvedGeo);
 	const aggregate = await aggregatePublicCatalogFacets(payload, where);
+	const facetGeoIndex = await loadPublicGeoIndex(
+		payload,
+		aggregate.geographyRows as Pick<
+			PublicCatalogSelectedProperty,
+			"region" | "city" | "district"
+		>[],
+	);
+	const cities = new Map<string, number>();
+	const districts = new Map<string, number>();
+	for (const row of aggregate.geographyRows) {
+		const geo = publicGeoForProperty(
+			row as Pick<PublicCatalogSelectedProperty, "city" | "district">,
+			facetGeoIndex,
+		);
+		if (geo?.city.name) cities.set(geo.city.name, (cities.get(geo.city.name) ?? 0) + 1);
+		if (geo?.district?.name) {
+			districts.set(
+				geo.district.name,
+				(districts.get(geo.district.name) ?? 0) + 1,
+			);
+		}
+	}
 	const categories = aggregate.categories.flatMap((bucket) => {
 		const parsed = propertyCategorySchema.safeParse(bucket.value);
 		return parsed.success ? [{ value: parsed.data, count: bucket.count }] : [];
@@ -485,8 +855,12 @@ export async function findPublicCatalogFacets(
 		total: aggregate.total,
 		categories,
 		dealTypes,
-		cities: aggregate.cities,
-		districts: aggregate.districts,
+		cities: [...cities.entries()]
+			.sort(([left], [right]) => left.localeCompare(right, "ru"))
+			.map(([value, count]) => ({ value, count })),
+		districts: [...districts.entries()]
+			.sort(([left], [right]) => left.localeCompare(right, "ru"))
+			.map(([value, count]) => ({ value, count })),
 		rooms: aggregate.rooms,
 		priceMinor: {
 			min: aggregate.priceMin,
