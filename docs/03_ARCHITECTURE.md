@@ -45,9 +45,18 @@ Updated: 2026-09-23
 
 ## 5. Infrastructure / Deployment
 
-Current owner-confirmed contour: one existing DON CITY server in Timeweb. No second server has been created or authorized. `doncity-home.ru` resolves to a Timeweb-hosted address, but server/DB identity and credentials are not present in the known dedicated Secret Master map.
+EPIC-03/06 read-only discovery confirms one existing DON CITY Timeweb server and one separate managed PostgreSQL 18 cluster. The Ubuntu server is currently a clean target: no Nginx, container runtime, Node.js, application service or local PostgreSQL. The database is started, private-only and has provider automatic backup, but the server has no private-network attachment; SQL reachability therefore times out. Exact identities and credentials remain only in the dedicated `DonCity Server/prod` Secret Master scope.
 
-Read-only server/database discovery starts after the starter baseline and client activation contract. It determines actual runtime, Nginx, database placement/version, storage, backups, capacity and jobs ownership. The existing server remains the presumed production target when it satisfies the contract. A second instance, database move, Managed PostgreSQL or S3 provisioning requires evidence and a separate owner decision. Production itself still requires an explicit release command.
+The existing server remains the presumed production target. Target shape: host Nginx → immutable Next.js + Payload image on loopback → existing PostgreSQL over an authorized private route. Staging stays separate/noindex with separate database and secrets. Public database exposure, a second server, database move and new S3 provisioning are not implied. Production, DNS, network and secret mutations require their own authorized task and recovery proof. Operational detail: `docs/OPERATIONS.md` and `docs/research/EPIC-06_INFRASTRUCTURE_CONTRACT.md`.
+
+### Jobs ownership contract
+
+- Exactly one deployed runtime owns Payload queue polling/execution with `JOBS_AUTORUN=true`; every other runtime uses `false`.
+- The current proven owner is one Next.js + Payload application runtime. A standalone worker is not claimed until a real worker entrypoint is implemented and verified.
+- Payload `autoRun` cron `* * * * *` polls explicit queues. `dispatchDueFeeds` = `*/5 * * * *`; maintenance tasks including `recoverLeadDeliveries` = `*/15 * * * *`.
+- Static queues keep `disableScheduling=false`; programmatic queues keep `disableScheduling=true`.
+- `enableConcurrencyControl=true` remains mandatory.
+- Jobs-owner handover is stop-old-before-enable-new; simultaneous owners and a public jobs endpoint are forbidden.
 
 ## 6. Quality / Testing
 

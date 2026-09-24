@@ -26,8 +26,8 @@ export type ClientReadinessConfig = {
  */
 export const clientReadinessConfig = {
 	domain: "doncity-home.ru",
-	deploymentTarget: null,
-	database: null,
+	deploymentTarget: "timeweb-vps",
+	database: "timeweb-managed-postgresql",
 	mediaStorage: null,
 	feedImageSource: null,
 	jobsActiveRuntimeCount: null,

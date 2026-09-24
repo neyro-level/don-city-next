@@ -30,8 +30,9 @@ AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode `B
 | текущая работа | `04_BACKLOG.md` |
 | release | `05_RELEASE_CHECKLIST.md` |
 | UI | `06_DESIGN_SYSTEM.md` |
+| operations / runtime | `OPERATIONS.md` |
 | детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V3_0.md` |
 
 ## Current Focus
 
-EPIC-00…06: repository/docs → exact starter acquisition/install → client activation → read-only server/database/inventory discovery → infrastructure contract. Master plan v6 imported with CLEAN reconciliation; EPIC-00 has a private canonical repository, registered worktree and manual exact-head merge-gate bootstrap. Следующая safe action — его targeted verification; starter, сервер и production ещё не затрагиваются.
+Master plan v6 is imported with CLEAN reconciliation. Repository, exact starter baseline, DON CITY activation and UI intake are materialized. EPIC-06 read-only discovery confirms the one existing Timeweb server and separate managed PostgreSQL 18 target; the infrastructure/jobs contract is verified on branch `codex/epic-06-infrastructure-contract`. The remaining EPIC-03 SQL inventory requires a separately authorized private-network attachment. Production is not authorized.
