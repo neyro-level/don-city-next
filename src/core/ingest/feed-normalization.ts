@@ -4,6 +4,7 @@ import {
 	validateExternalImageUrl,
 } from "./image-hosts.ts";
 import { normalizeAreaM2 } from "./numeric-invariants.ts";
+import { normalizeLandAreaToSotka } from "./property-taxonomy.ts";
 
 export const normalizedFeedImageSchema = z.object({
 	url: z.string().url(),
@@ -17,12 +18,18 @@ export const normalizedFeedOfferSchema = z.object({
 	category: z.string().optional(),
 	dealType: z.string().optional(),
 	propertyType: z.string().optional(),
+	houseType: z.string().optional(),
 	priceMinor: z.number().int().nonnegative().optional(),
 	currency: z.literal("RUB"),
 	rooms: z.number().finite().optional(),
 	totalArea: z.number().finite().optional(),
 	livingArea: z.number().finite().optional(),
 	kitchenArea: z.number().finite().optional(),
+	plotAreaSotka: z.number().finite().optional(),
+	landAreaNeedsReview: z.boolean().default(false),
+	landCategory: z.string().optional(),
+	permittedUse: z.string().optional(),
+	communications: z.array(z.string().min(1)).optional(),
 	floor: z.number().finite().optional(),
 	floors: z.number().finite().optional(),
 	region: z.string().optional(),
@@ -57,6 +64,7 @@ export type RawYrlOffer = {
 	category?: string;
 	type?: string;
 	propertyType?: string;
+	houseType?: string;
 	price?: string;
 	currency?: string;
 	address?: string;
@@ -76,6 +84,11 @@ export type RawYrlOffer = {
 	livingAreaUnit?: string;
 	kitchenArea?: string;
 	kitchenAreaUnit?: string;
+	plotArea?: string;
+	plotAreaUnit?: string;
+	landCategory?: string;
+	permittedUse?: string;
+	communications?: string[];
 	externalComplexId?: string;
 	externalComplexName?: string;
 	externalBuildingId?: string;
@@ -102,6 +115,10 @@ export function normalizeYrlOffer(
 	const issues: FeedNormalizationIssue[] = [];
 	const images = [];
 	const currency = normalizeCurrency(rawOffer.currency);
+	const landArea = normalizeLandAreaToSotka(
+		rawOffer.plotArea,
+		rawOffer.plotAreaUnit,
+	);
 
 	for (const picture of rawOffer.pictures) {
 		const validation = validateExternalImageUrl(picture, allowedImageHosts);
@@ -147,6 +164,7 @@ export function normalizeYrlOffer(
 		category: rawOffer.category,
 		dealType: rawOffer.type,
 		propertyType: rawOffer.propertyType,
+		houseType: rawOffer.houseType,
 		priceMinor: parseMoneyToMinor(rawOffer.price),
 		currency: currency.value,
 		rooms: parseOptionalNumber(rawOffer.rooms),
@@ -162,6 +180,11 @@ export function normalizeYrlOffer(
 			rawOffer.kitchenArea,
 			rawOffer.kitchenAreaUnit,
 		),
+		plotAreaSotka: landArea.plotAreaSotka,
+		landAreaNeedsReview: landArea.needsReview,
+		landCategory: normalizeOptionalText(rawOffer.landCategory),
+		permittedUse: normalizeOptionalText(rawOffer.permittedUse),
+		communications: normalizeTextList(rawOffer.communications),
 		floor: parseOptionalNumber(rawOffer.floor),
 		floors: parseOptionalNumber(rawOffer.floors),
 		region: rawOffer.region,
@@ -195,6 +218,21 @@ export function normalizeYrlOffer(
 	}
 
 	return { ok: true, offer: parsed.data, issues };
+}
+
+function normalizeOptionalText(value: string | undefined): string | undefined {
+	const normalized = value?.trim();
+	return normalized ? normalized : undefined;
+}
+
+function normalizeTextList(
+	values: readonly string[] | undefined,
+): string[] | undefined {
+	if (!values) return undefined;
+	const normalized = [
+		...new Set(values.map(normalizeOptionalText).filter(Boolean)),
+	] as string[];
+	return normalized.length > 0 ? normalized : undefined;
 }
 
 function normalizeCurrency(

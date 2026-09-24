@@ -301,7 +301,63 @@ export const Properties: CollectionConfig = {
 				{ label: "House", value: "house" },
 				{ label: "Land", value: "land" },
 				{ label: "Commercial", value: "commercial" },
+				{ label: "Room", value: "room" },
+				{ label: "Garage", value: "garage" },
 			],
+		},
+		{
+			name: "houseType",
+			type: "select",
+			options: [
+				{ label: "House", value: "house" },
+				{ label: "Cottage", value: "cottage" },
+				{ label: "Townhouse", value: "townhouse" },
+				{ label: "Dacha", value: "dacha" },
+				{ label: "Part of house", value: "part_of_house" },
+			],
+		},
+		{
+			name: "plotAreaSotka",
+			type: "number",
+			min: 0,
+			admin: { step: 0.01 },
+		},
+		{
+			name: "landCategory",
+			type: "text",
+			admin: {
+				description:
+					"Source land category. Canonical legal values are preserved without an invented local enum.",
+			},
+		},
+		{
+			name: "permittedUse",
+			type: "text",
+			admin: {
+				description:
+					"Source permitted land use. Unknown values remain reviewable instead of being coerced.",
+			},
+		},
+		{
+			name: "communications",
+			type: "array",
+			fields: [
+				{
+					name: "value",
+					type: "text",
+					required: true,
+				},
+			],
+		},
+		{
+			name: "landAreaNeedsReview",
+			type: "checkbox",
+			defaultValue: false,
+			access: privateFieldAccess,
+			admin: {
+				description:
+					"Import set this when a supplied land-area unit is ambiguous or invalid.",
+			},
 		},
 		{
 			name: "dealType",

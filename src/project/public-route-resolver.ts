@@ -29,7 +29,7 @@ export type PublicRobots = {
 };
 
 type CatalogQuery = {
-	category?: "apartment" | "house" | "land" | "commercial";
+	category?: "apartment" | "house" | "land";
 	city?: string;
 	district?: string;
 	rooms?: number[];

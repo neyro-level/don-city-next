@@ -58,6 +58,7 @@ async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
 		market: data.market,
 		category: data.category,
 		dealType: data.dealType,
+		houseType: data.houseType,
 		priceMinor: data.priceMinor,
 		currency: data.currency,
 		publicAddress: data.publicAddress,
@@ -67,7 +68,7 @@ async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
 		regionRaw: geo.regionRaw,
 		cityRaw: geo.cityRaw,
 		districtRaw: geo.districtRaw,
-		needsReview: geo.needsReview,
+		needsReview: geo.needsReview || Boolean(data.landAreaNeedsReview),
 		street: data.street,
 		house: data.house,
 		lat: data.lat,
@@ -76,6 +77,11 @@ async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
 		totalArea: data.totalArea,
 		livingArea: data.livingArea,
 		kitchenArea: data.kitchenArea,
+		plotAreaSotka: data.plotAreaSotka,
+		landAreaNeedsReview: data.landAreaNeedsReview,
+		landCategory: data.landCategory,
+		permittedUse: data.permittedUse,
+		communications: data.communications,
 		floor: data.floor,
 		floors: data.floors,
 		pricePerMeterMinor: data.pricePerMeterMinor,
@@ -150,13 +156,23 @@ export function createPayloadFeedIngestRepository(
 				);
 			}
 			const patch: Record<string, unknown> = { ...data };
-			if ("region" in data || "locality" in data || "district" in data) {
+			if (
+				"region" in data ||
+				"locality" in data ||
+				"district" in data ||
+				"landAreaNeedsReview" in data
+			) {
 				const geo = await resolveFeedGeo(payload, {
 					region: data.region ?? found.docs[0].regionRaw ?? undefined,
 					locality: data.locality ?? found.docs[0].cityRaw ?? undefined,
 					district: data.district ?? found.docs[0].districtRaw ?? undefined,
 				});
 				Object.assign(patch, geo);
+				patch.needsReview =
+					geo.needsReview ||
+					Boolean(
+						data.landAreaNeedsReview ?? found.docs[0].landAreaNeedsReview,
+					);
 			}
 			delete patch.locality;
 			delete patch.feedSource;

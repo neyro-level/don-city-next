@@ -20,6 +20,11 @@ import {
 	publicRedirectDestinationIsChain,
 } from "./payload-reads";
 import { publicGatewayPolicy } from "./policy";
+import {
+	r1PublicPropertyCategories,
+	r1PublicPropertyPublicationClauses,
+	type R1PublicPropertyCategory,
+} from "./property-policy";
 
 const publicPropertySelect = {
 	slug: true,
@@ -54,12 +59,7 @@ const publicPropertySelect = {
 	updatedAt: true,
 } satisfies PropertiesSelect<true>;
 
-const propertyCategorySchema = z.enum([
-	"apartment",
-	"house",
-	"land",
-	"commercial",
-]);
+const propertyCategorySchema = z.enum([...r1PublicPropertyCategories]);
 const propertyDealTypeSchema = z.enum(["sale", "rent"]);
 const propertySortSchema = z.enum([
 	"recommended",
@@ -97,35 +97,40 @@ export const catalogQuerySchema = z.object({
 export type CatalogQueryInput = z.input<typeof catalogQuerySchema>;
 export type CatalogQuery = z.output<typeof catalogQuerySchema>;
 
-type PublicCatalogSelectedProperty = Pick<
-	Property,
-	| "id"
-	| "slug"
-	| "status"
-	| "market"
-	| "category"
-	| "dealType"
-	| "priceMinor"
-	| "currency"
-	| "pricePerMeterMinor"
-	| "rooms"
-	| "totalArea"
-	| "livingArea"
-	| "kitchenArea"
-	| "floor"
-	| "floors"
-	| "cityRaw"
-	| "districtRaw"
-	| "publicAddress"
-	| "lat"
-	| "lng"
-	| "title"
-	| "description"
-	| "images"
-	| "updatedAt"
-	| "publishedAt"
-	| "contentPurgedAt"
->;
+type PublicCatalogSelectedProperty = Omit<
+	Pick<
+		Property,
+		| "id"
+		| "slug"
+		| "status"
+		| "market"
+		| "category"
+		| "dealType"
+		| "priceMinor"
+		| "currency"
+		| "pricePerMeterMinor"
+		| "rooms"
+		| "totalArea"
+		| "livingArea"
+		| "kitchenArea"
+		| "floor"
+		| "floors"
+		| "cityRaw"
+		| "districtRaw"
+		| "publicAddress"
+		| "lat"
+		| "lng"
+		| "title"
+		| "description"
+		| "images"
+		| "updatedAt"
+		| "publishedAt"
+		| "contentPurgedAt"
+	>,
+	"category"
+> & {
+	category: R1PublicPropertyCategory;
+};
 
 export type PublicCatalogProperty = Omit<
 	PublicCatalogSelectedProperty,
@@ -186,6 +191,7 @@ export const publicPropertyPublicationWhere: Where = {
 		{ status: { equals: "active" } },
 		{ publishedAt: { exists: true } },
 		{ contentPurgedAt: { exists: false } },
+		...r1PublicPropertyPublicationClauses(),
 	],
 };
 
@@ -194,6 +200,7 @@ export const publicPropertyRetainedArchivedWhere: Where = {
 		{ status: { equals: "archived" } },
 		{ publishedAt: { exists: true } },
 		{ contentPurgedAt: { exists: false } },
+		...r1PublicPropertyPublicationClauses(),
 	],
 };
 

@@ -239,7 +239,27 @@ export interface Property {
    */
   slug: string;
   market: 'secondary' | 'newbuild';
-  category: 'apartment' | 'house' | 'land' | 'commercial';
+  category: 'apartment' | 'house' | 'land' | 'commercial' | 'room' | 'garage';
+  houseType?: ('house' | 'cottage' | 'townhouse' | 'dacha' | 'part_of_house') | null;
+  plotAreaSotka?: number | null;
+  /**
+   * Source land category. Canonical legal values are preserved without an invented local enum.
+   */
+  landCategory?: string | null;
+  /**
+   * Source permitted land use. Unknown values remain reviewable instead of being coerced.
+   */
+  permittedUse?: string | null;
+  communications?:
+    | {
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Import set this when a supplied land-area unit is ambiguous or invalid.
+   */
+  landAreaNeedsReview?: boolean | null;
   dealType: 'sale' | 'rent';
   priceMinor?: number | null;
   currency?: 'RUB' | null;
@@ -937,6 +957,17 @@ export interface PropertiesSelect<T extends boolean = true> {
   slug?: T;
   market?: T;
   category?: T;
+  houseType?: T;
+  plotAreaSotka?: T;
+  landCategory?: T;
+  permittedUse?: T;
+  communications?:
+    | T
+    | {
+        value?: T;
+        id?: T;
+      };
+  landAreaNeedsReview?: T;
   dealType?: T;
   priceMinor?: T;
   currency?: T;

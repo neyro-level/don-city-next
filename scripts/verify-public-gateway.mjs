@@ -12,6 +12,10 @@ const policySource = readFileSync(
 	"src/core/data-access/public/policy.ts",
 	"utf8",
 );
+const propertyPolicySource = readFileSync(
+	"src/core/data-access/public/property-policy.ts",
+	"utf8",
+);
 const accessSource = readFileSync(
 	"src/core/data-access/public/access-mode.ts",
 	"utf8",
@@ -177,6 +181,19 @@ for (const snippet of requiredPredicateSnippets) {
 		throw new Error(
 			`Publication predicate missing from Public Gateway: ${snippet}`,
 		);
+	}
+}
+
+for (const snippet of [
+	'"apartment"',
+	'"house"',
+	'"land"',
+	'{ market: { equals: "secondary" } }',
+	'{ dealType: { equals: "sale" } }',
+	"category: { in: [...r1PublicPropertyCategories] }",
+]) {
+	if (!propertyPolicySource.includes(snippet)) {
+		throw new Error(`R1 property publication policy missing: ${snippet}`);
 	}
 }
 

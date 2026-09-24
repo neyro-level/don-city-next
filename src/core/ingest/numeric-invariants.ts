@@ -1,5 +1,6 @@
 const maxSafeMinor = Number.MAX_SAFE_INTEGER;
 const maxAreaM2 = 99_999_999.99;
+const maxPlotAreaSotka = 99_999_999.99;
 const areaFields = ["totalArea", "livingArea", "kitchenArea"] as const;
 const moneyFields = ["priceMinor", "pricePerMeterMinor"] as const;
 
@@ -38,6 +39,26 @@ export function normalizeAreaM2(
 	return normalized;
 }
 
+export function normalizePlotAreaSotka(
+	value: number | null | undefined,
+	policy: AreaPrecisionPolicy = "reject",
+	field = "plotAreaSotka",
+): number | null | undefined {
+	if (value == null) return value;
+	if (!Number.isFinite(value) || value < 0 || value > maxPlotAreaSotka) {
+		throw new Error(
+			`${field} must be between 0 and ${maxPlotAreaSotka} sotka.`,
+		);
+	}
+
+	const normalized = Number(value.toFixed(2));
+	const tolerance = Number.EPSILON * Math.max(1, Math.abs(value)) * 4;
+	if (policy === "reject" && Math.abs(value - normalized) > tolerance) {
+		throw new Error(`${field} must have at most two decimal places.`);
+	}
+	return normalized;
+}
+
 export function normalizePropertyNumericWrite(
 	data: Record<string, unknown>,
 ): void {
@@ -57,5 +78,12 @@ export function normalizePropertyNumericWrite(
 				field,
 			);
 		}
+	}
+	if ("plotAreaSotka" in data) {
+		data.plotAreaSotka = normalizePlotAreaSotka(
+			data.plotAreaSotka as number | null | undefined,
+			"reject",
+			"plotAreaSotka",
+		);
 	}
 }

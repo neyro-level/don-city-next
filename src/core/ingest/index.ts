@@ -62,9 +62,16 @@ export {
 } from "./manual-ownership.ts";
 export {
 	normalizeAreaM2,
+	normalizePlotAreaSotka,
 	normalizePropertyNumericWrite,
 	requireMoneyMinor,
 } from "./numeric-invariants.ts";
+export {
+	normalizeHouseType,
+	normalizeLandAreaToSotka,
+	propertyHouseTypes,
+	type PropertyHouseType,
+} from "./property-taxonomy.ts";
 export {
 	approveSuspiciousDeactivation,
 	queueManualFeedImport,

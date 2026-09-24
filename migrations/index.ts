@@ -10,6 +10,7 @@ import * as migration_20260919_151000 from "./20260919_151000";
 import * as migration_20260921_185354_add_reset_password_requested_at from "./20260921_185354_add_reset_password_requested_at";
 import * as migration_20260924_103933 from "./20260924_103933";
 import * as migration_20260924_104718 from "./20260924_104718";
+import * as migration_20260924_141917_property_taxonomy from "./20260924_141917_property_taxonomy";
 
 export const migrations = [
 	{
@@ -71,5 +72,10 @@ export const migrations = [
 		up: migration_20260924_104718.up,
 		down: migration_20260924_104718.down,
 		name: "20260924_104718",
+	},
+	{
+		up: migration_20260924_141917_property_taxonomy.up,
+		down: migration_20260924_141917_property_taxonomy.down,
+		name: "20260924_141917_property_taxonomy",
 	},
 ];

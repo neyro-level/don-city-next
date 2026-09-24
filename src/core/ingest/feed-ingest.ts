@@ -5,13 +5,19 @@ import type {
 	FeedNormalizationIssue,
 	NormalizedFeedOffer,
 } from "./feed-normalization.ts";
+import {
+	normalizeHouseType,
+	type PropertyHouseType,
+} from "./property-taxonomy.ts";
 
 export type FeedIngestMarket = "secondary" | "newbuild";
 export type FeedPropertyCategory =
 	| "apartment"
 	| "house"
 	| "land"
-	| "commercial";
+	| "commercial"
+	| "room"
+	| "garage";
 export type FeedPropertyDealType = "sale" | "rent";
 
 export type FeedIngestContext = {
@@ -41,6 +47,7 @@ export type FeedPropertyWriteData = {
 	market: FeedIngestMarket;
 	category: FeedPropertyCategory;
 	dealType: FeedPropertyDealType;
+	houseType?: PropertyHouseType;
 	priceMinor?: number;
 	currency: "RUB";
 	publicAddress?: string;
@@ -55,6 +62,11 @@ export type FeedPropertyWriteData = {
 	totalArea?: number;
 	livingArea?: number;
 	kitchenArea?: number;
+	plotAreaSotka?: number;
+	landAreaNeedsReview?: boolean;
+	landCategory?: string;
+	permittedUse?: string;
+	communications?: { value: string }[];
 	floor?: number;
 	floors?: number;
 	pricePerMeterMinor?: number | null;
@@ -265,6 +277,7 @@ export function buildFeedPropertyWriteData({
 		market: context.market,
 		category: normalizePropertyCategory(offer.category, offer.propertyType),
 		dealType: normalizeDealType(offer.dealType),
+		houseType: normalizeHouseType(offer.houseType ?? offer.propertyType),
 		priceMinor: offer.priceMinor,
 		currency: offer.currency,
 		publicAddress: offer.publicAddress,
@@ -279,6 +292,11 @@ export function buildFeedPropertyWriteData({
 		totalArea: offer.totalArea,
 		livingArea: offer.livingArea,
 		kitchenArea: offer.kitchenArea,
+		plotAreaSotka: offer.plotAreaSotka,
+		landAreaNeedsReview: offer.landAreaNeedsReview,
+		landCategory: offer.landCategory,
+		permittedUse: offer.permittedUse,
+		communications: offer.communications?.map((value) => ({ value })),
 		floor: offer.floor,
 		floors: offer.floors,
 		externalComplexId: offer.externalComplexId,
@@ -360,6 +378,12 @@ function normalizePropertyCategory(
 	}
 	if (/(коммер|commercial|office|офис)/i.test(value)) {
 		return "commercial";
+	}
+	if (/(комнат|room)/i.test(value)) {
+		return "room";
+	}
+	if (/(гараж|garage|parking|парков)/i.test(value)) {
+		return "garage";
 	}
 	return "apartment";
 }

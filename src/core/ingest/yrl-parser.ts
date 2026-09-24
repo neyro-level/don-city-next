@@ -316,6 +316,9 @@ function assignOfferField(
 		case "property-type":
 			raw.propertyType = text;
 			break;
+		case "house-type":
+			raw.houseType = text;
+			break;
 		case "price/value":
 			raw.price = text;
 			break;
@@ -378,6 +381,24 @@ function assignOfferField(
 			break;
 		case "kitchen-space/unit":
 			raw.kitchenAreaUnit = text;
+			break;
+		case "lot-area/value":
+		case "plot-area/value":
+			raw.plotArea = text;
+			break;
+		case "lot-area/unit":
+		case "plot-area/unit":
+			raw.plotAreaUnit = text;
+			break;
+		case "land-category":
+			raw.landCategory = text;
+			break;
+		case "permitted-use":
+			raw.permittedUse = text;
+			break;
+		case "communication":
+		case "communications/communication":
+			raw.communications = [...(raw.communications ?? []), text];
 			break;
 		case "picture":
 			raw.pictures.push(text);

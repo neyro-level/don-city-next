@@ -4,6 +4,7 @@ import type { Payload, Where } from "payload";
 import type { Property } from "../../../project/payload-types.ts";
 import { propertyLifecycleReadAccess } from "./access-mode.ts";
 import { publicGatewayPolicy } from "./policy";
+import { r1PublicPropertyPublicationClauses } from "./property-policy";
 
 const access = {
 	overrideAccess: publicGatewayPolicy.overrideAccess,
@@ -16,6 +17,7 @@ const publicPropertyPublicationWhere: Where = {
 		{ status: { equals: "active" } },
 		{ publishedAt: { exists: true } },
 		{ contentPurgedAt: { exists: false } },
+		...r1PublicPropertyPublicationClauses(),
 	],
 };
 
@@ -114,7 +116,7 @@ export async function findPublicSitemapListingLastModified(
 	all?: string;
 	byCategory: Partial<Record<Property["category"], string>>;
 }> {
-	const categories = ["apartment", "house", "land", "commercial"] as const;
+	const categories = ["apartment", "house", "land"] as const;
 	const [all, ...categoryResults] = await Promise.all([
 		payload.find({
 			collection: "properties",

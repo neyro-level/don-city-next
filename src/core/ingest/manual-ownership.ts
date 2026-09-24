@@ -24,6 +24,11 @@ export const importOwnedFields = [
 	"externalComplexName",
 	"externalBuildingId",
 	"externalLayoutId",
+	"houseType",
+	"plotAreaSotka",
+	"landCategory",
+	"permittedUse",
+	"communications",
 ] as const;
 
 export type ImportOwnedField = (typeof importOwnedFields)[number];
