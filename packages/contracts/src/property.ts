@@ -1,6 +1,11 @@
+import type {
+	PropertyCategory,
+	PropertyDealType,
+	PropertyMarket,
+} from "./common";
 import type { AppliedPropertyFiltersDTO } from "./filters";
+import type { PropertyLocationDTO } from "./geo";
 import type { MediaDTO } from "./media";
-import type { PropertyCategory, PropertyDealType } from "./common";
 
 export type PropertyPriceDTO = {
 	priceMinor: number;
@@ -32,6 +37,7 @@ export type PropertyCardDTO = {
 	address: string;
 	city: string;
 	district?: string;
+	geo?: PropertyLocationDTO;
 	primaryMedia: MediaDTO | null;
 	summary: readonly PropertySummaryItemDTO[];
 	badges: readonly string[];
@@ -47,6 +53,62 @@ export type PropertyDetailsDTO = PropertyCardDTO & {
 	};
 	related: readonly PropertyCardDTO[];
 };
+
+export type ApartmentPropertyDetailsDTO = PropertyDetailsDTO & {
+	category: "apartment";
+	market: "secondary";
+	geo: PropertyLocationDTO;
+	categoryDetails: {
+		rooms?: number;
+		totalArea?: number;
+		livingArea?: number;
+		kitchenArea?: number;
+		floor?: number;
+		floors?: number;
+	};
+};
+
+export type HousePropertyDetailsDTO = PropertyDetailsDTO & {
+	category: "house";
+	market: "secondary";
+	geo: PropertyLocationDTO;
+	categoryDetails: {
+		houseType: "house" | "cottage" | "townhouse" | "dacha" | "part_of_house";
+		plotAreaSotka?: number;
+	};
+};
+
+export type LandPropertyDetailsDTO = PropertyDetailsDTO & {
+	category: "land";
+	market: "secondary";
+	geo: PropertyLocationDTO;
+	categoryDetails: {
+		plotAreaSotka?: number;
+		landCategory?: string;
+		permittedUse?: string;
+		communications: readonly string[];
+	};
+};
+
+/** Prepared-off: this type does not authorize a public R1 catalog or route. */
+export type PreparedCommercialPropertyDTO = PropertyDetailsDTO & {
+	category: "commercial";
+	market: PropertyMarket;
+	geo: PropertyLocationDTO;
+	availability: "prepared-off";
+};
+
+/** Prepared-off: newbuild may not be exposed before its R2 research contract. */
+export type PreparedDevelopmentDTO = {
+	market: "newbuild";
+	geo: PropertyLocationDTO;
+	availability: "prepared-off";
+};
+
+export type R1PropertyDetailsDTO =
+	| ApartmentPropertyDetailsDTO
+	| HousePropertyDetailsDTO
+	| LandPropertyDetailsDTO;
 
 export type PropertyListDTO = {
 	items: readonly PropertyCardDTO[];

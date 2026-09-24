@@ -1,15 +1,55 @@
 import type {
+	ApartmentPropertyDetailsDTO,
 	BreadcrumbDTO,
+	HousePropertyDetailsDTO,
+	LandPropertyDetailsDTO,
 	LeadFormContext,
 	MediaDTO,
 	PageSEOContract,
+	PreparedCommercialPropertyDTO,
+	PreparedDevelopmentDTO,
 	PropertyCardDTO,
 	PropertyDetailsDTO,
 	PropertyFilterDTO,
 	PropertyListDTO,
+	PropertyLocationDTO,
 	SiteFooterDTO,
 	SiteHeaderDTO,
 } from "./index";
+
+const geoFixture = {
+	region: {
+		id: "region-dpr",
+		slug: "dnr",
+		name: "Донецкая Народная Республика",
+		shortName: "ДНР",
+		isPublished: true,
+	},
+	city: {
+		id: "city-donetsk",
+		slug: "donetsk",
+		name: "Донецк",
+		region: {
+			id: "region-dpr",
+			slug: "dnr",
+			name: "Донецкая Народная Республика",
+			shortName: "ДНР",
+			isPublished: true,
+		},
+		nameGenitive: "Донецка",
+		nameLocative: "Донецке",
+		preposition: "в",
+		isPublished: true,
+	},
+	district: {
+		id: "district-central",
+		slug: "central",
+		name: "Центральный",
+		type: "administrative_district",
+		city: { id: "city-donetsk", slug: "donetsk", name: "Донецк" },
+		isPublished: true,
+	},
+} as const satisfies PropertyLocationDTO;
 
 const logo = {
 	kind: "managed",
@@ -45,7 +85,9 @@ export const baseContractFixture = {
 		categories: [{ value: "apartment", label: "Квартиры" }],
 		dealTypes: [{ value: "sale", label: "Продажа" }],
 		cities: [{ value: "demo-city", label: "Демо-город" }],
-		districts: [{ value: "central", label: "Центральный", parentValue: "demo-city" }],
+		districts: [
+			{ value: "central", label: "Центральный", parentValue: "demo-city" },
+		],
 		rooms: [1, 2, 3, 4],
 		priceMinor: { min: 200_000_000, max: 3_000_000_000 },
 		buildingTypes: [],
@@ -68,7 +110,12 @@ export const baseContractFixture = {
 	footer: {
 		brandName: "AMS Realty Baza Starter",
 		logo,
-		groups: [{ title: "Недвижимость", links: [{ label: "Каталог", href: "/nedvizhimost" }] }],
+		groups: [
+			{
+				title: "Недвижимость",
+				links: [{ label: "Каталог", href: "/nedvizhimost" }],
+			},
+		],
 		contacts: [],
 		legalLinks: [{ label: "Правовая информация", href: "/legal" }],
 		copyright: "© AMS Realty Baza Starter",
@@ -86,7 +133,11 @@ export const baseContractFixture = {
 	lead: {
 		formKind: "property",
 		sourcePage: "/obekty/fixture-apartment",
-		property: { id: "fixture-property-1", slug: "fixture-apartment", title: "Двухкомнатная квартира" },
+		property: {
+			id: "fixture-property-1",
+			slug: "fixture-apartment",
+			title: "Двухкомнатная квартира",
+		},
 		consentVersion: "fixture-consent-v1",
 		consentHref: "/legal/personal-data",
 		consentRequired: true,
@@ -109,3 +160,44 @@ export const propertyDetailsFixture = {
 	characteristics: [{ label: "Ремонт", value: "Современный" }],
 	related: [],
 } as const satisfies PropertyDetailsDTO;
+
+export const categorySpecificPropertyFixtures = {
+	apartment: {
+		...propertyDetailsFixture,
+		category: "apartment",
+		market: "secondary",
+		geo: geoFixture,
+		categoryDetails: { rooms: 2, totalArea: 58.4, floor: 4, floors: 9 },
+	} satisfies ApartmentPropertyDetailsDTO,
+	house: {
+		...propertyDetailsFixture,
+		category: "house",
+		market: "secondary",
+		geo: geoFixture,
+		categoryDetails: { houseType: "dacha", plotAreaSotka: 6 },
+	} satisfies HousePropertyDetailsDTO,
+	land: {
+		...propertyDetailsFixture,
+		category: "land",
+		market: "secondary",
+		geo: geoFixture,
+		categoryDetails: {
+			plotAreaSotka: 8.5,
+			landCategory: "Земли населённых пунктов",
+			permittedUse: "ИЖС",
+			communications: ["электричество"],
+		},
+	} satisfies LandPropertyDetailsDTO,
+	commercialPrepared: {
+		...propertyDetailsFixture,
+		category: "commercial",
+		market: "secondary",
+		geo: geoFixture,
+		availability: "prepared-off",
+	} satisfies PreparedCommercialPropertyDTO,
+	developmentPrepared: {
+		market: "newbuild",
+		geo: geoFixture,
+		availability: "prepared-off",
+	} satisfies PreparedDevelopmentDTO,
+} as const;

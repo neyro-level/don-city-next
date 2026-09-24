@@ -1,12 +1,12 @@
 {
 	"schemaVersion": 2,
-	"contractVersion": "1.2.0",
+	"contractVersion": "1.3.1",
 	"state": "frozen",
 	"algorithm": "sha256-normalized-lf",
 	"files": [
 		{
 			"path": "packages/contracts/src/common.ts",
-			"sha256": "7e6a23880fac92d8ca41a149c0a723314d20fee6ec3a6f7060ee946dd1ffd51e"
+			"sha256": "668918cefe1f4706dfa108b5eb5a909716b07643f18d13b008d8810d988e384b"
 		},
 		{
 			"path": "packages/contracts/src/filters.ts",
@@ -14,11 +14,15 @@
 		},
 		{
 			"path": "packages/contracts/src/fixtures.ts",
-			"sha256": "e6eac7168f7b0020150d3547e80580de667cb472d49590e81d8b61c778e666c3"
+			"sha256": "9cb916b272f75e2cd99888f46c3181b96f2cf857078c8b48b9e4e4abbae0ad1c"
+		},
+		{
+			"path": "packages/contracts/src/geo.ts",
+			"sha256": "9c77e342bb8abb910438c0808de27ebdf71dc0483115a971c3836653fde5140f"
 		},
 		{
 			"path": "packages/contracts/src/index.ts",
-			"sha256": "2b2e0cce31869f9d7c6a22b25db6a49957ba2db309fb1493c7c2801ecab08621"
+			"sha256": "e336e275ee2f7c80f491aac1d750fc0a27cf10c50d4cea69367b134c5200f6c4"
 		},
 		{
 			"path": "packages/contracts/src/lead.ts",
@@ -38,7 +42,7 @@
 		},
 		{
 			"path": "packages/contracts/src/property.ts",
-			"sha256": "0609104c318f986680191b2e2ff1b8286b9ce8f8516997e79556cef55ee8d0e3"
+			"sha256": "d43fb1030021cbae6593348dcaf3afd00379aa7808f065e83184feb62244afda"
 		},
 		{
 			"path": "packages/contracts/src/public-page.ts",
@@ -53,5 +57,5 @@
 			"sha256": "1242b3933c68ba857603cb5f8bb7dbc38f55678b9582d27474ee76e1d9e32250"
 		}
 	],
-	"aggregateSha256": "0987199c72d7311dd5bc0a51a39afb6053208de44664e09ab4917f844f81a2b1"
+	"aggregateSha256": "8b15fe3b2186a0f9b77f8076b7bc6060e2fe77f8f8c122d7abe3c9cf3e0750a7"
 }

@@ -8,3 +8,5 @@ export type PropertyCategory =
 	| "other";
 
 export type PropertyDealType = "sale" | "rent";
+
+export type PropertyMarket = "secondary" | "newbuild";
