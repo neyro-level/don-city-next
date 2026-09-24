@@ -14,7 +14,7 @@ Goal: получить канонический repository, healthy docs map и 
 - [x] Windows checkout привязан к canonical `origin`.
 - [x] Product Development Standard 2.0 bootstrap создан.
 - [x] Secret Master/Git access names проверены без раскрытия values.
-- [x] Dedicated SSH, single Timeweb server, managed PostgreSQL 18, backup posture, capacity and jobs-owner contract verified read-only; SQL inventory awaits a private-network attachment.
+- [x] Dedicated DON CITY SSH access, private NIC, managed PostgreSQL 18, backup posture, capacity and jobs-owner contract verified; authenticated read-only inventory confirms an empty database target. Temporary database credential is in Secret Master and requires rotation before deployment.
 - [x] SourceCraft starter access и exact `main` SHA проверены read-only.
 - [x] Starter transformation/UI preservation/page completeness contract согласован и внесён в master plan v3.
 - [x] Single Timeweb server strategy and Manrope/dark-green design direction внесены в master plan v4.
