@@ -7,6 +7,7 @@ import { leadConsentContext } from "./legal.config.ts";
 import { siteConfig } from "./site.config.ts";
 
 const sellerSlug = "prodat-nedvizhimost";
+const lawyerSlug = "yurist";
 
 const sellerSections = [
 	{
@@ -23,6 +24,21 @@ const sellerSections = [
 	},
 ] as const;
 
+const lawyerSections = [
+	{
+		title: "Проверка документов",
+		text: "Разберём документы по объекту и вопросы, которые важно уточнить до сделки.",
+	},
+	{
+		title: "Сопровождение сделки",
+		text: "Поможем с юридическими этапами купли-продажи и оформлением прав по ситуации.",
+	},
+	{
+		title: "Наследство и земельные вопросы",
+		text: "Обсудим вопросы наследства, регистрации права и земли в рамках вашей ситуации.",
+	},
+] as const;
+
 export function buildStaticMarketingPage(input: {
 	slug: string;
 	title: string;
@@ -30,16 +46,21 @@ export function buildStaticMarketingPage(input: {
 	breadcrumbs: BreadcrumbDTO;
 }): MarketingPageDTO {
 	const seller = input.slug === sellerSlug;
+	const lawyer = input.slug === lawyerSlug;
 	return {
 		slug: input.slug,
-		eyebrow: seller ? "Продажа недвижимости" : siteConfig.brandName,
+		eyebrow: seller
+			? "Продажа недвижимости"
+			: lawyer
+				? "Юридическое сопровождение"
+				: siteConfig.brandName,
 		title: input.title,
 		lead: input.seo.description,
 		seo: input.seo,
 		breadcrumbs: input.breadcrumbs,
-		sections: seller ? sellerSections : [],
+		sections: seller ? sellerSections : lawyer ? lawyerSections : [],
 		leadContext: {
-			formKind: seller ? "sell" : "general",
+			formKind: seller ? "sell" : lawyer ? "legal" : "general",
 			sourcePage: input.seo.canonicalPath,
 			...leadConsentContext(),
 		},

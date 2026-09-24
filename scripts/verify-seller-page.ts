@@ -26,9 +26,9 @@ assert.match(seller.sections[0]?.title ?? "", /Оценка/);
 assert.match(seller.sections[2]?.text ?? "", /юридические этапы/);
 
 const generic = buildStaticMarketingPage({
-	slug: "yurist",
-	title: "Юрист по недвижимости в Донецке",
-	seo: { ...seller.seo, canonicalPath: "/yurist/" },
+	slug: "kontakty",
+	title: "Контакты агентства недвижимости «ДОН СИТИ» в Донецке",
+	seo: { ...seller.seo, canonicalPath: "/kontakty/" },
 	breadcrumbs: { items: [] },
 });
 assert.equal(generic.leadContext?.formKind, "general");

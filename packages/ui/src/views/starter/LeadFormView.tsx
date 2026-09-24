@@ -42,6 +42,7 @@ function toIntakeFormKind(
 	if (kind === "property") return "property_request";
 	if (kind === "callback") return "callback";
 	if (kind === "general" || kind === "mortgage") return "consultation";
+	if (kind === "legal") return "generic";
 	return "generic";
 }
 

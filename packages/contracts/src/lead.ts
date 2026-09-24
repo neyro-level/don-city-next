@@ -4,6 +4,7 @@ export type LeadFormKind =
 	| "property"
 	| "mortgage"
 	| "sell"
+	| "legal"
 	| "rent";
 
 export type LeadPropertyContextDTO = {
