@@ -10,6 +10,7 @@ import {
 	JsonLdScript,
 } from "@/core/seo/structured-data";
 import { leadConsentContext } from "@/project/legal.config";
+import { projectUrls } from "@/project/url-grammar";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export default async function CatalogPage({
 				filters={catalog.filters}
 				leadContext={{
 					formKind: "general",
-					sourcePage: "/nedvizhimost",
+					sourcePage: projectUrls.primaryCatalog,
 					...leadConsentContext(),
 				}}
 			/>

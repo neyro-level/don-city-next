@@ -9,10 +9,11 @@ import {
 import { leadConsentContext } from "@/project/legal.config";
 import { siteProfile } from "@/project/site.profile";
 import { resolveCategoryRoute } from "@/platform/profile";
+import { buildPropertyUrl, projectUrls } from "@/project/url-grammar";
 
 export const dynamic = "force-dynamic";
 
-const canonicalPath = "/kvartiry/donetsk/";
+const canonicalPath = projectUrls.primaryCatalog;
 const title = "Купить квартиру в Донецке, ДНР: цены и объявления";
 const description =
 	"Квартиры на продажу в Донецке, ДНР: 1-, 2- и 3-комнатные варианты в разных районах. Подбор и сопровождение сделки в «ДОН СИТИ».";
@@ -49,7 +50,11 @@ export default async function DonetskApartmentsCatalogPage() {
 		...catalog.list,
 		items: catalog.list.items.map((property) => ({
 			...property,
-			href: `/kvartiry/${property.slug}/`,
+			href: buildPropertyUrl({
+				category: property.category,
+				semantic: property.slug,
+				publicUrlId: property.id,
+			}),
 		})),
 	};
 

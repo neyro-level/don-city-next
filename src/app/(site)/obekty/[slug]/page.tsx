@@ -12,6 +12,7 @@ import {
 } from "@/core/seo/structured-data";
 import { siteConfig } from "@/project/site.config";
 import { leadConsentContext } from "@/project/legal.config";
+import { projectUrls } from "@/project/url-grammar";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export async function generateMetadata({
 				title: `Объект снят с публикации — ${siteConfig.brandName}`,
 				description:
 					"Объект больше не публикуется. Посмотрите актуальные предложения в каталоге.",
-				canonicalPath: `/obekty/${slug}`,
+				canonicalPath: projectUrls.primaryCatalog,
 				indexing: "noindex",
 				following: "follow",
 			});
@@ -99,8 +100,8 @@ export default async function PropertyPage({
 			<JsonLdScript data={buildPropertyJsonLd(property)} />
 			<JsonLdScript
 				data={buildBreadcrumbJsonLd([
-					{ name: "Главная", path: "/" },
-					{ name: "Недвижимость", path: "/nedvizhimost" },
+					{ name: "Главная", path: projectUrls.home },
+					{ name: "Недвижимость", path: projectUrls.primaryCatalog },
 					{ name: property.title, path: property.href },
 				])}
 			/>

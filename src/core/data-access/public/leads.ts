@@ -18,6 +18,7 @@ import { siteConfig } from "../../../project/site.config.ts";
 import { systemOverrideAccess } from "../system/overrides.ts";
 import { publicGatewayReadAccess } from "./access-mode.ts";
 import { getPublicGatewayPayload } from "./payload.ts";
+import { buildPropertyUrl } from "../../../project/url-grammar.ts";
 
 export type PublicLeadSubmitResult =
 	| { accepted: true; reused: boolean }
@@ -110,7 +111,11 @@ export async function submitPublicLead({
 		});
 		const property = found.docs[0];
 		const canonicalSourcePage = property
-			? `/obekty/${property.slug}`
+			? buildPropertyUrl({
+					category: property.category,
+					semantic: property.slug,
+					publicUrlId: property.id,
+				})
 			: undefined;
 		if (!property || intake.lead.sourcePage !== canonicalSourcePage) {
 			return propertyContextRejected(intake.lead.sourcePage);

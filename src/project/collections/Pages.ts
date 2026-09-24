@@ -2,6 +2,7 @@ import type { CollectionConfig } from "payload";
 import { publicPageReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
 import { projectConfig } from "../project.config.ts";
+import { buildProjectUrl } from "../url-grammar.ts";
 
 export const Pages: CollectionConfig = {
 	slug: "pages",
@@ -20,7 +21,7 @@ export const Pages: CollectionConfig = {
 			({ data }) => {
 				if (!data || typeof data.slug !== "string") return data;
 				const slug = data.slug.trim().replace(/^\/+/, "");
-				const path = `/${slug}`;
+				const path = buildProjectUrl({ kind: "static", slug }).slice(0, -1);
 				const reserved = projectConfig.reservedNamespaces.some(
 					(namespace) => path === namespace || path.startsWith(`${namespace}/`),
 				);

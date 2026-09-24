@@ -5,6 +5,7 @@ import type {
 } from "@ams/realtbase-contracts";
 import { serializeJsonLdSafely } from "./json-ld.ts";
 import { absoluteUrl, siteBrandName } from "./site.ts";
+import { projectUrls } from "../../project/url-grammar.ts";
 
 type JsonLd = Record<string, unknown>;
 
@@ -23,7 +24,7 @@ export function buildOrganizationJsonLd(): JsonLd {
 		"@context": "https://schema.org",
 		"@type": "RealEstateAgent",
 		name: siteBrandName,
-		url: absoluteUrl("/"),
+		url: absoluteUrl(projectUrls.home),
 	};
 }
 
@@ -32,7 +33,7 @@ export function buildWebsiteJsonLd(home: HomePageDTO): JsonLd {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		name: siteBrandName,
-		url: absoluteUrl("/"),
+		url: absoluteUrl(projectUrls.home),
 		description: home.seo.description,
 	};
 }

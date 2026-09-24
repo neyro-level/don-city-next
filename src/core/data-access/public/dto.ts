@@ -15,6 +15,11 @@ import type { PublicCatalogFacetsResult } from "./catalog";
 import { leadConsentContext } from "../../../project/legal.config.ts";
 import type { PublicPageRecord } from "./pages";
 import { siteConfig } from "../../../project/site.config.ts";
+import {
+	buildProjectUrl,
+	buildPropertyUrl,
+	projectUrls,
+} from "../../../project/url-grammar.ts";
 
 const brandName = siteConfig.brandName;
 const logo = {
@@ -57,7 +62,11 @@ export function toPropertyCardDTO(
 	return {
 		id: String(property.id),
 		slug: property.slug,
-		href: `/obekty/${property.slug}`,
+		href: buildPropertyUrl({
+			category: property.category,
+			semantic: property.slug,
+			publicUrlId: property.id,
+		}),
 		title: property.title,
 		category: property.category,
 		dealType: property.dealType,
@@ -274,25 +283,31 @@ export function toPropertyFilterDTO(
 
 export function toShellDTO(pages: readonly PublicPageRecord[]) {
 	const starterNavigation = [
-		{ label: "Недвижимость", href: "/nedvizhimost" },
-		{ label: "Услуги", href: "/uslugi" },
-		{ label: "Ипотека", href: "/ipoteka" },
-		{ label: "О компании", href: "/o-kompanii" },
-		{ label: "Контакты", href: "/kontakty" },
+		{ label: "Недвижимость", href: projectUrls.primaryCatalog },
+		{ label: "Услуги", href: projectUrls.services },
+		{ label: "Ипотека", href: projectUrls.mortgage },
+		{ label: "О компании", href: projectUrls.about },
+		{ label: "Контакты", href: projectUrls.contacts },
 	];
 	const cmsNavigation = pages
 		.filter((page) => page.slug !== "home")
 		.slice(0, 6)
-		.map((page) => ({ label: page.title, href: `/${page.slug}` }));
+		.map((page) => ({
+			label: page.title,
+			href: buildProjectUrl({ kind: "static", slug: page.slug }),
+		}));
 	const links = cmsNavigation.length ? cmsNavigation : starterNavigation;
 
 	const header: SiteHeaderDTO = {
 		brandName,
-		homeHref: "/",
+		homeHref: projectUrls.home,
 		logo,
 		navigation: links,
 		phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
-		primaryAction: { label: "Подобрать объект", href: "/nedvizhimost" },
+		primaryAction: {
+			label: "Подобрать объект",
+			href: projectUrls.primaryCatalog,
+		},
 	};
 
 	const footer: SiteFooterDTO = {
@@ -303,11 +318,11 @@ export function toShellDTO(pages: readonly PublicPageRecord[]) {
 		legalLinks: [
 			{
 				label: "Политика конфиденциальности",
-				href: "/politika-konfidencialnosti",
+				href: projectUrls.privacy,
 			},
 			{
 				label: "Согласие на обработку данных",
-				href: "/soglasie-na-obrabotku-personalnyh-dannyh",
+				href: projectUrls.consent,
 			},
 		],
 		copyright: `© ${brandName}`,
@@ -327,7 +342,7 @@ export function toHomePageDTO(page: PublicPageRecord | null): HomePageDTO {
 		seo: page?.seo ?? {
 			title: `${brandName} — недвижимость`,
 			description: "Подбор недвижимости и сопровождение сделки.",
-			canonicalPath: "/",
+			canonicalPath: projectUrls.home,
 			indexing: "index",
 			following: "follow",
 		},
@@ -345,29 +360,29 @@ export function toHomePageDTO(page: PublicPageRecord | null): HomePageDTO {
 		],
 		leadContext: {
 			formKind: "general",
-			sourcePage: "/",
+			sourcePage: projectUrls.home,
 			...leadConsentContext(),
 		},
 		featuredPropertyId: "",
 		serviceLinks: [
 			{
 				label: "Купить",
-				href: "/nedvizhimost",
+				href: projectUrls.primaryCatalog,
 				description: "Квартиры и дома в каталоге",
 			},
 			{
 				label: "Продать",
-				href: "/prodat",
+				href: projectUrls.sale,
 				description: "Оценка и сопровождение продажи",
 			},
 			{
 				label: "Сдать",
-				href: "/sdat",
+				href: projectUrls.rent,
 				description: "Аренда без лишней неопределённости",
 			},
 			{
 				label: "Ипотека",
-				href: "/ipoteka",
+				href: projectUrls.mortgage,
 				description: "Подбор программы и одобрение",
 			},
 		],
@@ -382,7 +397,10 @@ export function toMarketingPageDTO(page: PublicPageRecord): MarketingPageDTO {
 		lead: page.seo.description,
 		seo: page.seo,
 		breadcrumbs: {
-			items: [{ label: "Главная", href: "/" }, { label: page.title }],
+			items: [
+				{ label: "Главная", href: projectUrls.home },
+				{ label: page.title },
+			],
 		},
 		sections: [],
 		leadContext: {

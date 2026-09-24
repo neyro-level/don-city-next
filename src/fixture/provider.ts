@@ -11,6 +11,11 @@ import type {
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
 import { siteConfig } from "../project/site.config.ts";
+import {
+	buildProjectUrl,
+	buildPropertyUrl,
+	projectUrls,
+} from "../project/url-grammar.ts";
 
 const brandName = siteConfig.brandName;
 const logo = {
@@ -22,20 +27,23 @@ const logo = {
 };
 
 const navigation = [
-	{ label: "Недвижимость", href: "/nedvizhimost" },
-	{ label: "Услуги", href: "/uslugi" },
-	{ label: "Ипотека", href: "/ipoteka" },
-	{ label: "О компании", href: "/o-kompanii" },
-	{ label: "Контакты", href: "/kontakty" },
+	{ label: "Недвижимость", href: projectUrls.primaryCatalog },
+	{ label: "Услуги", href: projectUrls.services },
+	{ label: "Ипотека", href: projectUrls.mortgage },
+	{ label: "О компании", href: projectUrls.about },
+	{ label: "Контакты", href: projectUrls.contacts },
 ] as const;
 
 export const fixtureHeader: SiteHeaderDTO = {
 	brandName,
-	homeHref: "/",
+	homeHref: projectUrls.home,
 	logo,
 	navigation,
 	phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
-	primaryAction: { label: "Подобрать объект", href: "/nedvizhimost" },
+	primaryAction: {
+		label: "Подобрать объект",
+		href: projectUrls.primaryCatalog,
+	},
 };
 
 export const fixtureFooter: SiteFooterDTO = {
@@ -46,8 +54,8 @@ export const fixtureFooter: SiteFooterDTO = {
 		{
 			title: "Услуги",
 			links: [
-				{ label: "Продать", href: "/prodat" },
-				{ label: "Сдать", href: "/sdat" },
+				{ label: "Продать", href: projectUrls.sale },
+				{ label: "Сдать", href: projectUrls.rent },
 			],
 		},
 		{ title: "Компания", links: navigation.slice(3) },
@@ -59,11 +67,11 @@ export const fixtureFooter: SiteFooterDTO = {
 	legalLinks: [
 		{
 			label: "Политика конфиденциальности",
-			href: "/politika-konfidencialnosti",
+			href: projectUrls.privacy,
 		},
 		{
 			label: "Согласие на обработку данных",
-			href: "/soglasie-na-obrabotku-personalnyh-dannyh",
+			href: projectUrls.consent,
 		},
 	],
 	copyright: `© ${brandName}`,
@@ -109,10 +117,14 @@ const propertySeed = [
 ] as const;
 
 export const fixtureProperties: readonly PropertyCardDTO[] = propertySeed.map(
-	(item) => ({
+	(item, index) => ({
 		id: item.id,
 		slug: item.slug,
-		href: `/obekty/${item.slug}`,
+		href: buildPropertyUrl({
+			category: "apartment",
+			semantic: item.slug,
+			publicUrlId: index + 1,
+		}),
 		title: item.title,
 		category: "apartment",
 		dealType: "sale",
@@ -184,7 +196,7 @@ const leadContext = (
 	formKind,
 	sourcePage,
 	consentVersion: "fixture-consent-v1",
-	consentHref: "/soglasie-na-obrabotku-personalnyh-dannyh",
+	consentHref: projectUrls.consent,
 	consentRequired: true,
 });
 
@@ -196,7 +208,7 @@ export const fixtureHome: HomePageDTO = {
 	seo: pageSeo(
 		"Недвижимость",
 		"Подбор недвижимости и сопровождение сделки.",
-		"/",
+		projectUrls.home,
 	),
 	breadcrumbs: { items: [{ label: "Главная" }] },
 	sections: [
@@ -210,23 +222,27 @@ export const fixtureHome: HomePageDTO = {
 			],
 		},
 	],
-	leadContext: leadContext("general", "/"),
+	leadContext: leadContext("general", projectUrls.home),
 	featuredPropertyId: fixtureProperties[0]?.id ?? "",
 	serviceLinks: [
 		{
 			label: "Купить",
-			href: "/nedvizhimost",
+			href: projectUrls.primaryCatalog,
 			description: "Квартиры из актуального каталога",
 		},
-		{ label: "Продать", href: "/prodat", description: "Оценка и план продажи" },
+		{
+			label: "Продать",
+			href: projectUrls.sale,
+			description: "Оценка и план продажи",
+		},
 		{
 			label: "Сдать",
-			href: "/sdat",
+			href: projectUrls.rent,
 			description: "Поиск арендатора и сопровождение",
 		},
 		{
 			label: "Ипотека",
-			href: "/ipoteka",
+			href: projectUrls.mortgage,
 			description: "Подбор сценария финансирования",
 		},
 	],
@@ -347,14 +363,24 @@ export const fixtureMarketingPages: readonly MarketingPageDTO[] =
 		eyebrow: page.eyebrow,
 		title: page.title,
 		lead: page.lead,
-		seo: pageSeo(page.title, page.lead, `/${page.slug}`),
+		seo: pageSeo(
+			page.title,
+			page.lead,
+			buildProjectUrl({ kind: "static", slug: page.slug }),
+		),
 		breadcrumbs: {
-			items: [{ label: "Главная", href: "/" }, { label: page.eyebrow }],
+			items: [
+				{ label: "Главная", href: projectUrls.home },
+				{ label: page.eyebrow },
+			],
 		},
 		sections: page.sections,
 		leadContext:
 			"formKind" in page
-				? leadContext(page.formKind, `/${page.slug}`)
+				? leadContext(
+						page.formKind,
+						buildProjectUrl({ kind: "static", slug: page.slug }),
+					)
 				: undefined,
 	}));
 
@@ -367,11 +393,11 @@ export const fixtureLegalPages: readonly MarketingPageDTO[] = [
 		seo: pageSeo(
 			"Политика конфиденциальности",
 			"Правила обработки информации.",
-			"/politika-konfidencialnosti",
+			projectUrls.privacy,
 		),
 		breadcrumbs: {
 			items: [
-				{ label: "Главная", href: "/" },
+				{ label: "Главная", href: projectUrls.home },
 				{ label: "Политика конфиденциальности" },
 			],
 		},
@@ -394,11 +420,11 @@ export const fixtureLegalPages: readonly MarketingPageDTO[] = [
 		seo: pageSeo(
 			"Согласие на обработку данных",
 			"Условия обработки персональных данных.",
-			"/soglasie-na-obrabotku-personalnyh-dannyh",
+			projectUrls.consent,
 		),
 		breadcrumbs: {
 			items: [
-				{ label: "Главная", href: "/" },
+				{ label: "Главная", href: projectUrls.home },
 				{ label: "Согласие на обработку данных" },
 			],
 		},

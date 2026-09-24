@@ -10,6 +10,7 @@ import type { Payload, Where } from "payload";
 import { z } from "zod";
 import type { PropertiesSelect, Property } from "@/project/payload-types";
 import { sanitizeExplicitRedirectPath } from "@/core/seo/redirect-path";
+import { buildPropertyUrl } from "@/project/url-grammar";
 import { publicGatewayPolicy } from "./policy";
 import {
 	aggregatePublicCatalogFacets,
@@ -351,7 +352,11 @@ export async function findPublicPropertyLifecycleBySlug(
 	const property = await findPublicPropertyLifecycleRow(payload, slug);
 	if (!property) return { found: false };
 
-	const fromPath = `/obekty/${slug}`;
+	const fromPath = buildPropertyUrl({
+		category: property.category,
+		semantic: slug,
+		publicUrlId: property.id,
+	});
 	const redirect = await findPublicRedirectByFromPath(payload, fromPath);
 	const destination = sanitizeExplicitRedirectPath(redirect?.to);
 	const chained =

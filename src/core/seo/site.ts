@@ -1,5 +1,6 @@
 import { createSiteSeo, type PublicUrlEntry } from "../../platform/seo/site.ts";
 import { siteConfig } from "../../project/site.config.ts";
+import { projectUrls } from "../../project/url-grammar.ts";
 
 export type { PublicUrlEntry } from "../../platform/seo/site.ts";
 
@@ -10,52 +11,62 @@ export const getSiteUrl = siteSeo.getSiteUrl;
 export const absoluteUrl = siteSeo.absoluteUrl;
 
 export const staticPublicUrlEntries: readonly PublicUrlEntry[] = [
-	{ path: "/", changeFrequency: "daily", priority: 1, indexable: true },
 	{
-		path: "/nedvizhimost",
+		path: projectUrls.home,
+		changeFrequency: "daily",
+		priority: 1,
+		indexable: true,
+	},
+	{
+		path: projectUrls.primaryCatalog,
 		changeFrequency: "daily",
 		priority: 0.9,
 		indexable: true,
 	},
 	{
-		path: "/uslugi",
+		path: projectUrls.services,
 		changeFrequency: "weekly",
 		priority: 0.7,
 		indexable: true,
 	},
 	{
-		path: "/o-kompanii",
+		path: projectUrls.about,
 		changeFrequency: "monthly",
 		priority: 0.6,
 		indexable: true,
 	},
 	{
-		path: "/ipoteka",
+		path: projectUrls.mortgage,
 		changeFrequency: "weekly",
 		priority: 0.7,
 		indexable: true,
 	},
 	{
-		path: "/prodat",
+		path: projectUrls.sale,
 		changeFrequency: "weekly",
 		priority: 0.7,
 		indexable: true,
 	},
-	{ path: "/sdat", changeFrequency: "weekly", priority: 0.7, indexable: true },
 	{
-		path: "/kontakty",
+		path: projectUrls.rent,
+		changeFrequency: "weekly",
+		priority: 0.7,
+		indexable: true,
+	},
+	{
+		path: projectUrls.contacts,
 		changeFrequency: "monthly",
 		priority: 0.6,
 		indexable: true,
 	},
 	{
-		path: "/politika-konfidencialnosti",
+		path: projectUrls.privacy,
 		changeFrequency: "yearly",
 		priority: 0.2,
 		indexable: false,
 	},
 	{
-		path: "/soglasie-na-obrabotku-personalnyh-dannyh",
+		path: projectUrls.consent,
 		changeFrequency: "yearly",
 		priority: 0.2,
 		indexable: false,

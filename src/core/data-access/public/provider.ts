@@ -8,10 +8,7 @@ import {
 } from "./payload-reads";
 import { projectConfig } from "@/project/project.config";
 import { resolvePropertyPageLifecycle } from "@/core/seo/property";
-import {
-	type PublicUrlEntry,
-	staticPublicUrlEntries,
-} from "@/core/seo/site";
+import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
 import {
 	type CatalogQueryInput,
 	catalogQuerySchema,
@@ -30,12 +27,9 @@ import {
 	toPropertyListDTO,
 	toShellDTO,
 } from "./dto";
-import {
-	fallbackPublicPage,
-	findPublicPage,
-	findPublicPages,
-} from "./pages";
+import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
+import { buildProjectUrl, buildPropertyUrl } from "@/project/url-grammar";
 
 export type PublicPropertyPageState =
 	| {
@@ -54,7 +48,9 @@ export type PublicPropertyPageState =
 const urlsPerShard = projectConfig.sitemapUrlsPerShard;
 const queryPageSize = projectConfig.sitemapQueryPageSize;
 
-function emptyCatalog(query: CatalogQueryInput = { limit: 24, page: 1 }): PublicCatalogResult {
+function emptyCatalog(
+	query: CatalogQueryInput = { limit: 24, page: 1 },
+): PublicCatalogResult {
 	const parsed = catalogQuerySchema.parse(query);
 	return {
 		items: [],
@@ -84,10 +80,7 @@ function indexableStaticEntries(): PublicUrlEntry[] {
 }
 
 async function listRange<T>(
-	readPage: (input: {
-		limit: number;
-		offset: number;
-	}) => Promise<readonly T[]>,
+	readPage: (input: { limit: number; offset: number }) => Promise<readonly T[]>,
 	offset: number,
 	limit: number,
 ): Promise<T[]> {
@@ -162,7 +155,9 @@ export async function getPublicSitemapShardCount() {
 	return Math.max(1, Math.ceil(totals.total / urlsPerShard));
 }
 
-export async function getPublicSitemapShard(id: number): Promise<PublicUrlEntry[]> {
+export async function getPublicSitemapShard(
+	id: number,
+): Promise<PublicUrlEntry[]> {
 	if (!Number.isInteger(id) || id < 0) return [];
 	const payload = await getOptionalPublicGatewayPayload();
 	const staticEntries = indexableStaticEntries();
@@ -197,7 +192,7 @@ export async function getPublicSitemapShard(id: number): Promise<PublicUrlEntry[
 			);
 			entries.push(
 				...pages.map((page) => ({
-					path: `/${page.slug}`,
+					path: buildProjectUrl({ kind: "static", slug: page.slug }),
 					lastModified: page.updatedAt,
 					changeFrequency: "weekly" as const,
 					priority: 0.6,
@@ -221,7 +216,11 @@ export async function getPublicSitemapShard(id: number): Promise<PublicUrlEntry[
 		);
 		entries.push(
 			...properties.map((property) => ({
-				path: `/obekty/${property.slug}`,
+				path: buildPropertyUrl({
+					category: property.category,
+					semantic: property.slug,
+					publicUrlId: property.id,
+				}),
 				lastModified: property.updatedAt,
 				changeFrequency: "daily" as const,
 				priority: 0.8,
