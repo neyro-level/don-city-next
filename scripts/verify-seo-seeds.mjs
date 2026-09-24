@@ -189,8 +189,8 @@ assertUnique(
 	"SEO registry URLs",
 );
 assertUnique(
-	districts.rows.map((row) => row.slug),
-	"District slugs",
+	districts.rows.map((row) => `${row.citySlug}/${row.slug}`),
+	"District city/slug identities",
 );
 
 for (const row of seo.rows) {
@@ -219,6 +219,13 @@ for (const row of seo.rows) {
 		!row.url.startsWith("/yurist/") || row.url === "/yurist/",
 		"child lawyer routes are forbidden in R1",
 	);
+	if (row.status === "active") {
+		assert.doesNotMatch(
+			row.url,
+			/^\/(?:kvartiry|doma|uchastki)\/donetsk(?:\/|$)/,
+			`${row.registryId} must not retain a category-first V3 URL`,
+		);
+	}
 
 	if (row.status === "candidate") {
 		assert.equal(
