@@ -2,7 +2,12 @@
 
 Plan ID: AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO
 Version: v6
-Status: APPROVED
+Status: SUPERSEDED
+
+> Historical snapshot. Superseded on 2026-09-24 by
+> `../AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` (`v7 APPROVED`). Its completed
+> execution evidence remains valid, but this file is not an active source for
+> new Task Manager claims, URL ownership or implementation decisions.
 
 **Product contract version:** `3.0.1`
 **Date:** `2026-09-23`

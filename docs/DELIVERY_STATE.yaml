@@ -2,31 +2,44 @@ schema_version: 1
 program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
 plan_version: v7
 plan_status: APPROVED
-current_wave: RP00_CURRENT_STATE_INVENTORY
-current_epic: dcv4-epic-53
-current_task: dcv4-task-53-delivery
-next_action: deliver-rp00-pr-through-standard-exact-head-gate
+current_wave: RP01_SOURCE_OF_TRUTH_ADR_ARCHIVE
+current_epic: dcv4-epic-54
+current_task: dcv4-task-54-delivery
+next_action: deliver-rp01-pr-through-standard-exact-head-gate
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 8dfd7a6c8568a46dc9c0c7430e99c2e75ce9bcfd
-  active_branch: codex/rp-00-current-state-inventory
+  base_sha: 2520bdcab19569882de24a308ffffbe92d488602
+  active_branch: codex/rp-01-source-of-truth
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcv4-task-53-delivery
-  reason: exact V4 graph imported; RP-00 preflight, implementation and verification completed with execution ledgers
+  current_task: dcv4-task-54-delivery
+  reason: exact V4 graph CLEAN; RP-01 preflight, implementation and verification completed with execution ledgers
 evidence:
   rp_00:
-    status: verification-pass-delivery-pending
+    status: delivered
     branch: codex/rp-00-current-state-inventory
+    pull_request: 8
+    gate_run: 9
+    merge_commit: 2520bdcab19569882de24a308ffffbe92d488602
     inventory_commit: 1e8f9e08be00bf02e7a9df0331739cc0abce7391
     verification_commit: 1eace475afb15f141fb7ffac1e79a1c1bdd14927
     reports:
       - docs/replan/RP00_PREFLIGHT.md
       - docs/replan/RP00_INVENTORY.md
       - docs/replan/RP00_VERIFICATION.md
+  rp_01:
+    status: verification-pass-delivery-pending
+    branch: codex/rp-01-source-of-truth
+    implementation_head: 802e66a2762784e95a5d852f08800288e6d9706d
+    verification_head: 5b6a0886ea03ce7a9f6c86933923a4062462bf1a
+    reports:
+      - docs/replan/RP01_PREFLIGHT.md
+      - docs/replan/RP01_VERIFICATION.md
+      - docs/adr/README.md
+      - docs/CHANGELOG.md
   epic_00:
     verification: PASS
     branch: codex/epic-00-governance
@@ -75,19 +88,19 @@ evidence:
       - docs/research/EPIC-06_VERIFICATION.md
       - docs/OPERATIONS.md
 task_contract:
-  goal: "Deliver RP-00 factual current-state inventory and continue the exact approved V4 ready-loop."
-  non_goals: "City-first runtime implementation, production, DNS/server/secret mutation or destructive database action."
+  goal: "Deliver RP-01 V4 Source of Truth, durable ADRs and archive verification, then continue the approved ready-loop."
+  non_goals: "Runtime implementation, production, DNS/server/secret mutation or destructive database action."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
   ux_scope: PUBLIC_COMMERCIAL
-  boundaries: "RP-00 documentation/evidence only; V3 runtime remains unchanged and EPIC-08 WIP remains isolated."
+  boundaries: "RP-01 documentation governance only; runtime remains unchanged and EPIC-08 WIP remains isolated."
   data_changes: none
   auth_pii: "No auth, PII or secret access; canonical production origin is the owner-confirmed https://doncity-home.ru."
   integrations: "None in WORK; DNS, server, database and production remain untouched."
-  proof: "RP00 inventory status/evidence matrix, exact merged-vs-WIP classification, public read-only observation and Task Manager CLEAN reconciliation."
+  proof: "V4 source hash, finalized V3 archive hash, ADR uniqueness/status, active-owner assertions and Task Manager CLEAN reconciliation."
   gate: STANDARD
-  done_state: "RP-00 PR merged after one exact-head STANDARD gate; epic ledger closed; RP-01 becomes ready."
+  done_state: "RP-01 PR merged after one exact-head STANDARD gate; epic ledger closed; RP-02 becomes ready."
 production:
   authorized: false
   gate: explicit-owner-release-command

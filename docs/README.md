@@ -32,7 +32,16 @@ AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode `B
 | UI | `06_DESIGN_SYSTEM.md` |
 | operations / runtime | `OPERATIONS.md` |
 | детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
+| долговечные архитектурные решения | `adr/README.md` |
+| история изменений contract | `CHANGELOG.md` |
+
+`research/**`, `replan/**` и `archive/**` содержат evidence и исторические
+snapshots. Они не заменяют активные Source of Truth выше. Точный статус
+research-артефактов описан в `research/README.md`.
 
 ## Current Focus
 
-Task Manager Architect has completed the RP-00…RP-12 integration and final audit. Existing implementation evidence remains preserved, while new claims and production actions are paused until the exact v7 replacement graph is approved and imported.
+V4 `v7` утверждён, импортирован и reconciled без drift. RP-00 доставлен в
+`main`; текущий автономный поток — RP-01 (Source of Truth, ADR и archive
+verification). Production, DNS и необратимые внешние действия остаются
+отдельно авторизуемыми.

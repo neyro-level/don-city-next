@@ -6,7 +6,10 @@ Updated: 2026-09-24
 
 ## URL model
 
-Канонический полный реестр, metadata, district/facet rules и Wordstat mapping: master plan §§7–31. Здесь фиксируется ownership без копирования таблиц.
+Канонический полный реестр, metadata, district/facet rules и Wordstat mapping:
+master plan §§7–31. Здесь фиксируется ownership без копирования таблиц.
+Долговечные причины решений закреплены в ADR-001, ADR-002 и ADR-004 из
+`docs/adr/README.md`.
 
 - `/` — brand/agency/realtor intent.
 - `/donetsk/` — вся недвижимость.
@@ -15,7 +18,8 @@ Updated: 2026-09-24
 - Property canonical — `/{category}/{semantic}-{publicUrlId}/`; geo is data, not path identity.
 - Category roots в `SINGLE_GEO` — `200 noindex,follow`.
 - Nearby geo hub/category in R1 — only published + matching active inventory, `noindex`, not sitemap/menu; nearby district routes are 404.
-- Every URL consumer uses the typed grammar from master plan RP-04.
+- Every URL consumer uses the typed grammar from master plan RP-04; active
+  category-first listing ownership отсутствует.
 
 ## Primary flows
 

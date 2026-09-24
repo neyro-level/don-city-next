@@ -8,7 +8,8 @@ Updated: 2026-09-24
 
 ### REPLAN V4 — city-first contract
 
-Goal: интегрировать RP-00…RP-12, провести final audit exact V4 и только после owner approval заменить execution graph без потери закрытых V3 evidence.
+Goal: выполнить утверждённый V4 graph без потери закрытых V3 evidence и без
+скрытого production scope.
 
 - [x] Private SourceCraft repository `integrator-p/don-city-next` создан.
 - [x] Windows checkout привязан к canonical `origin`.
@@ -27,11 +28,12 @@ Goal: интегрировать RP-00…RP-12, провести final audit exa
 - [x] V4 graph материализован и импортирован: `55` исполняемых эпиков, `265` задач, reconciliation `CLEAN`.
 - [x] Получена точная фраза владельца `План утвержден` для exact v7 snapshot.
 - [x] Replacement graph reconciled в существующем Beads store и передан Developer.
-- [x] RP-00 factual inventory and verification completed; delivery pending exact-head STANDARD gate.
+- [x] RP-00 factual inventory delivered through PR 8, exact-head STANDARD Gate 9 and merge `2520bdc`.
+- [x] RP-01 Source of Truth, four ADRs and archive verification implemented and verified; delivery pending exact-head STANDARD gate.
 
 ## NEXT
 
-1. RP-00…RP-01 — factual inventory and SoT/ADR consolidation.
+1. RP-01 — SoT/ADR/archive consolidation after completed RP-00.
 2. RP-02…RP-07 — platform/profile/grammar/geo/resolver/SEO contracts.
 3. RP-08…RP-12 — nearby geo, linking, gateway, sitemap and two-profile proof.
 4. Resume only remaining V4-adjusted main-line epics.

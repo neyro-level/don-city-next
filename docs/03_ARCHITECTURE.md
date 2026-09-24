@@ -37,6 +37,8 @@ Updated: 2026-09-24
 
 ### Platform / Project split
 
+Decision record: `docs/adr/ADR-003-platform-project-split.md`.
+
 - `src/platform/**` owns portable grammar, resolver, geo, SEO, catalog, gate,
   sitemap and IndexNow behavior and contains no DON CITY/Donetsk literals.
 - `src/project/**` owns Site Profile, brand/content and registry inputs.
@@ -44,6 +46,10 @@ Updated: 2026-09-24
   typed project inputs into platform modules.
 - Site Profile is the sole owner of geo mode, category/market statuses,
   thresholds and facet whitelist.
+
+URL ownership decisions are recorded in ADR-001, ADR-002 and ADR-004. The
+master plan remains the exact grammar/metadata registry; ADRs explain the
+stable boundaries and do not duplicate that registry.
 
 ## 4. Data and Security Boundaries
 

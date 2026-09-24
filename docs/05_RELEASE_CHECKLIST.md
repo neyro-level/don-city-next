@@ -7,6 +7,7 @@ Updated: 2026-09-24
 ## Preconditions
 
 - [ ] Exact master plan approved and Task Manager reconciliation CLEAN.
+- [ ] V4 is the only active detailed contract; V3 is `SUPERSEDED` and ADR-001…ADR-004 are accepted.
 - [ ] EPIC-47 release candidate complete.
 - [ ] Production command explicitly given by owner.
 - [ ] Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence.
