@@ -56,7 +56,7 @@
 		"verify:lead-delivery-state": "node --experimental-strip-types scripts/verify-lead-delivery-state.mjs",
 		"verify:max-adapter": "node --experimental-strip-types scripts/verify-max-adapter.mjs",
 		"verify:custom-webhook-adapter": "node --experimental-strip-types scripts/verify-custom-webhook-adapter.mjs",
-		"verify:seo-contracts": "node --experimental-strip-types scripts/verify-seo-contracts.mjs",
+		"verify:seo-contracts": "node --experimental-strip-types scripts/verify-seo-contracts.mjs && node scripts/verify-seo-seeds.mjs",
 		"verify:owner-operations": "node --experimental-strip-types scripts/verify-owner-operations.mjs",
 		"verify:health-alerts": "node --experimental-strip-types scripts/verify-health-alerts.mjs",
 		"verify:operational-recovery": "node --experimental-strip-types scripts/verify-operational-recovery.mjs",

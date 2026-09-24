@@ -30,6 +30,10 @@ Updated: 2026-09-23
 - Content Gate и numeric thresholds — master plan §§14–16A.
 - Sitemap включает только canonical/indexable/Gate-pass URLs.
 - Evidence Wordstat хранится в master plan до выделения research artifact; финальные решения принадлежат этому документу через ссылки на exact sections.
+- `docs/seo/SEO_REGISTRY_SEED.csv` materializes the approved static, district and facet rows; `docs/seo/DISTRICT_REGISTRY_SEED.csv` materializes Donetsk district grammar and tiers. These are the only active SEO seed files and never replace this URL/index/canonical ownership layer.
+- Seed status `candidate` means the URL is structurally approved but remains `noindex` and outside sitemap until the inventory threshold and Content Gate pass.
+- The owner-confirmed single production origin is `https://doncity-home.ru`; seed URLs stay root-relative and all rendered canonical, Open Graph, sitemap, robots and JSON-LD URLs use that origin.
+- Secondary/`vtorichka` intent belongs to `/kvartiry/donetsk/`; no `vtorichka` facet exists. R1 legal scope is exactly `/yurist/`, with no `/yurist/[usluga]/` routes.
 
 ## Required states
 

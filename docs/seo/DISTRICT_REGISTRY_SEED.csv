@@ -1,0 +1,11 @@
+name,slug,type,citySlug,parentSlug,preposition,nameLocative,apartmentTier,apartmentBroad,apartmentSource,houseTier,houseBroad,houseSource,isPublished
+"Будённовский","budennovskiy","administrative_district","donetsk","","в","Будённовском","TEST","","fallback_no_wordstat","P2","68","wordstat_v1","true"
+"Ворошиловский","voroshilovskiy","administrative_district","donetsk","","в","Ворошиловском","P1","145","wordstat_v1","TEST","","fallback_no_wordstat","true"
+"Калининский","kalininskiy","administrative_district","donetsk","","в","Калининском","P1","147","wordstat_v1","TEST","","fallback_no_wordstat","true"
+"Киевский","kievskiy","administrative_district","donetsk","","в","Киевском","TEST","","fallback_no_wordstat","TEST","","fallback_no_wordstat","true"
+"Кировский","kirovskiy","administrative_district","donetsk","","в","Кировском","P1","116","wordstat_v1","P2","67","wordstat_v1","true"
+"Куйбышевский","kuybyshevskiy","administrative_district","donetsk","","в","Куйбышевском","TEST","","fallback_no_wordstat","P2","70","wordstat_v1","true"
+"Ленинский","leninskiy","administrative_district","donetsk","","в","Ленинском","P2","97","wordstat_v1","TEST","","fallback_no_wordstat","true"
+"Петровский","petrovskiy","administrative_district","donetsk","","в","Петровском","P2","97","wordstat_v1","TEST","","fallback_no_wordstat","true"
+"Пролетарский","proletarskiy","administrative_district","donetsk","","в","Пролетарском","P1","115","wordstat_v1","TEST","","fallback_no_wordstat","true"
+"Текстильщик","tekstilshchik","microdistrict","donetsk","","на","Текстильщике","P1","137","wordstat_v1","","","","true"
