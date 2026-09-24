@@ -72,6 +72,7 @@
 		"verify:geo-model": "pnpm verify:route-resolver && node --experimental-strip-types scripts/verify-geo-model.ts && pnpm verify:nearby-geo",
 		"verify:nearby-geo": "node --experimental-strip-types scripts/verify-nearby-geo.ts",
 		"verify:navigation": "node --experimental-strip-types scripts/verify-navigation.ts",
+		"verify:navigation-shell": "node --experimental-strip-types scripts/verify-navigation-shell.ts",
 		"verify:gateway-context": "node --experimental-strip-types scripts/verify-gateway-context.ts",
 		"verify:sitemap-indexnow": "node --experimental-strip-types scripts/verify-sitemap-indexnow.ts",
 		"verify:two-profile": "node --experimental-strip-types scripts/verify-two-profile-proof.ts",

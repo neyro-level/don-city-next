@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { StarterSiteFooter, StarterSiteHeader } from "@ams/realtbase-ui";
+import { StarterSiteFooter } from "@ams/realtbase-ui";
 import { getPublicShell } from "@/core/data-access/public";
+import { PublicSiteHeader } from "./public-site-header";
 
 export const revalidate = 3600;
 
@@ -12,7 +13,7 @@ export default async function PublicSiteLayout({
 	const shell = await getPublicShell();
 	return (
 		<div className="min-h-screen bg-surface-page text-content-strong">
-			<StarterSiteHeader header={shell.header} />
+			<PublicSiteHeader header={shell.header} />
 			<main>{children}</main>
 			<StarterSiteFooter footer={shell.footer} />
 		</div>
