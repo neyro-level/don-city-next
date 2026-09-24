@@ -51,6 +51,7 @@
 		"verify:feed-parser": "node --experimental-strip-types scripts/verify-feed-parser.mjs",
 		"verify:property-taxonomy": "node --experimental-strip-types scripts/verify-property-taxonomy.mjs",
 		"verify:public-url-id": "node --experimental-strip-types scripts/verify-public-url-id.ts",
+		"verify:property-card-system": "node --conditions=react-server --experimental-strip-types scripts/verify-property-card-system.ts",
 		"verify:seller-page": "node --experimental-strip-types scripts/verify-seller-page.ts",
 		"verify:lawyer-page": "node --experimental-strip-types scripts/verify-lawyer-page.ts",
 		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",
