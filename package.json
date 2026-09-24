@@ -54,6 +54,7 @@
 		"verify:property-card-system": "node --conditions=react-server --experimental-strip-types scripts/verify-property-card-system.ts",
 		"verify:property-detail-routes": "node --experimental-strip-types scripts/verify-property-detail-routes.ts",
 		"verify:property-lifecycle-routes": "node --experimental-strip-types scripts/verify-property-lifecycle-routes.ts",
+		"verify:home-page": "node --conditions=react-server --experimental-strip-types scripts/verify-home-page.ts",
 		"verify:seller-page": "node --experimental-strip-types scripts/verify-seller-page.ts",
 		"verify:lawyer-page": "node --experimental-strip-types scripts/verify-lawyer-page.ts",
 		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",

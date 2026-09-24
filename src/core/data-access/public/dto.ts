@@ -23,6 +23,7 @@ import {
 	buildNapPhoneLink,
 	toPublicNapDTO,
 } from "../../../project/site-settings.ts";
+import { seoRegistryById } from "../../../project/seo-registry.generated.ts";
 import { buildPropertyUrl, projectUrls } from "../../../project/url-grammar.ts";
 import type {
 	PublicCatalogFacetsResult,
@@ -32,6 +33,24 @@ import type {
 import type { PublicPageRecord } from "./pages";
 
 const brandName = siteConfig.brandName;
+function requireHomeRegistry() {
+	const entry = seoRegistryById.get("HOME");
+	if (!entry) {
+		throw new Error(
+			"HOME SEO registry entry is required for the public homepage.",
+		);
+	}
+	return entry;
+}
+
+const homeRegistry = requireHomeRegistry();
+const homeSeo = {
+	title: homeRegistry.title,
+	description: homeRegistry.description,
+	canonicalPath: homeRegistry.url,
+	indexing: "index",
+	following: "follow",
+} as const;
 const logo = {
 	kind: "managed" as const,
 	src: "/fixture/logo.svg",
@@ -336,21 +355,13 @@ export function toShellDTO(
 	return { header, footer } as const;
 }
 
-export function toHomePageDTO(page: PublicPageRecord | null): HomePageDTO {
+export function toHomePageDTO(_page: PublicPageRecord | null): HomePageDTO {
 	return {
 		slug: "home",
 		eyebrow: "Недвижимость без лишней неопределённости",
-		title: page?.title || "Проверенная недвижимость",
-		lead:
-			page?.seo.description ||
-			"Подбираем объекты по вашим критериям и сопровождаем путь до сделки.",
-		seo: page?.seo ?? {
-			title: `${brandName} — недвижимость`,
-			description: "Подбор недвижимости и сопровождение сделки.",
-			canonicalPath: projectUrls.home,
-			indexing: "index",
-			following: "follow",
-		},
+		title: homeRegistry.h1,
+		lead: homeRegistry.description,
+		seo: homeSeo,
 		breadcrumbs: { items: [{ label: "Главная" }] },
 		sections: [
 			{
