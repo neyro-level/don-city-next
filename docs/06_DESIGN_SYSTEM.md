@@ -49,10 +49,10 @@ Each starter token/component/section is classified during EPIC-16:
 ```text
 primitives → layout → shared → domain → page-specific → route composition
 Button/Input/Select/Dialog → Container/Section → shell/lead form
-→ catalog filters/cards/pagination → Donetsk catalog copy → /kvartiry/donetsk/
+→ catalog filters/cards/pagination → Donetsk catalog copy → /donetsk/kvartiry/
 ```
 
-The representative `/kvartiry/donetsk/` page proves the foundation with the
+The representative `/donetsk/kvartiry/` page proves the foundation with the
 approved title, description, canonical path, one logical H1, public DTO catalog,
 filters, empty state, property cards and contextual lead action. Future route
 families reuse or variant this system; they do not establish another visual

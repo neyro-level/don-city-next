@@ -2,7 +2,7 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-23
+Updated: 2026-09-24
 
 ## 1. Architecture Summary
 
@@ -34,6 +34,16 @@ Updated: 2026-09-23
 | settings | NAP/domain/config | site-settings Global | NAP DTO | public pages, JSON-LD |
 | media | manual/project media | verified project storage + Payload Media | media DTO | catalog/content |
 | runtime | cache/jobs/observability | project runtime | internal operations | all enabled modules |
+
+### Platform / Project split
+
+- `src/platform/**` owns portable grammar, resolver, geo, SEO, catalog, gate,
+  sitemap and IndexNow behavior and contains no DON CITY/Donetsk literals.
+- `src/project/**` owns Site Profile, brand/content and registry inputs.
+- Platform may not import Project; the application composition root injects
+  typed project inputs into platform modules.
+- Site Profile is the sole owner of geo mode, category/market statuses,
+  thresholds and facet whitelist.
 
 ## 4. Data and Security Boundaries
 
@@ -75,7 +85,7 @@ WORK uses targeted diagnostics. PR creation runs no CI. Before merge: AI review 
 - Component decision: `REUSE → VARIANT → CREATE` after starter inventory.
 - Default rendering: Server Components; client boundary only at interactive leaves.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents forbidden in reusable UI.
-- Representative page: `/kvartiry/donetsk/` before mass route scaling.
+- Representative page: `/donetsk/kvartiry/` before mass route scaling.
 - SEO owner: Product Structure/master registry; UI preserves one H1, metadata/canonical/structured-data compatibility.
 - States: responsive mobile/tablet/desktop plus loading/empty/error/success and catalog-specific partial/stale states where applicable.
 - Theme: light-only until a separate decision; class-based dark variant, `.dark` not installed.

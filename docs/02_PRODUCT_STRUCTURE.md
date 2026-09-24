@@ -2,7 +2,7 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-23
+Updated: 2026-09-24
 
 ## URL model
 
@@ -10,11 +10,12 @@ Updated: 2026-09-23
 
 - `/` — brand/agency/realtor intent.
 - `/donetsk/` — вся недвижимость.
-- `/{kvartiry|doma|uchastki}/donetsk/` — category × geo.
-- Third segment — district/microdistrict, затем approved facet; иначе 404.
-- Property canonical — category route + stable `publicUrlId` in semantic slug.
+- `/{geo}/{kvartiry|doma|uchastki}/` — geo × category.
+- Third segment — district/microdistrict of that city, затем approved facet; иначе 404.
+- Property canonical — `/{category}/{semantic}-{publicUrlId}/`; geo is data, not path identity.
 - Category roots в `SINGLE_GEO` — `200 noindex,follow`.
-- Nearby geo R1 — только published + active object, `noindex`, не sitemap/menu.
+- Nearby geo hub/category in R1 — only published + matching active inventory, `noindex`, not sitemap/menu; nearby district routes are 404.
+- Every URL consumer uses the typed grammar from master plan RP-04.
 
 ## Primary flows
 
@@ -33,7 +34,7 @@ Updated: 2026-09-23
 - `docs/seo/SEO_REGISTRY_SEED.csv` materializes the approved static, district and facet rows; `docs/seo/DISTRICT_REGISTRY_SEED.csv` materializes Donetsk district grammar and tiers. These are the only active SEO seed files and never replace this URL/index/canonical ownership layer.
 - Seed status `candidate` means the URL is structurally approved but remains `noindex` and outside sitemap until the inventory threshold and Content Gate pass.
 - The owner-confirmed single production origin is `https://doncity-home.ru`; seed URLs stay root-relative and all rendered canonical, Open Graph, sitemap, robots and JSON-LD URLs use that origin.
-- Secondary/`vtorichka` intent belongs to `/kvartiry/donetsk/`; no `vtorichka` facet exists. R1 legal scope is exactly `/yurist/`, with no `/yurist/[usluga]/` routes.
+- Secondary/`vtorichka` intent belongs to `/donetsk/kvartiry/`; no `vtorichka` facet exists. R1 legal scope is exactly `/yurist/`, with no `/yurist/[usluga]/` routes.
 
 ## Required states
 

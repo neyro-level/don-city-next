@@ -1,8 +1,8 @@
 # DON CITY
 
-Status: Implementation
+Status: Replan approved; Task Manager handoff
 Version: 0.1
-Updated: 2026-09-23
+Updated: 2026-09-24
 
 ## Что создаём
 
@@ -14,7 +14,7 @@ Updated: 2026-09-23
 
 ## Текущий статус
 
-Master plan `v6 APPROVED`: Task Manager graph is authorized for import and autonomous Developer execution. Production remains separately authorized only by an explicit release command.
+Master plan `v7 APPROVED` / product contract `4.0.1` passed the four-pass Architect audit with `READY_WITH_LIMITS` and was approved by the owner on 2026-09-24. The V4 graph has `55` executable epics and `265` task cards; exact validation/import/reconciliation precede Developer claims. The prior v6 Task Manager graph remains immutable historical evidence. Production remains separately authorized only by an explicit release command.
 
 ## Platform contract
 
@@ -31,8 +31,8 @@ AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode `B
 | release | `05_RELEASE_CHECKLIST.md` |
 | UI | `06_DESIGN_SYSTEM.md` |
 | operations / runtime | `OPERATIONS.md` |
-| детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V3_0.md` |
+| детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
 
 ## Current Focus
 
-Master plan v6 is imported with CLEAN reconciliation. Repository, exact starter baseline, DON CITY activation and UI intake are materialized. EPIC-06 read-only discovery confirms the one existing Timeweb server and separate managed PostgreSQL 18 target; the infrastructure/jobs contract is verified on branch `codex/epic-06-infrastructure-contract`. The remaining EPIC-03 SQL inventory requires a separately authorized private-network attachment. Production is not authorized.
+Task Manager Architect has completed the RP-00…RP-12 integration and final audit. Existing implementation evidence remains preserved, while new claims and production actions are paused until the exact v7 replacement graph is approved and imported.

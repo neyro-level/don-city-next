@@ -2,7 +2,7 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-23
+Updated: 2026-09-24
 
 ## Preconditions
 
@@ -28,6 +28,9 @@ Updated: 2026-09-23
 ## SEO / Runtime
 
 - [ ] Titles/H1/descriptions/canonicals/robots/sitemaps pass full crawl.
+- [ ] City-first V4 owner matrix passes; no category-first V3 listing URL is public.
+- [ ] Global property URLs resolve by `publicUrlId` and contain no geo segment.
+- [ ] SINGLE_GEO and MULTI_GEO profile matrices pass without product-code drift.
 - [ ] 301/308/404/410 and property lifecycle pass real HTTP proof.
 - [ ] Staging remains noindex and isolated from production PII.
 - [ ] Immutable artifact built once and identified by exact SHA.

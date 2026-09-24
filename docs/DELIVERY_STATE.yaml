@@ -1,23 +1,32 @@
 schema_version: 1
-program: AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO
-plan_version: v6
+program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
+plan_version: v7
 plan_status: APPROVED
-current_wave: W0
-current_epic: EPIC-04
-current_task: dcn-task-04-evidence
-next_action: create-epic-04-pr-and-run-exact-head-risky-gate
+current_wave: RP00_CURRENT_STATE_INVENTORY
+current_epic: dcv4-epic-53
+current_task: dcv4-task-53-delivery
+next_action: deliver-rp00-pr-through-standard-exact-head-gate
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 1d25364282c1991c52487250333b6f0a49ec62ed
-  active_branch: codex/epic-04-seo-freeze
+  base_sha: 8dfd7a6c8568a46dc9c0c7430e99c2e75ce9bcfd
+  active_branch: codex/rp-00-current-state-inventory
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcn-task-04-evidence
-  reason: EPIC-04 implementation and verification ledgers closed; traceability package ready for delivery
+  current_task: dcv4-task-53-delivery
+  reason: exact V4 graph imported; RP-00 preflight, implementation and verification completed with execution ledgers
 evidence:
+  rp_00:
+    status: verification-pass-delivery-pending
+    branch: codex/rp-00-current-state-inventory
+    inventory_commit: 1e8f9e08be00bf02e7a9df0331739cc0abce7391
+    verification_commit: 1eace475afb15f141fb7ffac1e79a1c1bdd14927
+    reports:
+      - docs/replan/RP00_PREFLIGHT.md
+      - docs/replan/RP00_INVENTORY.md
+      - docs/replan/RP00_VERIFICATION.md
   epic_00:
     verification: PASS
     branch: codex/epic-00-governance
@@ -66,19 +75,19 @@ evidence:
       - docs/research/EPIC-06_VERIFICATION.md
       - docs/OPERATIONS.md
 task_contract:
-  goal: "Materialize the approved R1 SEO and district registries as deterministic seed CSVs and align Product Structure ownership."
-  non_goals: "New keyword research, invented frequency, R2 routes, database import/schema changes, DNS/server/secret mutation or production."
+  goal: "Deliver RP-00 factual current-state inventory and continue the exact approved V4 ready-loop."
+  non_goals: "City-first runtime implementation, production, DNS/server/secret mutation or destructive database action."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
   ux_scope: PUBLIC_COMMERCIAL
-  boundaries: "Approved master-plan registry -> Product Structure decisions + two allowed seed CSV artifacts; no runtime write."
+  boundaries: "RP-00 documentation/evidence only; V3 runtime remains unchanged and EPIC-08 WIP remains isolated."
   data_changes: none
   auth_pii: "No auth, PII or secret access; canonical production origin is the owner-confirmed https://doncity-home.ru."
   integrations: "None in WORK; DNS, server, database and production remain untouched."
-  proof: "Exact CSV schemas/rows, deterministic verifier, domain/URL/tier/collision negative checks and Source of Truth consistency."
-  gate: RISKY
-  done_state: "Reviewed and merged EPIC-04 seed freeze with exact-head RISKY evidence; no production or external mutation."
+  proof: "RP00 inventory status/evidence matrix, exact merged-vs-WIP classification, public read-only observation and Task Manager CLEAN reconciliation."
+  gate: STANDARD
+  done_state: "RP-00 PR merged after one exact-head STANDARD gate; epic ledger closed; RP-01 becomes ready."
 production:
   authorized: false
   gate: explicit-owner-release-command

@@ -2,13 +2,13 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-23
+Updated: 2026-09-24
 
 ## NOW
 
-### EPIC-00 — Governance / repository / plan readiness
+### REPLAN V4 — city-first contract
 
-Goal: получить канонический repository, healthy docs map и exact master plan, готовый к owner approval и Task Manager import.
+Goal: интегрировать RP-00…RP-12, провести final audit exact V4 и только после owner approval заменить execution graph без потери закрытых V3 evidence.
 
 - [x] Private SourceCraft repository `integrator-p/don-city-next` создан.
 - [x] Windows checkout привязан к canonical `origin`.
@@ -21,21 +21,26 @@ Goal: получить канонический repository, healthy docs map и 
 - [x] OD-01 закрыт: `MERGE_AFTER_GATE` для implementation scope; OD-02 закрыт в пользу одного существующего Timeweb server.
 - [x] Final audit exact v5: найден task-graph blocker; v5 не импортировался.
 - [x] Re-audit exact v6: `PASS`, task-graph blocker resolved.
-- [ ] Импортировать clean APPROVED Task Manager graph и передать Developer.
+- [x] V3 execution остановлен на source drift; WIP EPIC-08 сохранён отдельно.
+- [x] City-first revision packet интегрирован в master plan `v7 REVIEW` / product contract `4.0.1`.
+- [x] Финальный четырёхпроходный аудит V4 завершён: `READY_WITH_LIMITS`, blockers `0`, unresolved major `0`.
+- [x] V4 graph материализован и импортирован: `55` исполняемых эпиков, `265` задач, reconciliation `CLEAN`.
+- [x] Получена точная фраза владельца `План утвержден` для exact v7 snapshot.
+- [x] Replacement graph reconciled в существующем Beads store и передан Developer.
+- [x] RP-00 factual inventory and verification completed; delivery pending exact-head STANDARD gate.
 
 ## NEXT
 
-1. EPIC-01 — isolated fetch + exact starter baseline + frozen-lockfile install.
-2. EPIC-02 — DON CITY client activation.
-3. EPIC-03/06 — dedicated access recovery and read-only discovery of the one existing Timeweb server, database, inventory and infrastructure.
-4. EPIC-04/05 — SEO seed freeze and docs consolidation.
-5. EPIC-07…15 — schema/contracts/gateways/SEO resolver.
+1. RP-00…RP-01 — factual inventory and SoT/ADR consolidation.
+2. RP-02…RP-07 — platform/profile/grammar/geo/resolver/SEO contracts.
+3. RP-08…RP-12 — nearby geo, linking, gateway, sitemap and two-profile proof.
+4. Resume only remaining V4-adjusted main-line epics.
 
 Подробный порядок и зависимости — master plan §33A и §36.
 
 ## LATER
 
-- EPIC-16…47 — public product, runtime quality, staging and release candidate.
+- Оставшиеся незавершённые EPIC-05…47 — public product, runtime quality, staging and release candidate; historical/superseded epics не перезапускаются.
 - EPIC-48 — production, only explicit release command.
 - EPIC-49 — post-launch Day-60.
 - EPIC-50…52 — R2 research and activation.
