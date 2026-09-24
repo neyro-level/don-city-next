@@ -133,6 +133,11 @@ const sitemapPaths = staticPublicUrlEntries
 	.map((entry) => entry.path);
 assert.ok(sitemapPaths.includes("/"));
 assert.ok(sitemapPaths.includes(projectUrls.primaryCatalog));
+assert.ok(sitemapPaths.includes("/donetsk/"));
+assert.ok(sitemapPaths.includes("/donetsk/doma/"));
+assert.ok(sitemapPaths.includes("/donetsk/uchastki/"));
+assert.equal(sitemapPaths.includes("/kvartiry/"), false);
+assert.equal(sitemapPaths.includes("/kvartiry/donetsk/"), false);
 assert.equal(sitemapPaths.includes("/politika-konfidencialnosti"), false);
 assert.equal(
 	sitemapPaths.includes("/soglasie-na-obrabotku-personalnyh-dannyh"),

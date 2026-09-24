@@ -4,8 +4,13 @@ import type { PublicPageIdentityDTO } from "@ams/realtbase-contracts";
 
 import { resolvePropertyPageLifecycle } from "@/core/seo/property";
 import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
+import { maxMeaningfulLastModified } from "@/platform/sitemap/registry";
 import { projectConfig } from "@/project/project.config";
-import { buildProjectUrl, buildPropertyUrl } from "@/project/url-grammar";
+import {
+	buildPropertyUrl,
+	parseProjectUrl,
+	propertyCategoryToSlug,
+} from "@/project/url-grammar";
 import {
 	type CatalogQueryInput,
 	catalogQuerySchema,
@@ -33,9 +38,8 @@ import {
 import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
 import {
-	countPublicSitemapPages,
 	countPublicSitemapProperties,
-	listPublicSitemapPagesPage,
+	findPublicSitemapListingLastModified,
 	listPublicSitemapPropertiesPage,
 } from "./payload-reads";
 
@@ -92,6 +96,39 @@ function emptyCatalog(
 
 function indexableStaticEntries(): PublicUrlEntry[] {
 	return staticPublicUrlEntries.filter((entry) => entry.indexable);
+}
+
+async function sitemapRegistryEntriesWithOwnedLastModified(
+	payload: NonNullable<
+		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
+	>,
+): Promise<PublicUrlEntry[]> {
+	const listingDates = await findPublicSitemapListingLastModified(payload);
+	return indexableStaticEntries().map((entry) => {
+		const key = parseProjectUrl(entry.path);
+		if (key?.kind === "geoHub") {
+			return {
+				...entry,
+				lastModified: maxMeaningfulLastModified(
+					entry.lastModified,
+					listingDates.all,
+				),
+			};
+		}
+		if (key?.kind === "categoryGeo") {
+			const category = Object.entries(listingDates.byCategory).find(
+				([propertyCategory]) =>
+					propertyCategoryToSlug(
+						propertyCategory as keyof typeof listingDates.byCategory,
+					) === key.category,
+			)?.[1];
+			return {
+				...entry,
+				lastModified: maxMeaningfulLastModified(entry.lastModified, category),
+			};
+		}
+		return entry;
+	});
 }
 
 async function listRange<T>(
@@ -161,15 +198,12 @@ export async function getPublicSitemapTotals() {
 		};
 	}
 	const staticCount = indexableStaticEntries().length;
-	const [pages, properties] = await Promise.all([
-		countPublicSitemapPages(payload),
-		countPublicSitemapProperties(payload),
-	]);
+	const properties = await countPublicSitemapProperties(payload);
 	return {
 		staticCount,
-		pages,
+		pages: 0,
 		properties,
-		total: staticCount + pages + properties,
+		total: staticCount + properties,
 	};
 }
 
@@ -183,7 +217,9 @@ export async function getPublicSitemapShard(
 ): Promise<PublicUrlEntry[]> {
 	if (!Number.isInteger(id) || id < 0) return [];
 	const payload = await getOptionalPublicGatewayPayload();
-	const staticEntries = indexableStaticEntries();
+	const staticEntries = payload
+		? await sitemapRegistryEntriesWithOwnedLastModified(payload)
+		: indexableStaticEntries();
 	if (!payload) {
 		const start = id * urlsPerShard;
 		return start >= staticEntries.length
@@ -204,32 +240,7 @@ export async function getPublicSitemapShard(
 		cursor += slice.length;
 	}
 
-	const pagesStart = staticEntries.length;
-	if (cursor >= pagesStart && remaining > 0) {
-		const pageOffset = cursor - pagesStart;
-		if (pageOffset < totals.pages) {
-			const pages = await listRange(
-				(input) => listPublicSitemapPagesPage(payload, input),
-				pageOffset,
-				remaining,
-			);
-			entries.push(
-				...pages.map((page) => ({
-					path: buildProjectUrl({ kind: "static", slug: page.slug }),
-					lastModified: page.updatedAt,
-					changeFrequency: "weekly" as const,
-					priority: 0.6,
-					indexable: true,
-				})),
-			);
-			remaining -= pages.length;
-			cursor += pages.length;
-		} else {
-			cursor = pagesStart + totals.pages;
-		}
-	}
-
-	const propertiesStart = staticEntries.length + totals.pages;
+	const propertiesStart = staticEntries.length;
 	if (cursor >= propertiesStart && remaining > 0) {
 		const propertyOffset = cursor - propertiesStart;
 		const properties = await listRange(

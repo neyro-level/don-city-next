@@ -108,6 +108,52 @@ export async function countPublicSitemapProperties(
 	return result.totalDocs;
 }
 
+export async function findPublicSitemapListingLastModified(
+	payload: Payload,
+): Promise<{
+	all?: string;
+	byCategory: Partial<Record<Property["category"], string>>;
+}> {
+	const categories = ["apartment", "house", "land", "commercial"] as const;
+	const [all, ...categoryResults] = await Promise.all([
+		payload.find({
+			collection: "properties",
+			where: publicPropertyPublicationWhere,
+			limit: 1,
+			page: 1,
+			sort: "-updatedAt",
+			select: { updatedAt: true },
+			...access,
+		}),
+		...categories.map((category) =>
+			payload.find({
+				collection: "properties",
+				where: {
+					and: [
+						...(publicPropertyPublicationWhere.and ?? []),
+						{ category: { equals: category } },
+					],
+				},
+				limit: 1,
+				page: 1,
+				sort: "-updatedAt",
+				select: { updatedAt: true },
+				...access,
+			}),
+		),
+	]);
+
+	return {
+		all: all.docs[0]?.updatedAt,
+		byCategory: Object.fromEntries(
+			categories.flatMap((category, index) => {
+				const updatedAt = categoryResults[index]?.docs[0]?.updatedAt;
+				return updatedAt ? [[category, updatedAt]] : [];
+			}),
+		),
+	};
+}
+
 export async function listPublicSitemapPropertiesPage(
 	payload: Payload,
 	input: { limit: number; offset: number },
