@@ -32,6 +32,7 @@ const nonIndexableFilterKeys = [
 
 export function buildPortableCatalogSeoDecision(
 	indexedFilterKeys: readonly string[],
+	basePath: string,
 	searchParams: CatalogSearchParams = {},
 ): PortableCatalogSeoDecision {
 	const entries = normalizeSearchParams(searchParams);
@@ -49,7 +50,7 @@ export function buildPortableCatalogSeoDecision(
 	const indexedEntries = entries.filter(([key]) =>
 		indexedFilterKeys.includes(key),
 	);
-	const canonicalPath = buildCatalogCanonicalPath(indexedEntries);
+	const canonicalPath = buildCatalogCanonicalPath(basePath, indexedEntries);
 	const query = buildCatalogQuery(entries);
 
 	if (hasUnknownParam)
@@ -94,11 +95,14 @@ function normalizeSearchParams(
 	);
 }
 
-function buildCatalogCanonicalPath(entries: [string, string][]): string {
-	if (!entries.length) return "/nedvizhimost";
+function buildCatalogCanonicalPath(
+	basePath: string,
+	entries: [string, string][],
+): string {
+	if (!entries.length) return basePath;
 	const params = new URLSearchParams();
 	for (const [key, value] of entries) params.append(key, value);
-	return `/nedvizhimost?${params.toString()}`;
+	return `${basePath}?${params.toString()}`;
 }
 
 function buildCatalogQuery(entries: [string, string][]): PortableCatalogQuery {

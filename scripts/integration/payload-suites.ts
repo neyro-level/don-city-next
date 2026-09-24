@@ -18,6 +18,7 @@ import { submitPublicLead } from "../../src/core/data-access/public/leads.ts";
 import { findPublicPage } from "../../src/core/data-access/public/pages.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
 import { resolvePropertyPageLifecycle } from "../../src/core/seo/property.ts";
+import { buildPropertyUrl } from "../../src/project/url-grammar.ts";
 import { runDeliverLeadTask } from "../../src/core/leads/deliver-lead.ts";
 import { defineLeadDeliveryPolicy } from "../../src/core/leads/delivery-policy.ts";
 import {
@@ -422,11 +423,16 @@ await payload.update({
 	...access,
 });
 
+const propertyCanonicalUrl = buildPropertyUrl({
+	category: publishedProperty.category,
+	semantic: publishedProperty.slug,
+	publicUrlId: publishedProperty.id,
+});
 const propertyLeadBody = {
 	name: "Integration Property Lead",
 	phone: "+79990000009",
 	formKind: "property_request",
-	sourcePage: `/obekty/${publishedProperty.slug}`,
+	sourcePage: propertyCanonicalUrl,
 	property: String(publishedProperty.id),
 	consentAccepted: true,
 	consentVersion: "pd-2026-01",
@@ -468,7 +474,7 @@ for (const persisted of persistedPropertyLeads.docs) {
 			: String(persisted.property),
 		String(publishedProperty.id),
 	);
-	assert.equal(persisted.sourcePage, `/obekty/${publishedProperty.slug}`);
+	assert.equal(persisted.sourcePage, propertyCanonicalUrl);
 	assert.equal(persisted.consent?.version, "pd-2026-01");
 	assert.notEqual(
 		persisted.consent?.consentedAt,
@@ -479,7 +485,11 @@ for (const persisted of persistedPropertyLeads.docs) {
 const mismatchedPropertyLead = await submitPublicLead({
 	body: {
 		...propertyLeadBody,
-		sourcePage: "/obekty/client-forged-slug",
+		sourcePage: buildPropertyUrl({
+			category: publishedProperty.category,
+			semantic: "client-forged-slug",
+			publicUrlId: publishedProperty.id,
+		}),
 		requestAttemptId: "55555555-5555-4555-8555-555555555555",
 	},
 	rateLimitKey: `integration-property-mismatch-${suffix}`,

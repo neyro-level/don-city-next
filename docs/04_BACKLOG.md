@@ -31,12 +31,13 @@ Goal: выполнить утверждённый V4 graph без потери �
 - [x] RP-00 factual inventory delivered through PR 8, exact-head STANDARD Gate 9 and merge `2520bdc`.
 - [x] RP-01 Source of Truth, four ADRs and archive verification delivered through PR 9, exact-head STANDARD Gate 10 and merge `ff2c749`.
 - [x] RP-02 Platform/Project split delivered through PR 10, exact-head RISKY Gate 11 and merge `c6f612d`.
-- [x] RP-03 Typed Site Profile and PREPARED_OFF fail-closed behavior implemented and verified; delivery pending exact-head RISKY gate.
+- [x] RP-03 Typed Site Profile delivered through PR 11, exact-head RISKY Gate 12 and merge `b4dea6e`.
+- [x] RP-04 Canonical URL Grammar implemented and verified: eight typed `PageKey` variants, generated round trips, project registry, migrated URL consumers and literal-path guard; delivery pending exact-head RISKY gate.
 
 ## NEXT
 
-1. RP-03 — deliver verified Typed Site Profile through its exact-head RISKY gate.
-2. RP-04…RP-07 — grammar, geo, resolver and SEO contracts.
+1. RP-04 — deliver verified Canonical URL Grammar through its exact-head RISKY gate.
+2. RP-05…RP-07 — geo, resolver and SEO contracts.
 3. RP-08…RP-12 — nearby geo, linking, gateway, sitemap and two-profile proof.
 4. Resume only remaining V4-adjusted main-line epics.
 

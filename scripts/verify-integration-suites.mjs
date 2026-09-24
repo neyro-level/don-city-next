@@ -24,6 +24,7 @@ import {
 	resetRuntimeClock,
 } from "../src/core/time/clock.ts";
 import { projectConfig } from "../src/project/project.config.ts";
+import { projectUrls } from "../src/project/url-grammar.ts";
 import { deriveTestDatabaseUri, loadLocalEnv } from "./integration/env.mjs";
 import { startFixtureHttpServer } from "./integration/fixture-http-server.mjs";
 import { createMemoryFeedRepository } from "./integration/memory-feed-repository.mjs";
@@ -139,7 +140,7 @@ const revalidation = await postBatchedHttpRevalidate({
 	secret: revalidateSecret,
 	targets: [
 		{ type: "tag", tag: "properties" },
-		{ type: "path", path: "/nedvizhimost", routeType: "page" },
+		{ type: "path", path: projectUrls.primaryCatalog, routeType: "page" },
 	],
 	reason: "required-integration-proof",
 });
@@ -153,7 +154,7 @@ assert.deepEqual(
 	invalidatedTargets,
 	[
 		{ type: "tag", tag: "properties" },
-		{ type: "path", path: "/nedvizhimost", routeType: "page" },
+		{ type: "path", path: projectUrls.primaryCatalog, routeType: "page" },
 	],
 	"the internal Route Handler executor must invoke the in-process invalidator boundary",
 );

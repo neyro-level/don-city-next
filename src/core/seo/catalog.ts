@@ -7,6 +7,7 @@ import {
 } from "../../platform/seo/catalog.ts";
 import { projectConfig } from "../../project/project.config.ts";
 import { absoluteUrl, siteBrandName } from "./site.ts";
+import { projectUrls } from "../../project/url-grammar.ts";
 
 const indexedFilterKeys = projectConfig.indexedCatalogFilterKeys;
 const allowedControlKeys = ["page", "sort", "view"] as const;
@@ -36,6 +37,7 @@ export function buildCatalogSeoDecision(
 ): CatalogSeoDecision {
 	return buildPortableCatalogSeoDecision(
 		indexedFilterKeys,
+		projectUrls.primaryCatalog,
 		searchParams,
 	) as CatalogSeoDecision;
 }

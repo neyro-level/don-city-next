@@ -8,6 +8,7 @@ import {
 	runImportFeed,
 	startImportHeartbeat,
 } from "../src/core/ingest/index.ts";
+import { projectUrls } from "../src/project/url-grammar.ts";
 
 const repository = createRepository();
 const baseContext = {
@@ -74,7 +75,7 @@ assert.equal(firstRun.warningCount, 1);
 assert.equal(repository.issues.length, 1);
 assert.deepEqual(firstRun.invalidatedTargets, [
 	{ type: "tag", tag: "properties" },
-	{ type: "path", path: "/nedvizhimost", routeType: "page" },
+	{ type: "path", path: projectUrls.primaryCatalog, routeType: "page" },
 ]);
 assert.equal(repository.byId.get("property-1").pricePerMeterMinor, null);
 
@@ -580,7 +581,7 @@ const httpOk = await postBatchedHttpRevalidate({
 	secret: "fixture-secret",
 	targets: [
 		{ type: "tag", tag: "properties" },
-		{ type: "path", path: "/nedvizhimost", routeType: "page" },
+		{ type: "path", path: projectUrls.primaryCatalog, routeType: "page" },
 	],
 	fetchImpl: async (_url, init) => {
 		postedBodies += 1;

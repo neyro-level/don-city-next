@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { projectUrls } from "../../project/url-grammar.ts";
 import { calculatePropertyDerivedFields } from "./derived-fields.ts";
 import type {
 	FeedNormalizationIssue,
@@ -169,7 +170,9 @@ export async function ingestNormalizedFeed({
 		});
 		const nextData = buildFeedPropertyWriteData({ context, offer, existing });
 		if (nextData.market !== context.market) {
-			throw new Error("Feed ingest cannot write a property outside source market.");
+			throw new Error(
+				"Feed ingest cannot write a property outside source market.",
+			);
 		}
 
 		if (!existing) {
@@ -180,7 +183,9 @@ export async function ingestNormalizedFeed({
 		}
 
 		if (existing.feedSource !== context.feedSourceId) {
-			throw new Error("Feed ingest cannot write a property outside source scope.");
+			throw new Error(
+				"Feed ingest cannot write a property outside source scope.",
+			);
 		}
 
 		if (existing.market !== context.market) {
@@ -189,7 +194,8 @@ export async function ingestNormalizedFeed({
 				code: "feed.offer_invalid",
 				externalId: offer.externalId,
 				field: "market",
-				messageRedacted: "Existing feed property market does not match the source.",
+				messageRedacted:
+					"Existing feed property market does not match the source.",
 				feedSource: context.feedSourceId,
 				importRun: context.importRunId,
 			});
@@ -230,7 +236,7 @@ export async function ingestNormalizedFeed({
 	if (result.createdCount > 0 || result.updatedCount > 0) {
 		result.invalidatedTargets = [
 			{ type: "tag", tag: "properties" },
-			{ type: "path", path: "/nedvizhimost", routeType: "page" },
+			{ type: "path", path: projectUrls.primaryCatalog, routeType: "page" },
 		];
 		await invalidateCache?.(result.invalidatedTargets);
 	}

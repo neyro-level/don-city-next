@@ -16,6 +16,7 @@ import type {
 import { parseYrlFeed } from "./yrl-parser.ts";
 import { startImportHeartbeat } from "./dispatch-due-feeds.ts";
 import { projectConfig } from "../../project/project.config.ts";
+import { projectUrls } from "../../project/url-grammar.ts";
 
 export type ImportFeedSourceSnapshot = {
 	id: string;
@@ -285,7 +286,11 @@ export async function runImportFeed(
 			if (ingestResult.invalidatedTargets.length === 0) {
 				ingestResult.invalidatedTargets = [
 					{ type: "tag", tag: "properties" },
-					{ type: "path", path: "/nedvizhimost", routeType: "page" },
+					{
+						type: "path",
+						path: projectUrls.primaryCatalog,
+						routeType: "page",
+					},
 				];
 			}
 		}

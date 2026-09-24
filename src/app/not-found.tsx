@@ -1,5 +1,6 @@
 import { Button, Container, Section } from "@ams/realtbase-ui";
 import Link from "next/link";
+import { projectUrls } from "@/project/url-grammar";
 
 export default function NotFound() {
 	return (
@@ -18,10 +19,10 @@ export default function NotFound() {
 					</p>
 					<div className="mt-7 flex justify-center gap-3">
 						<Button asChild>
-							<Link href="/">На главную</Link>
+							<Link href={projectUrls.home}>На главную</Link>
 						</Button>
 						<Button asChild variant="outline">
-							<Link href="/nedvizhimost">В каталог</Link>
+							<Link href={projectUrls.primaryCatalog}>В каталог</Link>
 						</Button>
 					</div>
 				</Container>

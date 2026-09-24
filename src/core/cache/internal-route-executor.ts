@@ -2,17 +2,17 @@ import {
 	type CacheTarget,
 	cacheInvalidationRequestSchema,
 } from "./revalidation-contract.ts";
+import { projectUrls } from "../../project/url-grammar.ts";
 
 const allowedPathPrefixes = [
-	"/",
-	"/nedvizhimost",
-	"/obekty",
-	"/uslugi",
-	"/o-kompanii",
-	"/ipoteka",
-	"/prodat",
-	"/sdat",
-	"/kontakty",
+	projectUrls.home,
+	projectUrls.primaryCatalog,
+	projectUrls.services,
+	projectUrls.about,
+	projectUrls.mortgage,
+	projectUrls.sale,
+	projectUrls.rent,
+	projectUrls.contacts,
 ] as const;
 const allowedTags = new Set(["site", "properties", "property", "media"]);
 

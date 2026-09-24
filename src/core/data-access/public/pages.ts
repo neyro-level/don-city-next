@@ -3,6 +3,7 @@ import "server-only";
 import type { PageSEOContract } from "@ams/realtbase-contracts";
 import type { Payload } from "payload";
 import { siteConfig } from "../../../project/site.config.ts";
+import { buildProjectUrl, projectUrls } from "../../../project/url-grammar.ts";
 import { publicGatewayPolicy } from "./policy";
 
 export type PublicPageRecord = {
@@ -18,7 +19,10 @@ function pageSeo(
 	description?: string | null,
 	noindex?: boolean | null,
 ): PageSEOContract {
-	const canonicalPath = slug === "home" ? "/" : `/${slug}`;
+	const canonicalPath =
+		slug === "home"
+			? projectUrls.home
+			: buildProjectUrl({ kind: "static", slug });
 	const seoTitle = title.includes(siteConfig.brandName)
 		? title
 		: `${title} — ${siteConfig.brandName}`;

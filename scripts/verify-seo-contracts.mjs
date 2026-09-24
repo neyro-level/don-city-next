@@ -17,6 +17,7 @@ import {
 	metadataRobotsForPolicy,
 	resolveIndexingPolicy,
 } from "../src/project/indexing-policy.ts";
+import { projectUrls } from "../src/project/url-grammar.ts";
 
 const fixtureOrigin = "https://realty-client.example";
 assert.equal(getProjectIndexingPolicy(), "noindex");
@@ -92,7 +93,7 @@ assert.deepEqual(catalogSeoParamPolicy.indexedFilterKeys, [
 ]);
 
 const base = buildCatalogSeoDecision({});
-assert.equal(base.canonicalPath, "/nedvizhimost");
+assert.equal(base.canonicalPath, projectUrls.primaryCatalog);
 assert.equal(base.index, true);
 assert.equal(base.reason, "base");
 
@@ -103,24 +104,27 @@ const whitelisted = buildCatalogSeoDecision({
 });
 assert.equal(
 	whitelisted.canonicalPath,
-	"/nedvizhimost?category=apartment&dealType=sale&rooms=1&rooms=2",
+	`${projectUrls.primaryCatalog}?category=apartment&dealType=sale&rooms=1&rooms=2`,
 );
 assert.equal(whitelisted.index, true);
 assert.equal(whitelisted.reason, "whitelisted_filter");
 assert.deepEqual(whitelisted.query.rooms, [1, 2]);
 
 const control = buildCatalogSeoDecision({ page: "2", sort: "priceAsc" });
-assert.equal(control.canonicalPath, "/nedvizhimost");
+assert.equal(control.canonicalPath, projectUrls.primaryCatalog);
 assert.equal(control.index, false);
 assert.equal(control.reason, "control_or_nonindex_filter");
 
 const freeText = buildCatalogSeoDecision({ query: "центр" });
-assert.equal(freeText.canonicalPath, "/nedvizhimost");
+assert.equal(freeText.canonicalPath, projectUrls.primaryCatalog);
 assert.equal(freeText.index, false);
 assert.equal(freeText.reason, "control_or_nonindex_filter");
 
 const unknown = buildCatalogSeoDecision({ debug: "1", category: "house" });
-assert.equal(unknown.canonicalPath, "/nedvizhimost?category=house");
+assert.equal(
+	unknown.canonicalPath,
+	`${projectUrls.primaryCatalog}?category=house`,
+);
 assert.equal(unknown.index, false);
 assert.equal(unknown.reason, "unknown_param");
 
@@ -128,7 +132,7 @@ const sitemapPaths = staticPublicUrlEntries
 	.filter((entry) => entry.indexable)
 	.map((entry) => entry.path);
 assert.ok(sitemapPaths.includes("/"));
-assert.ok(sitemapPaths.includes("/nedvizhimost"));
+assert.ok(sitemapPaths.includes(projectUrls.primaryCatalog));
 assert.equal(sitemapPaths.includes("/politika-konfidencialnosti"), false);
 assert.equal(
 	sitemapPaths.includes("/soglasie-na-obrabotku-personalnyh-dannyh"),
