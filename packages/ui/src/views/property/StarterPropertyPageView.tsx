@@ -22,12 +22,14 @@ export function PropertyPageView({
 	breadcrumbs = [],
 	contextLinks = [],
 	pageIdentity,
+	legalSupport,
 }: {
 	property: PropertyDetailsDTO;
 	leadContext: MarketingPageDTO["leadContext"];
 	breadcrumbs?: readonly BreadcrumbItemDTO[];
 	contextLinks?: readonly { href: string; label: string }[];
 	pageIdentity?: PublicPageIdentityDTO;
+	legalSupport?: { href: string; formKind: "legal" };
 }) {
 	return (
 		<>
@@ -132,6 +134,35 @@ export function PropertyPageView({
 							</a>
 						))}
 					</Container>
+				</section>
+			) : null}
+			{legalSupport ? (
+				<section id="section-property-legal-check" className="bg-surface-raised">
+					<Section>
+						<Container size="narrow">
+							<Card>
+								<CardHeader>
+									<h2 className="text-display-small font-semibold leading-tight-copy">
+										Юридическая проверка объекта
+									</h2>
+									<CardDescription>
+										Перед сделкой можно обсудить документы и юридические вопросы по
+										вашей ситуации.
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<Button asChild>
+										<a
+											href={legalSupport.href}
+											data-lead-form-kind={legalSupport.formKind}
+										>
+											Перейти к юристу
+										</a>
+									</Button>
+								</CardContent>
+							</Card>
+						</Container>
+					</Section>
 				</section>
 			) : null}
 			<section id="section-property-related" className="bg-surface-subtle">

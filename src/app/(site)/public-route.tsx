@@ -13,6 +13,7 @@ import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
+import { projectUrls } from "@/project/url-grammar";
 
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
@@ -72,6 +73,10 @@ export async function ResolvedPublicRoutePage({
 				breadcrumbs={result.breadcrumbs}
 				contextLinks={result.internalLinks}
 				pageIdentity={result.identity}
+				legalSupport={{
+					href: projectUrls.lawyer,
+					formKind: "legal",
+				}}
 			/>
 		);
 	}
