@@ -9,6 +9,10 @@ import type {
 } from "@ams/realtbase-contracts";
 import type { Payload, Where } from "payload";
 import { z } from "zod";
+import {
+	landFacetSlugs,
+	permittedUseForLandFacet,
+} from "../../../platform/catalog/land-facets.ts";
 import { sanitizeExplicitRedirectPath } from "@/core/seo/redirect-path";
 import type {
 	CitiesSelect,
@@ -80,6 +84,7 @@ const propertySortSchema = z.enum([
 	"priceDesc",
 ]);
 const propertyViewSchema = z.enum(["grid", "list", "map"]);
+const landUseFacetSchema = z.enum(landFacetSlugs);
 
 const optionalPositiveInt = z.coerce.number().int().positive().optional();
 const optionalNonNegativeNumber = z.coerce.number().nonnegative().optional();
@@ -100,6 +105,7 @@ export const catalogQuerySchema = z.object({
 	geoSlug: z.string().trim().min(1).max(80).optional(),
 	districtSlug: z.string().trim().min(1).max(80).optional(),
 	rooms: z.array(optionalPositiveInt.unwrap()).max(8).optional(),
+	landUse: landUseFacetSchema.optional(),
 	priceFromMinor: optionalPositiveInt,
 	priceToMinor: optionalPositiveInt,
 	areaFrom: optionalNonNegativeNumber,
@@ -534,6 +540,13 @@ function buildCatalogWhere(
 	if (geo.city) and.push({ city: { equals: Number(geo.city.id) } });
 	if (geo.district) and.push({ district: { equals: Number(geo.district.id) } });
 	if (query.rooms?.length) and.push({ rooms: { in: query.rooms } });
+	if (query.landUse) {
+		and.push({
+			permittedUse: {
+				contains: permittedUseForLandFacet(query.landUse),
+			},
+		});
+	}
 	if (query.priceFromMinor)
 		and.push({ priceMinor: { greater_than_equal: query.priceFromMinor } });
 	if (query.priceToMinor)

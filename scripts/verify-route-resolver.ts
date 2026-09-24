@@ -149,4 +149,22 @@ if (gatePassedDistrict.kind === "page") {
 	assert.equal(gatePassedDistrict.robots.indexing, "index");
 }
 
+for (const [path, landUse] of [
+	["/donetsk/uchastki/izhs/", "izhs"],
+	["/donetsk/uchastki/snt/", "snt"],
+] as const) {
+	const result = await resolve(path);
+	assert.equal(result.kind, "page", path);
+	if (result.kind === "page") {
+		assert.deepEqual(result.catalogQuery, {
+			category: "land",
+			geoSlug: "donetsk",
+			districtSlug: undefined,
+			rooms: undefined,
+			landUse,
+		});
+		assert.equal(result.robots.indexing, "noindex", path);
+	}
+}
+
 console.log("RP-06 route resolver matrix: PASS");

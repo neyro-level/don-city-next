@@ -385,6 +385,7 @@ export const Properties: CollectionConfig = {
 		{
 			name: "permittedUse",
 			type: "text",
+			index: true,
 			admin: {
 				description:
 					"Source permitted land use. Unknown values remain reviewable instead of being coerced.",

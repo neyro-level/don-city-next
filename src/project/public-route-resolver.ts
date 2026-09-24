@@ -5,6 +5,7 @@ import type {
 import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-geo.ts";
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
+import type { LandFacetSlug } from "../platform/catalog/land-facets.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import {
 	effectiveListingRobots,
@@ -37,6 +38,7 @@ type CatalogQuery = {
 	geoSlug?: string;
 	districtSlug?: string;
 	rooms?: number[];
+	landUse?: LandFacetSlug;
 };
 
 export type ResolvedPublicPage = {
@@ -165,12 +167,17 @@ function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
 					key.facet
 				]
 			: undefined;
+	const landUse =
+		key.kind === "categoryGeoFacet" && key.category === "uchastki"
+			? ({ izhs: "izhs", snt: "snt" } as const)[key.facet as LandFacetSlug]
+			: undefined;
 	return {
 		category,
 		geoSlug: key.kind === "categoryRoot" ? undefined : key.geo,
 		districtSlug:
 			key.kind === "categoryGeoDistrict" ? key.district : undefined,
 		rooms,
+		landUse,
 	};
 }
 
