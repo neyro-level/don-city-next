@@ -17,6 +17,7 @@ import { Redirects } from "./src/project/collections/Redirects.ts";
 import { Regions } from "./src/project/collections/Regions.ts";
 import { Users } from "./src/project/collections/Users.ts";
 import { runtimeEnv } from "./src/project/env.ts";
+import { SiteSettings } from "./src/project/globals/SiteSettings.ts";
 import { payloadJobsAutoRun } from "./src/project/jobs/queues.ts";
 import { payloadJobTasks } from "./src/project/jobs/tasks.ts";
 
@@ -48,6 +49,7 @@ export default buildConfig({
 		Media,
 		Redirects,
 	],
+	globals: [SiteSettings],
 	cors: runtimeEnv.NEXT_PUBLIC_SERVER_URL
 		? [runtimeEnv.NEXT_PUBLIC_SERVER_URL]
 		: [],

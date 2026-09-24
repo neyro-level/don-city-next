@@ -83,6 +83,9 @@ export const publicPageReadAccess: Access = ({ req }) =>
 		],
 	});
 
+export const publicGlobalReadAccess: Access = ({ req }) =>
+	isOperator(req.user) || isPublicGatewayRead(req);
+
 export const publicRedirectReadAccess: Access = ({ req }) =>
 	roleOrPublicWhere(req, true);
 

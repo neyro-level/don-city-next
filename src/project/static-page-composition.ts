@@ -2,12 +2,14 @@ import type {
 	BreadcrumbDTO,
 	MarketingPageDTO,
 	PageSEOContract,
+	PublicNapDTO,
 } from "@ams/realtbase-contracts";
 import { leadConsentContext } from "./legal.config.ts";
 import { siteConfig } from "./site.config.ts";
 
 const sellerSlug = "prodat-nedvizhimost";
 const lawyerSlug = "yurist";
+const contactsSlug = "kontakty";
 
 const sellerSections = [
 	{
@@ -44,9 +46,19 @@ export function buildStaticMarketingPage(input: {
 	title: string;
 	seo: PageSEOContract;
 	breadcrumbs: BreadcrumbDTO;
+	nap?: PublicNapDTO;
 }): MarketingPageDTO {
 	const seller = input.slug === sellerSlug;
 	const lawyer = input.slug === lawyerSlug;
+	const contacts = input.slug === contactsSlug;
+	const contactSections = input.nap
+		? [
+				{
+					title: "Контакты офиса",
+					text: `${input.nap.address.full}. Телефон: ${input.nap.phone.display}. Email: ${input.nap.email}. ${input.nap.openingHours}.`,
+				},
+			]
+		: [];
 	return {
 		slug: input.slug,
 		eyebrow: seller
@@ -58,7 +70,13 @@ export function buildStaticMarketingPage(input: {
 		lead: input.seo.description,
 		seo: input.seo,
 		breadcrumbs: input.breadcrumbs,
-		sections: seller ? sellerSections : lawyer ? lawyerSections : [],
+		sections: seller
+			? sellerSections
+			: lawyer
+				? lawyerSections
+				: contacts
+					? contactSections
+					: [],
 		leadContext: {
 			formKind: seller ? "sell" : lawyer ? "legal" : "general",
 			sourcePage: input.seo.canonicalPath,

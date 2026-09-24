@@ -7,6 +7,7 @@ import type {
 	PropertyDetailsDTO,
 	PropertyFilterDTO,
 	PropertyListDTO,
+	PublicNapDTO,
 	SiteFooterDTO,
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
@@ -17,6 +18,11 @@ import {
 	buildR1Navigation,
 } from "../../../project/navigation.ts";
 import { siteConfig } from "../../../project/site.config.ts";
+import {
+	buildNapContactLinks,
+	buildNapPhoneLink,
+	toPublicNapDTO,
+} from "../../../project/site-settings.ts";
 import { buildPropertyUrl, projectUrls } from "../../../project/url-grammar.ts";
 import type {
 	PublicCatalogFacetsResult,
@@ -285,7 +291,10 @@ export function toPropertyFilterDTO(
 	};
 }
 
-export function toShellDTO(_pages: readonly PublicPageRecord[]) {
+export function toShellDTO(
+	_pages: readonly PublicPageRecord[],
+	nap: PublicNapDTO = toPublicNapDTO(),
+) {
 	const links = buildR1Navigation();
 	const propertyLinks = links[0]?.children ?? [];
 
@@ -295,7 +304,7 @@ export function toShellDTO(_pages: readonly PublicPageRecord[]) {
 		logo,
 		navigation: links,
 		geoSwitcher: buildGeoSwitcher(),
-		phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
+		phone: buildNapPhoneLink(nap),
 		primaryAction: {
 			label: "Подобрать объект",
 			href: projectUrls.primaryCatalog,
@@ -309,7 +318,7 @@ export function toShellDTO(_pages: readonly PublicPageRecord[]) {
 			{ title: "Недвижимость", links: propertyLinks },
 			{ title: "Разделы", links: links.slice(1) },
 		],
-		contacts: [{ label: "+7 (000) 000-00-00", href: "tel:+70000000000" }],
+		contacts: buildNapContactLinks(nap, projectUrls.contacts),
 		legalLinks: [
 			{
 				label: "Политика конфиденциальности",

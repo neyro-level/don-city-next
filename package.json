@@ -53,6 +53,7 @@
 		"verify:public-url-id": "node --experimental-strip-types scripts/verify-public-url-id.ts",
 		"verify:seller-page": "node --experimental-strip-types scripts/verify-seller-page.ts",
 		"verify:lawyer-page": "node --experimental-strip-types scripts/verify-lawyer-page.ts",
+		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",
 		"verify:feed-ingest": "node --experimental-strip-types scripts/verify-feed-ingest.mjs",
 		"verify:feed-lifecycle": "node --experimental-strip-types scripts/verify-feed-lifecycle.mjs",
 		"verify:manual-ownership": "node --experimental-strip-types scripts/verify-manual-ownership.mjs",

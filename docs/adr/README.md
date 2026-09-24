@@ -10,3 +10,4 @@ Master plan остаётся источником полного contract; ADR �
 | [ADR-002](ADR-002-city-hub-owns-general-intent.md) | Accepted | City hub owns general intent |
 | [ADR-003](ADR-003-platform-project-split.md) | Accepted | Platform / Project split |
 | [ADR-004](ADR-004-entities-global-no-geo-in-path.md) | Accepted | Global entity URLs contain no geo segment |
+| [ADR-0006](ADR-0006-public-nap-contract.md) | Accepted | Public NAP DTO and one runtime source |

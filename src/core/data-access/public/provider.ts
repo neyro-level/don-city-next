@@ -6,6 +6,7 @@ import { resolvePropertyPageLifecycle } from "@/core/seo/property";
 import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
 import { maxMeaningfulLastModified } from "@/platform/sitemap/registry";
 import { projectConfig } from "@/project/project.config";
+import { toPublicNapDTO } from "@/project/site-settings";
 import {
 	buildPropertyUrl,
 	parseProjectUrl,
@@ -37,6 +38,7 @@ import {
 } from "./nearby-geo";
 import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
+import { findPublicSiteSettings } from "./site-settings";
 import {
 	countPublicSitemapProperties,
 	findPublicSitemapListingLastModified,
@@ -153,7 +155,16 @@ export async function getPublicShell() {
 	if (!payload) {
 		return toShellDTO([]);
 	}
-	return toShellDTO(await findPublicPages(payload));
+	const [pages, nap] = await Promise.all([
+		findPublicPages(payload),
+		findPublicSiteSettings(payload),
+	]);
+	return toShellDTO(pages, nap);
+}
+
+export async function getPublicNap() {
+	const payload = await getOptionalPublicGatewayPayload();
+	return payload ? findPublicSiteSettings(payload) : toPublicNapDTO();
 }
 
 export type PublicCatalogRequest = {

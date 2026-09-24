@@ -13,6 +13,11 @@ import type {
 import { buildGeoSwitcher, buildR1Navigation } from "../project/navigation.ts";
 import { siteConfig } from "../project/site.config.ts";
 import {
+	buildNapContactLinks,
+	buildNapPhoneLink,
+	toPublicNapDTO,
+} from "../project/site-settings.ts";
+import {
 	buildProjectUrl,
 	buildPropertyUrl,
 	projectUrls,
@@ -28,6 +33,7 @@ const logo = {
 };
 
 const navigation = buildR1Navigation();
+const nap = toPublicNapDTO();
 
 export const fixtureHeader: SiteHeaderDTO = {
 	brandName,
@@ -35,7 +41,7 @@ export const fixtureHeader: SiteHeaderDTO = {
 	logo,
 	navigation,
 	geoSwitcher: buildGeoSwitcher(),
-	phone: { label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
+	phone: buildNapPhoneLink(nap),
 	primaryAction: {
 		label: "Подобрать объект",
 		href: projectUrls.primaryCatalog,
@@ -56,10 +62,7 @@ export const fixtureFooter: SiteFooterDTO = {
 		},
 		{ title: "Компания", links: navigation.slice(3) },
 	],
-	contacts: [
-		{ label: "+7 (000) 000-00-00", href: "tel:+70000000000" },
-		{ label: "hello@example.test", href: "mailto:hello@example.test" },
-	],
+	contacts: buildNapContactLinks(nap, projectUrls.contacts),
 	legalLinks: [
 		{
 			label: "Политика конфиденциальности",
@@ -344,11 +347,11 @@ const marketingPages = [
 		slug: "kontakty",
 		eyebrow: "Контакты",
 		title: "Обсудим вашу задачу",
-		lead: "Fixture-контакты не используются для реальных обращений и будут заменены в проекте клиента.",
+		lead: "Свяжитесь с нами удобным способом или посетите офис.",
 		sections: [
-			{ title: "Телефон", text: "+7 (000) 000-00-00" },
-			{ title: "Электронная почта", text: "hello@example.test" },
-			{ title: "Адрес", text: "Демо-город, демонстрационный адрес" },
+			{ title: "Телефон", text: nap.phone.display },
+			{ title: "Электронная почта", text: nap.email },
+			{ title: "Адрес", text: nap.address.full },
 		],
 	},
 ] as const;

@@ -6,6 +6,7 @@ import type {
 import { serializeJsonLdSafely } from "./json-ld.ts";
 import { absoluteUrl, siteBrandName } from "./site.ts";
 import { projectUrls } from "../../project/url-grammar.ts";
+import { buildRealEstateAgentJsonLd } from "./real-estate-agent.ts";
 
 type JsonLd = Record<string, unknown>;
 
@@ -19,14 +20,7 @@ export function JsonLdScript({ data }: { data: JsonLd }) {
 	);
 }
 
-export function buildOrganizationJsonLd(): JsonLd {
-	return {
-		"@context": "https://schema.org",
-		"@type": "RealEstateAgent",
-		name: siteBrandName,
-		url: absoluteUrl(projectUrls.home),
-	};
-}
+export { buildRealEstateAgentJsonLd as buildOrganizationJsonLd };
 
 export function buildWebsiteJsonLd(home: HomePageDTO): JsonLd {
 	return {

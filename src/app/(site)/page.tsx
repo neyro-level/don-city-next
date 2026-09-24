@@ -7,7 +7,7 @@ import {
 	HomeTrustSection,
 } from "@ams/realtbase-ui";
 import { toMetadata } from "@/core/seo/page-metadata";
-import { getPublicHomePage } from "@/core/data-access/public";
+import { getPublicHomePage, getPublicNap } from "@/core/data-access/public";
 import {
 	buildOrganizationJsonLd,
 	buildWebsiteJsonLd,
@@ -22,10 +22,10 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-	const home = await getPublicHomePage();
+	const [home, nap] = await Promise.all([getPublicHomePage(), getPublicNap()]);
 	return (
 		<>
-			<JsonLdScript data={buildOrganizationJsonLd()} />
+			<JsonLdScript data={buildOrganizationJsonLd(nap)} />
 			<JsonLdScript data={buildWebsiteJsonLd(home.page)} />
 			<HomeHeroSection page={home.page} featured={home.featured} />
 			<HomeServicesSection page={home.page} />

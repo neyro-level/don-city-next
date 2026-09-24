@@ -42,6 +42,7 @@ export {
 	getPublicCatalog,
 	getNearbyGeoAvailability,
 	getPublicHomePage,
+	getPublicNap,
 	getPublicMarketingPage,
 	getPublicProperty,
 	getPublicPropertyByPublicUrlId,

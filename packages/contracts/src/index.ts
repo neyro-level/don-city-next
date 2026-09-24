@@ -1,4 +1,4 @@
-export const contractVersion = "1.1.0" as const;
+export const contractVersion = "1.2.0" as const;
 export const contractState = "frozen" as const;
 
 export type { PropertyCategory, PropertyDealType } from "./common";
@@ -20,6 +20,7 @@ export type {
 	MarketingSectionDTO,
 } from "./marketing";
 export type { MediaDTO } from "./media";
+export type { PublicNapDTO } from "./nap";
 export type {
 	PropertyCardDTO,
 	PropertyCharacteristicDTO,

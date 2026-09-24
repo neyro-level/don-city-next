@@ -7,7 +7,7 @@ import {
 } from "@ams/realtbase-ui";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getPublicCatalog } from "@/core/data-access/public";
+import { getPublicCatalog, getPublicNap } from "@/core/data-access/public";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
@@ -111,8 +111,10 @@ export async function ResolvedPublicRoutePage({
 		);
 	}
 
+	const staticSlug = result.key.kind === "static" ? result.key.slug : "page";
+	const nap = staticSlug === "kontakty" ? await getPublicNap() : undefined;
 	const staticPage = buildStaticMarketingPage({
-		slug: result.key.kind === "static" ? result.key.slug : "page",
+		slug: staticSlug,
 		title: result.h1,
 		seo: {
 			title: result.title,
@@ -122,6 +124,7 @@ export async function ResolvedPublicRoutePage({
 			following: result.robots.following,
 		},
 		breadcrumbs: { items: result.breadcrumbs },
+		nap,
 	});
 	return <MarketingPageView page={staticPage} />;
 }

@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 2,
-	"contractVersion": "1.1.0",
+	"contractVersion": "1.2.0",
 	"state": "frozen",
 	"algorithm": "sha256-normalized-lf",
 	"files": [
@@ -18,11 +18,11 @@
 		},
 		{
 			"path": "packages/contracts/src/index.ts",
-			"sha256": "020a3d7750fbec458128df3d4fce35316b7e3c658a4aab2c17a3b9b6b570afbc"
+			"sha256": "2b2e0cce31869f9d7c6a22b25db6a49957ba2db309fb1493c7c2801ecab08621"
 		},
 		{
 			"path": "packages/contracts/src/lead.ts",
-			"sha256": "b1a3636d6286de1438f9cb610a828d9df6e2dd09e9eb066d598c4d6b9aa6c583"
+			"sha256": "f9a8bc6566bb71c130b62e78457b3a177379c803683926ac4f50d1406ae538ea"
 		},
 		{
 			"path": "packages/contracts/src/marketing.ts",
@@ -31,6 +31,10 @@
 		{
 			"path": "packages/contracts/src/media.ts",
 			"sha256": "abb262d6795bf4c1a3cba2f9b3f05fbc2d454dd2cbd77c08ac3419c1500a72ad"
+		},
+		{
+			"path": "packages/contracts/src/nap.ts",
+			"sha256": "04afc8c5756fcf7d4fa98bde4e6cdeecf5401fb65f7d621dba04f38d41941f68"
 		},
 		{
 			"path": "packages/contracts/src/property.ts",
@@ -49,5 +53,5 @@
 			"sha256": "1242b3933c68ba857603cb5f8bb7dbc38f55678b9582d27474ee76e1d9e32250"
 		}
 	],
-	"aggregateSha256": "26e33923f7bcf0a93e204edde7cb048ea2c0befbdba9cd3e0531ed5cb5b6ebd2"
+	"aggregateSha256": "0987199c72d7311dd5bc0a51a39afb6053208de44664e09ab4917f844f81a2b1"
 }
