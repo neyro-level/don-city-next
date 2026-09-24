@@ -8,10 +8,9 @@ import type {
 } from "@ams/realtbase-contracts";
 import type { Payload, Where } from "payload";
 import { z } from "zod";
-import type { PropertiesSelect, Property } from "@/project/payload-types";
 import { sanitizeExplicitRedirectPath } from "@/core/seo/redirect-path";
+import type { PropertiesSelect, Property } from "@/project/payload-types";
 import { buildPropertyUrl } from "@/project/url-grammar";
-import { publicGatewayPolicy } from "./policy";
 import {
 	aggregatePublicCatalogFacets,
 	findPublicPropertyLifecycleRow,
@@ -19,6 +18,7 @@ import {
 	listPublicSitemapPropertiesPage,
 	publicRedirectDestinationIsChain,
 } from "./payload-reads";
+import { publicGatewayPolicy } from "./policy";
 
 const publicPropertySelect = {
 	slug: true,
@@ -37,8 +37,8 @@ const publicPropertySelect = {
 	kitchenArea: true,
 	floor: true,
 	floors: true,
-	locality: true,
-	district: true,
+	cityRaw: true,
+	districtRaw: true,
 	publicAddress: true,
 	lat: true,
 	lng: true,
@@ -96,7 +96,7 @@ export const catalogQuerySchema = z.object({
 export type CatalogQueryInput = z.input<typeof catalogQuerySchema>;
 export type CatalogQuery = z.output<typeof catalogQuerySchema>;
 
-export type PublicCatalogProperty = Pick<
+type PublicCatalogSelectedProperty = Pick<
 	Property,
 	| "id"
 	| "slug"
@@ -113,8 +113,8 @@ export type PublicCatalogProperty = Pick<
 	| "kitchenArea"
 	| "floor"
 	| "floors"
-	| "locality"
-	| "district"
+	| "cityRaw"
+	| "districtRaw"
 	| "publicAddress"
 	| "lat"
 	| "lng"
@@ -122,10 +122,17 @@ export type PublicCatalogProperty = Pick<
 	| "description"
 	| "images"
 	| "updatedAt"
+	| "publishedAt"
+	| "contentPurgedAt"
 >;
 
-type PublicCatalogSelectedProperty = PublicCatalogProperty &
-	Pick<Property, "status" | "publishedAt" | "contentPurgedAt">;
+export type PublicCatalogProperty = Omit<
+	PublicCatalogSelectedProperty,
+	"cityRaw" | "districtRaw" | "publishedAt" | "contentPurgedAt"
+> & {
+	locality?: string | null;
+	district?: string | null;
+};
 
 export type PublicPropertyLifecycleLookup =
 	| { found: false }
@@ -201,16 +208,16 @@ function buildCatalogWhere(query: CatalogQuery): Where {
 			or: [
 				{ title: { contains: query.query } },
 				{ publicAddress: { contains: query.query } },
-				{ locality: { contains: query.query } },
-				{ district: { contains: query.query } },
+				{ cityRaw: { contains: query.query } },
+				{ districtRaw: { contains: query.query } },
 			],
 		});
 	}
 
 	if (query.category) and.push({ category: { equals: query.category } });
 	if (query.dealType) and.push({ dealType: { equals: query.dealType } });
-	if (query.city) and.push({ locality: { equals: query.city } });
-	if (query.district) and.push({ district: { equals: query.district } });
+	if (query.city) and.push({ cityRaw: { equals: query.city } });
+	if (query.district) and.push({ districtRaw: { equals: query.district } });
 	if (query.rooms?.length) and.push({ rooms: { in: query.rooms } });
 	if (query.priceFromMinor)
 		and.push({ priceMinor: { greater_than_equal: query.priceFromMinor } });
@@ -255,8 +262,8 @@ function toPublicCatalogProperty(
 		kitchenArea: property.kitchenArea,
 		floor: property.floor,
 		floors: property.floors,
-		locality: property.locality,
-		district: property.district,
+		locality: property.cityRaw,
+		district: property.districtRaw,
 		publicAddress: property.publicAddress,
 		lat: property.lat,
 		lng: property.lng,

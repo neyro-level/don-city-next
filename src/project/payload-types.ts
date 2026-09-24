@@ -70,6 +70,9 @@ export interface Config {
     users: User;
     pages: Page;
     properties: Property;
+    regions: Region;
+    cities: City;
+    districts: District;
     'feed-sources': FeedSource;
     'import-runs': ImportRun;
     'import-issues': ImportIssue;
@@ -88,6 +91,9 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     properties: PropertiesSelect<false> | PropertiesSelect<true>;
+    regions: RegionsSelect<false> | RegionsSelect<true>;
+    cities: CitiesSelect<false> | CitiesSelect<true>;
+    districts: DistrictsSelect<false> | DistrictsSelect<true>;
     'feed-sources': FeedSourcesSelect<false> | FeedSourcesSelect<true>;
     'import-runs': ImportRunsSelect<false> | ImportRunsSelect<true>;
     'import-issues': ImportIssuesSelect<false> | ImportIssuesSelect<true>;
@@ -244,9 +250,12 @@ export interface Property {
   kitchenArea?: number | null;
   floor?: number | null;
   floors?: number | null;
-  region?: string | null;
-  locality?: string | null;
-  district?: string | null;
+  region?: (number | null) | Region;
+  city?: (number | null) | City;
+  district?: (number | null) | District;
+  regionRaw?: string | null;
+  cityRaw?: string | null;
+  districtRaw?: string | null;
   street?: string | null;
   house?: string | null;
   publicAddress?: string | null;
@@ -374,6 +383,67 @@ export interface ImportRun {
    * Redacted operational diagnostic only. Do not store feed payload, raw response, PII, credentials or tokens.
    */
   lastErrorRedacted?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "regions".
+ */
+export interface Region {
+  id: number;
+  name: string;
+  shortName: string;
+  slug: string;
+  ownerVerified: boolean;
+  sortOrder: number;
+  isPublished: boolean;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities".
+ */
+export interface City {
+  id: number;
+  name: string;
+  slug: string;
+  region: number | Region;
+  nameGenitive: string;
+  nameLocative: string;
+  preposition: string;
+  agglomerationOf?: (number | null) | City;
+  ownerVerified: boolean;
+  sortOrder: number;
+  isPublished: boolean;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "districts".
+ */
+export interface District {
+  id: number;
+  name: string;
+  slug: string;
+  type: 'administrative_district' | 'microdistrict';
+  city: number | City;
+  parent?: (number | null) | District;
+  sortOrder: number;
+  preposition?: string | null;
+  nameLocative?: string | null;
+  ownerVerified: boolean;
+  isPublished: boolean;
+  publishedAt?: string | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    noindex?: boolean | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -718,6 +788,18 @@ export interface PayloadLockedDocument {
         value: number | Property;
       } | null)
     | ({
+        relationTo: 'regions';
+        value: number | Region;
+      } | null)
+    | ({
+        relationTo: 'cities';
+        value: number | City;
+      } | null)
+    | ({
+        relationTo: 'districts';
+        value: number | District;
+      } | null)
+    | ({
         relationTo: 'feed-sources';
         value: number | FeedSource;
       } | null)
@@ -866,8 +948,11 @@ export interface PropertiesSelect<T extends boolean = true> {
   floor?: T;
   floors?: T;
   region?: T;
-  locality?: T;
+  city?: T;
   district?: T;
+  regionRaw?: T;
+  cityRaw?: T;
+  districtRaw?: T;
   street?: T;
   house?: T;
   publicAddress?: T;
@@ -897,6 +982,66 @@ export interface PropertiesSelect<T extends boolean = true> {
   cadastralNumber?: T;
   internalComment?: T;
   ownerContact?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "regions_select".
+ */
+export interface RegionsSelect<T extends boolean = true> {
+  name?: T;
+  shortName?: T;
+  slug?: T;
+  ownerVerified?: T;
+  sortOrder?: T;
+  isPublished?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities_select".
+ */
+export interface CitiesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  region?: T;
+  nameGenitive?: T;
+  nameLocative?: T;
+  preposition?: T;
+  agglomerationOf?: T;
+  ownerVerified?: T;
+  sortOrder?: T;
+  isPublished?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "districts_select".
+ */
+export interface DistrictsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  type?: T;
+  city?: T;
+  parent?: T;
+  sortOrder?: T;
+  preposition?: T;
+  nameLocative?: T;
+  ownerVerified?: T;
+  isPublished?: T;
+  publishedAt?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        noindex?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

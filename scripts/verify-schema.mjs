@@ -41,7 +41,8 @@ DECLARE
 		'properties_public_catalog_idx',
 		'properties_public_sitemap_idx',
 		'payload_jobs_wait_until_idx',
-		'payload_jobs_concurrency_key_idx'
+		'payload_jobs_concurrency_key_idx',
+		'city_slug_idx'
 	];
 	required_index text;
 	required_constraints text[] := ARRAY[

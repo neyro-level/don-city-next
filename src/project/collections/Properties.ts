@@ -1,4 +1,9 @@
 import type { CollectionConfig, FieldAccess, PayloadRequest } from "payload";
+import {
+	adminsAndOwners,
+	hasRole,
+	ownersOnly,
+} from "../../core/access/roles.ts";
 import { publicPropertyReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { applyDerivedFieldsOnWrite } from "../../core/ingest/derived-fields.ts";
 import {
@@ -9,7 +14,6 @@ import {
 	shouldRecordManualOwnership,
 } from "../../core/ingest/manual-ownership.ts";
 import { normalizePropertyNumericWrite } from "../../core/ingest/numeric-invariants.ts";
-import { adminsAndOwners, hasRole, ownersOnly } from "../../core/access/roles.ts";
 
 const fieldAdminsAndOwners: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner", "admin"]);
@@ -362,14 +366,32 @@ export const Properties: CollectionConfig = {
 		},
 		{
 			name: "region",
-			type: "text",
+			type: "relationship",
+			relationTo: "regions",
+			index: true,
 		},
 		{
-			name: "locality",
-			type: "text",
+			name: "city",
+			type: "relationship",
+			relationTo: "cities",
+			index: true,
 		},
 		{
 			name: "district",
+			type: "relationship",
+			relationTo: "districts",
+			index: true,
+		},
+		{
+			name: "regionRaw",
+			type: "text",
+		},
+		{
+			name: "cityRaw",
+			type: "text",
+		},
+		{
+			name: "districtRaw",
 			type: "text",
 			index: true,
 		},

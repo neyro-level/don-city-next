@@ -22,8 +22,8 @@ const publicPropertyPublicationWhere: Where = {
 type FacetRow = {
 	category?: string | null;
 	dealType?: string | null;
-	locality?: string | null;
-	district?: string | null;
+	cityRaw?: string | null;
+	districtRaw?: string | null;
 	rooms?: number | null;
 	priceMinor?: number | null;
 };
@@ -53,8 +53,8 @@ export async function aggregatePublicCatalogFacets(
 		select: {
 			category: true,
 			dealType: true,
-			locality: true,
-			district: true,
+			cityRaw: true,
+			districtRaw: true,
 			rooms: true,
 			priceMinor: true,
 		},
@@ -65,8 +65,8 @@ export async function aggregatePublicCatalogFacets(
 		total += 1;
 		if (doc.category) bump(categories, doc.category);
 		if (doc.dealType) bump(dealTypes, doc.dealType);
-		if (doc.locality) bump(cities, doc.locality);
-		if (doc.district) bump(districts, doc.district);
+		if (doc.cityRaw) bump(cities, doc.cityRaw);
+		if (doc.districtRaw) bump(districts, doc.districtRaw);
 		if (typeof doc.rooms === "number" && doc.rooms > 0) {
 			rooms.set(doc.rooms, (rooms.get(doc.rooms) ?? 0) + 1);
 		}

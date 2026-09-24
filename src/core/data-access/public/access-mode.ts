@@ -85,3 +85,8 @@ export const publicPageReadAccess: Access = ({ req }) =>
 
 export const publicRedirectReadAccess: Access = ({ req }) =>
 	roleOrPublicWhere(req, true);
+
+export const publicGeoReadAccess: Access = ({ req }) =>
+	roleOrPublicWhere(req, {
+		and: [{ isPublished: { equals: true } }, { publishedAt: { exists: true } }],
+	});

@@ -3,9 +3,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getPayload } from "payload";
 import config from "../payload.config.ts";
-import { requirePayloadRuntime } from "../src/project/env.ts";
-import { calculatePropertyDerivedFields } from "../src/core/ingest/derived-fields.ts";
 import { systemOverrideAccess } from "../src/core/data-access/system/overrides.ts";
+import { calculatePropertyDerivedFields } from "../src/core/ingest/derived-fields.ts";
+import { requirePayloadRuntime } from "../src/project/env.ts";
 
 type AtlasPhoto = {
 	path: string;
@@ -81,7 +81,13 @@ type ImportRecord = {
 	data: Record<string, unknown>;
 };
 
-const catalogPath = join(process.cwd(), "scripts", "demo", "atlas-yandex", "catalog.json");
+const catalogPath = join(
+	process.cwd(),
+	"scripts",
+	"demo",
+	"atlas-yandex",
+	"catalog.json",
+);
 const mediaRoot = join(process.cwd(), "public", "atlas-demo", "yandex");
 const mediaUrlPrefix = "/atlas-demo/yandex";
 const verifyOnly = process.argv.includes("--verify-only");
@@ -89,10 +95,14 @@ const verifyOnly = process.argv.includes("--verify-only");
 function readCatalog(): AtlasCatalog {
 	const catalog = JSON.parse(readFileSync(catalogPath, "utf8")) as AtlasCatalog;
 	if (catalog.properties.length !== 60) {
-		throw new Error(`Atlas demo import expected 60 properties, got ${catalog.properties.length}.`);
+		throw new Error(
+			`Atlas demo import expected 60 properties, got ${catalog.properties.length}.`,
+		);
 	}
 	if (catalog.complexes.length !== 20) {
-		throw new Error(`Atlas demo import expected 20 complexes, got ${catalog.complexes.length}.`);
+		throw new Error(
+			`Atlas demo import expected 20 complexes, got ${catalog.complexes.length}.`,
+		);
 	}
 	return catalog;
 }
@@ -132,7 +142,10 @@ function mediaImages(photos: AtlasPhoto[], title: string) {
 	});
 }
 
-function internalSourceNote(provenance: AtlasProvenance, kind: "property" | "complex") {
+function internalSourceNote(
+	provenance: AtlasProvenance,
+	kind: "property" | "complex",
+) {
 	return [
 		`Atlas demo ${kind}.`,
 		`source=${provenance.source}`,
@@ -169,9 +182,9 @@ function propertyRecord(item: AtlasProperty): ImportRecord {
 			kitchenArea: defined(item.kitchenArea),
 			floor: defined(item.floor),
 			floors: defined(item.floorsTotal),
-			region: "Краснодарский край",
-			locality: "Краснодар",
-			district: defined(item.district),
+			regionRaw: "Краснодарский край",
+			cityRaw: "Краснодар",
+			districtRaw: defined(item.district),
 			publicAddress: item.address,
 			lat: defined(item.latitude),
 			lng: defined(item.longitude),
@@ -190,7 +203,9 @@ function complexDescription(item: AtlasComplex): string {
 		item.classLabel ? `Класс: ${item.classLabel}.` : null,
 		item.buildingType ? `Технология: ${item.buildingType}.` : null,
 		item.floorsLabel ? `Этажность: ${item.floorsLabel}.` : null,
-		item.ceilingHeightLabel ? `Высота потолков: ${item.ceilingHeightLabel}.` : null,
+		item.ceilingHeightLabel
+			? `Высота потолков: ${item.ceilingHeightLabel}.`
+			: null,
 	].filter(Boolean);
 	return [item.description, ...facts].filter(Boolean).join("\n\n");
 }
@@ -219,9 +234,9 @@ function complexRecord(item: AtlasComplex): ImportRecord {
 			dealType: "sale",
 			priceMinor,
 			currency: "RUB",
-			region: "Краснодарский край",
-			locality: "Краснодар",
-			district: defined(item.district),
+			regionRaw: "Краснодарский край",
+			cityRaw: "Краснодар",
+			districtRaw: defined(item.district),
 			publicAddress: item.address,
 			lat: defined(item.latitude),
 			lng: defined(item.longitude),
@@ -233,7 +248,10 @@ function complexRecord(item: AtlasComplex): ImportRecord {
 	};
 }
 
-async function findExisting(payload: Awaited<ReturnType<typeof getPayload>>, record: ImportRecord) {
+async function findExisting(
+	payload: Awaited<ReturnType<typeof getPayload>>,
+	record: ImportRecord,
+) {
 	const result = await payload.find({
 		collection: "properties",
 		depth: 0,
@@ -302,7 +320,9 @@ const payload = await getPayload({ config });
 
 try {
 	const before = await countExpected(payload, records);
-	const result = verifyOnly ? { created: 0, updated: 0 } : await upsertRecords(payload, records);
+	const result = verifyOnly
+		? { created: 0, updated: 0 }
+		: await upsertRecords(payload, records);
 	const afterProperties = await countExpected(payload, propertyRecords);
 	const afterComplexes = await countExpected(payload, complexRecords);
 	const after = afterProperties + afterComplexes;
@@ -319,4 +339,3 @@ try {
 } finally {
 	await payload.destroy();
 }
-

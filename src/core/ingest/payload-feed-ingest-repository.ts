@@ -1,15 +1,16 @@
 import type { Payload } from "payload";
-import { systemOverrideAccess } from "../data-access/system/overrides.ts";
+import { resolveFeedGeo } from "../../project/geo/feed-match.ts";
 import {
 	countMissingActiveFeedProperties,
 	deactivateMissingFeedProperties,
 	touchFeedPropertiesLastSeenAt,
 } from "../data-access/ingest/sql/index.ts";
+import { systemOverrideAccess } from "../data-access/system/overrides.ts";
 import type {
+	FeedImportIssueDraft,
 	FeedIngestRepository,
 	FeedPropertyRecord,
 	FeedPropertyWriteData,
-	FeedImportIssueDraft,
 } from "./feed-ingest.ts";
 
 const importAccess = {
@@ -28,15 +29,23 @@ function redactIssueMessage(message: string): string {
 }
 
 function asRecord(value: unknown): FeedPropertyRecord {
-	const row = value as FeedPropertyRecord;
+	const row = value as FeedPropertyRecord & {
+		regionRaw?: string | null;
+		cityRaw?: string | null;
+		districtRaw?: string | null;
+	};
 	return {
 		...row,
 		id: String(row.id),
 		slug: String(row.slug),
+		region: row.regionRaw ?? undefined,
+		locality: row.cityRaw ?? undefined,
+		district: row.districtRaw ?? undefined,
 	};
 }
 
-function toPropertyData(data: FeedPropertyWriteData) {
+async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
+	const geo = await resolveFeedGeo(payload, data);
 	return {
 		origin: "feed" as const,
 		feedSource: Number(data.feedSource),
@@ -52,9 +61,13 @@ function toPropertyData(data: FeedPropertyWriteData) {
 		priceMinor: data.priceMinor,
 		currency: data.currency,
 		publicAddress: data.publicAddress,
-		locality: data.locality,
-		district: data.district,
-		region: data.region,
+		region: geo.region,
+		city: geo.city,
+		district: geo.district,
+		regionRaw: geo.regionRaw,
+		cityRaw: geo.cityRaw,
+		districtRaw: geo.districtRaw,
+		needsReview: geo.needsReview,
 		street: data.street,
 		house: data.house,
 		lat: data.lat,
@@ -109,7 +122,7 @@ export function createPayloadFeedIngestRepository(
 			const created = await payload.create({
 				collection: "properties",
 				draft: false,
-				data: toPropertyData(data),
+				data: await toPropertyData(payload, data),
 				...importAccess,
 			});
 			return asRecord(created);
@@ -132,9 +145,20 @@ export function createPayloadFeedIngestRepository(
 				throw new Error("Feed ingest repository is source-scoped.");
 			}
 			if (data.market && data.market !== found.docs[0].market) {
-				throw new Error("Feed ingest cannot write a property outside source market.");
+				throw new Error(
+					"Feed ingest cannot write a property outside source market.",
+				);
 			}
 			const patch: Record<string, unknown> = { ...data };
+			if ("region" in data || "locality" in data || "district" in data) {
+				const geo = await resolveFeedGeo(payload, {
+					region: data.region ?? found.docs[0].regionRaw ?? undefined,
+					locality: data.locality ?? found.docs[0].cityRaw ?? undefined,
+					district: data.district ?? found.docs[0].districtRaw ?? undefined,
+				});
+				Object.assign(patch, geo);
+			}
+			delete patch.locality;
 			delete patch.feedSource;
 			delete patch.lastImportRun;
 			delete patch.origin;
@@ -168,7 +192,12 @@ export function createPayloadFeedIngestRepository(
 				...importAccess,
 			});
 		},
-		async touchLastSeenAt({ feedSourceId: sourceId, importRunId, externalIds, nowIso }) {
+		async touchLastSeenAt({
+			feedSourceId: sourceId,
+			importRunId,
+			externalIds,
+			nowIso,
+		}) {
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
 			}

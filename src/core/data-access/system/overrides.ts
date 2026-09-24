@@ -6,7 +6,8 @@ type SystemOperation =
 	| "migration-helper"
 	| "trusted-inspection"
 	| "payload-jobs-inspect"
-	| "payload-jobs-unstuck";
+	| "payload-jobs-unstuck"
+	| "geo-seed";
 
 export function systemOverrideAccess(operation: SystemOperation) {
 	return {
