@@ -1,13 +1,15 @@
 import {
-	MarketingRoute,
-	generateMarketingMetadata,
-} from "../marketing-route";
+	generateResolvedRouteMetadata,
+	ResolvedPublicRoutePage,
+} from "../public-route";
+
+const segments = ["politika-konfidencialnosti"] as const;
 
 export const revalidate = 3600;
 
 export function generateMetadata() {
-	return generateMarketingMetadata("politika-konfidencialnosti");
+	return generateResolvedRouteMetadata(segments);
 }
 export default function Page() {
-	return <MarketingRoute slug="politika-konfidencialnosti" />;
+	return <ResolvedPublicRoutePage segments={segments} />;
 }

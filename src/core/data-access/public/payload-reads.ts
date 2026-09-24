@@ -266,6 +266,46 @@ export async function findPublicPropertyLifecycleRow(
 	};
 }
 
+export async function findPublicPropertyLifecycleRowById(
+	payload: Payload,
+	publicUrlId: string,
+): Promise<{
+	id: Property["id"];
+	slug: string;
+	category: Property["category"];
+	status: "active" | "archived";
+	publishedAt: string | null;
+	contentPurgedAt: string | null;
+} | null> {
+	if (!/^\d+$/.test(publicUrlId)) return null;
+	const result = await payload.find({
+		collection: "properties",
+		where: { id: { equals: Number(publicUrlId) } },
+		limit: 1,
+		page: 1,
+		select: {
+			id: true,
+			slug: true,
+			category: true,
+			status: true,
+			publishedAt: true,
+			contentPurgedAt: true,
+		},
+		...propertyLifecycleReadAccess(),
+		depth: 0,
+	});
+	const row = result.docs[0];
+	if (!row) return null;
+	return {
+		id: row.id,
+		slug: row.slug,
+		category: row.category,
+		status: row.status === "archived" ? "archived" : "active",
+		publishedAt: row.publishedAt ?? null,
+		contentPurgedAt: row.contentPurgedAt ?? null,
+	};
+}
+
 export async function findPublicRedirectByFromPath(
 	payload: Payload,
 	fromPath: string,

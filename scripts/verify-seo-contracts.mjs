@@ -237,14 +237,13 @@ assert.ok(
 );
 
 const marketingPages = [
-	"src/app/(site)/uslugi/page.tsx",
+	"src/app/(site)/prodat-nedvizhimost/page.tsx",
+	"src/app/(site)/yurist/page.tsx",
 	"src/app/(site)/o-kompanii/page.tsx",
-	"src/app/(site)/ipoteka/page.tsx",
 	"src/app/(site)/kontakty/page.tsx",
 	"src/app/(site)/politika-konfidencialnosti/page.tsx",
 	"src/app/(site)/soglasie-na-obrabotku-personalnyh-dannyh/page.tsx",
-	"src/app/(site)/sdat/page.tsx",
-	"src/app/(site)/prodat/page.tsx",
+	"src/app/(site)/spasibo/page.tsx",
 ];
 for (const file of marketingPages) {
 	const source = readFileSync(file, "utf8");
@@ -274,7 +273,7 @@ assert.equal(
 	"home must not be force-dynamic",
 );
 assert.ok(
-	readFileSync("src/app/(site)/nedvizhimost/page.tsx", "utf8").includes(
+	readFileSync("src/app/(site)/[...segments]/page.tsx", "utf8").includes(
 		"force-dynamic",
 	),
 	"catalog may stay dynamic",

@@ -10,16 +10,19 @@ import type {
 	SiteFooterDTO,
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
-import type { PublicCatalogProperty, PublicCatalogResult } from "./catalog";
-import type { PublicCatalogFacetsResult } from "./catalog";
 import { leadConsentContext } from "../../../project/legal.config.ts";
-import type { PublicPageRecord } from "./pages";
 import { siteConfig } from "../../../project/site.config.ts";
 import {
 	buildProjectUrl,
 	buildPropertyUrl,
 	projectUrls,
 } from "../../../project/url-grammar.ts";
+import type {
+	PublicCatalogFacetsResult,
+	PublicCatalogProperty,
+	PublicCatalogResult,
+} from "./catalog";
+import type { PublicPageRecord } from "./pages";
 
 const brandName = siteConfig.brandName;
 const logo = {
@@ -284,8 +287,7 @@ export function toPropertyFilterDTO(
 export function toShellDTO(pages: readonly PublicPageRecord[]) {
 	const starterNavigation = [
 		{ label: "Недвижимость", href: projectUrls.primaryCatalog },
-		{ label: "Услуги", href: projectUrls.services },
-		{ label: "Ипотека", href: projectUrls.mortgage },
+		{ label: "Юрист", href: projectUrls.lawyer },
 		{ label: "О компании", href: projectUrls.about },
 		{ label: "Контакты", href: projectUrls.contacts },
 	];
@@ -376,14 +378,9 @@ export function toHomePageDTO(page: PublicPageRecord | null): HomePageDTO {
 				description: "Оценка и сопровождение продажи",
 			},
 			{
-				label: "Сдать",
-				href: projectUrls.rent,
-				description: "Аренда без лишней неопределённости",
-			},
-			{
-				label: "Ипотека",
-				href: projectUrls.mortgage,
-				description: "Подбор программы и одобрение",
+				label: "Юрист",
+				href: projectUrls.lawyer,
+				description: "Проверка документов и сопровождение сделки",
 			},
 		],
 	};

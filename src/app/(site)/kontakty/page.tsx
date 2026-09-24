@@ -1,13 +1,15 @@
 import {
-	MarketingRoute,
-	generateMarketingMetadata,
-} from "../marketing-route";
+	generateResolvedRouteMetadata,
+	ResolvedPublicRoutePage,
+} from "../public-route";
+
+const segments = ["kontakty"] as const;
 
 export const revalidate = 3600;
 
 export function generateMetadata() {
-	return generateMarketingMetadata("kontakty");
+	return generateResolvedRouteMetadata(segments);
 }
 export default function Page() {
-	return <MarketingRoute slug="kontakty" />;
+	return <ResolvedPublicRoutePage segments={segments} />;
 }

@@ -117,16 +117,15 @@ for (const file of fixtureRuntimeFiles) {
 
 const requiredFixtureRoutes = [
 	"src/app/(site)/page.tsx",
-	"src/app/(site)/nedvizhimost/page.tsx",
-	"src/app/(site)/obekty/[slug]/page.tsx",
-	"src/app/(site)/uslugi/page.tsx",
+	"src/app/(site)/[...segments]/page.tsx",
+	"src/app/(site)/public-route.tsx",
+	"src/app/(site)/prodat-nedvizhimost/page.tsx",
+	"src/app/(site)/yurist/page.tsx",
 	"src/app/(site)/o-kompanii/page.tsx",
-	"src/app/(site)/ipoteka/page.tsx",
-	"src/app/(site)/prodat/page.tsx",
-	"src/app/(site)/sdat/page.tsx",
 	"src/app/(site)/kontakty/page.tsx",
 	"src/app/(site)/politika-konfidencialnosti/page.tsx",
 	"src/app/(site)/soglasie-na-obrabotku-personalnyh-dannyh/page.tsx",
+	"src/app/(site)/spasibo/page.tsx",
 	"src/app/not-found.tsx",
 ];
 for (const route of requiredFixtureRoutes) {
@@ -226,9 +225,7 @@ const propertyPagePath = path.join(
 	"src",
 	"app",
 	"(site)",
-	"obekty",
-	"[slug]",
-	"page.tsx",
+	"public-route.tsx",
 );
 const goneResponsePath = path.join(
 	root,
@@ -265,7 +262,7 @@ if (
 	!readFileSync(propertyPagePath, "utf8").includes("GonePropertyPage")
 ) {
 	violations.push(
-		"src/app/(site)/obekty/[slug]/page.tsx: visual gone-property page is missing",
+		"src/app/(site)/public-route.tsx: visual gone-property page is missing",
 	);
 }
 if (!existsSync(anonymousRestHelperPath)) {

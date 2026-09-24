@@ -1,17 +1,15 @@
+import { projectUrls } from "../../project/url-grammar.ts";
 import {
 	type CacheTarget,
 	cacheInvalidationRequestSchema,
 } from "./revalidation-contract.ts";
-import { projectUrls } from "../../project/url-grammar.ts";
 
 const allowedPathPrefixes = [
 	projectUrls.home,
 	projectUrls.primaryCatalog,
-	projectUrls.services,
+	projectUrls.lawyer,
 	projectUrls.about,
-	projectUrls.mortgage,
 	projectUrls.sale,
-	projectUrls.rent,
 	projectUrls.contacts,
 ] as const;
 const allowedTags = new Set(["site", "properties", "property", "media"]);

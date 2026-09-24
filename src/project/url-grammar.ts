@@ -1,12 +1,12 @@
 import type { PropertyCategory } from "@ams/realtbase-contracts";
 import {
 	buildUrl,
-	parseUrl,
 	type CanonicalPath,
 	type PageKey,
+	parseUrl,
 	type UrlGrammarRegistry,
 } from "../platform/grammar/index.ts";
-import { siteProfile, type SiteCategory } from "./site.profile.ts";
+import { type SiteCategory, siteProfile } from "./site.profile.ts";
 
 const staticSlugs = [
 	"prodat-nedvizhimost",
@@ -16,19 +16,24 @@ const staticSlugs = [
 	"politika-konfidencialnosti",
 	"soglasie-na-obrabotku-personalnyh-dannyh",
 	"spasibo",
-	// Starter routes remain registered until their page contracts move in RP-09.
-	"nedvizhimost",
-	"uslugi",
-	"ipoteka",
-	"prodat",
-	"sdat",
 ] as const;
 
 export const urlGrammarRegistry = {
 	categorySlugs: Object.keys(siteProfile.categoryStatus),
 	geoSlugs: Object.keys(siteProfile.geoCategoryStatus),
 	staticSlugs,
-	districts: [{ geo: siteProfile.primaryGeo, slug: "tekstilshchik" }],
+	districts: [
+		"budennovskiy",
+		"voroshilovskiy",
+		"kalininskiy",
+		"kievskiy",
+		"kirovskiy",
+		"kuybyshevskiy",
+		"leninskiy",
+		"petrovskiy",
+		"proletarskiy",
+		"tekstilshchik",
+	].map((slug) => ({ geo: siteProfile.primaryGeo, slug })),
 	facets: Object.entries(siteProfile.facetWhitelist).flatMap(
 		([category, facets]) => (facets ?? []).map((slug) => ({ category, slug })),
 	),
@@ -50,10 +55,12 @@ export const projectUrls = {
 		geo: siteProfile.primaryGeo,
 		category: "kvartiry",
 	}),
-	services: buildUrl({ kind: "static", slug: "uslugi" }),
-	mortgage: buildUrl({ kind: "static", slug: "ipoteka" }),
 	sale: buildUrl({ kind: "static", slug: "prodat-nedvizhimost" }),
-	rent: buildUrl({ kind: "static", slug: "sdat" }),
+	lawyer: buildUrl({ kind: "static", slug: "yurist" }),
+	// Transitional semantic aliases keep DTO consumers on grammar-owned V4 URLs.
+	services: buildUrl({ kind: "static", slug: "yurist" }),
+	mortgage: buildUrl({ kind: "static", slug: "yurist" }),
+	rent: buildUrl({ kind: "static", slug: "prodat-nedvizhimost" }),
 	about: buildUrl({ kind: "static", slug: "o-kompanii" }),
 	contacts: buildUrl({ kind: "static", slug: "kontakty" }),
 	privacy: buildUrl({ kind: "static", slug: "politika-konfidencialnosti" }),
@@ -63,6 +70,12 @@ export const projectUrls = {
 	}),
 	thanks: buildUrl({ kind: "static", slug: "spasibo" }),
 } as const;
+
+export function propertyCategoryToSlug(
+	category: Exclude<PropertyCategory, "other">,
+): SiteCategory {
+	return propertyCategorySlug[category];
+}
 
 export function buildProjectUrl(key: PageKey): CanonicalPath {
 	return buildUrl(key);
@@ -85,9 +98,14 @@ export function propertyPageKey(input: {
 	return {
 		kind: "property",
 		category: propertyCategorySlug[input.category],
-		semantic: input.semantic,
+		semantic: canonicalPropertySemantic(input.semantic),
 		publicUrlId: String(input.publicUrlId),
 	};
+}
+
+export function canonicalPropertySemantic(value: string): string {
+	const normalized = value.trim().toLowerCase();
+	return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized) ? normalized : "obekt";
 }
 
 export function buildPropertyUrl(input: {

@@ -42,6 +42,7 @@ export {
 	getPublicHomePage,
 	getPublicMarketingPage,
 	getPublicProperty,
+	getPublicPropertyByPublicUrlId,
 	getPublicShell,
 	getPublicSitemapEntries,
 	getPublicSitemapShard,

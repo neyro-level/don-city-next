@@ -22,7 +22,7 @@ assert.equal(
 const apartmentCandidate = {
 	category: "kvartiry" as const,
 	geo: siteProfile.primaryGeo,
-	href: "/kvartiry/donetsk/",
+	href: "/donetsk/kvartiry/",
 	label: "Apartments",
 };
 const preparedOffProfile = {

@@ -1,5 +1,5 @@
-import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
 	buildFraudFingerprint,
 	evaluateLeadRateLimit,
@@ -147,7 +147,7 @@ assert.equal(formSource.includes("requestAttemptId"), true);
 assert.equal(formSource.includes("consentedAt:"), false);
 for (const file of [
 	"src/core/data-access/public/dto.ts",
-	"src/app/(site)/obekty/[slug]/page.tsx",
+	"src/app/(site)/public-route.tsx",
 	"packages/ui/src/views/catalog/StarterCatalogPageView.tsx",
 ]) {
 	assert.equal(

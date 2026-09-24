@@ -1,20 +1,17 @@
 import "server-only";
 
-import {
-	countPublicSitemapPages,
-	countPublicSitemapProperties,
-	listPublicSitemapPagesPage,
-	listPublicSitemapPropertiesPage,
-} from "./payload-reads";
-import { projectConfig } from "@/project/project.config";
 import { resolvePropertyPageLifecycle } from "@/core/seo/property";
 import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
+import { projectConfig } from "@/project/project.config";
+import { buildProjectUrl, buildPropertyUrl } from "@/project/url-grammar";
 import {
 	type CatalogQueryInput,
 	catalogQuerySchema,
 	findPublicCatalogFacets,
 	findPublicCatalogProperties,
+	findPublicPropertyById,
 	findPublicPropertyBySlug,
+	findPublicPropertyLifecycleById,
 	findPublicPropertyLifecycleBySlug,
 	type PublicCatalogResult,
 } from "./catalog";
@@ -29,7 +26,12 @@ import {
 } from "./dto";
 import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
-import { buildProjectUrl, buildPropertyUrl } from "@/project/url-grammar";
+import {
+	countPublicSitemapPages,
+	countPublicSitemapProperties,
+	listPublicSitemapPagesPage,
+	listPublicSitemapPropertiesPage,
+} from "./payload-reads";
 
 export type PublicPropertyPageState =
 	| {
@@ -299,6 +301,36 @@ export async function getPublicProperty(
 		lifecycle,
 		property: toPropertyDetailsDTO(property, related),
 	} as const;
+}
+
+export async function getPublicPropertyByPublicUrlId(
+	publicUrlId: string,
+): Promise<PublicPropertyPageState | null> {
+	const payload = await getOptionalPublicGatewayPayload();
+	if (!payload) return null;
+	const lifecycle = resolvePropertyPageLifecycle(
+		await findPublicPropertyLifecycleById(payload, publicUrlId),
+	);
+	if (lifecycle.kind === "missing") return null;
+	if (lifecycle.kind === "gone") return { lifecycle };
+	if (lifecycle.kind === "redirect") return { lifecycle };
+
+	const property = await findPublicPropertyById(payload, publicUrlId);
+	if (!property) return null;
+	const relatedResult = await findPublicCatalogProperties(payload, {
+		limit: 3,
+		page: 1,
+		category: property.category,
+		city: property.locality ?? undefined,
+	});
+	const related = relatedResult.items
+		.filter((item) => item.id !== property.id)
+		.slice(0, 3);
+
+	return {
+		lifecycle,
+		property: toPropertyDetailsDTO(property, related),
+	};
 }
 
 export async function getPublicMarketingPage(slug: string) {

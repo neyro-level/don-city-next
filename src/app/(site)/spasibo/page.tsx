@@ -3,13 +3,14 @@ import {
 	ResolvedPublicRoutePage,
 } from "../public-route";
 
-const segments = ["o-kompanii"] as const;
+const segments = ["spasibo"] as const;
 
 export const revalidate = 3600;
 
 export function generateMetadata() {
 	return generateResolvedRouteMetadata(segments);
 }
+
 export default function Page() {
 	return <ResolvedPublicRoutePage segments={segments} />;
 }

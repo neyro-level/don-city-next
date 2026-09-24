@@ -24,7 +24,7 @@ export const staticPublicUrlEntries: readonly PublicUrlEntry[] = [
 		indexable: true,
 	},
 	{
-		path: projectUrls.services,
+		path: projectUrls.lawyer,
 		changeFrequency: "weekly",
 		priority: 0.7,
 		indexable: true,
@@ -36,19 +36,7 @@ export const staticPublicUrlEntries: readonly PublicUrlEntry[] = [
 		indexable: true,
 	},
 	{
-		path: projectUrls.mortgage,
-		changeFrequency: "weekly",
-		priority: 0.7,
-		indexable: true,
-	},
-	{
 		path: projectUrls.sale,
-		changeFrequency: "weekly",
-		priority: 0.7,
-		indexable: true,
-	},
-	{
-		path: projectUrls.rent,
 		changeFrequency: "weekly",
 		priority: 0.7,
 		indexable: true,

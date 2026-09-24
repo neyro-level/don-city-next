@@ -14,6 +14,7 @@ import { buildPropertyUrl } from "@/project/url-grammar";
 import {
 	aggregatePublicCatalogFacets,
 	findPublicPropertyLifecycleRow,
+	findPublicPropertyLifecycleRowById,
 	findPublicRedirectByFromPath,
 	listPublicSitemapPropertiesPage,
 	publicRedirectDestinationIsChain,
@@ -350,6 +351,57 @@ export async function findPublicPropertyBySlug(payload: Payload, slug: string) {
 	if (!property) return null;
 
 	return toPublicCatalogProperty(property as PublicCatalogSelectedProperty);
+}
+
+export async function findPublicPropertyById(
+	payload: Payload,
+	publicUrlId: string,
+) {
+	if (!/^\d+$/.test(publicUrlId)) return null;
+	const result = await payload.find({
+		collection: "properties",
+		where: {
+			and: [
+				publicPropertyDetailsWhere,
+				{ id: { equals: Number(publicUrlId) } },
+			],
+		},
+		depth: publicGatewayPolicy.depth,
+		limit: 1,
+		page: 1,
+		select: publicPropertySelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+
+	const property = result.docs[0];
+	return property
+		? toPublicCatalogProperty(property as PublicCatalogSelectedProperty)
+		: null;
+}
+
+export async function findPublicPropertyLifecycleById(
+	payload: Payload,
+	publicUrlId: string,
+): Promise<
+	PublicPropertyLifecycleLookup & {
+		slug?: string;
+		category?: Property["category"];
+	}
+> {
+	const property = await findPublicPropertyLifecycleRowById(
+		payload,
+		publicUrlId,
+	);
+	if (!property) return { found: false };
+	return {
+		found: true,
+		slug: property.slug,
+		category: property.category,
+		status: property.status,
+		publishedAt: property.publishedAt,
+		contentPurgedAt: property.contentPurgedAt,
+	};
 }
 
 export async function findPublicPropertyLifecycleBySlug(
