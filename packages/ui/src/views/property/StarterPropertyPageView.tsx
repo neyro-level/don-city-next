@@ -2,6 +2,7 @@ import type {
 	BreadcrumbItemDTO,
 	MarketingPageDTO,
 	PropertyDetailsDTO,
+	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
 import { Button } from "../../components/ui/button";
 import {
@@ -20,15 +21,22 @@ export function PropertyPageView({
 	leadContext,
 	breadcrumbs = [],
 	contextLinks = [],
+	pageIdentity,
 }: {
 	property: PropertyDetailsDTO;
 	leadContext: MarketingPageDTO["leadContext"];
 	breadcrumbs?: readonly BreadcrumbItemDTO[];
 	contextLinks?: readonly { href: string; label: string }[];
+	pageIdentity?: PublicPageIdentityDTO;
 }) {
 	return (
 		<>
-			<section id="section-property-gallery">
+			<section
+				id="section-property-gallery"
+				data-analytics-event="property_open"
+				data-analytics-geo-slug={pageIdentity?.geoSlug}
+				data-analytics-page-key={pageIdentity?.pageKey}
+			>
 				<Section space="hero">
 					<Container>
 						<nav

@@ -66,6 +66,7 @@
 		"verify:geo-model": "pnpm verify:route-resolver && node --experimental-strip-types scripts/verify-geo-model.ts && pnpm verify:nearby-geo",
 		"verify:nearby-geo": "node --experimental-strip-types scripts/verify-nearby-geo.ts",
 		"verify:navigation": "node --experimental-strip-types scripts/verify-navigation.ts",
+		"verify:gateway-context": "node --experimental-strip-types scripts/verify-gateway-context.ts",
 		"verify:geo-runtime": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/verify-geo-runtime.ts",
 		"verify:route-resolver": "node --experimental-strip-types scripts/verify-route-resolver.ts",
 		"verify:route-http": "node scripts/verify-route-http.mjs",

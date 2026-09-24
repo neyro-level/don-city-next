@@ -70,14 +70,18 @@ export async function ResolvedPublicRoutePage({
 				leadContext={leadPage.leadContext}
 				breadcrumbs={result.breadcrumbs}
 				contextLinks={result.internalLinks}
+				pageIdentity={result.identity}
 			/>
 		);
 	}
 	if (result.catalogQuery) {
 		const catalog = await getPublicCatalog({
-			...result.catalogQuery,
-			limit: 24,
-			page: 1,
+			identity: result.identity,
+			query: {
+				...result.catalogQuery,
+				limit: 24,
+				page: 1,
+			},
 		});
 		return (
 			<CatalogPageView
@@ -101,6 +105,7 @@ export async function ResolvedPublicRoutePage({
 				}}
 				breadcrumbs={result.breadcrumbs}
 				contextLinks={result.internalLinks}
+				pageIdentity={catalog.identity}
 			/>
 		);
 	}

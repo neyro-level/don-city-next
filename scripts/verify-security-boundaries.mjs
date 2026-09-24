@@ -224,7 +224,9 @@ assert.ok(
 	"CORS must be exact-origin driven",
 );
 assert.ok(
-	payloadConfig.includes('process.env.NODE_ENV === "production" ? false'),
+	/process\.env\.NODE_ENV\s*===\s*["']production["']\s*\?\s*false/s.test(
+		payloadConfig,
+	),
 	"production Payload db push must be hard-disabled",
 );
 assert.ok(

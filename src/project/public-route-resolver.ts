@@ -1,4 +1,7 @@
-import type { PropertyCategory } from "@ams/realtbase-contracts";
+import type {
+	PropertyCategory,
+	PublicPageIdentityDTO,
+} from "@ams/realtbase-contracts";
 import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-geo.ts";
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
@@ -9,6 +12,7 @@ import {
 	buildPropertyNavigation,
 	type InternalLink,
 } from "./navigation.ts";
+import { buildPublicPageIdentity } from "./public-page-identity.ts";
 import { seoRegistryByCanonicalPath } from "./seo-registry.generated.ts";
 import { siteConfig } from "./site.config.ts";
 import { siteProfile } from "./site.profile.ts";
@@ -44,6 +48,7 @@ export type ResolvedPublicPage = {
 	geoLinks?: readonly { href: string; label: string }[];
 	breadcrumbs: readonly { label: string; href?: string }[];
 	internalLinks: readonly InternalLink[];
+	identity: PublicPageIdentityDTO;
 	property?: Extract<
 		PublicPropertyPageState,
 		{ property: unknown }
@@ -73,8 +78,11 @@ function page(
 		| "canonicalPath"
 		| "breadcrumbs"
 		| "internalLinks"
+		| "identity"
 	> &
-		Partial<Pick<ResolvedPublicPage, "breadcrumbs" | "internalLinks">>,
+		Partial<
+			Pick<ResolvedPublicPage, "breadcrumbs" | "internalLinks" | "identity">
+		>,
 ): ResolvedPublicPage {
 	const result = {
 		kind: "page" as const,
@@ -87,6 +95,7 @@ function page(
 		...result,
 		breadcrumbs: input.breadcrumbs ?? buildPageBreadcrumbs(key, result.h1),
 		internalLinks: input.internalLinks ?? buildCatalogLinks(key),
+		identity: input.identity ?? buildPublicPageIdentity(key),
 	};
 }
 
@@ -315,6 +324,8 @@ export async function resolveProjectPublicRoute(
 	}
 	const geoLinks = await propertyNearbyGeoLinks(property, dependencies);
 	const navigation = buildPropertyNavigation(property, geoLinks);
+	const actualGeoSlug =
+		nearbyGeoSlugForCity(property.city) ?? siteProfile.primaryGeo;
 	return page(key, {
 		title: `${property.title} — ${siteConfig.brandName}`,
 		description: property.description,
@@ -326,5 +337,9 @@ export async function resolveProjectPublicRoute(
 		geoLinks,
 		breadcrumbs: navigation.breadcrumbs,
 		internalLinks: navigation.links,
+		identity: buildPublicPageIdentity(key, {
+			geoSlug: actualGeoSlug,
+			category: actualCategory,
+		}),
 	});
 }

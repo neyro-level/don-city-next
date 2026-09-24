@@ -3,6 +3,7 @@ import type {
 	LeadFormContext,
 	PropertyFilterDTO,
 	PropertyListDTO,
+	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
 import { Badge } from "../../components/ui/badge";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
@@ -36,6 +37,7 @@ export function CatalogPageView({
 	copy = defaultCopy,
 	breadcrumbs = [],
 	contextLinks = [],
+	pageIdentity,
 }: {
 	list: PropertyListDTO;
 	filters: PropertyFilterDTO;
@@ -43,12 +45,16 @@ export function CatalogPageView({
 	copy?: CatalogPageCopy;
 	breadcrumbs?: readonly BreadcrumbItemDTO[];
 	contextLinks?: readonly { label: string; href: string }[];
+	pageIdentity?: PublicPageIdentityDTO;
 }) {
 	return (
 		<>
 			<section
 				id="section-catalog-hero"
 				className="border-b border-border bg-surface-raised py-[var(--section-space-md)]"
+				data-analytics-event="category_catalog_view"
+				data-analytics-geo-slug={pageIdentity?.geoSlug}
+				data-analytics-page-key={pageIdentity?.pageKey}
 			>
 				<Container>
 					{breadcrumbs.length ? (

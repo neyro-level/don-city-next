@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { PublicPageIdentityDTO } from "@ams/realtbase-contracts";
+
 import { resolvePropertyPageLifecycle } from "@/core/seo/property";
 import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
 import { projectConfig } from "@/project/project.config";
@@ -24,12 +26,12 @@ import {
 	toPropertyListDTO,
 	toShellDTO,
 } from "./dto";
-import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
-import { getOptionalPublicGatewayPayload } from "./payload";
 import {
 	findNearbyGeoAvailability,
 	type NearbyGeoAvailability,
 } from "./nearby-geo";
+import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
+import { getOptionalPublicGatewayPayload } from "./payload";
 import {
 	countPublicSitemapPages,
 	countPublicSitemapProperties,
@@ -117,13 +119,20 @@ export async function getPublicShell() {
 	return toShellDTO(await findPublicPages(payload));
 }
 
-export async function getPublicCatalog(
-	query: CatalogQueryInput = { limit: 24, page: 1 },
-) {
+export type PublicCatalogRequest = {
+	identity: PublicPageIdentityDTO;
+	query: CatalogQueryInput;
+};
+
+export async function getPublicCatalog({
+	identity,
+	query,
+}: PublicCatalogRequest) {
 	const payload = await getOptionalPublicGatewayPayload();
 	if (!payload) {
 		const result = emptyCatalog(query);
 		return {
+			identity,
 			list: toPropertyListDTO(result),
 			filters: toPropertyFilterDTO(result),
 		} as const;
@@ -134,6 +143,7 @@ export async function getPublicCatalog(
 	]);
 
 	return {
+		identity,
 		list: toPropertyListDTO(result),
 		filters: toPropertyFilterDTO(result, facets),
 	} as const;

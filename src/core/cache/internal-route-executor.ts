@@ -13,6 +13,8 @@ const allowedPathPrefixes = [
 	projectUrls.contacts,
 ] as const;
 const allowedTags = new Set(["site", "properties", "property", "media"]);
+const scopedTag =
+	/^(?:geo:[a-z0-9-]+(?::cat:[a-z0-9-]+)?|district:[a-z0-9-]+:[a-z0-9-]+|property:[a-z0-9-]+)$/;
 
 export type InternalRevalidationResult = {
 	status: 200 | 400 | 403 | 404;
@@ -23,7 +25,9 @@ export type InternalRevalidationResult = {
 };
 
 function allowedTarget(target: CacheTarget): boolean {
-	if (target.type === "tag") return allowedTags.has(target.tag);
+	if (target.type === "tag") {
+		return allowedTags.has(target.tag) || scopedTag.test(target.tag);
+	}
 	return allowedPathPrefixes.some(
 		(prefix) => target.path === prefix || target.path.startsWith(`${prefix}/`),
 	);
