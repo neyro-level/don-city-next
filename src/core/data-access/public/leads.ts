@@ -110,11 +110,11 @@ export async function submitPublicLead({
 			...publicGatewayReadAccess(),
 		});
 		const property = found.docs[0];
-		const canonicalSourcePage = property
+		const canonicalSourcePage = property?.publicUrlId != null
 			? buildPropertyUrl({
 					category: property.category,
 					semantic: property.slug,
-					publicUrlId: property.id,
+					publicUrlId: property.publicUrlId,
 				})
 			: undefined;
 		if (!property || intake.lead.sourcePage !== canonicalSourcePage) {

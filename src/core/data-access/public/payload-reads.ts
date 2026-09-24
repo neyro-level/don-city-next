@@ -161,8 +161,8 @@ export async function listPublicSitemapPropertiesPage(
 	input: { limit: number; offset: number },
 ): Promise<
 	readonly {
-		id: Property["id"];
 		slug: string;
+		publicUrlId: number;
 		category: Property["category"];
 		updatedAt: string;
 	}[]
@@ -178,8 +178,8 @@ export async function listPublicSitemapPropertiesPage(
 
 	const pageSize = Math.min(100, limit);
 	const items: {
-		id: Property["id"];
 		slug: string;
+		publicUrlId: number;
 		category: Property["category"];
 		updatedAt: string;
 	}[] = [];
@@ -192,18 +192,24 @@ export async function listPublicSitemapPropertiesPage(
 			limit: pageSize,
 			page,
 			sort: "-updatedAt",
-			select: { id: true, slug: true, category: true, updatedAt: true },
+			select: {
+				publicUrlId: true,
+				slug: true,
+				category: true,
+				updatedAt: true,
+			},
 			...access,
 		});
 		if (!result.docs.length) break;
 		for (const property of result.docs) {
+			if (property.publicUrlId == null) continue;
 			if (skipped < offset) {
 				skipped += 1;
 				continue;
 			}
 			items.push({
-				id: property.id,
 				slug: property.slug,
+				publicUrlId: property.publicUrlId,
 				category: property.category,
 				updatedAt: property.updatedAt,
 			});
@@ -282,7 +288,7 @@ export async function findPublicPropertyLifecycleRow(
 	payload: Payload,
 	slug: string,
 ): Promise<{
-	id: Property["id"];
+		publicUrlId: number;
 	category: Property["category"];
 	status: "active" | "archived";
 	publishedAt: string | null;
@@ -294,7 +300,7 @@ export async function findPublicPropertyLifecycleRow(
 		limit: 1,
 		page: 1,
 		select: {
-			id: true,
+			publicUrlId: true,
 			category: true,
 			status: true,
 			publishedAt: true,
@@ -304,9 +310,9 @@ export async function findPublicPropertyLifecycleRow(
 		depth: 0,
 	});
 	const row = result.docs[0];
-	if (!row) return null;
+	if (!row || row.publicUrlId == null) return null;
 	return {
-		id: row.id,
+		publicUrlId: row.publicUrlId,
 		category: row.category,
 		status: row.status === "archived" ? "archived" : "active",
 		publishedAt: row.publishedAt ?? null,
@@ -314,11 +320,11 @@ export async function findPublicPropertyLifecycleRow(
 	};
 }
 
-export async function findPublicPropertyLifecycleRowById(
+export async function findPublicPropertyLifecycleRowByPublicUrlId(
 	payload: Payload,
 	publicUrlId: string,
 ): Promise<{
-	id: Property["id"];
+		publicUrlId: number;
 	slug: string;
 	category: Property["category"];
 	status: "active" | "archived";
@@ -328,11 +334,11 @@ export async function findPublicPropertyLifecycleRowById(
 	if (!/^\d+$/.test(publicUrlId)) return null;
 	const result = await payload.find({
 		collection: "properties",
-		where: { id: { equals: Number(publicUrlId) } },
+		where: { publicUrlId: { equals: Number(publicUrlId) } },
 		limit: 1,
 		page: 1,
 		select: {
-			id: true,
+			publicUrlId: true,
 			slug: true,
 			category: true,
 			status: true,
@@ -343,9 +349,9 @@ export async function findPublicPropertyLifecycleRowById(
 		depth: 0,
 	});
 	const row = result.docs[0];
-	if (!row) return null;
+	if (!row || row.publicUrlId == null) return null;
 	return {
-		id: row.id,
+		publicUrlId: row.publicUrlId,
 		slug: row.slug,
 		category: row.category,
 		status: row.status === "archived" ? "archived" : "active",

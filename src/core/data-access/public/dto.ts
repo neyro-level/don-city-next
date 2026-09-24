@@ -69,7 +69,7 @@ export function toPropertyCardDTO(
 		href: buildPropertyUrl({
 			category: property.category,
 			semantic: property.slug,
-			publicUrlId: property.id,
+			publicUrlId: property.publicUrlId,
 		}),
 		title: property.title,
 		category: property.category,

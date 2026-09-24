@@ -238,6 +238,10 @@ export interface Property {
    * Public immutable page identity. Feed imports must not rotate it after first publish.
    */
   slug: string;
+  /**
+   * Stable public numeric identity. Assigned once from the created Payload record and never edited.
+   */
+  publicUrlId?: number | null;
   market: 'secondary' | 'newbuild';
   category: 'apartment' | 'house' | 'land' | 'commercial' | 'room' | 'garage';
   houseType?: ('house' | 'cottage' | 'townhouse' | 'dacha' | 'part_of_house') | null;
@@ -955,6 +959,7 @@ export interface PropertiesSelect<T extends boolean = true> {
   publishedAt?: T;
   contentPurgedAt?: T;
   slug?: T;
+  publicUrlId?: T;
   market?: T;
   category?: T;
   houseType?: T;

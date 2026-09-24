@@ -14,7 +14,7 @@ import { buildPropertyUrl } from "@/project/url-grammar";
 import {
 	aggregatePublicCatalogFacets,
 	findPublicPropertyLifecycleRow,
-	findPublicPropertyLifecycleRowById,
+	findPublicPropertyLifecycleRowByPublicUrlId,
 	findPublicRedirectByFromPath,
 	listPublicSitemapPropertiesPage,
 	publicRedirectDestinationIsChain,
@@ -28,6 +28,7 @@ import {
 
 const publicPropertySelect = {
 	slug: true,
+	publicUrlId: true,
 	status: true,
 	publishedAt: true,
 	contentPurgedAt: true,
@@ -102,6 +103,7 @@ type PublicCatalogSelectedProperty = Omit<
 		Property,
 		| "id"
 		| "slug"
+		| "publicUrlId"
 		| "status"
 		| "market"
 		| "category"
@@ -130,6 +132,7 @@ type PublicCatalogSelectedProperty = Omit<
 	"category"
 > & {
 	category: R1PublicPropertyCategory;
+	publicUrlId: number;
 };
 
 export type PublicCatalogProperty = Omit<
@@ -191,6 +194,7 @@ export const publicPropertyPublicationWhere: Where = {
 		{ status: { equals: "active" } },
 		{ publishedAt: { exists: true } },
 		{ contentPurgedAt: { exists: false } },
+		{ publicUrlId: { exists: true } },
 		...r1PublicPropertyPublicationClauses(),
 	],
 };
@@ -200,6 +204,7 @@ export const publicPropertyRetainedArchivedWhere: Where = {
 		{ status: { equals: "archived" } },
 		{ publishedAt: { exists: true } },
 		{ contentPurgedAt: { exists: false } },
+		{ publicUrlId: { exists: true } },
 		...r1PublicPropertyPublicationClauses(),
 	],
 };
@@ -257,6 +262,7 @@ function toPublicCatalogProperty(
 	return {
 		id: property.id,
 		slug: property.slug,
+		publicUrlId: property.publicUrlId,
 		status: property.status,
 		market: property.market,
 		category: property.category,
@@ -292,8 +298,28 @@ function toPublicCatalogProperty(
 export async function findPublicSitemapProperties(
 	payload: Payload,
 	input: { limit: number; offset: number } = { limit: 500, offset: 0 },
-): Promise<readonly Pick<PublicCatalogProperty, "slug" | "updatedAt">[]> {
-	return listPublicSitemapPropertiesPage(payload, input);
+): Promise<
+	readonly {
+		slug: string;
+		publicUrlId: number;
+		category: R1PublicPropertyCategory;
+		updatedAt: string;
+	}[]
+> {
+	return listPublicSitemapPropertiesPage(payload, input).then((items) =>
+		items.flatMap((item) =>
+			r1PublicPropertyCategories.includes(
+				item.category as R1PublicPropertyCategory,
+			)
+				? [
+						{
+							...item,
+							category: item.category as R1PublicPropertyCategory,
+						},
+					]
+				: [],
+		),
+	);
 }
 
 export async function findPublicCatalogProperties(
@@ -360,7 +386,7 @@ export async function findPublicPropertyBySlug(payload: Payload, slug: string) {
 	return toPublicCatalogProperty(property as PublicCatalogSelectedProperty);
 }
 
-export async function findPublicPropertyById(
+export async function findPublicPropertyByPublicUrlId(
 	payload: Payload,
 	publicUrlId: string,
 ) {
@@ -370,7 +396,7 @@ export async function findPublicPropertyById(
 		where: {
 			and: [
 				publicPropertyDetailsWhere,
-				{ id: { equals: Number(publicUrlId) } },
+				{ publicUrlId: { equals: Number(publicUrlId) } },
 			],
 		},
 		depth: publicGatewayPolicy.depth,
@@ -387,7 +413,7 @@ export async function findPublicPropertyById(
 		: null;
 }
 
-export async function findPublicPropertyLifecycleById(
+export async function findPublicPropertyLifecycleByPublicUrlId(
 	payload: Payload,
 	publicUrlId: string,
 ): Promise<
@@ -396,7 +422,7 @@ export async function findPublicPropertyLifecycleById(
 		category?: Property["category"];
 	}
 > {
-	const property = await findPublicPropertyLifecycleRowById(
+	const property = await findPublicPropertyLifecycleRowByPublicUrlId(
 		payload,
 		publicUrlId,
 	);
@@ -421,7 +447,7 @@ export async function findPublicPropertyLifecycleBySlug(
 	const fromPath = buildPropertyUrl({
 		category: property.category,
 		semantic: slug,
-		publicUrlId: property.id,
+		publicUrlId: property.publicUrlId,
 	});
 	const redirect = await findPublicRedirectByFromPath(payload, fromPath);
 	const destination = sanitizeExplicitRedirectPath(redirect?.to);

@@ -6,6 +6,7 @@ import {
 } from "../../core/access/roles.ts";
 import { publicPropertyReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { applyDerivedFieldsOnWrite } from "../../core/ingest/derived-fields.ts";
+import { publicUrlIdFromPayloadId } from "../../core/identity/public-url-id.ts";
 import {
 	applyPublishedSlugPolicy,
 	collectChangedImportOwnedFields,
@@ -91,7 +92,17 @@ export const Properties: CollectionConfig = {
 	],
 	hooks: {
 		beforeChange: [
-			({ data, originalDoc, req }) => {
+			({ data, operation, originalDoc, req }) => {
+				const context = req?.context as
+					| { publicUrlIdInitialized?: boolean }
+					| undefined;
+				if (operation === "create") {
+					delete data.publicUrlId;
+				} else if (originalDoc?.publicUrlId != null) {
+					data.publicUrlId = originalDoc.publicUrlId;
+				} else if (!context?.publicUrlIdInitialized) {
+					delete data.publicUrlId;
+				}
 				normalizePropertyNumericWrite(data);
 				const priceMinor =
 					data.priceMinor === undefined
@@ -159,6 +170,30 @@ export const Properties: CollectionConfig = {
 				});
 				if (lockedSlug) data.slug = lockedSlug;
 				return data;
+			},
+		],
+		afterChange: [
+			async ({ context, doc, operation, req }) => {
+				if (
+					operation !== "create" ||
+					doc.publicUrlId != null ||
+					context.publicUrlIdInitialized
+				) {
+					return doc;
+				}
+
+				const publicUrlId = publicUrlIdFromPayloadId(doc.id);
+
+				return req.payload.update({
+					collection: "properties",
+					id: doc.id,
+					data: { publicUrlId },
+					overrideAccess: true,
+					context: {
+						...context,
+						publicUrlIdInitialized: true,
+					},
+				});
 			},
 		],
 	},
@@ -278,6 +313,23 @@ export const Properties: CollectionConfig = {
 			admin: {
 				description:
 					"Public immutable page identity. Feed imports must not rotate it after first publish.",
+			},
+		},
+		{
+			name: "publicUrlId",
+			type: "number",
+			unique: true,
+			index: true,
+			min: 1,
+			access: {
+				read: () => true,
+				create: fieldOwnersOnly,
+				update: fieldOwnersOnly,
+			},
+			admin: {
+				readOnly: true,
+				description:
+					"Stable public numeric identity. Assigned once from the created Payload record and never edited.",
 			},
 		},
 		{

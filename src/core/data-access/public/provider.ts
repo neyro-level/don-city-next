@@ -16,9 +16,9 @@ import {
 	catalogQuerySchema,
 	findPublicCatalogFacets,
 	findPublicCatalogProperties,
-	findPublicPropertyById,
+	findPublicPropertyByPublicUrlId,
 	findPublicPropertyBySlug,
-	findPublicPropertyLifecycleById,
+	findPublicPropertyLifecycleByPublicUrlId,
 	findPublicPropertyLifecycleBySlug,
 	type PublicCatalogResult,
 } from "./catalog";
@@ -253,7 +253,7 @@ export async function getPublicSitemapShard(
 				path: buildPropertyUrl({
 					category: property.category,
 					semantic: property.slug,
-					publicUrlId: property.id,
+					publicUrlId: property.publicUrlId,
 				}),
 				lastModified: property.updatedAt,
 				changeFrequency: "daily" as const,
@@ -341,13 +341,13 @@ export async function getPublicPropertyByPublicUrlId(
 	const payload = await getOptionalPublicGatewayPayload();
 	if (!payload) return null;
 	const lifecycle = resolvePropertyPageLifecycle(
-		await findPublicPropertyLifecycleById(payload, publicUrlId),
+		await findPublicPropertyLifecycleByPublicUrlId(payload, publicUrlId),
 	);
 	if (lifecycle.kind === "missing") return null;
 	if (lifecycle.kind === "gone") return { lifecycle };
 	if (lifecycle.kind === "redirect") return { lifecycle };
 
-	const property = await findPublicPropertyById(payload, publicUrlId);
+	const property = await findPublicPropertyByPublicUrlId(payload, publicUrlId);
 	if (!property) return null;
 	const relatedResult = await findPublicCatalogProperties(payload, {
 		limit: 3,

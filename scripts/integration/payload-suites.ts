@@ -422,11 +422,14 @@ await payload.update({
 	data: { contentPurgedAt: null },
 	...access,
 });
+if (publishedProperty.publicUrlId == null) {
+	throw new Error("Created property must receive a stable publicUrlId.");
+}
 
 const propertyCanonicalUrl = buildPropertyUrl({
 	category: publishedProperty.category,
 	semantic: publishedProperty.slug,
-	publicUrlId: publishedProperty.id,
+	publicUrlId: publishedProperty.publicUrlId,
 });
 const propertyLeadBody = {
 	name: "Integration Property Lead",
@@ -488,7 +491,7 @@ const mismatchedPropertyLead = await submitPublicLead({
 		sourcePage: buildPropertyUrl({
 			category: publishedProperty.category,
 			semantic: "client-forged-slug",
-			publicUrlId: publishedProperty.id,
+			publicUrlId: publishedProperty.publicUrlId,
 		}),
 		requestAttemptId: "55555555-5555-4555-8555-555555555555",
 	},
