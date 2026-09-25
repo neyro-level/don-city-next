@@ -56,6 +56,7 @@
 		"verify:property-lifecycle-routes": "node --experimental-strip-types scripts/verify-property-lifecycle-routes.ts",
 		"verify:home-page": "node --conditions=react-server --experimental-strip-types scripts/verify-home-page.ts",
 		"verify:geo-hub-page": "node --experimental-strip-types scripts/verify-geo-hub-page.ts",
+		"verify:apartment-geo-page": "node --experimental-strip-types scripts/verify-apartment-geo-page.ts",
 		"verify:seller-page": "node --experimental-strip-types scripts/verify-seller-page.ts",
 		"verify:lawyer-page": "node --experimental-strip-types scripts/verify-lawyer-page.ts",
 		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",
