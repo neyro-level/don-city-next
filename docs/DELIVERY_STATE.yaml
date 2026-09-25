@@ -128,6 +128,12 @@ evidence:
     branch: codex/epic-45-timeweb-staging
     base_sha: e2fafec266eedd20c14b0b40be11b3ff4916cbf8
     preflight_head: 2341b30cc76b42f0913ee1a422a5233fd81e6422
+    implementation_head: 8dd361b8ec2a10e5beb29a7f7bd26c95662694f3
+    artifact_contract_head: 740d3ba5b752cf74d420c9aa2f51ff75f18a52aa
+    local_build: PASS
+    rehearsal_manifest: PASS
+    docker_image: NOT_BUILT_DAEMON_UNAVAILABLE
+    live_staging: BLOCKED_OWNER_GATE
     reports:
       - docs/research/EPIC-45_TIMEWEB_STAGING_PREFLIGHT.md
       - docs/research/EPIC-45_STAGING_IMPLEMENTATION.md
