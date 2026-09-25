@@ -8,6 +8,8 @@ function safe(value: string, label: string): string {
 }
 
 export const publicCacheTags = {
+	site: "site",
+	properties: "properties",
 	geo: (geoSlug: string) => `geo:${safe(geoSlug, "geo")}`,
 	category: (geoSlug: string, category: string) =>
 		`geo:${safe(geoSlug, "geo")}:cat:${safe(category, "category")}`,
@@ -16,6 +18,46 @@ export const publicCacheTags = {
 	property: (publicUrlId: string) =>
 		`property:${safe(publicUrlId, "property")}`,
 } as const;
+
+function relationshipSlug(value: unknown): string | null {
+	if (!value || typeof value !== "object" || !("slug" in value)) return null;
+	return typeof value.slug === "string" ? value.slug : null;
+}
+
+export function buildPropertyWriteInvalidationTargets(input: {
+	geo?: unknown;
+	category?: string | null;
+	district?: unknown;
+	publicUrlId?: string | number | null;
+}): CacheTarget[] {
+	const targets: CacheTarget[] = [
+		{ type: "tag", tag: publicCacheTags.properties },
+	];
+	const geoSlug = relationshipSlug(input.geo);
+	const districtSlug = relationshipSlug(input.district);
+	if (geoSlug) {
+		targets.push({ type: "tag", tag: publicCacheTags.geo(geoSlug) });
+		if (input.category) {
+			targets.push({
+				type: "tag",
+				tag: publicCacheTags.category(geoSlug, input.category),
+			});
+		}
+		if (districtSlug) {
+			targets.push({
+				type: "tag",
+				tag: publicCacheTags.district(geoSlug, districtSlug),
+			});
+		}
+	}
+	if (input.publicUrlId != null) {
+		targets.push({
+			type: "tag",
+			tag: publicCacheTags.property(String(input.publicUrlId)),
+		});
+	}
+	return targets;
+}
 
 export function buildPropertyInvalidationTargets(input: {
 	geoSlug: string;

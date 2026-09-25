@@ -2,7 +2,7 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-24
+Updated: 2026-09-25
 
 ## Preconditions
 
@@ -33,6 +33,7 @@ Updated: 2026-09-24
 - [ ] Global property URLs resolve by `publicUrlId` and contain no geo segment.
 - [ ] SINGLE_GEO and MULTI_GEO profile matrices pass without product-code drift.
 - [ ] 301/308/404/410 and property lifecycle pass real HTTP proof.
+- [ ] Home/ALL/category/district/facet/property cache hits and event-driven invalidation pass staging proof within the stale-data SLA.
 - [ ] Staging remains noindex and isolated from production PII.
 - [ ] Immutable artifact built once and identified by exact SHA.
 

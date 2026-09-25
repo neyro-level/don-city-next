@@ -3,6 +3,8 @@ import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
 import { publicGeoReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { geoValidationSystemAccess } from "../../core/data-access/system/geo.ts";
 import { relationId, validateDistrictSlug } from "../geo/constraints.ts";
+import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
+import { publicCacheTags } from "../cache-tags.ts";
 
 export const Districts: CollectionConfig = {
 	slug: "districts",
@@ -54,6 +56,22 @@ export const Districts: CollectionConfig = {
 				}
 				data.slug = slug;
 				return data;
+			},
+		],
+		afterChange: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.properties }],
+					"district_changed",
+				);
+			},
+		],
+		afterDelete: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.properties }],
+					"district_deleted",
+				);
 			},
 		],
 	},

@@ -2,6 +2,8 @@ import type { CollectionConfig } from "payload";
 import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
 import { publicGeoReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { validateCitySlug } from "../geo/constraints.ts";
+import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
+import { publicCacheTags } from "../cache-tags.ts";
 
 export const Cities: CollectionConfig = {
 	slug: "cities",
@@ -17,6 +19,22 @@ export const Cities: CollectionConfig = {
 			({ data }) => {
 				if (data?.slug) data.slug = validateCitySlug(data.slug);
 				return data;
+			},
+		],
+		afterChange: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.properties }],
+					"city_changed",
+				);
+			},
+		],
+		afterDelete: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.properties }],
+					"city_deleted",
+				);
 			},
 		],
 	},

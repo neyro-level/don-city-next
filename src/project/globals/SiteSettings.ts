@@ -2,6 +2,8 @@ import type { GlobalConfig } from "payload";
 import { adminsAndOwners } from "../../core/access/roles.ts";
 import { publicGlobalReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { approvedSiteSettings, siteSettingsSlug } from "../site-settings.ts";
+import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
+import { publicCacheTags } from "../cache-tags.ts";
 
 export const SiteSettings: GlobalConfig = {
 	slug: siteSettingsSlug,
@@ -9,6 +11,16 @@ export const SiteSettings: GlobalConfig = {
 	access: {
 		read: publicGlobalReadAccess,
 		update: adminsAndOwners,
+	},
+	hooks: {
+		afterChange: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.site }],
+					"site_settings_changed",
+				);
+			},
+		],
 	},
 	fields: [
 		{

@@ -3,6 +3,8 @@ import { publicPageReadAccess } from "../../core/data-access/public/access-mode.
 import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
 import { projectConfig } from "../project.config.ts";
 import { buildProjectUrl } from "../url-grammar.ts";
+import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
+import { publicCacheTags } from "../cache-tags.ts";
 
 export const Pages: CollectionConfig = {
 	slug: "pages",
@@ -32,6 +34,22 @@ export const Pages: CollectionConfig = {
 				}
 				data.slug = slug;
 				return data;
+			},
+		],
+		afterChange: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.site }],
+					"page_changed",
+				);
+			},
+		],
+		afterDelete: [
+			async () => {
+				await invalidateProjectPublicCache(
+					[{ type: "tag", tag: publicCacheTags.site }],
+					"page_deleted",
+				);
 			},
 		],
 	},

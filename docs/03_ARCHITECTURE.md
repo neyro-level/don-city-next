@@ -2,7 +2,7 @@
 
 Status: Draft
 Version: 0.1
-Updated: 2026-09-24
+Updated: 2026-09-25
 
 ## 1. Architecture Summary
 
@@ -66,6 +66,24 @@ EPIC-03 discovery confirms one existing DON CITY Timeweb server and one separate
 The existing server remains the presumed production target and the verified database route is the existing private VPC; public database exposure, a second server, database move or new S3 resource is not implied. The database connection is stored in Secret Master and must be rotated before deployment because the temporary password appeared in the owner conversation. `doncity-home.ru` currently resolves elsewhere and does not return a usable site response. Production, DNS, further network mutation and secret mutation still require their own authorized task and recovery proof. Detailed evidence is in `docs/research/EPIC-03_DISCOVERY.md`.
 
 Target shape: host Nginx → immutable Next.js + Payload image on loopback → existing PostgreSQL over the verified private route. Staging stays separate/noindex with separate database and secrets. Operational detail: `docs/OPERATIONS.md` and `docs/research/EPIC-06_INFRASTRUCTURE_CONTRACT.md`.
+
+### Public cache contract
+
+- The public App Router uses the Next.js 16 previous-model Data Cache around
+  Public Gateway reads; `cacheComponents` stays disabled until a separate
+  rendering-model decision.
+- Home, ALL, category, district, facet and property reads have deterministic
+  input keys and a 3600-second safety TTL.
+- Canonical tags are `site`, `properties`, `geo:{slug}`,
+  `geo:{slug}:cat:{category}`, `district:{city}:{slug}` and
+  `property:{publicUrlId}`. Facets are separate keyed variants and inherit
+  geo/category invalidation instead of creating another tag grammar.
+- CMS writes invalidate through the authenticated, rate-limited and allowlisted
+  internal HTTP route. Feed imports emit one batched invalidation and must not
+  perform one request per changed row.
+- Proxy and lifecycle HTTP reads stay outside the Data Cache. A cache failure
+  does not expose data or abort a CMS write; health alerts and the TTL bound the
+  stale-data window.
 
 ### Jobs ownership contract
 

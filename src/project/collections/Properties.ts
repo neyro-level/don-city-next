@@ -7,6 +7,7 @@ import {
 import { publicPropertyReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { applyDerivedFieldsOnWrite } from "../../core/ingest/derived-fields.ts";
 import { publicUrlIdFromPayloadId } from "../../core/identity/public-url-id.ts";
+import { initializePropertyPublicUrlId } from "../../core/data-access/system/property-public-url-id.ts";
 import {
 	applyPublishedSlugPolicy,
 	collectChangedImportOwnedFields,
@@ -15,10 +16,32 @@ import {
 	shouldRecordManualOwnership,
 } from "../../core/ingest/manual-ownership.ts";
 import { normalizePropertyNumericWrite } from "../../core/ingest/numeric-invariants.ts";
+import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
+import { buildPropertyWriteInvalidationTargets } from "../cache-tags.ts";
+
+async function invalidatePropertyDocument(
+	doc: Record<string, unknown>,
+	reason: string,
+) {
+	await invalidateProjectPublicCache(
+		buildPropertyWriteInvalidationTargets({
+			geo: doc.city,
+			category: typeof doc.category === "string" ? doc.category : undefined,
+			district: doc.district,
+			publicUrlId:
+				typeof doc.publicUrlId === "string" ||
+				typeof doc.publicUrlId === "number"
+					? doc.publicUrlId
+					: undefined,
+		}),
+		reason,
+	);
+}
 
 const fieldAdminsAndOwners: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner", "admin"]);
 const fieldOwnersOnly: FieldAccess = ({ req }) => hasRole(req.user, ["owner"]);
+const publicIdentityReadAccess: FieldAccess = () => true;
 
 const privateFieldAccess = {
 	read: fieldAdminsAndOwners,
@@ -184,16 +207,31 @@ export const Properties: CollectionConfig = {
 
 				const publicUrlId = publicUrlIdFromPayloadId(doc.id);
 
-				return req.payload.update({
-					collection: "properties",
-					id: doc.id,
-					data: { publicUrlId },
-					overrideAccess: true,
-					context: {
-						...context,
-						publicUrlIdInitialized: true,
-					},
+				return initializePropertyPublicUrlId({
+					payload: req.payload,
+					propertyId: doc.id,
+					publicUrlId,
+					context,
 				});
+			},
+			async ({ context, doc }) => {
+				if ((context as { source?: string } | undefined)?.source === "import") {
+					return doc;
+				}
+				await invalidatePropertyDocument(
+					doc as Record<string, unknown>,
+					"property_changed",
+				);
+				return doc;
+			},
+		],
+		afterDelete: [
+			async ({ doc }) => {
+				await invalidatePropertyDocument(
+					doc as Record<string, unknown>,
+					"property_deleted",
+				);
+				return doc;
 			},
 		],
 	},
@@ -322,7 +360,7 @@ export const Properties: CollectionConfig = {
 			index: true,
 			min: 1,
 			access: {
-				read: () => true,
+				read: publicIdentityReadAccess,
 				create: fieldOwnersOnly,
 				update: fieldOwnersOnly,
 			},

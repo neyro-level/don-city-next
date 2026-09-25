@@ -7,7 +7,10 @@ import {
 } from "@ams/realtbase-ui";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { getPublicCatalog, getPublicNap } from "@/core/data-access/public";
+import {
+	getCachedPublicCatalog,
+	getCachedPublicNap,
+} from "@/core/data-access/public/cached-provider";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
@@ -85,7 +88,7 @@ export async function ResolvedPublicRoutePage({
 		);
 	}
 	if (result.catalogQuery) {
-		const catalog = await getPublicCatalog({
+		const catalog = await getCachedPublicCatalog({
 			identity: result.identity,
 			query: {
 				...result.catalogQuery,
@@ -121,7 +124,8 @@ export async function ResolvedPublicRoutePage({
 	}
 
 	const staticSlug = result.key.kind === "static" ? result.key.slug : "page";
-	const nap = staticSlug === "kontakty" ? await getPublicNap() : undefined;
+	const nap =
+		staticSlug === "kontakty" ? await getCachedPublicNap() : undefined;
 	const staticPage = buildStaticMarketingPage({
 		slug: staticSlug,
 		title: result.h1,

@@ -7,7 +7,10 @@ import {
 	HomeTrustSection,
 } from "@ams/realtbase-ui";
 import { toMetadata } from "@/core/seo/page-metadata";
-import { getPublicHomePage, getPublicNap } from "@/core/data-access/public";
+import {
+	getCachedPublicHomePage,
+	getCachedPublicNap,
+} from "@/core/data-access/public/cached-provider";
 import {
 	buildOrganizationJsonLd,
 	buildWebsiteJsonLd,
@@ -17,12 +20,15 @@ import {
 export const revalidate = 3600;
 
 export async function generateMetadata() {
-	const home = await getPublicHomePage();
+	const home = await getCachedPublicHomePage();
 	return toMetadata(home.page.seo);
 }
 
 export default async function HomePage() {
-	const [home, nap] = await Promise.all([getPublicHomePage(), getPublicNap()]);
+	const [home, nap] = await Promise.all([
+		getCachedPublicHomePage(),
+		getCachedPublicNap(),
+	]);
 	return (
 		<>
 			<JsonLdScript data={buildOrganizationJsonLd(nap)} />

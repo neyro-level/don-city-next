@@ -87,6 +87,7 @@
 		"verify:house-districts-facets": "node --experimental-strip-types scripts/verify-house-districts-facets.ts",
 		"verify:navigation-shell": "node --experimental-strip-types scripts/verify-navigation-shell.ts",
 		"verify:gateway-context": "node --experimental-strip-types scripts/verify-gateway-context.ts",
+		"verify:cache-targets": "node --conditions=react-server --experimental-strip-types scripts/verify-cache-targets.ts",
 		"verify:sitemap-indexnow": "node --experimental-strip-types scripts/verify-sitemap-indexnow.ts",
 		"verify:two-profile": "node --experimental-strip-types scripts/verify-two-profile-proof.ts",
 		"verify:geo-runtime": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/verify-geo-runtime.ts",

@@ -6,19 +6,19 @@ import {
 	resolveProjectPublicRoute,
 } from "../../project/public-route-resolver.ts";
 import {
-	getNearbyGeoAvailability,
-	getPublicDistrictParentSlug,
-	getPublicPropertyByPublicUrlId,
-} from "../data-access/public/provider.ts";
+	getCachedNearbyGeoAvailability,
+	getCachedPublicDistrictParentSlug,
+	getCachedPublicPropertyByPublicUrlId,
+} from "../data-access/public/cached-provider.ts";
 
 export const resolvePublicRoute = cache(
 	(segments: readonly string[], searchParams: PublicRouteSearchParams = {}) =>
 		resolveProjectPublicRoute(
 			segments,
 			{
-				loadProperty: getPublicPropertyByPublicUrlId,
-				loadNearbyGeo: getNearbyGeoAvailability,
-				loadDistrictParentSlug: getPublicDistrictParentSlug,
+				loadProperty: getCachedPublicPropertyByPublicUrlId,
+				loadNearbyGeo: getCachedNearbyGeoAvailability,
+				loadDistrictParentSlug: getCachedPublicDistrictParentSlug,
 			},
 			searchParams,
 		),
