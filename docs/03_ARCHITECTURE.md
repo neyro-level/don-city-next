@@ -94,6 +94,21 @@ Target shape: host Nginx → immutable Next.js + Payload image on loopback → e
 - `enableConcurrencyControl=true` remains mandatory.
 - Jobs-owner handover is stop-old-before-enable-new; simultaneous owners and a public jobs endpoint are forbidden.
 
+### Public performance contract
+
+- Catalog and card composition remain React Server Components. Client
+  boundaries are limited to explicit interactions and public app imports use
+  narrow UI package entrypoints instead of the aggregate package barrel.
+- Catalog page 2+ is fetched through the Public Gateway, linked by
+  server-rendered anchors, marked `noindex,follow`, and self-canonical. Page 1
+  keeps the clean canonical URL.
+- Listing media reserves layout space with an explicit aspect ratio and
+  intrinsic dimensions. Below-the-fold images are lazy/async; priority is only
+  assigned to an identified above-the-fold candidate.
+- Local build and client-reference measurements are regression evidence, not
+  Web Vitals. LCP/CLS/INP acceptance requires a throttled staging trace against
+  an exact candidate SHA.
+
 ## 6. Quality / Testing
 
 WORK uses targeted diagnostics. PR creation runs no CI. Before merge: AI review + one exact-head `STANDARD` or risk-specific `RISKY` SourceCraft gate. `.sourcecraft/ci.yaml` keeps both gates manual-only, requires `expected_commit_sha` and rejects a run whose `SOURCECRAFT_COMMIT_SHA` differs from that full SHA. Release reuses valid evidence and builds one immutable artifact.

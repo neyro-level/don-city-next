@@ -2,6 +2,10 @@
 
 Status: `LOCAL PASS`
 
+Verified implementation head: `2aac0501c523519e75a65616dbbbe6c660ec7c31`.
+The following documentation-only commit preserves that implementation head as
+the verification target.
+
 ## Acceptance matrix
 
 | Area | Verdict | Evidence |
