@@ -2,10 +2,17 @@ import { createHash } from "node:crypto";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { execFileSync } from "node:child_process";
+import assert from "node:assert/strict";
 
 const root = process.cwd();
 const outputDir = join(root, ".release");
 const outputFile = join(outputDir, "release-manifest.json");
+const mode = process.env.RELEASE_MODE ?? "REHEARSAL";
+
+assert.ok(
+	mode === "REHEARSAL" || mode === "RELEASE",
+	"RELEASE_MODE must be REHEARSAL or RELEASE",
+);
 
 function git(args) {
 	return execFileSync("git", args, {
@@ -30,9 +37,9 @@ const status = git(["status", "--short"]);
 const manifest = {
 	project: packageJson.name,
 	version: packageJson.version,
-	profile: "REALTY_BASE",
-	deliveryProfile: "COMMERCIAL",
-	mode: "RELEASE",
+	profile: "REALTY_CATALOG",
+	deliveryProfile: "CRITICAL",
+	mode,
 	source: {
 		branch: git(["branch", "--show-current"]),
 		commit: git(["rev-parse", "HEAD"]),
@@ -43,11 +50,15 @@ const manifest = {
 		node: packageJson.engines?.node,
 		packageManager: packageJson.packageManager,
 		nextRuntime: "next-start-full-image",
-		jobsAutorunOwner: "single production runtime only",
+		jobsAutorunOwner:
+			mode === "REHEARSAL"
+				? "disabled for isolated staging"
+				: "single production runtime only",
+		indexing: mode === "REHEARSAL" ? "noindex" : "owner-gated",
 	},
 	artifact: {
 		format: "docker-image",
-		imageName: "ams-realty-baza-starter",
+		imageName: "don-city-next",
 		dockerfile: "Dockerfile",
 	},
 	migrations: migrations.map((file) => basename(file)),

@@ -11,6 +11,10 @@
   and deny-all robots response.
 - A redacted proof matrix covers R1 routes, geo/facets, nearby locality,
   lifecycle, feeds, leads, cache, monitoring and rollback.
+- Release-manifest identity is client-specific (`REALTY_CATALOG`, `CRITICAL`,
+  `don-city-next`) and defaults to `REHEARSAL`; the release verifier now checks
+  the isolated DON CITY staging assets instead of legacy starter deployment
+  files.
 
 ## Remaining live gates
 
@@ -32,6 +36,8 @@ allowlists and the final storage/deployment/backup/monitoring contract.
   `PASS`.
 - TypeScript: `PASS`; scoped Biome lint: `PASS`; documentation Source of Truth
   guard: `PASS`.
+- Next.js 16.3.5 production build of the local candidate: `PASS` (23 static
+  pages generated; dynamic application/API routes compiled).
 - Real client-readiness gate: expected `FAIL` with exactly four external
   blockers: retention decisions, real host allowlists and the live
   storage/deployment/backup/monitoring contract.

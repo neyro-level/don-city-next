@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(path, "utf8");
 
 const dockerfile = read("Dockerfile");
-const compose = read("deploy/compose/start-baza.compose.yml");
-const nginx = read("deploy/nginx/start-baza.ams24.ru.conf");
+const compose = read("deploy/clients/timeweb/staging/compose.staging.yml.example");
+const nginx = read("deploy/clients/timeweb/staging/nginx.staging.conf.example");
 const operations = read("docs/OPERATIONS.md");
 const releaseManifest = read("scripts/release-manifest.mjs");
 const pnpmWorkspace = read("pnpm-workspace.yaml");
@@ -21,20 +21,29 @@ for (const expected of [
 
 assert.ok(!dockerfile.includes("DATABASE_URI="), "Dockerfile must not embed database credentials.");
 assert.ok(!compose.includes("DATABASE_URI="), "Compose template must not embed database credentials.");
-assert.ok(compose.includes("AMS_REALTBASE_IMAGE"), "Compose template must require an immutable image tag.");
+assert.ok(compose.includes('${IMAGE:?'), "Compose template must require an immutable image tag.");
 assert.ok(
-	compose.includes("/etc/ams/realtbase/start-baza.env"),
-	"Compose template must load runtime env from the server secret materialization path.",
+	compose.includes("STAGING_ENV_FILE"),
+	"Compose template must load a separate staging env file.",
 );
-assert.ok(compose.includes('PAYLOAD_DB_PUSH: "false"'), "Production compose must keep Payload db push disabled.");
-assert.ok(nginx.includes("start-baza.ams24.ru"), "Nginx template must target the internal production domain.");
-assert.ok(nginx.includes("noindex, nofollow"), "Nginx template must preserve internal noindex policy.");
-assert.ok(operations.includes("immutable artifact"), "Operations must preserve immutable artifact rule.");
+assert.ok(compose.includes('JOBS_AUTORUN: "false"'), "Staging must not own Payload jobs.");
+assert.ok(!/^\s*build\s*:/m.test(compose), "Staging must consume an image built outside the server.");
+assert.ok(nginx.includes("__STAGING_DOMAIN__"), "Nginx template must require an explicit staging domain.");
+assert.ok(nginx.includes("noindex, nofollow"), "Nginx template must preserve staging noindex policy.");
+assert.ok(operations.includes("immutable image"), "Operations must preserve immutable image rule.");
 assert.ok(releaseManifest.includes(".release"), "Release manifest must write local uncommitted evidence.");
 assert.ok(pnpmWorkspace.includes("confirmModulesPurge: false"), "Workspace must support non-interactive Docker builds.");
 assert.ok(
 	releaseManifest.includes("next-start-full-image"),
 	"Release manifest must record the full-image Next.js runtime shape.",
 );
+for (const expected of [
+	'profile: "REALTY_CATALOG"',
+	'deliveryProfile: "CRITICAL"',
+	'imageName: "don-city-next"',
+	'process.env.RELEASE_MODE ?? "REHEARSAL"',
+]) {
+	assert.ok(releaseManifest.includes(expected), `Release manifest must include ${expected}.`);
+}
 
 console.log("release artifact contract ok");
