@@ -8,6 +8,25 @@ export type LeadFormKind =
 	| "consultation"
 	| "generic";
 
+export type LeadBusinessFormKind =
+	| "general"
+	| "callback"
+	| "property"
+	| "mortgage"
+	| "sell"
+	| "legal"
+	| "rent";
+
+export type LeadBusinessContext = {
+	formKind: LeadBusinessFormKind;
+	category?: string;
+	district?: string;
+	city?: string;
+	property?: string;
+	mortgage?: string;
+	development?: string;
+};
+
 export type LeadIntakeAccepted = {
 	accepted: true;
 	lead: {
@@ -20,6 +39,7 @@ export type LeadIntakeAccepted = {
 		sourcePage: string;
 		referrer?: string;
 		property?: string;
+		context: LeadBusinessContext;
 		utm?: {
 			source?: string;
 			medium?: string;
@@ -81,6 +101,25 @@ const leadIntakeSchema = z.object({
 	sourcePage: z.string().trim().min(1).max(512),
 	referrer: z.string().trim().max(512).optional().or(z.literal("")),
 	property: z.string().trim().max(128).optional().or(z.literal("")),
+	context: z
+		.object({
+			formKind: z.enum([
+				"general",
+				"callback",
+				"property",
+				"mortgage",
+				"sell",
+				"legal",
+				"rent",
+			]),
+			category: nullableContextValue(),
+			district: nullableContextValue(),
+			city: nullableContextValue(),
+			property: nullableContextValue(128),
+			mortgage: nullableContextValue(),
+			development: nullableContextValue(),
+		})
+		.optional(),
 	utm: z
 		.object({
 			source: z.string().trim().max(120).optional().or(z.literal("")),
@@ -113,6 +152,7 @@ export function prepareLeadIntake(
 	}
 
 	const payload = parsed.data;
+	const businessContext = payload.context;
 	const currentConsentVersion =
 		options?.currentConsentVersion ?? legalConsentConfig.currentConsentVersion;
 	if (payload.consentVersion !== currentConsentVersion) {
@@ -170,8 +210,21 @@ export function prepareLeadIntake(
 			referrer: emptyToUndefined(payload.referrer),
 			property:
 				payload.formKind === "property_request"
-					? emptyToUndefined(payload.property)
+					? nullableToUndefined(businessContext?.property ?? payload.property)
 					: undefined,
+			context: {
+				formKind:
+					businessContext?.formKind ??
+					fallbackBusinessFormKind(payload.formKind),
+				category: nullableToUndefined(businessContext?.category),
+				district: nullableToUndefined(businessContext?.district),
+				city: nullableToUndefined(businessContext?.city),
+				property: nullableToUndefined(
+					businessContext?.property ?? payload.property,
+				),
+				mortgage: nullableToUndefined(businessContext?.mortgage),
+				development: nullableToUndefined(businessContext?.development),
+			},
 			utm: normalizeUtm(payload.utm),
 			consent: {
 				accepted: true,
@@ -346,6 +399,22 @@ function normalizeUtm(input: z.output<typeof leadIntakeSchema>["utm"]) {
 function emptyToUndefined(value: string | undefined): string | undefined {
 	const trimmed = value?.trim();
 	return trimmed ? trimmed : undefined;
+}
+
+function nullableToUndefined(
+	value: string | null | undefined,
+): string | undefined {
+	return emptyToUndefined(value ?? undefined);
+}
+
+function nullableContextValue(max = 80) {
+	return z.string().trim().min(1).max(max).nullable().optional();
+}
+
+function fallbackBusinessFormKind(kind: LeadFormKind): LeadBusinessFormKind {
+	if (kind === "property_request") return "property";
+	if (kind === "callback") return "callback";
+	return "general";
 }
 
 function hashSafe(parts: string[]): string {

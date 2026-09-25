@@ -19,6 +19,10 @@ const lead = {
 	message: "Хочу консультацию",
 	formKind: "consultation",
 	sourcePage: "/kontakty",
+	context: {
+		formKind: "legal",
+		city: "donetsk",
+	},
 	consent: {
 		accepted: true,
 		version: "privacy-2026-09",
@@ -41,6 +45,7 @@ const delivery = {
 const payload = buildCustomWebhookLeadPayload(lead, delivery);
 assert.equal(payload.channelId, "custom-webhook");
 assert.equal(payload.idempotencyKey, delivery.idempotencyKey);
+assert.equal(payload.context.formKind, "legal");
 
 let capturedRequest;
 const delivered = await sendCustomWebhookLead({

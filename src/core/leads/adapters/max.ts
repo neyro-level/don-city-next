@@ -5,6 +5,7 @@ export type MaxLeadPayload = {
 	channelId: "max";
 	leadId: string;
 	formKind: LeadRecord["formKind"];
+	context: LeadRecord["context"];
 	sourcePage: string;
 	contact: {
 		name: string;
@@ -86,6 +87,7 @@ export function buildMaxLeadPayload(lead: LeadRecord): MaxLeadPayload {
 		channelId: "max",
 		leadId: lead.id,
 		formKind: lead.formKind,
+		context: lead.context,
 		sourcePage: lead.sourcePage,
 		contact: {
 			name: lead.name,

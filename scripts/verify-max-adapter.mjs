@@ -11,6 +11,10 @@ const lead = {
 	message: "Хочу консультацию",
 	formKind: "consultation",
 	sourcePage: "/kontakty",
+	context: {
+		formKind: "legal",
+		city: "donetsk",
+	},
 	consent: {
 		accepted: true,
 		version: "privacy-2026-09",
@@ -22,6 +26,7 @@ const lead = {
 const payload = buildMaxLeadPayload(lead);
 assert.equal(payload.channelId, "max");
 assert.equal(payload.contact.phoneE164, "+79161234567");
+assert.equal(payload.context.formKind, "legal");
 
 const delivered = await sendMaxLead({
 	lead,

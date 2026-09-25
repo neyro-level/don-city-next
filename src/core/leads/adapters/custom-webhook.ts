@@ -9,6 +9,7 @@ export type CustomWebhookLeadPayload = {
 	deliveryId: string;
 	idempotencyKey: string;
 	formKind: LeadRecord["formKind"];
+	context: LeadRecord["context"];
 	sourcePage: string;
 	contact: {
 		name: string;
@@ -188,6 +189,7 @@ export function buildCustomWebhookLeadPayload(
 		deliveryId: delivery.id,
 		idempotencyKey: delivery.idempotencyKey,
 		formKind: lead.formKind,
+		context: lead.context,
 		sourcePage: lead.sourcePage,
 		contact: {
 			name: lead.name,

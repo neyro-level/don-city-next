@@ -1,11 +1,11 @@
 import type { Payload, PayloadRequest } from "payload";
-import { systemOverrideAccess } from "../system/overrides.ts";
 import type {
 	LeadDeliveryRecord,
 	LeadOutboxRepository,
 	LeadOutboxTransaction,
 	LeadRecord,
 } from "../../leads/outbox.ts";
+import { systemOverrideAccess } from "../system/overrides.ts";
 
 const access = systemOverrideAccess("system-job");
 
@@ -46,6 +46,7 @@ function mapLead(doc: Record<string, unknown>): LeadRecord {
 		version?: string;
 		consentedAt?: string;
 	};
+	const context = (doc.context ?? {}) as Record<string, unknown>;
 	return {
 		id: String(doc.id),
 		status: "new",
@@ -61,6 +62,18 @@ function mapLead(doc: Record<string, unknown>): LeadRecord {
 			doc.property === null || doc.property === undefined
 				? undefined
 				: relationId(doc.property),
+		context: {
+			formKind: businessFormKind(context.formKind, doc.formKind),
+			category: optionalString(context.category),
+			district: optionalString(context.district),
+			city: optionalString(context.city),
+			property:
+				context.property === null || context.property === undefined
+					? undefined
+					: relationId(context.property),
+			mortgage: optionalString(context.mortgage),
+			development: optionalString(context.development),
+		},
 		utm: (doc.utm as LeadRecord["utm"]) ?? undefined,
 		consent: {
 			accepted: true,
@@ -110,6 +123,10 @@ export function createPayloadLeadOutboxRepository(
 						sourcePage: input.sourcePage,
 						referrer: input.referrer,
 						property: parsePropertyId(input.property),
+						context: {
+							...input.context,
+							property: parsePropertyId(input.context.property),
+						},
 						utm: input.utm,
 						consent: input.consent,
 						status: "new",
@@ -219,4 +236,31 @@ export function createPayloadLeadOutboxRepository(
 			});
 		},
 	};
+}
+
+function optionalString(value: unknown): string | undefined {
+	return typeof value === "string" && value ? value : undefined;
+}
+
+function businessFormKind(
+	value: unknown,
+	legacy: unknown,
+): LeadRecord["context"]["formKind"] {
+	if (
+		typeof value === "string" &&
+		[
+			"general",
+			"callback",
+			"property",
+			"mortgage",
+			"sell",
+			"legal",
+			"rent",
+		].includes(value)
+	) {
+		return value as LeadRecord["context"]["formKind"];
+	}
+	if (legacy === "property_request") return "property";
+	if (legacy === "callback") return "callback";
+	return "general";
 }

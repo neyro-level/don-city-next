@@ -16,7 +16,12 @@ export type LeadPropertyContextDTO = {
 export type LeadFormContext = {
 	formKind: LeadFormKind;
 	sourcePage: string;
+	category?: string;
+	district?: string;
+	city?: string;
 	property?: LeadPropertyContextDTO;
+	mortgage?: string | null;
+	development?: string | null;
 	consentVersion: string;
 	consentHref: string;
 	consentRequired: boolean;

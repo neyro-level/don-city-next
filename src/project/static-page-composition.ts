@@ -7,6 +7,7 @@ import type {
 import { companyProfile } from "./company-profile.ts";
 import { leadConsentContext } from "./legal.config.ts";
 import { siteConfig } from "./site.config.ts";
+import { siteProfile } from "./site.profile.ts";
 import { projectUrls } from "./url-grammar.ts";
 
 const sellerSlug = "prodat-nedvizhimost";
@@ -136,6 +137,7 @@ export function buildStaticMarketingPage(input: {
 				: {
 						formKind: seller ? "sell" : lawyer ? "legal" : "general",
 						sourcePage: input.seo.canonicalPath,
+						city: siteProfile.primaryGeo,
 						...leadConsentContext(),
 					},
 	};

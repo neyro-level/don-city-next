@@ -103,6 +103,40 @@ export const Leads: CollectionConfig = {
 			index: true,
 		},
 		{
+			name: "context",
+			type: "group",
+			admin: {
+				description:
+					"Typed business context captured by the public form. Future mortgage/development values remain nullable until their modules are activated.",
+			},
+			fields: [
+				{
+					name: "formKind",
+					type: "select",
+					options: [
+						{ label: "General", value: "general" },
+						{ label: "Callback", value: "callback" },
+						{ label: "Property", value: "property" },
+						{ label: "Mortgage", value: "mortgage" },
+						{ label: "Sell", value: "sell" },
+						{ label: "Legal", value: "legal" },
+						{ label: "Rent", value: "rent" },
+					],
+				},
+				{ name: "category", type: "text" },
+				{ name: "district", type: "text" },
+				{ name: "city", type: "text" },
+				{
+					name: "property",
+					type: "relationship",
+					relationTo: "properties",
+					index: true,
+				},
+				{ name: "mortgage", type: "text" },
+				{ name: "development", type: "text" },
+			],
+		},
+		{
 			name: "utm",
 			type: "group",
 			fields: [

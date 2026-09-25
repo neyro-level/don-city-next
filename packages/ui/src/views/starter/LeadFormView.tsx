@@ -1,9 +1,8 @@
 "use client"; // interactive form state, validation, fetch, focus management
 
 import type { LeadFormContext, LeadFormKind } from "@ams/realtbase-contracts";
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
-import { Checkbox } from "../../components/ui/checkbox";
 import {
 	Card,
 	CardContent,
@@ -12,6 +11,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../components/ui/card";
+import { Checkbox } from "../../components/ui/checkbox";
 import {
 	Field,
 	FieldDescription,
@@ -118,7 +118,15 @@ export function LeadFormView({
 					message,
 					formKind: toIntakeFormKind(context.formKind),
 					sourcePage: context.sourcePage,
-					property: context.property?.id,
+					context: {
+						formKind: context.formKind,
+						category: context.category ?? null,
+						district: context.district ?? null,
+						city: context.city ?? null,
+						property: context.property?.id ?? null,
+						mortgage: context.mortgage ?? null,
+						development: context.development ?? null,
+					},
 					consentAccepted: true,
 					consentVersion: context.consentVersion,
 					honeypot: String(data.get("company") ?? ""),

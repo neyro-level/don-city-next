@@ -449,7 +449,14 @@ const propertyLeadBody = {
 	phone: "+79990000009",
 	formKind: "property_request",
 	sourcePage: propertyCanonicalUrl,
-	property: String(publishedProperty.id),
+	context: {
+		formKind: "property",
+		category: publishedProperty.category,
+		city: "donetsk",
+		property: String(publishedProperty.id),
+		mortgage: null,
+		development: null,
+	},
 	consentAccepted: true,
 	consentVersion: legalConsentConfig.currentConsentVersion,
 	honeypot: "",
@@ -491,6 +498,18 @@ for (const persisted of persistedPropertyLeads.docs) {
 		String(publishedProperty.id),
 	);
 	assert.equal(persisted.sourcePage, normalizedPropertyCanonicalUrl);
+	assert.equal(persisted.context?.formKind, "property");
+	assert.equal(persisted.context?.category, publishedProperty.category);
+	assert.equal(persisted.context?.city, "donetsk");
+	assert.equal(
+		persisted.context?.property &&
+			typeof persisted.context.property === "object"
+			? String(persisted.context.property.id)
+			: String(persisted.context?.property),
+		String(publishedProperty.id),
+	);
+	assert.equal(persisted.context?.mortgage, null);
+	assert.equal(persisted.context?.development, null);
 	assert.equal(
 		persisted.consent?.version,
 		legalConsentConfig.currentConsentVersion,

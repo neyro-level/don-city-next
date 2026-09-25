@@ -147,6 +147,9 @@ export async function ResolvedPublicRoutePage({
 			leadContext: {
 				formKind: "property",
 				sourcePage: result.canonicalPath,
+				category: result.property.category,
+				district: result.property.district,
+				city: result.property.city,
 				property: {
 					id: result.property.id,
 					slug: result.property.slug,
@@ -185,6 +188,9 @@ export async function ResolvedPublicRoutePage({
 				leadContext={{
 					formKind: "general",
 					sourcePage: result.canonicalPath,
+					category: result.catalogQuery.category,
+					district: result.catalogQuery.districtSlug,
+					city: result.catalogQuery.geoSlug,
 					...leadConsentContext(),
 				}}
 				copy={{

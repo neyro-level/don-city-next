@@ -8,12 +8,12 @@ import {
 import { parseTestApprovedOrigins } from "../security/test-destinations.ts";
 import { sendCustomWebhookLead } from "./adapters/custom-webhook.ts";
 import { sendMaxLead } from "./adapters/max.ts";
+import type { LeadDeliveryPolicy } from "./delivery-policy.ts";
 import {
 	completeLeadDeliveryAttempt,
 	type LeadDeliveryResult,
 	type LeadDeliveryStateRecord,
 } from "./delivery-state.ts";
-import type { LeadDeliveryPolicy } from "./delivery-policy.ts";
 import type { LeadDeliveryRecord, LeadRecord } from "./outbox.ts";
 
 const access = systemOverrideAccess("system-job");
@@ -47,6 +47,7 @@ function asLeadRecord(doc: Record<string, unknown>): LeadRecord {
 		version?: string;
 		consentedAt?: string;
 	};
+	const context = (doc.context ?? {}) as Record<string, unknown>;
 	return {
 		id: String(doc.id),
 		status: "new",
@@ -57,6 +58,15 @@ function asLeadRecord(doc: Record<string, unknown>): LeadRecord {
 		message: typeof doc.message === "string" ? doc.message : undefined,
 		formKind: doc.formKind as LeadRecord["formKind"],
 		sourcePage: String(doc.sourcePage ?? "/"),
+		context: {
+			formKind: businessFormKind(context.formKind, doc.formKind),
+			category: optionalString(context.category),
+			district: optionalString(context.district),
+			city: optionalString(context.city),
+			property: relationId(context.property),
+			mortgage: optionalString(context.mortgage),
+			development: optionalString(context.development),
+		},
 		consent: {
 			accepted: true,
 			version: String(consent.version ?? ""),
@@ -64,6 +74,41 @@ function asLeadRecord(doc: Record<string, unknown>): LeadRecord {
 		},
 		idempotencyKey: String(doc.idempotencyKey ?? ""),
 	};
+}
+
+function optionalString(value: unknown): string | undefined {
+	return typeof value === "string" && value ? value : undefined;
+}
+
+function relationId(value: unknown): string | undefined {
+	if (value === null || value === undefined) return undefined;
+	if (typeof value === "object" && "id" in value) {
+		return String((value as { id: unknown }).id);
+	}
+	return String(value);
+}
+
+function businessFormKind(
+	value: unknown,
+	legacy: unknown,
+): LeadRecord["context"]["formKind"] {
+	if (
+		typeof value === "string" &&
+		[
+			"general",
+			"callback",
+			"property",
+			"mortgage",
+			"sell",
+			"legal",
+			"rent",
+		].includes(value)
+	) {
+		return value as LeadRecord["context"]["formKind"];
+	}
+	if (legacy === "property_request") return "property";
+	if (legacy === "callback") return "callback";
+	return "general";
 }
 
 async function persistDelivery(

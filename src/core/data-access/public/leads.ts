@@ -99,7 +99,7 @@ export async function submitPublicLead({
 
 	const payload = await getPublicGatewayPayload();
 	if (intake.lead.formKind === "property_request") {
-		const propertyId = intake.lead.property;
+		const propertyId = intake.lead.context.property;
 		if (!propertyId || !/^\d+$/.test(propertyId)) {
 			return propertyContextRejected(intake.lead.sourcePage);
 		}
@@ -125,6 +125,7 @@ export async function submitPublicLead({
 			return propertyContextRejected(intake.lead.sourcePage);
 		}
 		intake.lead.property = String(property.id);
+		intake.lead.context.property = String(property.id);
 		intake.lead.sourcePage = canonicalSourcePage;
 	}
 	const repository = createPayloadLeadOutboxRepository(payload);

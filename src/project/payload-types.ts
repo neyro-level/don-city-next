@@ -537,6 +537,18 @@ export interface Lead {
   sourcePage: string;
   referrer?: string | null;
   property?: (number | null) | Property;
+  /**
+   * Typed business context captured by the public form. Future mortgage/development values remain nullable until their modules are activated.
+   */
+  context?: {
+    formKind?: ('general' | 'callback' | 'property' | 'mortgage' | 'sell' | 'legal' | 'rent') | null;
+    category?: string | null;
+    district?: string | null;
+    city?: string | null;
+    property?: (number | null) | Property;
+    mortgage?: string | null;
+    development?: string | null;
+  };
   utm?: {
     source?: string | null;
     medium?: string | null;
@@ -1171,6 +1183,17 @@ export interface LeadsSelect<T extends boolean = true> {
   sourcePage?: T;
   referrer?: T;
   property?: T;
+  context?:
+    | T
+    | {
+        formKind?: T;
+        category?: T;
+        district?: T;
+        city?: T;
+        property?: T;
+        mortgage?: T;
+        development?: T;
+      };
   utm?:
     | T
     | {
