@@ -86,7 +86,19 @@ for (const [key, value] of Object.entries(expectedAliases)) {
 const uiPackage = readJson(join(root, "packages", "ui", "package.json"));
 assert.deepEqual(
 	Object.keys(uiPackage.exports).sort(),
-	[".", "./primitives", "./styles.css", "./views"].sort(),
+	[
+		".",
+		"./primitives",
+		"./starter/catalog-page",
+		"./starter/gone-property-page",
+		"./starter/home-page",
+		"./starter/legal-document-page",
+		"./starter/marketing-page",
+		"./starter/property-page",
+		"./starter/site-shell",
+		"./styles.css",
+		"./views",
+	].sort(),
 	"UI package exports must stay intentional and closed",
 );
 const plainUsageCount = walk(join(root, "packages", "ui", "src"))
