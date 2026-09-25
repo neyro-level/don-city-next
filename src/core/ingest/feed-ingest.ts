@@ -272,9 +272,7 @@ export function buildFeedPropertyWriteData({
 	);
 	const dealType = normalizeDealType(offer.dealType);
 	const houseType = normalizeHouseType(offer.houseType ?? offer.propertyType);
-	const houseTypeNeedsReview = Boolean(
-		offer.houseType?.trim() && !houseType,
-	);
+	const houseTypeNeedsReview = Boolean(offer.houseType?.trim() && !houseType);
 	return {
 		feedSource: context.feedSourceId,
 		externalId: offer.externalId,
@@ -409,41 +407,27 @@ function normalizePropertyCategory(
 		if (explicit) return { value: explicit, needsReview: false };
 	}
 
-	// Compatibility fallback for pre-existing source variants not yet recorded in
-	// the YRL source map. It deliberately preserves the prior ingest behaviour.
-	const value = `${category ?? ""} ${propertyType ?? ""}`.toLowerCase();
-	if (/(дом|коттедж|house)/i.test(value)) {
-		return { value: "house", needsReview: false };
-	}
-	if (/(участ|зем|land)/i.test(value)) {
-		return { value: "land", needsReview: false };
-	}
-	if (/(коммер|commercial|office|офис)/i.test(value)) {
-		return { value: "commercial", needsReview: false };
-	}
-	if (/(комнат|room)/i.test(value)) {
-		return { value: "room", needsReview: false };
-	}
-	if (/(гараж|garage|parking|парков)/i.test(value)) {
-		return { value: "garage", needsReview: false };
-	}
-	if (/(квартир|апартамент|apartment|flat)/i.test(value)) {
-		return { value: "apartment", needsReview: false };
-	}
 	return { value: "apartment", needsReview: true };
 }
+
+const dealTypeMap: Readonly<Record<string, FeedPropertyDealType>> = {
+	аренда: "rent",
+	сдам: "rent",
+	снять: "rent",
+	rent: "rent",
+	продажа: "sale",
+	продам: "sale",
+	купить: "sale",
+	sale: "sale",
+	sell: "sale",
+};
 
 function normalizeDealType(value: string | undefined): {
 	value: FeedPropertyDealType;
 	needsReview: boolean;
 } {
-	const normalized = value?.toLowerCase() ?? "";
-	if (/(rent|аренд|сдам|снять)/i.test(normalized)) {
-		return { value: "rent", needsReview: false };
-	}
-	if (/(sale|sell|продаж|продам|купить)/i.test(normalized)) {
-		return { value: "sale", needsReview: false };
-	}
+	const explicit = dealTypeMap[normalizeSourceValue(value)];
+	if (explicit) return { value: explicit, needsReview: false };
 	return { value: "sale", needsReview: true };
 }
 

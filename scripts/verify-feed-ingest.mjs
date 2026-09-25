@@ -54,6 +54,25 @@ assert.equal(unknownTaxonomy.category, "apartment");
 assert.equal(unknownTaxonomy.dealType, "sale");
 assert.equal(unknownTaxonomy.taxonomyNeedsReview, true);
 
+for (const taxonomyProbe of [
+	{
+		category: "not a house",
+		propertyType: "unknown house format",
+		dealType: "not for sale",
+	},
+	{
+		category: "не квартира",
+		propertyType: "неизвестный домоформат",
+		dealType: "не продажа",
+	},
+]) {
+	const normalized = buildFeedPropertyWriteData({
+		context: baseContext,
+		offer: { ...offer, ...taxonomyProbe },
+	});
+	assert.equal(normalized.taxonomyNeedsReview, true);
+}
+
 const unsupportedCurrency = await parseYrlFeed({
 	stream: [
 		new TextEncoder().encode(
@@ -394,6 +413,7 @@ const boundedRuntime = await runImportFeed(
 			status: "fetched",
 			body: [],
 			sha256: Promise.resolve("bounded-hash"),
+			cancel: async () => undefined,
 		}),
 		parseFeed: async ({ onOffer }) => {
 			for (let index = 0; index < 10_001; index += 1) {
@@ -454,6 +474,84 @@ assert.ok(
 	"runtime must never buffer more offers than the configured batch bound",
 );
 
+let duplicateSafetyDeactivationCalls = 0;
+const duplicateSafetyRuntime = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		ingestBatchSize: 17,
+		claimQueuedImportRun: async () => "duplicate-safety-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "duplicate-safety-source",
+			code: "duplicate-safety",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "DUPLICATE_SAFETY_FEED_URL",
+			lastOfferCount: 100,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/duplicate-safety.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			sha256: Promise.resolve("duplicate-safety-hash"),
+			cancel: async () => undefined,
+		}),
+		parseFeed: async ({ onOffer }) => {
+			for (let index = 0; index < 50; index += 1) {
+				await onOffer?.({ ...offer, externalId: `unique-${index}` });
+			}
+			for (let index = 0; index < 20; index += 1) {
+				await onOffer?.({ ...offer, externalId: `unique-${index}` });
+			}
+			return {
+				offers: [],
+				issues: [],
+				stats: {
+					offersSeen: 70,
+					maxRetainedCharsObserved: 0,
+					maxBufferedOffersObserved: 1,
+					parserCompleted: true,
+					criticalStructuralAnomaly: false,
+				},
+			};
+		},
+		createRepository: () => ({
+			...createRepository(),
+			countMissingActive: async () => 50,
+			deactivateMissing: async () => {
+				duplicateSafetyDeactivationCalls += 1;
+				return 50;
+			},
+		}),
+		ingest: async ({ offers, issues }) => ({
+			offeredCount: offers.length,
+			createdCount: offers.length,
+			updatedCount: 0,
+			skippedCount: 0,
+			warningCount: 0,
+			errorCount: issues.length,
+			invalidatedTargets: [],
+		}),
+		finishRun: async () => undefined,
+		recordSourceContact: async () => undefined,
+		allowedImageHosts: new Set(),
+	},
+	{
+		feedSourceId: "duplicate-safety-source",
+		importRunId: "duplicate-safety-run",
+	},
+);
+assert.equal(duplicateSafetyRuntime.ingest?.offeredCount, 50);
+assert.equal(duplicateSafetyRuntime.ingest?.errorCount, 20);
+assert.equal(duplicateSafetyRuntime.status, "suspicious");
+assert.equal(
+	duplicateSafetyDeactivationCalls,
+	0,
+	"duplicate externalId values must not inflate deactivation safety counts",
+);
+
 let cacheWarningFinish;
 const cacheWarningRuntime = await runImportFeed(
 	{
@@ -475,6 +573,7 @@ const cacheWarningRuntime = await runImportFeed(
 			status: "fetched",
 			body: [],
 			sha256: Promise.resolve("cache-warning-hash"),
+			cancel: async () => undefined,
 		}),
 		parseFeed: async ({ onOffer }) => {
 			await onOffer?.(offer);
@@ -550,6 +649,7 @@ const rejectedApproval = await runImportFeed(
 			status: "fetched",
 			body: [],
 			sha256: Promise.resolve("approval-hash"),
+			cancel: async () => undefined,
 		}),
 		parseFeed: async () => ({
 			offers: [],
@@ -677,6 +777,182 @@ const nullDueDispatch = await dispatchDueFeeds({
 });
 assert.equal(nullDueDispatch.dispatched.length, 1);
 
+let disabledFetchCalls = 0;
+const disabledRuntime = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "disabled-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "disabled-source",
+			code: "disabled",
+			enabled: false,
+			market: "secondary",
+			feedUrlRef: "DISABLED_FEED_URL",
+			lastOfferCount: null,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/disabled.xml",
+		fetchFeed: async () => {
+			disabledFetchCalls += 1;
+			throw new Error("disabled source must not fetch");
+		},
+		createRepository: () => createRepository(),
+		finishRun: async ({ status }) => assert.equal(status, "failed"),
+		recordSourceContact: async () => undefined,
+		allowedImageHosts: new Set(),
+	},
+	{ feedSourceId: "disabled-source", importRunId: "disabled-run" },
+);
+assert.equal(disabledRuntime.status, "failed");
+assert.equal(disabledFetchCalls, 0);
+
+let transactionWrites = 0;
+let transactionCommitted = false;
+let transactionRolledBack = false;
+let failedFeedCancelled = false;
+const budgetedRuntime = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		ingestBatchSize: 1,
+		maxTotalOffers: 1,
+		maxTotalIssues: 2,
+		maxDatabaseWorkUnits: 4,
+		maxImportDurationMs: 1_000,
+		monotonicNow: () => 100,
+		claimQueuedImportRun: async () => "budget-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "budget-source",
+			code: "budget",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "BUDGET_FEED_URL",
+			lastOfferCount: null,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/budget.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			sha256: Promise.resolve("budget-hash"),
+			cancel: async () => {
+				failedFeedCancelled = true;
+			},
+		}),
+		beginImportTransaction: async () => "tx-budget",
+		commitImportTransaction: async () => {
+			transactionCommitted = true;
+		},
+		rollbackImportTransaction: async () => {
+			transactionRolledBack = true;
+			transactionWrites = 0;
+		},
+		createRepository: (_feedSourceId, transactionId) => {
+			assert.equal(transactionId, "tx-budget");
+			return createRepository();
+		},
+		parseFeed: async ({ onOffer }) => {
+			await onOffer?.({ ...offer, externalId: "budget-1" });
+			await onOffer?.({ ...offer, externalId: "budget-2" });
+			throw new Error("budget must stop before this point");
+		},
+		ingest: async ({ offers }) => {
+			transactionWrites += offers.length;
+			return {
+				offeredCount: offers.length,
+				createdCount: offers.length,
+				updatedCount: 0,
+				skippedCount: 0,
+				warningCount: 0,
+				errorCount: 0,
+				invalidatedTargets: [],
+			};
+		},
+		finishRun: async ({ status }) => assert.equal(status, "failed"),
+		recordSourceContact: async () => undefined,
+		allowedImageHosts: new Set(),
+	},
+	{ feedSourceId: "budget-source", importRunId: "budget-run" },
+);
+assert.equal(budgetedRuntime.status, "failed");
+assert.equal(transactionWrites, 0, "failed import writes must be rolled back");
+assert.equal(transactionCommitted, false);
+assert.equal(transactionRolledBack, true);
+assert.equal(failedFeedCancelled, true);
+
+let duplicateBudgetRolledBack = false;
+let duplicateIssuesPersisted = 0;
+const duplicateBudgetRuntime = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		ingestBatchSize: 10,
+		maxTotalOffers: 10,
+		maxTotalIssues: 1,
+		maxDatabaseWorkUnits: 100,
+		maxImportDurationMs: 1_000,
+		monotonicNow: () => 100,
+		claimQueuedImportRun: async () => "duplicate-budget-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "duplicate-budget-source",
+			code: "duplicate-budget",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "DUPLICATE_BUDGET_FEED_URL",
+			lastOfferCount: null,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/duplicates.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			sha256: Promise.resolve("duplicate-budget-hash"),
+			cancel: async () => undefined,
+		}),
+		beginImportTransaction: async () => "tx-duplicate-budget",
+		commitImportTransaction: async () => {
+			throw new Error("duplicate issue budget must not commit");
+		},
+		rollbackImportTransaction: async () => {
+			duplicateBudgetRolledBack = true;
+			duplicateIssuesPersisted = 0;
+		},
+		createRepository: () => createRepository(),
+		parseFeed: async ({ onOffer }) => {
+			await onOffer?.({ ...offer, externalId: "duplicate-budget-id" });
+			await onOffer?.({ ...offer, externalId: "duplicate-budget-id" });
+			await onOffer?.({ ...offer, externalId: "duplicate-budget-id" });
+			throw new Error("duplicate issue budget must stop before this point");
+		},
+		ingest: async ({ issues }) => {
+			duplicateIssuesPersisted += issues.length;
+			return {
+				offeredCount: 0,
+				createdCount: 0,
+				updatedCount: 0,
+				skippedCount: 0,
+				warningCount: 0,
+				errorCount: issues.length,
+				invalidatedTargets: [],
+			};
+		},
+		finishRun: async ({ status }) => assert.equal(status, "failed"),
+		recordSourceContact: async () => undefined,
+		allowedImageHosts: new Set(),
+	},
+	{
+		feedSourceId: "duplicate-budget-source",
+		importRunId: "duplicate-budget-run",
+	},
+);
+assert.equal(duplicateBudgetRuntime.status, "failed");
+assert.equal(duplicateBudgetRolledBack, true);
+assert.equal(duplicateIssuesPersisted, 0);
+
 const importRuntime = readFileSync(
 	"src/core/ingest/import-feed-runtime.ts",
 	"utf8",
@@ -705,6 +981,11 @@ assert.equal(
 assert.ok(
 	ownerFeed.includes('task: "importFeed"'),
 	"manual import must enqueue the same importFeed job",
+);
+assert.ok(
+	importRuntime.includes("beginImportTransaction") &&
+		importRuntime.includes("rollbackImportTransaction"),
+	"import runtime must expose an all-or-nothing transaction boundary",
 );
 
 console.log("verify-feed-ingest: ok");

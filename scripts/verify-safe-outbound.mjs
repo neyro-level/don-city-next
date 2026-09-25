@@ -3,7 +3,13 @@ import { safeOutboundFetch } from "../src/core/security/safe-outbound-client.ts"
 
 const publicHost = "feeds.example.test";
 const publicUrl = `https://${publicHost}/feed.xml`;
-const allowedHosts = [publicHost, "127.0.0.1", "localhost", "0.0.0.0", "10.0.0.1"];
+const allowedHosts = [
+	publicHost,
+	"127.0.0.1",
+	"localhost",
+	"0.0.0.0",
+	"10.0.0.1",
+];
 
 function jsonResponse(status, body, headers = {}) {
 	return new Response(body, { status, headers });
@@ -71,6 +77,17 @@ await rejects(
 		}),
 	"private or link-local",
 );
+
+for (const address of ["::ffff:7f00:1", "::ffff:a9fe:a9fe"]) {
+	await rejects(
+		() =>
+			safeOutboundFetch(publicUrl, {
+				allowedHosts,
+				resolveAddresses: async () => [{ address, family: 6 }],
+			}),
+		"private or link-local",
+	);
+}
 
 await rejects(
 	() =>
@@ -155,7 +172,9 @@ let resolutionCalls = 0;
 let dispatcherClosed = false;
 const pinnedDispatcher = {
 	dispatch() {
-		throw new Error("test dispatcher must be passed through, not invoked directly");
+		throw new Error(
+			"test dispatcher must be passed through, not invoked directly",
+		);
 	},
 	async close() {
 		dispatcherClosed = true;
@@ -180,7 +199,11 @@ const pinned = await safeOutboundFetch(publicUrl, {
 });
 assert.equal(await pinned.text(), "pinned");
 await new Promise((resolve) => setImmediate(resolve));
-assert.equal(resolutionCalls, 1, "connection must reuse the validated resolution");
+assert.equal(
+	resolutionCalls,
+	1,
+	"connection must reuse the validated resolution",
+);
 assert.equal(dispatcherClosed, true);
 
 console.log("verify-safe-outbound: ok");

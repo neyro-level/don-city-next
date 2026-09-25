@@ -78,6 +78,7 @@ const notModified = await fetchConditionalFeed({
 			headers: new Headers({ etag: '"known-etag-next"' }),
 			body: null,
 			sha256: Promise.resolve(null),
+			cancel: async () => undefined,
 		};
 	},
 });
@@ -118,6 +119,26 @@ const consumed = await new Response(fetched.body).text();
 assert.equal(consumed, bodyText);
 assert.equal(await fetched.sha256, expectedHash);
 assert.equal(fetched.etag, '"body-etag-next"');
+
+let rejectedStreamCancelled = false;
+await assert.rejects(
+	() =>
+		fetchConditionalFeed({
+			url: "https://feeds.example.test/failure.xml",
+			outboundFetch: async () => ({
+				status: 500,
+				statusText: "Failure",
+				headers: new Headers(),
+				body: new ReadableStream(),
+				sha256: Promise.resolve(null),
+				cancel: async () => {
+					rejectedStreamCancelled = true;
+				},
+			}),
+		}),
+	/status 500/,
+);
+assert.equal(rejectedStreamCancelled, true);
 
 const dtd = await parseYrlFeed({
 	stream: chunkUtf8(
@@ -192,7 +213,8 @@ const emptyCurrency = normalizeYrlOffer(
 assert.equal(emptyCurrency.ok, false);
 assert.ok(
 	emptyCurrency.issues.some(
-		(issue) => issue.code === "feed.offer_invalid" && issue.field === "currency",
+		(issue) =>
+			issue.code === "feed.offer_invalid" && issue.field === "currency",
 	),
 );
 

@@ -254,8 +254,25 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 								maxBytes: 64 * 1024 * 1024,
 							}),
 						}),
-					createRepository: (feedSourceId) =>
-						createPayloadFeedIngestRepository(payload, feedSourceId),
+					beginImportTransaction: async () => {
+						const transactionId = await payload.db.beginTransaction();
+						if (transactionId == null) {
+							throw new Error(
+								"Payload Postgres did not start an import transaction.",
+							);
+						}
+						return transactionId;
+					},
+					commitImportTransaction: (transactionId) =>
+						payload.db.commitTransaction(transactionId),
+					rollbackImportTransaction: (transactionId) =>
+						payload.db.rollbackTransaction(transactionId),
+					createRepository: (feedSourceId, transactionId) =>
+						createPayloadFeedIngestRepository(
+							payload,
+							feedSourceId,
+							transactionId,
+						),
 					finishRun: async (finish) => {
 						const transitioned = await finishImportRun(payload, finish);
 						if (!transitioned) {

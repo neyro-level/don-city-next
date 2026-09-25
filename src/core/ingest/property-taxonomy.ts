@@ -10,19 +10,25 @@ export const propertyHouseTypes = [
 
 export type PropertyHouseType = (typeof propertyHouseTypes)[number];
 
+const houseTypeMap: Readonly<Record<string, PropertyHouseType>> = {
+	дом: "house",
+	house: "house",
+	коттедж: "cottage",
+	cottage: "cottage",
+	таунхаус: "townhouse",
+	townhouse: "townhouse",
+	дача: "dacha",
+	dacha: "dacha",
+	"часть дома": "part_of_house",
+	"part of house": "part_of_house",
+};
+
 export function normalizeHouseType(
 	value: string | undefined,
 ): PropertyHouseType | undefined {
 	const normalized = value?.trim().toLowerCase() ?? "";
 	if (!normalized) return undefined;
-	if (/(таунхаус|townhouse)/iu.test(normalized)) return "townhouse";
-	if (/(коттедж|cottage)/iu.test(normalized)) return "cottage";
-	if (/(дач|dacha)/iu.test(normalized)) return "dacha";
-	if (/(част(?:ь|и).*дом|part.*house)/iu.test(normalized)) {
-		return "part_of_house";
-	}
-	if (/(дом|house)/iu.test(normalized)) return "house";
-	return undefined;
+	return houseTypeMap[normalized];
 }
 
 export function normalizeLandAreaToSotka(

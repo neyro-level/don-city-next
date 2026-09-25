@@ -443,15 +443,22 @@ async function* toAsyncIterable(
 	}
 
 	const reader = stream.getReader();
+	let completed = false;
 	try {
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
+				completed = true;
 				return;
 			}
 			yield value;
 		}
 	} finally {
+		if (!completed) {
+			await reader
+				.cancel("YRL parser stopped before consuming the stream")
+				.catch(() => undefined);
+		}
 		reader.releaseLock();
 	}
 }

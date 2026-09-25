@@ -1,23 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { submitPublicLead } from "../../../../core/data-access/public/leads.ts";
+import {
+	checkPublicLeadRateLimit,
+	submitPublicLead,
+} from "../../../../core/data-access/public/leads.ts";
+import { readBoundedJsonBody } from "../../../../core/security/bounded-json-body.ts";
 import { getTrustedClientAddress } from "../../../../core/security/trusted-client-address.ts";
 
 export const runtime = "nodejs";
+const maxLeadBodyBytes = 64 * 1024;
 
 export async function POST(request: NextRequest) {
-	let body: unknown;
-	try {
-		body = await request.json();
-	} catch {
+	const rateLimitKey = getTrustedClientAddress(request);
+	const limited = checkPublicLeadRateLimit(rateLimitKey);
+	if (limited) {
+		return NextResponse.json(
+			{ accepted: false, code: limited.code },
+			{ status: limited.status },
+		);
+	}
+
+	const parsed = await readBoundedJsonBody(request, maxLeadBodyBytes);
+	if (!parsed.ok) {
 		return NextResponse.json(
 			{ accepted: false, code: "lead.invalid_payload" },
-			{ status: 400 },
+			{ status: parsed.reason === "too_large" ? 413 : 400 },
 		);
 	}
 
 	const result = await submitPublicLead({
-		body,
-		rateLimitKey: getTrustedClientAddress(request),
+		body: parsed.value,
+		rateLimitKey,
+		rateLimitChecked: true,
 	});
 
 	if (!result.accepted) {

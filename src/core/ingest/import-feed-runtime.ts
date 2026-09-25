@@ -35,8 +35,13 @@ export type ImportFeedSourceSnapshot = {
 
 export type ImportFeedRuntimeDeps = {
 	now: () => Date;
+	monotonicNow?: () => number;
 	heartbeatIntervalMs?: number;
 	ingestBatchSize?: number;
+	maxTotalOffers?: number;
+	maxTotalIssues?: number;
+	maxDatabaseWorkUnits?: number;
+	maxImportDurationMs?: number;
 	claimQueuedImportRun: (input: {
 		importRunId: string;
 		now: Date;
@@ -50,7 +55,13 @@ export type ImportFeedRuntimeDeps = {
 		lastModified?: string | null;
 	}) => Promise<FetchFeedResult>;
 	parseFeed?: typeof parseYrlFeed;
-	createRepository: (feedSourceId: string) => FeedIngestRepository;
+	beginImportTransaction?: () => Promise<string | number>;
+	commitImportTransaction?: (transactionId: string | number) => Promise<void>;
+	rollbackImportTransaction?: (transactionId: string | number) => Promise<void>;
+	createRepository: (
+		feedSourceId: string,
+		transactionId?: string | number,
+	) => FeedIngestRepository;
 	ingest?: typeof ingestNormalizedFeed;
 	finishRun: (input: {
 		importRunId: string;
@@ -146,9 +157,17 @@ export async function runImportFeed(
 		tick: () =>
 			deps.touchHeartbeat({ importRunId: input.importRunId, now: deps.now() }),
 	});
+	let transactionId: string | number | undefined;
+	let transactionSettled = false;
+	let fetchedForCleanup:
+		| Extract<FetchFeedResult, { status: "fetched" }>
+		| undefined;
 
 	try {
 		const source = await deps.loadFeedSource(input.feedSourceId);
+		if (!source.enabled) {
+			throw new Error("Disabled feed source cannot be imported.");
+		}
 		const url = deps.resolveFeedUrl(source.feedUrlRef);
 		const fetched = await deps.fetchFeed({
 			url,
@@ -175,13 +194,43 @@ export async function runImportFeed(
 			});
 			return { claimed: true, status: "unchanged" };
 		}
+		fetchedForCleanup = fetched;
+		const transactionHooks = [
+			deps.beginImportTransaction,
+			deps.commitImportTransaction,
+			deps.rollbackImportTransaction,
+		];
+		if (transactionHooks.some(Boolean) && !transactionHooks.every(Boolean)) {
+			throw new Error(
+				"Import transaction hooks must be configured as a complete set.",
+			);
+		}
+		transactionId = await deps.beginImportTransaction?.();
 
 		const parse = deps.parseFeed ?? parseYrlFeed;
 		const ingest = deps.ingest ?? ingestNormalizedFeed;
-		const repository = deps.createRepository(source.id);
+		const repository = deps.createRepository(source.id, transactionId);
 		const batchSize = deps.ingestBatchSize ?? projectConfig.ingestBatchSize;
+		const maxTotalOffers = deps.maxTotalOffers ?? 50_000;
+		const maxTotalIssues = deps.maxTotalIssues ?? 10_000;
+		const maxDatabaseWorkUnits = deps.maxDatabaseWorkUnits ?? 250_000;
+		const maxImportDurationMs = deps.maxImportDurationMs ?? 10 * 60_000;
+		const monotonicNow = deps.monotonicNow ?? (() => performance.now());
+		const deadline = monotonicNow() + maxImportDurationMs;
 		if (!Number.isInteger(batchSize) || batchSize < 1) {
 			throw new Error("ingestBatchSize must be a positive integer.");
+		}
+		if (
+			!Number.isInteger(maxTotalOffers) ||
+			maxTotalOffers < 1 ||
+			!Number.isInteger(maxTotalIssues) ||
+			maxTotalIssues < 1 ||
+			!Number.isInteger(maxDatabaseWorkUnits) ||
+			maxDatabaseWorkUnits < 1 ||
+			!Number.isFinite(maxImportDurationMs) ||
+			maxImportDurationMs < 1
+		) {
+			throw new Error("Import budgets must be positive finite values.");
 		}
 		const context = {
 			feedSourceId: source.id,
@@ -192,14 +241,37 @@ export async function runImportFeed(
 		};
 		let offerBatch: NormalizedFeedOffer[] = [];
 		let issueBatch: FeedNormalizationIssue[] = [];
+		const uniqueExternalIds = new Set<string>();
 		let maxBufferedOffersObserved = 0;
+		let totalOffers = 0;
+		let totalIssues = 0;
+		let databaseWorkUnits = 0;
 		const ingestResult = emptyIngestResult();
+		const assertImportBudget = () => {
+			if (monotonicNow() > deadline) {
+				throw new Error("Import duration budget exceeded.");
+			}
+			if (totalOffers > maxTotalOffers) {
+				throw new Error("Import offer budget exceeded.");
+			}
+			if (totalIssues > maxTotalIssues) {
+				throw new Error("Import issue budget exceeded.");
+			}
+			if (databaseWorkUnits > maxDatabaseWorkUnits) {
+				throw new Error("Import database work budget exceeded.");
+			}
+		};
 		const flushBatch = async () => {
 			if (offerBatch.length === 0 && issueBatch.length === 0) return;
 			const currentOffers = offerBatch;
 			const currentIssues = issueBatch;
 			offerBatch = [];
 			issueBatch = [];
+			// Each offer can require lookup, write and last-seen work; issue rows add
+			// one write. The conservative units keep DB work bounded independently
+			// from batch memory size.
+			databaseWorkUnits += currentOffers.length * 4 + currentIssues.length;
+			assertImportBudget();
 			mergeIngestResult(
 				ingestResult,
 				await ingest({
@@ -214,6 +286,23 @@ export async function runImportFeed(
 			stream: fetched.body,
 			allowedImageHosts: deps.allowedImageHosts,
 			onOffer: async (offer) => {
+				totalOffers += 1;
+				assertImportBudget();
+				if (uniqueExternalIds.has(offer.externalId)) {
+					totalIssues += 1;
+					assertImportBudget();
+					issueBatch.push({
+						severity: "error",
+						code: "feed.offer_duplicate",
+						externalId: offer.externalId,
+						field: "externalId",
+						messageRedacted: "Duplicate external offer identity was ignored.",
+					});
+					if (offerBatch.length + issueBatch.length >= batchSize)
+						await flushBatch();
+					return;
+				}
+				uniqueExternalIds.add(offer.externalId);
 				offerBatch.push(offer);
 				maxBufferedOffersObserved = Math.max(
 					maxBufferedOffersObserved,
@@ -223,6 +312,8 @@ export async function runImportFeed(
 					await flushBatch();
 			},
 			onIssue: async (issue) => {
+				totalIssues += 1;
+				assertImportBudget();
 				issueBatch.push(issue);
 				if (offerBatch.length + issueBatch.length >= batchSize)
 					await flushBatch();
@@ -231,6 +322,13 @@ export async function runImportFeed(
 			collectIssues: false,
 		});
 		await flushBatch();
+		assertImportBudget();
+		if (
+			!parsed.stats.parserCompleted ||
+			parsed.stats.criticalStructuralAnomaly
+		) {
+			throw new Error("Feed parser did not complete safely.");
+		}
 		const bodyHash = (await fetched.sha256) ?? undefined;
 
 		const seenBefore = now;
@@ -295,6 +393,11 @@ export async function runImportFeed(
 			}
 		}
 
+		if (transactionId !== undefined) {
+			await deps.commitImportTransaction?.(transactionId);
+			transactionSettled = true;
+		}
+
 		let cacheOk = true;
 		if (
 			ingestResult.invalidatedTargets.length > 0 &&
@@ -342,6 +445,13 @@ export async function runImportFeed(
 			maxBufferedOffersObserved,
 		};
 	} catch {
+		await fetchedForCleanup?.cancel?.("import failed").catch(() => undefined);
+		if (transactionId !== undefined && !transactionSettled) {
+			await deps
+				.rollbackImportTransaction?.(transactionId)
+				.catch(() => undefined);
+			transactionSettled = true;
+		}
 		await deps.finishRun({
 			importRunId: input.importRunId,
 			now: deps.now(),

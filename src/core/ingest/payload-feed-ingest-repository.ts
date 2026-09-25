@@ -1,4 +1,4 @@
-import type { Payload } from "payload";
+import type { Payload, PayloadRequest } from "payload";
 import { relationId } from "../../project/geo/constraints.ts";
 import { resolveFeedGeo } from "../../project/geo/feed-match.ts";
 import {
@@ -105,7 +105,17 @@ async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
 export function createPayloadFeedIngestRepository(
 	payload: Payload,
 	feedSourceId: string,
+	transactionId?: string | number,
 ): FeedIngestRepository {
+	const req =
+		transactionId === undefined
+			? undefined
+			: ({
+					payload,
+					user: null,
+					context: importAccess.context,
+					transactionID: transactionId,
+				} as unknown as PayloadRequest);
 	return {
 		async findFeedProperty({ feedSourceId: sourceId, externalId }) {
 			if (sourceId !== feedSourceId) {
@@ -122,6 +132,7 @@ export function createPayloadFeedIngestRepository(
 				},
 				limit: 1,
 				depth: 0,
+				req,
 				...importAccess,
 			});
 			const doc = found.docs[0];
@@ -135,6 +146,7 @@ export function createPayloadFeedIngestRepository(
 				collection: "properties",
 				draft: false,
 				data: await toPropertyData(payload, data),
+				req,
 				...importAccess,
 			});
 			return asRecord(created);
@@ -151,6 +163,7 @@ export function createPayloadFeedIngestRepository(
 				},
 				limit: 1,
 				depth: 0,
+				req,
 				...importAccess,
 			});
 			if (!found.docs[0]) {
@@ -195,6 +208,7 @@ export function createPayloadFeedIngestRepository(
 				id,
 				draft: false,
 				data: patch,
+				req,
 				...importAccess,
 			});
 			return asRecord(updated);
@@ -214,6 +228,7 @@ export function createPayloadFeedIngestRepository(
 					field: issue.field,
 					messageRedacted: redactIssueMessage(issue.messageRedacted),
 				},
+				req,
 				...importAccess,
 			});
 		},
@@ -226,6 +241,26 @@ export function createPayloadFeedIngestRepository(
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
 			}
+			if (req) {
+				if (externalIds.length === 0) return;
+				await payload.update({
+					collection: "properties",
+					where: {
+						and: [
+							{ origin: { equals: "feed" } },
+							{ feedSource: { equals: Number(sourceId) } },
+							{ externalId: { in: externalIds } },
+						],
+					},
+					data: {
+						lastSeenAt: nowIso,
+						lastImportRun: Number(importRunId),
+					},
+					req,
+					...importAccess,
+				});
+				return;
+			}
 			await touchFeedPropertiesLastSeenAt(payload, {
 				feedSourceId: sourceId,
 				importRunId,
@@ -236,6 +271,27 @@ export function createPayloadFeedIngestRepository(
 		async countMissingActive({ feedSourceId: sourceId, seenBeforeIso }) {
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
+			}
+			if (req) {
+				const result = await payload.count({
+					collection: "properties",
+					where: {
+						and: [
+							{ origin: { equals: "feed" } },
+							{ feedSource: { equals: Number(sourceId) } },
+							{ status: { equals: "active" } },
+							{
+								or: [
+									{ lastSeenAt: { exists: false } },
+									{ lastSeenAt: { less_than: seenBeforeIso } },
+								],
+							},
+						],
+					},
+					req,
+					...importAccess,
+				});
+				return result.totalDocs;
 			}
 			return countMissingActiveFeedProperties(payload, {
 				feedSourceId: sourceId,
@@ -250,6 +306,32 @@ export function createPayloadFeedIngestRepository(
 		}) {
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
+			}
+			if (req) {
+				const result = await payload.update({
+					collection: "properties",
+					where: {
+						and: [
+							{ origin: { equals: "feed" } },
+							{ feedSource: { equals: Number(sourceId) } },
+							{ status: { equals: "active" } },
+							{
+								or: [
+									{ lastSeenAt: { exists: false } },
+									{ lastSeenAt: { less_than: seenBeforeIso } },
+								],
+							},
+						],
+					},
+					data: {
+						status: "archived",
+						deactivatedAt: nowIso,
+						deactivatedByRun: Number(importRunId),
+					},
+					req,
+					...importAccess,
+				});
+				return result.docs.length;
 			}
 			return deactivateMissingFeedProperties(payload, {
 				feedSourceId: sourceId,

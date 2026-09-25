@@ -17,8 +17,11 @@ server {
     ssl_certificate __TLS_CERTIFICATE_PATH__;
     ssl_certificate_key __TLS_PRIVATE_KEY_PATH__;
 
-    location = /admin/login {
+    # Apply one abuse-control policy to both canonical and slash-suffixed
+    # Payload auth routes so equivalent URIs cannot fall through to location /.
+    location ~ ^/api/users/(?:login|forgot-password|reset-password)/?$ {
         limit_req zone=client_login burst=3 nodelay;
+        client_max_body_size 64k;
         proxy_pass http://127.0.0.1:3000;
         include proxy_params;
         proxy_set_header Host $host;
@@ -29,6 +32,7 @@ server {
 
     location = /api/public/leads {
         limit_req zone=client_leads burst=10 nodelay;
+        client_max_body_size 64k;
         proxy_pass http://127.0.0.1:3000;
         include proxy_params;
         proxy_set_header Host $host;
@@ -37,8 +41,9 @@ server {
         proxy_set_header X-Forwarded-Proto https;
     }
 
-    location ^~ /api/system/ {
+    location = /api/internal/revalidate {
         limit_req zone=client_internal burst=5 nodelay;
+        client_max_body_size 32k;
         allow __ADMIN_OR_RUNTIME_CIDR__;
         deny all;
         proxy_pass http://127.0.0.1:3000;

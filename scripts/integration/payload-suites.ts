@@ -9,6 +9,7 @@ import {
 	finishImportRun,
 	touchImportRunHeartbeat,
 } from "../../src/core/data-access/ingest/sql/index.ts";
+import { createPayloadFeedIngestRepository } from "../../src/core/ingest/payload-feed-ingest-repository.ts";
 import {
 	findPublicCatalogProperties,
 	findPublicPropertyBySlug,
@@ -107,6 +108,22 @@ const authUser = await payload.create({
 	},
 	...access,
 });
+
+await assert.rejects(
+	() =>
+		payload.update({
+			collection: "users",
+			id: authUser.id,
+			data: { email: `taken-over-${authSuffix}@example.test` },
+			overrideAccess: false,
+			user: {
+				id: 10_002,
+				collection: "users",
+				roles: ["admin"],
+			} as never,
+		}),
+	"admin must not mutate owner authentication fields",
+);
 
 const firstLogin = await payload.login({
 	collection: "users",
@@ -638,6 +655,26 @@ assert.equal(
 	"owner must update operational lead data",
 );
 assert.equal(updatedByOwner.message, "Owner-only PII update proof");
+
+const consentBeforeOwnerUpdate = updatedByOwner.consent;
+const ownerConsentMutation = await payload.update({
+	collection: "leads",
+	id: lead.id,
+	data: {
+		consent: {
+			accepted: false,
+			version: "owner-forged-version",
+			consentedAt: "2099-01-01T00:00:00.000Z",
+		},
+	},
+	overrideAccess: false,
+	user: owner,
+});
+assert.deepEqual(
+	ownerConsentMutation.consent,
+	consentBeforeOwnerUpdate,
+	"owner updates must not alter immutable consent evidence",
+);
 
 for (const [role, user] of [
 	["anonymous", null],
@@ -1337,6 +1374,71 @@ const lifecycleRun = await payload.create({
 	},
 	...access,
 });
+
+const rollbackTransactionId = await payload.db.beginTransaction();
+assert.notEqual(rollbackTransactionId, null);
+if (rollbackTransactionId == null) {
+	throw new Error("Payload Postgres transaction support is required");
+}
+const transactionalRepository = createPayloadFeedIngestRepository(
+	payload,
+	String(feedSource.id),
+	rollbackTransactionId,
+);
+const rollbackIssueCode = `rollback-${suffix}`;
+await transactionalRepository.createImportIssue({
+	feedSource: String(feedSource.id),
+	importRun: String(lifecycleRun.id),
+	severity: "error",
+	code: "feed.offer_invalid",
+	externalId: rollbackIssueCode,
+	messageRedacted: "Transactional rollback proof.",
+});
+await payload.db.rollbackTransaction(rollbackTransactionId);
+const rolledBackIssues = await payload.find({
+	collection: "import-issues",
+	where: { externalId: { equals: rollbackIssueCode } },
+	limit: 1,
+	depth: 0,
+	...access,
+});
+assert.equal(
+	rolledBackIssues.totalDocs,
+	0,
+	"feed repository writes must be discarded by transaction rollback",
+);
+
+const commitTransactionId = await payload.db.beginTransaction();
+assert.notEqual(commitTransactionId, null);
+if (commitTransactionId == null) {
+	throw new Error("Payload Postgres transaction support is required");
+}
+const commitIssueCode = `commit-${suffix}`;
+await createPayloadFeedIngestRepository(
+	payload,
+	String(feedSource.id),
+	commitTransactionId,
+).createImportIssue({
+	feedSource: String(feedSource.id),
+	importRun: String(lifecycleRun.id),
+	severity: "warning",
+	code: "feed.offer_invalid",
+	externalId: commitIssueCode,
+	messageRedacted: "Transactional commit proof.",
+});
+await payload.db.commitTransaction(commitTransactionId);
+const committedIssues = await payload.find({
+	collection: "import-issues",
+	where: { externalId: { equals: commitIssueCode } },
+	limit: 1,
+	depth: 0,
+	...access,
+});
+assert.equal(
+	committedIssues.totalDocs,
+	1,
+	"feed repository writes must become visible only after transaction commit",
+);
 const claimAt = new Date("2026-09-18T12:00:00.000Z");
 const contenders = await Promise.all([
 	claimQueuedImportRun(payload, {

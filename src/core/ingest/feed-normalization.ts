@@ -51,7 +51,7 @@ export type NormalizedFeedOffer = z.output<typeof normalizedFeedOfferSchema>;
 
 export type FeedNormalizationIssue = {
 	severity: "warning" | "error";
-	code: ImageHostIssueCode | "feed.offer_invalid";
+	code: ImageHostIssueCode | "feed.offer_invalid" | "feed.offer_duplicate";
 	externalId?: string;
 	field?: string;
 	messageRedacted: string;

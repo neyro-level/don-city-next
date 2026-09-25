@@ -20,7 +20,9 @@ export const Users: CollectionConfig = {
 	access: {
 		create: ownersOnly,
 		read: adminsAndOwners,
-		update: adminsAndOwners,
+		// Payload owns the built-in email/password fields, so guarding only the
+		// project roles field is insufficient to protect an owner identity.
+		update: ownersOnly,
 		delete: ownersOnly,
 	},
 	fields: [

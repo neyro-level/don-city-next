@@ -26,6 +26,7 @@ export type FetchedFeed = {
 	status: "fetched";
 	body: ReadableStream<Uint8Array>;
 	sha256: Promise<string | null>;
+	cancel: (reason?: unknown) => Promise<void>;
 	etag?: string;
 	lastModified?: string;
 };
@@ -71,7 +72,8 @@ export async function fetchConditionalFeed({
 	});
 
 	const responseEtag = response.headers.get("etag") ?? undefined;
-	const responseLastModified = response.headers.get("last-modified") ?? undefined;
+	const responseLastModified =
+		response.headers.get("last-modified") ?? undefined;
 
 	if (response.status === 304) {
 		return {
@@ -82,10 +84,12 @@ export async function fetchConditionalFeed({
 	}
 
 	if (response.status < 200 || response.status >= 300) {
+		await response.cancel(`feed status ${response.status}`);
 		throw new Error(`Feed request failed with status ${response.status}.`);
 	}
 
 	if (!response.body) {
+		await response.cancel("feed response body is empty");
 		throw new Error("Feed response body is empty.");
 	}
 
@@ -93,6 +97,7 @@ export async function fetchConditionalFeed({
 		status: "fetched",
 		body: response.body,
 		sha256: response.sha256,
+		cancel: response.cancel,
 		etag: responseEtag,
 		lastModified: responseLastModified,
 	};

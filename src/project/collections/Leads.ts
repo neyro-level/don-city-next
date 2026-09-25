@@ -8,6 +8,7 @@ import {
 const ownerPiiFieldAccess: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner"]);
 const systemPiiCreateAccess: FieldAccess = () => false;
+const immutableIntakeUpdateAccess: FieldAccess = () => false;
 
 const piiFieldAccess: {
 	read: FieldAccess;
@@ -150,6 +151,7 @@ export const Leads: CollectionConfig = {
 		{
 			name: "consent",
 			type: "group",
+			access: { update: immutableIntakeUpdateAccess },
 			admin: {
 				description:
 					"Immutable intake evidence for personal data processing consent.",

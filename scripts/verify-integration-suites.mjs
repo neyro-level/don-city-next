@@ -217,6 +217,7 @@ const truncated = await runImportFeed(
 				status: "fetched",
 				body: result.body,
 				sha256: result.sha256,
+				cancel: result.cancel,
 				etag: null,
 				lastModified: null,
 			};

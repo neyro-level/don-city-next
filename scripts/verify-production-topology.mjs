@@ -5,44 +5,38 @@ function read(path) {
 	return readFileSync(path, "utf8");
 }
 
-const project = read("docs/PROJECT.md");
 const architecture = read("docs/03_ARCHITECTURE.md");
 const operations = read("docs/OPERATIONS.md");
 const releaseChecklist = read("docs/05_RELEASE_CHECKLIST.md");
 const envExample = read(".env.example");
 const payloadConfig = read("payload.config.ts");
-
-for (const file of [
-	["docs/PROJECT.md", project],
-	["docs/03_ARCHITECTURE.md", architecture],
-	["docs/OPERATIONS.md", operations],
-	["docs/05_RELEASE_CHECKLIST.md", releaseChecklist],
-]) {
-	assert.ok(
-		file[1].includes("start-baza.ams24.ru"),
-		`${file[0]} must pin the internal production domain`,
-	);
-	assert.ok(
-		file[1].includes("noindex"),
-		`${file[0]} must keep the internal production instance noindex`,
-	);
-}
+const clientReadiness = read("src/project/client-readiness.config.ts");
+const storageActivation = read("scripts/clone-activate-timeweb-storage.mjs");
 
 for (const required of [
-	"local PostgreSQL",
-	"MEDIA_DIR",
-	"Secret Master",
-	"JOBS_AUTORUN=true",
+	"one existing DON CITY Timeweb server",
+	"managed PostgreSQL 18",
+	"private VPC",
+	"DonCity Server/prod",
 ]) {
 	assert.ok(
-		`${project}\n${architecture}\n${operations}`.includes(required),
-		`starter topology missing ${required}`,
+		architecture.includes(required),
+		`DON CITY architecture missing ${required}`,
 	);
 }
 
 assert.ok(
 	!payloadConfig.includes("storage-s3"),
-	"payload.config.ts must not import storage-s3",
+	"S3 must not be activated before the storage owner is proven",
+);
+assert.ok(
+	clientReadiness.includes("mediaStorage: null"),
+	"client readiness must fail closed until media storage is selected",
+);
+assert.ok(
+	storageActivation.includes("@payloadcms/storage-s3") &&
+		storageActivation.includes("timeweb-s3"),
+	"the explicit Timeweb storage activation path must remain available",
 );
 assert.ok(
 	operations.includes("offsite"),
@@ -57,45 +51,12 @@ assert.ok(
 	"Operations must name the primary alert destination",
 );
 
-const compose = read("deploy/compose/start-baza.compose.yml");
-assert.ok(
-	compose.includes('JOBS_AUTORUN: "true"'),
-	"compose must start exactly one jobs owner with JOBS_AUTORUN=true",
-);
-assert.ok(
-	compose.includes("MEDIA_DIR: /var/lib/ams/realtbase/media"),
-	"compose must pin persistent MEDIA_DIR",
-);
-assert.ok(
-	compose.includes("/var/lib/ams/realtbase/media:/var/lib/ams/realtbase/media"),
-	"compose must persist MEDIA_DIR across recreate",
-);
-
-const nginx = read("deploy/nginx/start-baza.ams24.ru.conf");
-assert.ok(nginx.includes("location /media/"), "nginx must alias local media");
-assert.ok(
-	nginx.includes("limit_req zone=ams_login"),
-	"nginx must rate-limit login",
-);
-assert.ok(
-	nginx.includes("INDEXING_POLICY=noindex") &&
-		nginx.includes('X-Robots-Tag "noindex, nofollow"'),
-	"starter Nginx indexing header must match the semantic noindex policy",
-);
-assert.ok(
-	read("deploy/clients/timeweb/nginx/site.conf.example").includes(
-		"__INDEXING_X_ROBOTS_TAG__",
-	),
-	"client Nginx blueprint must require an explicit indexing-policy rendering",
-);
-
 for (const requiredEnv of [
 	"DATABASE_URI=",
 	"DATABASE_POOL_MAX=",
 	"PAYLOAD_SECRET=",
 	"REVALIDATE_SECRET=",
 	"INTERNAL_HEALTH_SECRET=",
-	"MEDIA_DIR=",
 	"JOBS_AUTORUN=false",
 	"CACHE_INVALIDATION_MODE=http",
 ]) {
@@ -114,7 +75,7 @@ for (const forbiddenEnv of [
 	assert.equal(
 		envExample.includes(forbiddenEnv),
 		false,
-		`.env.example must not require starter S3 env ${forbiddenEnv}`,
+		`.env.example must not require unactivated S3 env ${forbiddenEnv}`,
 	);
 }
 
@@ -126,78 +87,20 @@ const dependencies = {
 assert.equal(
 	Object.hasOwn(dependencies, "@payloadcms/storage-s3"),
 	false,
-	"starter must not declare @payloadcms/storage-s3 as a required dependency",
+	"DON CITY must not declare @payloadcms/storage-s3 before activation",
 );
-
-const adr = read("docs/adr/ADR-LOCAL-STARTER-STORAGE.md");
-assert.ok(
-	adr.includes("Accepted"),
-	"ADR-LOCAL-STARTER-STORAGE must remain Accepted",
-);
-assert.ok(
-	adr.includes("не копирует эту topology автоматически"),
-	"ADR must state commercial clone does not copy starter topology automatically",
-);
-
-const agents = read("AGENTS.md");
-assert.ok(
-	agents.includes("local PostgreSQL"),
-	"AGENTS.md must pin local PostgreSQL starter runtime",
-);
-assert.ok(
-	agents.includes("MEDIA_DIR"),
-	"AGENTS.md must pin MEDIA_DIR starter runtime",
-);
-
-const composeForbidden = [
-	"storage-s3",
-	"S3_BUCKET",
-	"timeweb-cloud.com/dbaas",
-	"Managed PostgreSQL",
-];
-for (const needle of composeForbidden) {
-	assert.equal(
-		compose.includes(needle),
-		false,
-		`compose must not require ${needle} as starter runtime`,
-	);
-}
-
-for (const [name, body] of [
-	["docs/PROJECT.md", project],
-	["docs/03_ARCHITECTURE.md", architecture],
-	["docs/OPERATIONS.md", operations],
-]) {
-	assert.equal(
-		/S3 is required for starter/i.test(body) ||
-			body.includes("starter requires S3"),
-		false,
-		`${name} must not require S3 as this starter runtime`,
-	);
-	assert.equal(
-		body.includes("buy Timeweb Managed PostgreSQL"),
-		false,
-		`${name} must not require buying Managed PostgreSQL for this starter`,
-	);
-}
 
 assert.ok(
 	operations.includes("pg_dump -Fc"),
-	"Operations backup canon must remain local PostgreSQL dump",
+	"Operations backup canon must retain a custom-format PostgreSQL dump",
 );
 assert.ok(
 	operations.includes("archive `MEDIA_DIR`") ||
 		operations.includes("archive MEDIA_DIR"),
-	"Operations backup canon must remain MEDIA_DIR snapshot",
+	"Operations must define the conditional local-media snapshot",
 );
-
-assert.ok(
-	project.includes("leadRetentionDays = NEEDS_OWNER"),
-	"PROJECT.md must keep leadRetentionDays as NEEDS_OWNER until clone configuration",
-);
-assert.ok(
-	project.includes("archiveRetentionDays = NEEDS_OWNER"),
-	"PROJECT.md must keep archiveRetentionDays as NEEDS_OWNER until production",
-);
+assert.ok(architecture.includes("staging") && architecture.includes("noindex"));
+assert.ok(releaseChecklist.includes("backup") || releaseChecklist.includes("Backup"));
+assert.ok(releaseChecklist.includes("rollback") || releaseChecklist.includes("Rollback"));
 
 console.log("verify-production-topology: ok");

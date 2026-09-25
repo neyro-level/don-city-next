@@ -160,6 +160,11 @@ requireIncludes(
 	"admin login must lock after repeated attempts",
 );
 requireIncludes(
+	"src/project/collections/Users.ts",
+	"update: ownersOnly",
+	"only owners may mutate authentication-enabled user documents",
+);
+requireIncludes(
 	"src/project/collections/Media.ts",
 	"mediaOverwriteDisabled",
 	"local media overwrite must stay disabled",
@@ -284,6 +289,27 @@ for (const nginxFile of nginxFiles) {
 		nginx.includes("limit_req zone="),
 		`${nginxFile}: edge rate limiting must remain active`,
 	);
+	if (nginxFile.includes("clients/timeweb")) {
+		const authLocation =
+			"location ~ ^/api/users/(?:login|forgot-password|reset-password)/?$";
+		assert.ok(
+			nginx.includes(authLocation),
+			`${nginxFile}: equivalent Payload auth URIs must share one edge policy`,
+		);
+		assert.equal(
+			nginx.includes("location = /api/users/login"),
+			false,
+			`${nginxFile}: exact-only auth locations allow slash-variant bypasses`,
+		);
+		assert.ok(
+			nginx.includes("location = /api/internal/revalidate"),
+			`${nginxFile}: internal revalidation must be network-restricted`,
+		);
+		assert.ok(
+			!nginx.includes("location ^~ /api/system/"),
+			`${nginxFile}: stale internal route prefix is forbidden`,
+		);
+	}
 }
 
 const overrideAllowlist = new Set([
@@ -309,6 +335,10 @@ assert.match(leadsCollection, /create:\s*systemGatewayOnly/);
 assert.match(leadsCollection, /read:\s*ownersOnly/);
 assert.match(leadsCollection, /update:\s*ownersOnly/);
 assert.match(leadsCollection, /delete:\s*ownersOnly/);
+assert.ok(
+	leadsCollection.includes("immutableIntakeUpdateAccess"),
+	"lead consent evidence must reject owner updates",
+);
 
 const deliveriesCollection = read("src/project/collections/LeadDeliveries.ts");
 assert.ok(!deliveriesCollection.includes("adminsAndOwners"));

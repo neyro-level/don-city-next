@@ -39,11 +39,13 @@ export type SafeOutboundStreamResult = {
 	headers: Headers;
 	body: ReadableStream<Uint8Array> | null;
 	sha256: Promise<string | null>;
+	cancel: (reason?: unknown) => Promise<void>;
 };
 
 function isPrivateIPv4(address: string): boolean {
 	const parts = address.split(".").map(Number);
-	if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part))) return false;
+	if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part)))
+		return false;
 	const [a, b] = parts;
 	return (
 		a === 10 ||
@@ -59,6 +61,16 @@ function isPrivateIPv6(address: string): boolean {
 	const normalized = address.toLowerCase();
 	const mappedIpv4 = normalized.match(/:ffff:(\d+\.\d+\.\d+\.\d+)$/)?.[1];
 	if (mappedIpv4) return isPrivateIPv4(mappedIpv4);
+	const mappedHex = normalized.match(
+		/(?:^|:)ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/,
+	);
+	if (mappedHex) {
+		const high = Number.parseInt(mappedHex[1], 16);
+		const low = Number.parseInt(mappedHex[2], 16);
+		return isPrivateIPv4(
+			`${high >> 8}.${high & 0xff}.${low >> 8}.${low & 0xff}`,
+		);
+	}
 	return (
 		normalized === "::1" ||
 		normalized === "0:0:0:0:0:0:0:1" ||
@@ -70,7 +82,8 @@ function isPrivateIPv6(address: string): boolean {
 
 function isUnsafeHostLiteral(host: string): boolean {
 	const normalized = host.toLowerCase();
-	if (normalized === "localhost" || normalized.endsWith(".localhost")) return true;
+	if (normalized === "localhost" || normalized.endsWith(".localhost"))
+		return true;
 	const version = isIP(host);
 	if (version === 0) return false;
 	return isUnsafeAddress(host);
@@ -88,13 +101,19 @@ async function assertSafeDestination(
 	options: SafeOutboundOptions,
 ): Promise<AddressRecord | undefined> {
 	const host = url.hostname.toLowerCase();
-	const allowedHosts = new Set(options.allowedHosts.map((item) => item.toLowerCase()));
+	const allowedHosts = new Set(
+		options.allowedHosts.map((item) => item.toLowerCase()),
+	);
 	const approvedHttpHosts = new Set(
 		(options.approvedHttpHosts ?? []).map((item) => item.toLowerCase()),
 	);
 
-	if (!allowedHosts.has(host)) throw new Error(`Outbound host is not allowlisted: ${host}`);
-	if (url.protocol !== "https:" && !(url.protocol === "http:" && approvedHttpHosts.has(host))) {
+	if (!allowedHosts.has(host))
+		throw new Error(`Outbound host is not allowlisted: ${host}`);
+	if (
+		url.protocol !== "https:" &&
+		!(url.protocol === "http:" && approvedHttpHosts.has(host))
+	) {
 		throw new Error(`Outbound protocol is not approved for ${host}`);
 	}
 
@@ -106,16 +125,22 @@ async function assertSafeDestination(
 	}
 
 	if (isUnsafeHostLiteral(host)) {
-		throw new Error(`Outbound host resolves to a private or link-local address: ${host}`);
+		throw new Error(
+			`Outbound host resolves to a private or link-local address: ${host}`,
+		);
 	}
 
-	const resolver = options.resolveAddresses ?? ((name: string) => lookup(name, { all: true, verbatim: true }));
+	const resolver =
+		options.resolveAddresses ??
+		((name: string) => lookup(name, { all: true, verbatim: true }));
 	const addresses = await resolver(host);
 	if (addresses.length === 0) {
 		throw new Error(`Outbound host did not resolve to an address: ${host}`);
 	}
 	if (addresses.some((item) => isUnsafeAddress(item.address))) {
-		throw new Error(`Outbound host resolves to a private or link-local address: ${host}`);
+		throw new Error(
+			`Outbound host resolves to a private or link-local address: ${host}`,
+		);
 	}
 	return addresses[0];
 }
@@ -256,7 +281,10 @@ async function openSafeRequest(
 	}
 }
 
-async function readBounded(response: Response, maxBytes: number): Promise<ArrayBuffer> {
+async function readBounded(
+	response: Response,
+	maxBytes: number,
+): Promise<ArrayBuffer> {
 	const reader = response.body?.getReader();
 	if (!reader) return response.arrayBuffer();
 
@@ -290,7 +318,10 @@ export async function safeOutboundFetch(
 ): Promise<Response> {
 	const opened = await openSafeRequest(input, options);
 	try {
-		const body = await readBounded(opened.response, options.maxBytes ?? defaultMaxBytes);
+		const body = await readBounded(
+			opened.response,
+			options.maxBytes ?? defaultMaxBytes,
+		);
 		return new Response(body, {
 			status: opened.response.status,
 			statusText: opened.response.statusText,
@@ -314,6 +345,7 @@ export async function safeOutboundFetchStream(
 			headers: opened.response.headers,
 			body: null,
 			sha256: Promise.resolve(null),
+			cancel: async () => undefined,
 		};
 	}
 
@@ -328,6 +360,10 @@ export async function safeOutboundFetchStream(
 		headers: opened.response.headers,
 		body: tapped.stream,
 		sha256: tapped.sha256,
+		cancel: async (reason) => {
+			await tapped.stream.cancel(reason).catch(() => undefined);
+			opened.release();
+		},
 	};
 }
 
@@ -338,7 +374,9 @@ export function parseOutboundHostList(value?: string | null): string[] {
 		.filter(Boolean);
 }
 
-export function createSafeFeedOutboundFetch(options: Omit<SafeOutboundOptions, "headers" | "signal">) {
+export function createSafeFeedOutboundFetch(
+	options: Omit<SafeOutboundOptions, "headers" | "signal">,
+) {
 	return async (input: {
 		url: URL;
 		headers?: HeadersInit;
