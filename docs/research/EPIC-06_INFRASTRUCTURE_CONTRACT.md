@@ -6,6 +6,12 @@ Mode: read-only discovery and documentation
 
 Status: `PASS — target is suitable with explicit pre-deploy gaps`.
 
+Historical note: the network row below captures the state before the
+owner-authorized EPIC-03 private-NIC repair. The current Source of Truth is
+`03_ARCHITECTURE.md`: the existing private route and authenticated read-only
+PostgreSQL connectivity are proven. They must not be reintroduced as staging
+blockers.
+
 ## Actual topology
 
 | Layer | Verified state |
