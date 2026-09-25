@@ -42,6 +42,7 @@ type CatalogQuery = {
 	category?: "apartment" | "house" | "land";
 	geoSlug?: string;
 	districtSlug?: string;
+	page?: number;
 	rooms?: number[];
 	houseType?: HouseType;
 	landUse?: LandFacetSlug;
@@ -335,6 +336,44 @@ function singleSearchParamValue(
 	return value?.length === 1 ? value[0] : undefined;
 }
 
+function applyPaginationQuery(
+	result: ResolvedPublicRoute,
+	searchParams: PublicRouteSearchParams,
+): ResolvedPublicRoute {
+	if (
+		result.kind !== "page" ||
+		!result.catalogQuery ||
+		!("page" in searchParams)
+	) {
+		return result;
+	}
+
+	const raw = searchParams.page;
+	const values = Array.isArray(raw) ? raw : raw === undefined ? [] : [raw];
+	const value = values.length === 1 ? values[0] : undefined;
+	const pageNumber =
+		typeof value === "string" && /^[1-9]\d*$/.test(value)
+			? Number(value)
+			: Number.NaN;
+	const page = Number.isSafeInteger(pageNumber) ? pageNumber : 1;
+
+	if (page <= 1) {
+		return {
+			...result,
+			robots: { indexing: "noindex", following: "follow" },
+			catalogQuery: { ...result.catalogQuery, page: 1 },
+		};
+	}
+
+	const separator = result.canonicalPath.includes("?") ? "&" : "?";
+	return {
+		...result,
+		canonicalPath: `${result.canonicalPath}${separator}page=${page}`,
+		robots: { indexing: "noindex", following: "follow" },
+		catalogQuery: { ...result.catalogQuery, page },
+	};
+}
+
 function applyHouseTypeQuery(
 	result: ResolvedPublicRoute,
 	key: Extract<PageKey, { kind: "categoryRoot" | "categoryGeo" }>,
@@ -490,7 +529,10 @@ export async function resolveProjectPublicRoute(
 		(key.kind === "geoHub" || key.kind === "categoryGeo") &&
 		key.geo !== siteProfile.primaryGeo
 	) {
-		return resolveNearbyGeoPage(key, dependencies);
+		return applyPaginationQuery(
+			await resolveNearbyGeoPage(key, dependencies),
+			searchParams,
+		);
 	}
 	if (key.kind !== "property") {
 		const result = await resolveRegistryPage(key, dependencies);
@@ -501,11 +543,17 @@ export async function resolveProjectPublicRoute(
 				searchParams,
 				dependencies,
 			);
-			return applyHouseTypeQuery(apartmentResult, key, searchParams);
+			return applyPaginationQuery(
+				applyHouseTypeQuery(apartmentResult, key, searchParams),
+				searchParams,
+			);
 		}
-		return key.kind === "categoryRoot"
-			? applyHouseTypeQuery(result, key, searchParams)
-			: result;
+		return applyPaginationQuery(
+			key.kind === "categoryRoot"
+				? applyHouseTypeQuery(result, key, searchParams)
+				: result,
+			searchParams,
+		);
 	}
 
 	const state = await dependencies.loadProperty(key.publicUrlId);

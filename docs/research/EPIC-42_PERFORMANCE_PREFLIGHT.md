@@ -36,10 +36,7 @@ Status: `READY FOR IMPLEMENTATION`
    JavaScript.
 3. Page 2+ has no self-canonical metadata path. The approved contract requires
    `noindex,follow` plus a canonical URL containing the current page.
-4. The complete footer is a Client Component only because phone reveal uses
-   local state. Static footer navigation and legal content therefore receive
-   avoidable hydration JavaScript.
-5. There is no focused executable performance guard covering pagination,
+4. There is no focused executable performance guard covering pagination,
    RSC/client boundaries, media dimensions/loading, and the established cache
    path.
 
@@ -50,8 +47,9 @@ Status: `READY FOR IMPLEMENTATION`
   keeps the clean canonical URL.
 - Render bounded, crawlable pagination links on the server and preserve any
   canonical approved facet parameters.
-- Move footer phone reveal to a small Client Component and return the footer
-  shell to the server boundary.
+- Preserve the current public shell boundary: the active starter footer is a
+  Server Component, while interactive header and lead controls remain explicit
+  client leaves. The unused richer footer is outside this route and this epic.
 - Keep current media semantics: explicit dimensions/aspect ratios, lazy loading
   below the fold, and priority only for known above-the-fold media. Do not add a
   framework image dependency to the portable UI package in this epic.
@@ -62,8 +60,8 @@ Status: `READY FOR IMPLEMENTATION`
 - Page 2+ fetches the requested gateway page and exposes crawlable links.
 - Metadata is self-canonical and `noindex,follow` for page 2+.
 - Invalid or repeated page inputs never become indexable pagination URLs.
-- Catalog cards remain server-rendered; footer hydration is isolated to the
-  phone control; media dimensions/loading invariants remain explicit.
+- Catalog cards and the active public footer remain server-rendered; media
+  dimensions/loading invariants remain explicit.
 - Focused verifier, affected route/SEO/cache checks, typecheck, lint, and build
   pass.
 - LCP/CLS/INP field values are not fabricated locally. Exact runtime metrics
