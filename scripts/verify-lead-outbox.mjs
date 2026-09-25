@@ -5,6 +5,7 @@ import {
 	planRecoverableLeadDeliveryJobs,
 	prepareLeadIntake,
 } from "../src/core/leads/index.ts";
+import { legalConsentConfig } from "../src/project/legal.config.ts";
 
 const intake = prepareLeadIntake(
 	{
@@ -13,7 +14,7 @@ const intake = prepareLeadIntake(
 		formKind: "consultation",
 		sourcePage: "/kontakty",
 		consentAccepted: true,
-		consentVersion: "pd-2026-01",
+		consentVersion: legalConsentConfig.currentConsentVersion,
 		honeypot: "",
 		renderedAt: "2026-09-16T11:59:50.000Z",
 		submittedAt: "2026-09-16T12:00:00.000Z",
@@ -103,7 +104,7 @@ const secondAttempt = prepareLeadIntake(
 		formKind: "consultation",
 		sourcePage: "/kontakty",
 		consentAccepted: true,
-		consentVersion: "pd-2026-01",
+		consentVersion: legalConsentConfig.currentConsentVersion,
 		honeypot: "",
 		renderedAt: "2026-09-16T12:09:50.000Z",
 		submittedAt: "2026-09-16T12:10:00.000Z",

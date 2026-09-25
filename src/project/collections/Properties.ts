@@ -5,9 +5,9 @@ import {
 	ownersOnly,
 } from "../../core/access/roles.ts";
 import { publicPropertyReadAccess } from "../../core/data-access/public/access-mode.ts";
-import { applyDerivedFieldsOnWrite } from "../../core/ingest/derived-fields.ts";
-import { publicUrlIdFromPayloadId } from "../../core/identity/public-url-id.ts";
 import { initializePropertyPublicUrlId } from "../../core/data-access/system/property-public-url-id.ts";
+import { publicUrlIdFromPayloadId } from "../../core/identity/public-url-id.ts";
+import { applyDerivedFieldsOnWrite } from "../../core/ingest/derived-fields.ts";
 import {
 	applyPublishedSlugPolicy,
 	collectChangedImportOwnedFields,
@@ -211,6 +211,7 @@ export const Properties: CollectionConfig = {
 					payload: req.payload,
 					propertyId: doc.id,
 					publicUrlId,
+					req,
 					context,
 				});
 			},

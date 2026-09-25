@@ -17,10 +17,9 @@ import {
 import { submitPublicLead } from "../../src/core/data-access/public/leads.ts";
 import { findPublicPage } from "../../src/core/data-access/public/pages.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
-import { resolvePropertyPageLifecycle } from "../../src/core/seo/property.ts";
-import { buildPropertyUrl } from "../../src/project/url-grammar.ts";
 import { runDeliverLeadTask } from "../../src/core/leads/deliver-lead.ts";
 import { defineLeadDeliveryPolicy } from "../../src/core/leads/delivery-policy.ts";
+import { resolvePropertyPageLifecycle } from "../../src/core/seo/property.ts";
 import {
 	getMediaDirectory,
 	isLocalMediaReady,
@@ -32,6 +31,7 @@ import {
 	installRuntimeClock,
 	resetRuntimeClock,
 } from "../../src/core/time/clock.ts";
+import { clientReadinessConfig } from "../../src/project/client-readiness.config.ts";
 import { LeadDeliveries } from "../../src/project/collections/LeadDeliveries.ts";
 import { requirePayloadRuntime } from "../../src/project/env.ts";
 import {
@@ -39,7 +39,9 @@ import {
 	payloadJobTaskSlugs,
 } from "../../src/project/jobs/registry.ts";
 import { payloadJobTasks } from "../../src/project/jobs/tasks.ts";
+import { legalConsentConfig } from "../../src/project/legal.config.ts";
 import { projectConfig } from "../../src/project/project.config.ts";
+import { buildPropertyUrl } from "../../src/project/url-grammar.ts";
 
 requirePayloadRuntime();
 
@@ -431,6 +433,17 @@ const propertyCanonicalUrl = buildPropertyUrl({
 	semantic: publishedProperty.slug,
 	publicUrlId: publishedProperty.publicUrlId,
 });
+const normalizedPropertyCanonicalUrl = propertyCanonicalUrl.slice(0, -1);
+const leadProjectConfig = projectConfig as {
+	leadRetentionDays: number | null;
+};
+const leadReadinessConfig = clientReadinessConfig as {
+	legalContent: "approved" | "placeholder";
+};
+const previousPropertyLeadRetentionDays = leadProjectConfig.leadRetentionDays;
+const previousLegalContent = leadReadinessConfig.legalContent;
+leadProjectConfig.leadRetentionDays = 90;
+leadReadinessConfig.legalContent = "approved";
 const propertyLeadBody = {
 	name: "Integration Property Lead",
 	phone: "+79990000009",
@@ -438,7 +451,7 @@ const propertyLeadBody = {
 	sourcePage: propertyCanonicalUrl,
 	property: String(publishedProperty.id),
 	consentAccepted: true,
-	consentVersion: "pd-2026-01",
+	consentVersion: legalConsentConfig.currentConsentVersion,
 	honeypot: "",
 	renderedAt: "2026-09-18T11:59:50.000Z",
 	submittedAt: "2026-09-18T12:00:00.000Z",
@@ -477,8 +490,11 @@ for (const persisted of persistedPropertyLeads.docs) {
 			: String(persisted.property),
 		String(publishedProperty.id),
 	);
-	assert.equal(persisted.sourcePage, propertyCanonicalUrl);
-	assert.equal(persisted.consent?.version, "pd-2026-01");
+	assert.equal(persisted.sourcePage, normalizedPropertyCanonicalUrl);
+	assert.equal(
+		persisted.consent?.version,
+		legalConsentConfig.currentConsentVersion,
+	);
 	assert.notEqual(
 		persisted.consent?.consentedAt,
 		propertyLeadBody.submittedAt,
@@ -499,6 +515,8 @@ const mismatchedPropertyLead = await submitPublicLead({
 });
 assert.equal(mismatchedPropertyLead.accepted, false);
 assert.equal(mismatchedPropertyLead.code, "lead.invalid_payload");
+leadProjectConfig.leadRetentionDays = previousPropertyLeadRetentionDays;
+leadReadinessConfig.legalContent = previousLegalContent;
 
 const lead = await payload.create({
 	collection: "leads",

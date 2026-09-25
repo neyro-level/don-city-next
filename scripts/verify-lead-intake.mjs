@@ -20,7 +20,7 @@ const validPayload = {
 	sourcePage: "/kontakty",
 	referrer: "/",
 	consentAccepted: true,
-	consentVersion: "pd-2026-01",
+	consentVersion: legalConsentConfig.currentConsentVersion,
 	honeypot: "",
 	renderedAt: "2026-09-16T11:59:50.000Z",
 	submittedAt: "2026-09-16T12:00:00.000Z",
@@ -36,7 +36,10 @@ const accepted = prepareLeadIntake(validPayload, {
 });
 assert.equal(accepted.accepted, true);
 assert.equal(accepted.lead.phoneE164, "+79161234567");
-assert.equal(accepted.lead.consent.version, "pd-2026-01");
+assert.equal(
+	accepted.lead.consent.version,
+	legalConsentConfig.currentConsentVersion,
+);
 assert.equal(accepted.lead.consent.consentedAt, "2026-09-16T12:00:01.000Z");
 assert.equal(accepted.lead.idempotencyKey.startsWith("lead:"), true);
 assert.equal(accepted.lead.fraudFingerprint.startsWith("lead-fraud:"), true);

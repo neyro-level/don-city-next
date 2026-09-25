@@ -59,6 +59,11 @@ const propertiesSource = readFileSync(
 	"src/project/collections/Properties.ts",
 	"utf8",
 );
+const initializerSource = readFileSync(
+	"src/core/data-access/system/property-public-url-id.ts",
+	"utf8",
+);
+const stableIdSources = `${propertiesSource}\n${initializerSource}`;
 for (const snippet of [
 	'name: "publicUrlId"',
 	"unique: true",
@@ -66,7 +71,7 @@ for (const snippet of [
 	"publicUrlIdInitialized: true",
 	"data.publicUrlId = originalDoc.publicUrlId",
 ]) {
-	assert.ok(propertiesSource.includes(snippet), `Missing stable-ID guard: ${snippet}`);
+	assert.ok(stableIdSources.includes(snippet), `Missing stable-ID guard: ${snippet}`);
 }
 
 const catalogSource = readFileSync(

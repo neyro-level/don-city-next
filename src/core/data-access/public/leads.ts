@@ -1,24 +1,25 @@
 import "server-only";
 
 import type { Payload, PayloadRequest } from "payload";
-import { createPayloadLeadOutboxRepository } from "../leads/payload-outbox-repository.ts";
+import { clientReadinessConfig } from "../../../project/client-readiness.config.ts";
+import { runtimeEnv } from "../../../project/env.ts";
+import { legalConsentConfig } from "../../../project/legal.config.ts";
+import { projectConfig } from "../../../project/project.config.ts";
+import { siteConfig } from "../../../project/site.config.ts";
+import { buildPropertyUrl } from "../../../project/url-grammar.ts";
 import { resolveEnabledLeadChannels } from "../../leads/channels.ts";
 import { hitInProcessLeadRateLimit } from "../../leads/in-process-rate-limit.ts";
 import {
 	accelerateLeadDeliveryJobs,
 	commitLeadOutbox,
-	prepareLeadIntake,
 	type LeadIntakeRejected,
+	prepareLeadIntake,
 } from "../../leads/index.ts";
-import { runtimeEnv } from "../../../project/env.ts";
-import { clientReadinessConfig } from "../../../project/client-readiness.config.ts";
-import { legalConsentConfig } from "../../../project/legal.config.ts";
-import { projectConfig } from "../../../project/project.config.ts";
-import { siteConfig } from "../../../project/site.config.ts";
+import { normalizeCanonicalSourcePage } from "../../leads/intake.ts";
+import { createPayloadLeadOutboxRepository } from "../leads/payload-outbox-repository.ts";
 import { systemOverrideAccess } from "../system/overrides.ts";
 import { publicGatewayReadAccess } from "./access-mode.ts";
 import { getPublicGatewayPayload } from "./payload.ts";
-import { buildPropertyUrl } from "../../../project/url-grammar.ts";
 
 export type PublicLeadSubmitResult =
 	| { accepted: true; reused: boolean }
@@ -110,13 +111,16 @@ export async function submitPublicLead({
 			...publicGatewayReadAccess(),
 		});
 		const property = found.docs[0];
-		const canonicalSourcePage = property?.publicUrlId != null
-			? buildPropertyUrl({
-					category: property.category,
-					semantic: property.slug,
-					publicUrlId: property.publicUrlId,
-				})
-			: undefined;
+		const canonicalSourcePage =
+			property?.publicUrlId != null
+				? normalizeCanonicalSourcePage(
+						buildPropertyUrl({
+							category: property.category,
+							semantic: property.slug,
+							publicUrlId: property.publicUrlId,
+						}),
+					)
+				: undefined;
 		if (!property || intake.lead.sourcePage !== canonicalSourcePage) {
 			return propertyContextRejected(intake.lead.sourcePage);
 		}
