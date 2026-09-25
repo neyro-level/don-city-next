@@ -18,7 +18,8 @@ prove a live Timeweb connection.
 
 ## Activation order
 
-1. Create separate staging Managed PostgreSQL and S3 resources.
+1. Create separate staging Managed PostgreSQL and S3 resources. Do not reuse
+   production data, credentials or media.
 2. Copy `env.client.example` outside Git and fill it from Secret Master.
 3. Commit the client identity change so the checkout is clean, then run
    `pnpm clone:activate-timeweb-storage`. It installs the exact compatible
@@ -33,6 +34,18 @@ prove a live Timeweb connection.
 7. Validate Nginx placeholders, backup, monitoring and one jobs owner.
 8. Complete every item in `proofs/CLIENT_TIMEWEB_PROOF.md` before any client
    production decision.
+
+## Isolated staging
+
+`staging/` is the fail-closed rehearsal contract for DON CITY. It requires an
+immutable image, a separate env file and database, keeps Payload jobs disabled,
+binds the application to loopback on a distinct port and emits an unconditional
+`X-Robots-Tag: noindex, nofollow` header at Nginx. Its placeholders must be
+materialized outside Git only after the owner authorizes Timeweb writes.
+
+Static proof: `pnpm verify:client-readiness`. Live staging, migrations, DNS/TLS,
+S3, monitoring and smoke evidence remain external gates and are recorded in
+`proofs/STAGING_PROOF.md`.
 
 ## Official contract checked 2026-09-21
 

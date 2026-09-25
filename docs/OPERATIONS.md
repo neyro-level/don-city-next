@@ -115,8 +115,15 @@ channel must not share the failed application/server boundary.
 
 ## Current blockers before staging
 
-- attach the server to the existing database private network;
-- prove authenticated SQL connectivity;
-- decide and prove media/S3 ownership;
+- rotate the temporary managed-database credential that previously appeared in
+  owner conversation, then update its dedicated Secret Master values;
+- create or approve a separate staging database and staging runtime secrets;
+- decide and prove isolated staging media/S3 ownership;
 - render Nginx/runtime/monitoring configuration;
+- authorize the planned staging server writes and provide an approved staging
+  hostname when domain-level TLS/crawl proof is required;
 - approve retention, legal content and public indexing decisions.
+
+The existing private NIC route and authenticated read-only PostgreSQL 18.6
+connectivity were already proven in EPIC-03 and are entry evidence, not current
+blockers.

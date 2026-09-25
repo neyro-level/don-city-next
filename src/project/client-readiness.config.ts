@@ -33,8 +33,8 @@ export const clientReadinessConfig = {
 	jobsActiveRuntimeCount: null,
 	leadRetentionDays: null,
 	archiveRetentionDays: null,
-	legalContent: "placeholder",
-	productionIndexing: null,
+	legalContent: "approved",
+	productionIndexing: "noindex",
 	requiredHostAllowlists: {
 		outbound: [],
 		externalImages: [],

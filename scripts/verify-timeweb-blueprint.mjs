@@ -14,6 +14,10 @@ const requiredFiles = [
 	"backup/README.md",
 	"monitoring/README.md",
 	"proofs/CLIENT_TIMEWEB_PROOF.md",
+	"staging/compose.staging.yml.example",
+	"staging/env.staging.example",
+	"staging/nginx.staging.conf.example",
+	"proofs/STAGING_PROOF.md",
 ];
 
 export function validateBlueprint(input) {
@@ -25,6 +29,11 @@ export function validateBlueprint(input) {
 	const compose = input.files.get("compose/client.compose.yml.example") ?? "";
 	const nginx = input.files.get("nginx/site.conf.example") ?? "";
 	const proof = input.files.get("proofs/CLIENT_TIMEWEB_PROOF.md") ?? "";
+	const stagingCompose =
+		input.files.get("staging/compose.staging.yml.example") ?? "";
+	const stagingEnv = input.files.get("staging/env.staging.example") ?? "";
+	const stagingNginx =
+		input.files.get("staging/nginx.staging.conf.example") ?? "";
 
 	for (const file of requiredFiles)
 		if (!input.files.has(file)) add(`missing:${file}`);
@@ -43,6 +52,31 @@ export function validateBlueprint(input) {
 		add("server-build-path");
 	if ((compose.match(/JOBS_AUTORUN:\s*["']?true/g) ?? []).length !== 1)
 		add("jobs-owner-count");
+	if (!stagingCompose.includes('image: "${IMAGE:?'))
+		add("staging-immutable-image-missing");
+	if (/^\s*build\s*:/m.test(stagingCompose) || /git pull|pnpm build/i.test(stagingCompose))
+		add("staging-server-build-path");
+	if (!/JOBS_AUTORUN:\s*["']false["']/.test(stagingCompose))
+		add("staging-jobs-must-be-disabled");
+	if (!/^JOBS_AUTORUN=false$/m.test(stagingEnv))
+		add("staging-env-jobs-must-be-disabled");
+	if (!stagingNginx.includes('X-Robots-Tag "noindex, nofollow" always'))
+		add("staging-noindex-header-missing");
+	if (!stagingNginx.includes("__STAGING_DOMAIN__"))
+		add("staging-domain-placeholder-missing");
+	for (const marker of [
+		"127.0.0.1:3100:3000",
+		"__ADMIN_OR_RUNTIME_CIDR__",
+		"__ADMIN_ACCESS_POLICY__",
+		"location = /api/public/leads",
+		"location = /api/internal/revalidate",
+		"staging_login",
+		"staging_leads",
+		"staging_internal",
+	]) {
+		const source = marker === "127.0.0.1:3100:3000" ? stagingCompose : stagingNginx;
+		if (!source.includes(marker)) add(`staging-security-marker:${marker}`);
+	}
 	if (
 		/alias\s+[^;]*media/i.test(nginx) ||
 		/location\s+[^\n]*\/media\//i.test(nginx)
@@ -114,6 +148,35 @@ assert.ok(
 		"jobs-owner-count",
 	),
 	"negative fixture must reject a second jobs owner",
+);
+
+const invalidStagingFiles = new Map(files);
+invalidStagingFiles.set(
+	"staging/compose.staging.yml.example",
+	(invalidStagingFiles.get("staging/compose.staging.yml.example") ?? "").replace(
+		'JOBS_AUTORUN: "false"',
+		'JOBS_AUTORUN: "true"',
+	),
+);
+invalidStagingFiles.set(
+	"staging/nginx.staging.conf.example",
+	(invalidStagingFiles.get("staging/nginx.staging.conf.example") ?? "").replace(
+		'add_header X-Robots-Tag "noindex, nofollow" always;',
+		"",
+	),
+);
+const invalidStagingErrors = validateBlueprint({
+	files: invalidStagingFiles,
+	packageJson,
+	projectKind,
+});
+assert.ok(
+	invalidStagingErrors.includes("staging-jobs-must-be-disabled"),
+	"negative fixture must reject an active staging jobs owner",
+);
+assert.ok(
+	invalidStagingErrors.includes("staging-noindex-header-missing"),
+	"negative fixture must reject staging without a noindex header",
 );
 
 console.log(
