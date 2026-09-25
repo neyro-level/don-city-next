@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 	title: siteConfig.defaultTitle,
 	description: siteConfig.defaultDescription,
 	robots: metadataRobotsForPolicy(getProjectIndexingPolicy()),
+	icons: { icon: "/fixture/logo.svg" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

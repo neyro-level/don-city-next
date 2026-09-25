@@ -32,9 +32,30 @@ assert.ok(homePage.includes("<HomeHeroSection"));
 assert.ok(homePage.includes("<HomeServicesSection"));
 
 const layout = read("src/app/(site)/layout.tsx");
-assert.ok(layout.includes("<StarterSiteHeader"));
-assert.ok(layout.includes("<main>"));
+assert.ok(layout.includes("<PublicSiteHeader"));
+assert.ok(layout.includes('href="#main-content"'));
+assert.ok(layout.includes('id="main-content"'));
+assert.ok(layout.includes("tabIndex={-1}"));
 assert.ok(layout.includes("<StarterSiteFooter"));
+
+const notFound = read("src/app/not-found.tsx");
+assert.equal(
+	notFound.includes("<main"),
+	false,
+	"404 content must use the public shell main landmark",
+);
+assert.ok(notFound.includes("<h1"));
+
+const publicRoute = read("src/app/(site)/public-route.tsx");
+assert.ok(publicRoute.includes("Страница не найдена | ДОН СИТИ"));
+assert.ok(publicRoute.includes("Объект снят с публикации | ДОН СИТИ"));
+
+const goneResponse = read("src/core/http/property-gone-response.ts");
+assert.ok(goneResponse.includes('<html lang="ru">'));
+assert.ok(goneResponse.includes('name="viewport"'));
+assert.ok(goneResponse.includes("<main>"));
+assert.ok(goneResponse.includes("<h1>Объект снят с публикации</h1>"));
+assert.ok(goneResponse.includes('status: 410'));
 
 const globals = read("src/app/globals.css");
 assert.ok(globals.includes("prefers-reduced-motion"));
@@ -43,6 +64,7 @@ assert.equal(
 	false,
 	"root html must not enable a dark theme class",
 );
+assert.ok(read("src/app/layout.tsx").includes('icon: "/fixture/logo.svg"'));
 
 const fallback = read("packages/ui/src/views/starter/MediaFallback.tsx");
 assert.ok(fallback.includes("aria-hidden"));

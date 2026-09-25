@@ -1,3 +1,5 @@
+import { projectUrls } from "../../project/url-grammar.ts";
+
 const goneCacheHeaders = {
 	"Content-Type": "text/html; charset=utf-8",
 	"X-Robots-Tag": "noindex, follow",
@@ -10,6 +12,7 @@ export function renderPropertyGoneHtml(slug: string): string {
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Объект снят с публикации</title>
 <meta name="robots" content="noindex, follow">
 </head>
@@ -30,4 +33,3 @@ export function createPropertyGoneResponse(slug: string): Response {
 		headers: goneCacheHeaders,
 	});
 }
-import { projectUrls } from "../../project/url-grammar.ts";

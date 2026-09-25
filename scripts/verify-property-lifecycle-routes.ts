@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 import type { PublicPropertyPageState } from "../src/core/data-access/public/provider.ts";
+import { createPropertyGoneResponse } from "../src/core/http/property-gone-response.ts";
 import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.ts";
 
 type PropertyDetails = Extract<
@@ -117,5 +118,14 @@ assert.deepEqual(await resolve("/obekty/kalininskiy-2-komnatnaya/"), {
 	kind: "notFound",
 	statusCode: 404,
 });
+
+const goneResponse = createPropertyGoneResponse("1045");
+const goneHtml = await goneResponse.text();
+assert.equal(goneResponse.status, 410);
+assert.equal(goneResponse.headers.get("x-robots-tag"), "noindex, follow");
+assert.match(goneHtml, /<html lang="ru">/);
+assert.match(goneHtml, /<meta name="viewport"/);
+assert.match(goneHtml, /<main>/);
+assert.match(goneHtml, /<h1>Объект снят с публикации<\/h1>/);
 
 console.log("EPIC-29 property lifecycle route matrix: PASS");

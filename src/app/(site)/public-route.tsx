@@ -92,6 +92,20 @@ export async function generateResolvedRouteMetadata(
 	searchParams: PublicRouteSearchParams = {},
 ): Promise<Metadata> {
 	const result = await resolvePublicRoute(segments, searchParams);
+	if (result.kind === "notFound") {
+		return {
+			title: "Страница не найдена | ДОН СИТИ",
+			robots: { index: false, follow: false },
+		};
+	}
+	if (result.kind === "gone") {
+		return {
+			title: "Объект снят с публикации | ДОН СИТИ",
+			description:
+				"Объект больше не публикуется. Перейдите в каталог актуальной недвижимости ДОН СИТИ.",
+			robots: { index: false, follow: true },
+		};
+	}
 	if (result.kind !== "page") return {};
 	return toMetadata({
 		title: result.title,
