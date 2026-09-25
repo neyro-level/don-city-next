@@ -1,3 +1,5 @@
+import { projectUrls } from "./url-grammar.ts";
+
 export type LegalConsentConfig = {
 	currentConsentVersion: string;
 	consentHref: `/${string}`;
@@ -5,7 +7,7 @@ export type LegalConsentConfig = {
 };
 
 export const legalConsentConfig = {
-	currentConsentVersion: "pd-2026-01",
+	currentConsentVersion: "pd-2026-09-25",
 	consentHref: projectUrls.consent,
 	consentRequired: true,
 } as const satisfies LegalConsentConfig;
@@ -17,4 +19,3 @@ export function leadConsentContext() {
 		consentRequired: legalConsentConfig.consentRequired,
 	} as const;
 }
-import { projectUrls } from "./url-grammar.ts";

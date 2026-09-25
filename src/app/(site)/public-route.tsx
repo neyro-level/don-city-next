@@ -4,9 +4,14 @@ import {
 	type CatalogPaginationItem,
 } from "@ams/realtbase-ui/starter/catalog-page";
 import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
+import {
+	LegalDocumentView,
+	type SiteLinkRendererProps,
+} from "@ams/realtbase-ui/starter/legal-document-page";
 import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
 import { PropertyPageView } from "@ams/realtbase-ui/starter/property-page";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import {
 	getCachedPublicCatalog,
@@ -15,6 +20,7 @@ import {
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
+import { getProjectLegalDocument } from "@/project/legal-documents";
 import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
@@ -52,6 +58,33 @@ function buildCatalogPagination(
 		});
 	}
 	return items;
+}
+
+function LegalLink({
+	href,
+	children,
+	className,
+	title,
+	rel,
+	target,
+	ariaLabel,
+	ariaCurrent,
+	scroll,
+}: SiteLinkRendererProps) {
+	return (
+		<Link
+			href={href}
+			className={className}
+			title={title}
+			rel={rel}
+			target={target}
+			aria-label={ariaLabel}
+			aria-current={ariaCurrent}
+			scroll={scroll}
+		>
+			{children}
+		</Link>
+	);
 }
 
 export async function generateResolvedRouteMetadata(
@@ -164,8 +197,26 @@ export async function ResolvedPublicRoutePage({
 	}
 
 	const staticSlug = result.key.kind === "static" ? result.key.slug : "page";
-	const nap =
-		staticSlug === "kontakty" ? await getCachedPublicNap() : undefined;
+	const needsNap = [
+		"kontakty",
+		"o-kompanii",
+		"politika-konfidencialnosti",
+		"soglasie-na-obrabotku-personalnyh-dannyh",
+	].includes(staticSlug);
+	const nap = needsNap ? await getCachedPublicNap() : undefined;
+	const legalDocument = nap
+		? getProjectLegalDocument(staticSlug, nap)
+		: undefined;
+	if (legalDocument && nap) {
+		return (
+			<LegalDocumentView
+				document={legalDocument}
+				legalName={nap.legalName}
+				email={nap.email}
+				linkRenderer={LegalLink}
+			/>
+		);
+	}
 	const staticPage = buildStaticMarketingPage({
 		slug: staticSlug,
 		title: result.h1,

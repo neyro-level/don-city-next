@@ -10,8 +10,10 @@ import {
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import type { LegalDocumentDTO } from "../../view-models/content";
 import type { SiteLinkRenderer } from "../../lib/adapters";
+import type { LegalDocumentDTO } from "../../view-models/content";
+
+export type { SiteLinkRendererProps } from "../../lib/adapters";
 
 type LegalDocumentViewProps = {
 	document: LegalDocumentDTO;
@@ -27,7 +29,7 @@ export function LegalDocumentView({
 	linkRenderer: LinkRenderer,
 }: LegalDocumentViewProps) {
 	return (
-		<main className="bg-[var(--legal-document-surface-primary)] text-[var(--legal-document-content-primary)]">
+		<div className="bg-[var(--legal-document-surface-primary)] text-[var(--legal-document-content-primary)]">
 			<header className="border-b border-[var(--legal-document-border-primary)] bg-[var(--surface-card)]">
 				<div className="mx-auto max-w-295 px-5 py-8 md:px-8 md:py-10">
 					<Breadcrumb className="text-[var(--text-muted)]">
@@ -38,15 +40,6 @@ export function LegalDocumentView({
 									className="shrink-0 whitespace-nowrap font-medium leading-step-body transition hover:text-[var(--accent)]"
 								>
 									<LinkRenderer href="/">Главная</LinkRenderer>
-								</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator className="size-3.5 shrink-0 self-center text-[var(--legal-document-content-secondary)]" />
-							<BreadcrumbItem>
-								<BreadcrumbLink
-									asChild
-									className="shrink-0 whitespace-nowrap font-medium leading-step-body transition hover:text-[var(--accent)]"
-								>
-									<LinkRenderer href="/legal">Правовая информация</LinkRenderer>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator className="size-3.5 shrink-0 self-center text-[var(--legal-document-content-secondary)]" />
@@ -95,6 +88,12 @@ export function LegalDocumentView({
 				</Card>
 
 				<Card className="overflow-hidden rounded-lg border-[var(--legal-document-border-primary)] bg-[var(--surface-card)] px-5 md:px-8">
+					<div className="grid gap-3 py-7 text-body-compact leading-body-relaxed text-[var(--legal-document-content-strong)] md:py-9 md:text-body-large">
+						{document.intro.map((paragraph) => (
+							<p key={paragraph}>{paragraph}</p>
+						))}
+					</div>
+					<Separator className="bg-[var(--legal-document-surface-secondary)]" />
 					{document.sections.map((section, index) => (
 						<section
 							id={`section-${index + 1}`}
@@ -146,6 +145,6 @@ export function LegalDocumentView({
 					</Button>
 				</div>
 			</section>
-		</main>
+		</div>
 	);
 }

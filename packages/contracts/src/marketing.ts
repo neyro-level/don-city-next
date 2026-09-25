@@ -7,6 +7,11 @@ export type MarketingSectionDTO = {
 	items?: readonly string[];
 };
 
+export type MarketingPageActionDTO = {
+	label: string;
+	href: string;
+};
+
 export type MarketingPageDTO = {
 	slug: string;
 	eyebrow: string;
@@ -15,6 +20,7 @@ export type MarketingPageDTO = {
 	seo: PageSEOContract;
 	breadcrumbs: BreadcrumbDTO;
 	sections: readonly MarketingSectionDTO[];
+	primaryAction?: MarketingPageActionDTO;
 	leadContext?: LeadFormContext;
 };
 

@@ -59,6 +59,7 @@
 		"verify:apartment-geo-page": "node --experimental-strip-types scripts/verify-apartment-geo-page.ts",
 		"verify:seller-page": "node --experimental-strip-types scripts/verify-seller-page.ts",
 		"verify:lawyer-page": "node --experimental-strip-types scripts/verify-lawyer-page.ts",
+		"verify:company-contacts-legal": "node --experimental-strip-types scripts/verify-company-contacts-legal.ts",
 		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",
 		"verify:contracts-dto": "node --experimental-strip-types scripts/verify-contracts-dto.ts",
 		"verify:feed-ingest": "node --experimental-strip-types scripts/verify-feed-ingest.mjs",

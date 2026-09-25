@@ -6,6 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { Container, Section } from "../../components/ui/layout";
 import { LeadFormView } from "../starter/LeadFormView";
 
@@ -73,6 +74,13 @@ export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
 					{page.leadContext ? (
 						<div className="md:col-span-2">
 							<LeadFormView context={page.leadContext} />
+						</div>
+					) : null}
+					{page.primaryAction ? (
+						<div className="md:col-span-2">
+							<Button asChild>
+								<a href={page.primaryAction.href}>{page.primaryAction.label}</a>
+							</Button>
 						</div>
 					) : null}
 				</Container>

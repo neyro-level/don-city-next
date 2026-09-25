@@ -27,6 +27,7 @@ export type {
 } from "./lead";
 export type {
 	HomePageDTO,
+	MarketingPageActionDTO,
 	MarketingPageDTO,
 	MarketingSectionDTO,
 } from "./marketing";

@@ -53,11 +53,14 @@ const contacts = buildStaticMarketingPage({
 		indexing: "index",
 		following: "follow",
 	},
-	breadcrumbs: { items: [{ label: "Главная", href: "/" }, { label: "Контакты" }] },
+	breadcrumbs: {
+		items: [{ label: "Главная", href: "/" }, { label: "Контакты" }],
+	},
 	nap,
 });
-assert.equal(contacts.sections.length, 1);
+assert.equal(contacts.sections.length, 2);
 assert.match(contacts.sections[0]?.text ?? "", /doncity-info@yandex.com/);
 assert.match(contacts.sections[0]?.text ?? "", /Шахтостроителей/);
+assert.match(contacts.sections[1]?.text ?? "", /Пн/);
 
 console.log("EPIC-07 site settings / NAP contract: PASS");

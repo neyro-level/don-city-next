@@ -4,12 +4,18 @@ import type {
 	PageSEOContract,
 	PublicNapDTO,
 } from "@ams/realtbase-contracts";
+import { companyProfile } from "./company-profile.ts";
 import { leadConsentContext } from "./legal.config.ts";
 import { siteConfig } from "./site.config.ts";
+import { projectUrls } from "./url-grammar.ts";
 
 const sellerSlug = "prodat-nedvizhimost";
 const lawyerSlug = "yurist";
 const contactsSlug = "kontakty";
+const aboutSlug = "o-kompanii";
+const privacySlug = "politika-konfidencialnosti";
+const consentSlug = "soglasie-na-obrabotku-personalnyh-dannyh";
+const thanksSlug = "spasibo";
 
 const sellerSections = [
 	{
@@ -41,6 +47,42 @@ const lawyerSections = [
 	},
 ] as const;
 
+function contactSections(nap: PublicNapDTO) {
+	return [
+		{
+			title: "Контакты офиса",
+			text: `${nap.address.full}. Телефон: ${nap.phone.display}. E-mail: ${nap.email}.`,
+		},
+		{ title: "График работы", text: nap.openingHours },
+	] as const;
+}
+
+function aboutSections(nap: PublicNapDTO) {
+	return [
+		{
+			title: "О компании",
+			text: "ДОН СИТИ помогает с подбором, продажей и юридическим сопровождением сделок с недвижимостью в Донецке.",
+		},
+		{
+			title: "Руководитель и основатель",
+			text: `Руководитель и основатель агентства — ${companyProfile.managerName}.`,
+		},
+		{
+			title: "Правовая информация",
+			text: `Деятельность ведёт ${nap.legalName}.`,
+		},
+	] as const;
+}
+
+function thanksSections() {
+	return [
+		{
+			title: "Что дальше",
+			text: "Специалист ДОН СИТИ свяжется с вами по указанным контактам, чтобы уточнить задачу.",
+		},
+	] as const;
+}
+
 export function buildStaticMarketingPage(input: {
 	slug: string;
 	title: string;
@@ -51,21 +93,23 @@ export function buildStaticMarketingPage(input: {
 	const seller = input.slug === sellerSlug;
 	const lawyer = input.slug === lawyerSlug;
 	const contacts = input.slug === contactsSlug;
-	const contactSections = input.nap
-		? [
-				{
-					title: "Контакты офиса",
-					text: `${input.nap.address.full}. Телефон: ${input.nap.phone.display}. Email: ${input.nap.email}. ${input.nap.openingHours}.`,
-				},
-			]
-		: [];
+	const about = input.slug === aboutSlug;
+	const legal = input.slug === privacySlug || input.slug === consentSlug;
+	const thanks = input.slug === thanksSlug;
+	const nap = input.nap;
 	return {
 		slug: input.slug,
 		eyebrow: seller
 			? "Продажа недвижимости"
 			: lawyer
 				? "Юридическое сопровождение"
-				: siteConfig.brandName,
+				: about
+					? "О компании"
+					: legal
+						? "Правовая информация"
+						: thanks
+							? "Заявка принята"
+							: siteConfig.brandName,
 		title: input.title,
 		lead: input.seo.description,
 		seo: input.seo,
@@ -74,13 +118,25 @@ export function buildStaticMarketingPage(input: {
 			? sellerSections
 			: lawyer
 				? lawyerSections
-				: contacts
-					? contactSections
-					: [],
-		leadContext: {
-			formKind: seller ? "sell" : lawyer ? "legal" : "general",
-			sourcePage: input.seo.canonicalPath,
-			...leadConsentContext(),
-		},
+				: contacts && nap
+					? contactSections(nap)
+					: about && nap
+						? aboutSections(nap)
+						: legal
+							? []
+							: thanks
+								? thanksSections()
+								: [],
+		primaryAction: thanks
+			? { label: "Вернуться на главную", href: projectUrls.home }
+			: undefined,
+		leadContext:
+			legal || thanks
+				? undefined
+				: {
+						formKind: seller ? "sell" : lawyer ? "legal" : "general",
+						sourcePage: input.seo.canonicalPath,
+						...leadConsentContext(),
+					},
 	};
 }
