@@ -9,6 +9,7 @@ import type { PageKey } from "../platform/grammar/types.ts";
 import {
 	effectiveListingRobots,
 	type ListingContentGateEvidence,
+	resolveListingQueryCanonical,
 } from "../platform/seo/content-gate.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import {
@@ -80,6 +81,11 @@ export type PublicRouteDependencies = {
 		districtSlug: string,
 	) => Promise<string | null>;
 };
+
+export type PublicRouteSearchParams = Record<
+	string,
+	string | readonly string[] | undefined
+>;
 
 function page(
 	key: PageKey,
@@ -223,6 +229,93 @@ async function resolveRegistryPage(
 	});
 }
 
+const apartmentRoomFacetByRoom = {
+	1: "odnokomnatnye",
+	2: "dvuhkomnatnye",
+	3: "trehkomnatnye",
+} as const;
+
+function normalizedRoomValues(
+	value: PublicRouteSearchParams["rooms"],
+): number[] {
+	const values = Array.isArray(value) ? value : value ? [value] : [];
+	return [
+		...new Set(
+			values
+				.map((item) => Number(item))
+				.filter((item) => Number.isInteger(item) && item > 0),
+		),
+	].sort((left, right) => left - right);
+}
+
+async function applyApartmentRoomQuery(
+	result: ResolvedPublicRoute,
+	key: Extract<PageKey, { kind: "categoryGeo" }>,
+	searchParams: PublicRouteSearchParams,
+	dependencies: PublicRouteDependencies,
+): Promise<ResolvedPublicRoute> {
+	if (
+		result.kind !== "page" ||
+		key.geo !== siteProfile.primaryGeo ||
+		key.category !== "kvartiry" ||
+		!Object.values(searchParams).some((value) =>
+			Array.isArray(value) ? value.length > 0 : Boolean(value),
+		)
+	) {
+		return result;
+	}
+
+	const rooms = normalizedRoomValues(searchParams.rooms);
+	const approvedRoom = rooms.length === 1 ? rooms[0] : undefined;
+	const facet = approvedRoom
+		? apartmentRoomFacetByRoom[
+				approvedRoom as keyof typeof apartmentRoomFacetByRoom
+			]
+		: undefined;
+	const facetKey = facet
+		? ({
+				kind: "categoryGeoFacet",
+				geo: key.geo,
+				category: key.category,
+				facet,
+			} as const)
+		: undefined;
+	const facetContract = facetKey
+		? seoRegistryByCanonicalPath.get(buildProjectUrl(facetKey))
+		: undefined;
+	const evidence = facetContract
+		? await dependencies.loadListingContentGateEvidence?.(
+				facetContract.registryId,
+			)
+		: undefined;
+	const categoryGeoPath = buildProjectUrl(key);
+	const canonicalPath = facetContract
+		? resolveListingQueryCanonical({
+				entry: facetContract,
+				categoryGeoPath,
+				profile: siteProfile,
+				evidence,
+			})
+		: categoryGeoPath;
+
+	return {
+		...result,
+		canonicalPath,
+		robots: { indexing: "noindex", following: "follow" },
+		catalogQuery: {
+			...result.catalogQuery,
+			...(rooms.length ? { rooms } : {}),
+		},
+		internalLinks:
+			facetContract && canonicalPath === facetContract.url
+				? [
+						...result.internalLinks,
+						{ href: facetContract.url, label: facetContract.h1 },
+					]
+				: result.internalLinks,
+	};
+}
+
 async function resolveNearbyGeoPage(
 	key: Extract<PageKey, { kind: "geoHub" | "categoryGeo" }>,
 	dependencies: PublicRouteDependencies,
@@ -338,6 +431,7 @@ async function propertyNearbyGeoLinks(
 export async function resolveProjectPublicRoute(
 	segments: readonly string[],
 	dependencies: PublicRouteDependencies,
+	searchParams: PublicRouteSearchParams = {},
 ): Promise<ResolvedPublicRoute> {
 	const key = parseProjectUrl(
 		segments.length ? `/${segments.join("/")}/` : "/",
@@ -349,7 +443,12 @@ export async function resolveProjectPublicRoute(
 	) {
 		return resolveNearbyGeoPage(key, dependencies);
 	}
-	if (key.kind !== "property") return resolveRegistryPage(key, dependencies);
+	if (key.kind !== "property") {
+		const result = await resolveRegistryPage(key, dependencies);
+		return key.kind === "categoryGeo"
+			? applyApartmentRoomQuery(result, key, searchParams, dependencies)
+			: result;
+	}
 
 	const state = await dependencies.loadProperty(key.publicUrlId);
 	if (!state) return { kind: "notFound", statusCode: 404 };

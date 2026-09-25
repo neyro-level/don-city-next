@@ -11,14 +11,16 @@ import { getPublicCatalog, getPublicNap } from "@/core/data-access/public";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
 import { leadConsentContext } from "@/project/legal.config";
+import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
 import { projectUrls } from "@/project/url-grammar";
 
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
+	searchParams: PublicRouteSearchParams = {},
 ): Promise<Metadata> {
-	const result = await resolvePublicRoute(segments);
+	const result = await resolvePublicRoute(segments, searchParams);
 	if (result.kind !== "page") return {};
 	return toMetadata({
 		title: result.title,
@@ -31,10 +33,12 @@ export async function generateResolvedRouteMetadata(
 
 export async function ResolvedPublicRoutePage({
 	segments,
+	searchParams = {},
 }: {
 	segments: readonly string[];
+	searchParams?: PublicRouteSearchParams;
 }) {
-	const result = await resolvePublicRoute(segments);
+	const result = await resolvePublicRoute(segments, searchParams);
 	if (result.kind === "notFound") notFound();
 	if (result.kind === "redirect") permanentRedirect(result.destination);
 	if (result.kind === "gone") {
