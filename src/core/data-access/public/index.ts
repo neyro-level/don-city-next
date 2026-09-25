@@ -25,7 +25,6 @@ export type {
 	PublicCatalogFacetsResult,
 	PublicCatalogResult,
 } from "./catalog";
-export type { NearbyGeoAvailability } from "./nearby-geo";
 export {
 	catalogQuerySchema,
 	findPublicCatalogFacets,
@@ -37,13 +36,15 @@ export {
 	publicPropertyPublicationWhere,
 	publicPropertyRetainedArchivedWhere,
 } from "./catalog";
+export type { NearbyGeoAvailability } from "./nearby-geo";
 export { publicGatewayPolicy } from "./policy";
 export {
-	getPublicCatalog,
 	getNearbyGeoAvailability,
+	getPublicCatalog,
+	getPublicDistrictParentSlug,
 	getPublicHomePage,
-	getPublicNap,
 	getPublicMarketingPage,
+	getPublicNap,
 	getPublicProperty,
 	getPublicPropertyByPublicUrlId,
 	getPublicShell,

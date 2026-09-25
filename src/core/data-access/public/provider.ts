@@ -23,6 +23,7 @@ import {
 	findPublicPropertyLifecycleBySlug,
 	type PublicCatalogResult,
 } from "./catalog";
+import { findPublicDistrictParentSlug } from "./district-navigation";
 import {
 	type PublicPropertyDetailsDTO,
 	toHomePageDTO,
@@ -38,12 +39,12 @@ import {
 } from "./nearby-geo";
 import { fallbackPublicPage, findPublicPage, findPublicPages } from "./pages";
 import { getOptionalPublicGatewayPayload } from "./payload";
-import { findPublicSiteSettings } from "./site-settings";
 import {
 	countPublicSitemapProperties,
 	findPublicSitemapListingLastModified,
 	listPublicSitemapPropertiesPage,
 } from "./payload-reads";
+import { findPublicSiteSettings } from "./site-settings";
 
 export type PublicPropertyPageState =
 	| {
@@ -67,6 +68,16 @@ export async function getNearbyGeoAvailability(
 ): Promise<NearbyGeoAvailability | null> {
 	const payload = await getOptionalPublicGatewayPayload();
 	return payload ? findNearbyGeoAvailability(payload, slug) : null;
+}
+
+export async function getPublicDistrictParentSlug(
+	geoSlug: string,
+	districtSlug: string,
+): Promise<string | null> {
+	const payload = await getOptionalPublicGatewayPayload();
+	return payload
+		? findPublicDistrictParentSlug(payload, geoSlug, districtSlug)
+		: null;
 }
 
 function emptyCatalog(

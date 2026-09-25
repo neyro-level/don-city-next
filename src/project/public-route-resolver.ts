@@ -4,13 +4,13 @@ import type {
 } from "@ams/realtbase-contracts";
 import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-geo.ts";
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
-import type { PageKey } from "../platform/grammar/types.ts";
 import type { LandFacetSlug } from "../platform/catalog/land-facets.ts";
-import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
+import type { PageKey } from "../platform/grammar/types.ts";
 import {
 	effectiveListingRobots,
 	type ListingContentGateEvidence,
 } from "../platform/seo/content-gate.ts";
+import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import {
 	buildCatalogLinks,
 	buildPageBreadcrumbs,
@@ -75,6 +75,10 @@ export type PublicRouteDependencies = {
 	loadListingContentGateEvidence?: (
 		registryId: string,
 	) => Promise<ListingContentGateEvidence | null>;
+	loadDistrictParentSlug?: (
+		geoSlug: string,
+		districtSlug: string,
+	) => Promise<string | null>;
 };
 
 function page(
@@ -174,8 +178,7 @@ function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
 	return {
 		category,
 		geoSlug: key.kind === "categoryRoot" ? undefined : key.geo,
-		districtSlug:
-			key.kind === "categoryGeoDistrict" ? key.district : undefined,
+		districtSlug: key.kind === "categoryGeoDistrict" ? key.district : undefined,
 		rooms,
 		landUse,
 	};
@@ -191,12 +194,32 @@ async function resolveRegistryPage(
 	const evidence = await dependencies.loadListingContentGateEvidence?.(
 		contract.registryId,
 	);
+	const parentSlug =
+		key.kind === "categoryGeoDistrict"
+			? await dependencies.loadDistrictParentSlug?.(key.geo, key.district)
+			: undefined;
+	const parentContract =
+		key.kind === "categoryGeoDistrict" && parentSlug
+			? seoRegistryByCanonicalPath.get(
+					buildProjectUrl({
+						kind: "categoryGeoDistrict",
+						geo: key.geo,
+						category: key.category,
+						district: parentSlug,
+					}),
+				)
+			: undefined;
 	return page(key, {
 		title: contract.title,
 		description: contract.description,
 		h1: contract.h1,
 		robots: robotsFromRegistry(contract, evidence),
 		catalogQuery: catalogQueryFor(key),
+		breadcrumbs: buildPageBreadcrumbs(key, contract.h1, {
+			districtParent: parentContract
+				? { label: parentContract.h1, href: parentContract.url }
+				: undefined,
+		}),
 	});
 }
 

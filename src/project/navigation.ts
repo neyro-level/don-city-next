@@ -4,8 +4,8 @@ import type {
 	SiteNavItemDTO,
 } from "@ams/realtbase-contracts";
 import type { PageKey } from "../platform/grammar/types.ts";
-import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import { isListingSitemapEligible } from "../platform/seo/content-gate.ts";
+import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import { seoRegistry } from "./seo-registry.generated.ts";
 import { type SiteCategory, siteProfile } from "./site.profile.ts";
 import {
@@ -61,12 +61,6 @@ function categoryLink(geo: string, category: SiteCategory): InternalLink {
 function registryLink(url: string): InternalLink | null {
 	const entry = seoRegistry.find((candidate) => candidate.url === url);
 	if (!entry) return null;
-	if (
-		(entry.pageType === "district" || entry.pageType === "facet") &&
-		!isListingSitemapEligible(entry, siteProfile)
-	) {
-		return null;
-	}
 	return { href: entry.url, label: entry.h1 };
 }
 
@@ -147,6 +141,7 @@ export function buildHomeCatalogLinks(): InternalLink[] {
 export function buildPageBreadcrumbs(
 	key: PageKey,
 	currentLabel: string,
+	context: { districtParent?: BreadcrumbItemDTO } = {},
 ): BreadcrumbItemDTO[] {
 	if (key.kind === "home") return [{ label: "Главная" }];
 	const home = { label: "Главная", href: projectUrls.home };
@@ -165,7 +160,15 @@ export function buildPageBreadcrumbs(
 	if (key.kind === "categoryGeo") {
 		return [home, hub, { label: currentLabel }];
 	}
-	return [home, hub, category, { label: currentLabel }];
+	return [
+		home,
+		hub,
+		category,
+		...(key.kind === "categoryGeoDistrict" && context.districtParent
+			? [context.districtParent]
+			: []),
+		{ label: currentLabel },
+	];
 }
 
 export function buildCatalogLinks(key: PageKey): InternalLink[] {
