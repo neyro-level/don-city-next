@@ -1,4 +1,5 @@
 import type { Payload } from "payload";
+import { relationId } from "../../project/geo/constraints.ts";
 import { resolveFeedGeo } from "../../project/geo/feed-match.ts";
 import {
 	countMissingActiveFeedProperties,
@@ -37,6 +38,8 @@ function asRecord(value: unknown): FeedPropertyRecord {
 	return {
 		...row,
 		id: String(row.id),
+		feedSource: String(relationId(row.feedSource) ?? ""),
+		lastImportRun: String(relationId(row.lastImportRun) ?? ""),
 		slug: String(row.slug),
 		region: row.regionRaw ?? undefined,
 		locality: row.cityRaw ?? undefined,
@@ -68,7 +71,10 @@ async function toPropertyData(payload: Payload, data: FeedPropertyWriteData) {
 		regionRaw: geo.regionRaw,
 		cityRaw: geo.cityRaw,
 		districtRaw: geo.districtRaw,
-		needsReview: geo.needsReview || Boolean(data.landAreaNeedsReview),
+		needsReview:
+			geo.needsReview ||
+			Boolean(data.landAreaNeedsReview) ||
+			Boolean(data.taxonomyNeedsReview),
 		street: data.street,
 		house: data.house,
 		lat: data.lat,
@@ -160,7 +166,8 @@ export function createPayloadFeedIngestRepository(
 				"region" in data ||
 				"locality" in data ||
 				"district" in data ||
-				"landAreaNeedsReview" in data
+				"landAreaNeedsReview" in data ||
+				"taxonomyNeedsReview" in data
 			) {
 				const geo = await resolveFeedGeo(payload, {
 					region: data.region ?? found.docs[0].regionRaw ?? undefined,
@@ -172,8 +179,10 @@ export function createPayloadFeedIngestRepository(
 					geo.needsReview ||
 					Boolean(
 						data.landAreaNeedsReview ?? found.docs[0].landAreaNeedsReview,
-					);
+					) ||
+					Boolean(data.taxonomyNeedsReview);
 			}
+			delete patch.taxonomyNeedsReview;
 			delete patch.locality;
 			delete patch.feedSource;
 			delete patch.lastImportRun;

@@ -64,6 +64,7 @@ export type FeedPropertyWriteData = {
 	kitchenArea?: number;
 	plotAreaSotka?: number;
 	landAreaNeedsReview?: boolean;
+	taxonomyNeedsReview?: boolean;
 	landCategory?: string;
 	permittedUse?: string;
 	communications?: { value: string }[];
@@ -265,6 +266,15 @@ export function buildFeedPropertyWriteData({
 	offer: NormalizedFeedOffer;
 	existing?: FeedPropertyRecord;
 }): FeedPropertyWriteData {
+	const category = normalizePropertyCategory(
+		offer.category,
+		offer.propertyType,
+	);
+	const dealType = normalizeDealType(offer.dealType);
+	const houseType = normalizeHouseType(offer.houseType ?? offer.propertyType);
+	const houseTypeNeedsReview = Boolean(
+		offer.houseType?.trim() && !houseType,
+	);
 	return {
 		feedSource: context.feedSourceId,
 		externalId: offer.externalId,
@@ -275,9 +285,9 @@ export function buildFeedPropertyWriteData({
 		lastImportRun: context.importRunId,
 		status: "active",
 		market: context.market,
-		category: normalizePropertyCategory(offer.category, offer.propertyType),
-		dealType: normalizeDealType(offer.dealType),
-		houseType: normalizeHouseType(offer.houseType ?? offer.propertyType),
+		category: category.value,
+		dealType: dealType.value,
+		houseType,
 		priceMinor: offer.priceMinor,
 		currency: offer.currency,
 		publicAddress: offer.publicAddress,
@@ -294,6 +304,8 @@ export function buildFeedPropertyWriteData({
 		kitchenArea: offer.kitchenArea,
 		plotAreaSotka: offer.plotAreaSotka,
 		landAreaNeedsReview: offer.landAreaNeedsReview,
+		taxonomyNeedsReview:
+			category.needsReview || dealType.needsReview || houseTypeNeedsReview,
 		landCategory: offer.landCategory,
 		permittedUse: offer.permittedUse,
 		communications: offer.communications?.map((value) => ({ value })),
@@ -391,39 +403,48 @@ function normalizeSourceValue(value: string | undefined): string {
 function normalizePropertyCategory(
 	category: string | undefined,
 	propertyType: string | undefined,
-): FeedPropertyCategory {
+): { value: FeedPropertyCategory; needsReview: boolean } {
 	for (const sourceValue of [category, propertyType]) {
 		const explicit = yrlSourceCategoryMap[normalizeSourceValue(sourceValue)];
-		if (explicit) return explicit;
+		if (explicit) return { value: explicit, needsReview: false };
 	}
 
 	// Compatibility fallback for pre-existing source variants not yet recorded in
 	// the YRL source map. It deliberately preserves the prior ingest behaviour.
 	const value = `${category ?? ""} ${propertyType ?? ""}`.toLowerCase();
 	if (/(дом|коттедж|house)/i.test(value)) {
-		return "house";
+		return { value: "house", needsReview: false };
 	}
 	if (/(участ|зем|land)/i.test(value)) {
-		return "land";
+		return { value: "land", needsReview: false };
 	}
 	if (/(коммер|commercial|office|офис)/i.test(value)) {
-		return "commercial";
+		return { value: "commercial", needsReview: false };
 	}
 	if (/(комнат|room)/i.test(value)) {
-		return "room";
+		return { value: "room", needsReview: false };
 	}
 	if (/(гараж|garage|parking|парков)/i.test(value)) {
-		return "garage";
+		return { value: "garage", needsReview: false };
 	}
-	return "apartment";
+	if (/(квартир|апартамент|apartment|flat)/i.test(value)) {
+		return { value: "apartment", needsReview: false };
+	}
+	return { value: "apartment", needsReview: true };
 }
 
-function normalizeDealType(value: string | undefined): FeedPropertyDealType {
+function normalizeDealType(value: string | undefined): {
+	value: FeedPropertyDealType;
+	needsReview: boolean;
+} {
 	const normalized = value?.toLowerCase() ?? "";
 	if (/(rent|аренд|сдам|снять)/i.test(normalized)) {
-		return "rent";
+		return { value: "rent", needsReview: false };
 	}
-	return "sale";
+	if (/(sale|sell|продаж|продам|купить)/i.test(normalized)) {
+		return { value: "sale", needsReview: false };
+	}
+	return { value: "sale", needsReview: true };
 }
 
 function createOfferHash(offer: NormalizedFeedOffer): string {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+	buildFeedPropertyWriteData,
 	dispatchDueFeeds,
 	ingestNormalizedFeed,
 	isEnabledFeedDue,
@@ -31,6 +32,27 @@ const offer = {
 		{ url: "https://img.allowed.example/1.jpg", host: "img.allowed.example" },
 	],
 };
+
+const knownTaxonomy = buildFeedPropertyWriteData({
+	context: baseContext,
+	offer,
+});
+assert.equal(knownTaxonomy.category, "apartment");
+assert.equal(knownTaxonomy.dealType, "sale");
+assert.equal(knownTaxonomy.taxonomyNeedsReview, false);
+
+const unknownTaxonomy = buildFeedPropertyWriteData({
+	context: baseContext,
+	offer: {
+		...offer,
+		category: "неизвестный объект",
+		propertyType: "экспериментальный формат",
+		dealType: "обмен",
+	},
+});
+assert.equal(unknownTaxonomy.category, "apartment");
+assert.equal(unknownTaxonomy.dealType, "sale");
+assert.equal(unknownTaxonomy.taxonomyNeedsReview, true);
 
 const unsupportedCurrency = await parseYrlFeed({
 	stream: [
@@ -341,6 +363,16 @@ assert.equal(skipped.claimed, false);
 
 let largestIngestBatch = 0;
 let boundedIngestCalls = 0;
+let baselineDeactivationCalls = 0;
+let baselinePatch;
+const baselineRepository = {
+	...createRepository(),
+	countMissingActive: async () => 7,
+	deactivateMissing: async () => {
+		baselineDeactivationCalls += 1;
+		return 7;
+	},
+};
 const boundedRuntime = await runImportFeed(
 	{
 		now: () => new Date("2026-09-18T06:00:00.000Z"),
@@ -379,7 +411,7 @@ const boundedRuntime = await runImportFeed(
 				},
 			};
 		},
-		createRepository: () => createRepository(),
+		createRepository: () => baselineRepository,
 		ingest: async ({ offers, issues }) => {
 			boundedIngestCalls += 1;
 			largestIngestBatch = Math.max(
@@ -397,7 +429,9 @@ const boundedRuntime = await runImportFeed(
 			};
 		},
 		finishRun: async () => undefined,
-		recordSourceContact: async () => undefined,
+		recordSourceContact: async ({ patch }) => {
+			baselinePatch = patch;
+		},
 		allowedImageHosts: new Set(),
 	},
 	{ feedSourceId: "bounded-source", importRunId: "bounded-run" },
@@ -405,6 +439,8 @@ const boundedRuntime = await runImportFeed(
 assert.equal(boundedRuntime.claimed, true);
 assert.equal(boundedRuntime.status, "success");
 assert.equal(boundedRuntime.ingest?.offeredCount, 10_001);
+assert.equal(baselineDeactivationCalls, 0);
+assert.equal(baselinePatch?.lastOfferCount, 10_001);
 assert.ok(
 	boundedIngestCalls > 1,
 	"large feed must be ingested through awaited batches",
