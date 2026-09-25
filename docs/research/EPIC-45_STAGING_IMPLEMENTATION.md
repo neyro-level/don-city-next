@@ -15,6 +15,9 @@
   `don-city-next`) and defaults to `REHEARSAL`; the release verifier now checks
   the isolated DON CITY staging assets instead of legacy starter deployment
   files.
+- Pre-gate review aligned staging auth, lead, internal-revalidation and Admin
+  locations with the hardened Nginx policy, fixed the loopback port at `3100`
+  end to end and made `RELEASE` manifests fail outside clean exact `main`.
 
 ## Remaining live gates
 

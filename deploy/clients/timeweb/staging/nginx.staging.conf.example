@@ -1,7 +1,12 @@
+limit_req_zone $binary_remote_addr zone=staging_login:10m rate=5r/m;
+limit_req_zone $binary_remote_addr zone=staging_leads:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=staging_internal:10m rate=30r/m;
+
 server {
     listen 443 ssl http2;
     server_name __STAGING_DOMAIN__;
 
+    client_max_body_size 20m;
     add_header X-Robots-Tag "noindex, nofollow" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
@@ -13,6 +18,51 @@ server {
     location = /robots.txt {
         default_type text/plain;
         return 200 "User-agent: *\nDisallow: /\n";
+    }
+
+    location ~ ^/api/users/(?:login|forgot-password|reset-password)/?$ {
+        limit_req zone=staging_login burst=3 nodelay;
+        client_max_body_size 64k;
+        proxy_pass http://127.0.0.1:3100;
+        include proxy_params;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/public/leads {
+        limit_req zone=staging_leads burst=10 nodelay;
+        client_max_body_size 64k;
+        proxy_pass http://127.0.0.1:3100;
+        include proxy_params;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/internal/revalidate {
+        limit_req zone=staging_internal burst=5 nodelay;
+        client_max_body_size 32k;
+        allow __ADMIN_OR_RUNTIME_CIDR__;
+        deny all;
+        proxy_pass http://127.0.0.1:3100;
+        include proxy_params;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location /admin {
+        __ADMIN_ACCESS_POLICY__
+        proxy_pass http://127.0.0.1:3100;
+        include proxy_params;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
     }
 
     location / {

@@ -64,6 +64,19 @@ export function validateBlueprint(input) {
 		add("staging-noindex-header-missing");
 	if (!stagingNginx.includes("__STAGING_DOMAIN__"))
 		add("staging-domain-placeholder-missing");
+	for (const marker of [
+		"127.0.0.1:3100:3000",
+		"__ADMIN_OR_RUNTIME_CIDR__",
+		"__ADMIN_ACCESS_POLICY__",
+		"location = /api/public/leads",
+		"location = /api/internal/revalidate",
+		"staging_login",
+		"staging_leads",
+		"staging_internal",
+	]) {
+		const source = marker === "127.0.0.1:3100:3000" ? stagingCompose : stagingNginx;
+		if (!source.includes(marker)) add(`staging-security-marker:${marker}`);
+	}
 	if (
 		/alias\s+[^;]*media/i.test(nginx) ||
 		/location\s+[^\n]*\/media\//i.test(nginx)

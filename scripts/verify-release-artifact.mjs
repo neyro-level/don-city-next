@@ -30,6 +30,17 @@ assert.ok(compose.includes('JOBS_AUTORUN: "false"'), "Staging must not own Paylo
 assert.ok(!/^\s*build\s*:/m.test(compose), "Staging must consume an image built outside the server.");
 assert.ok(nginx.includes("__STAGING_DOMAIN__"), "Nginx template must require an explicit staging domain.");
 assert.ok(nginx.includes("noindex, nofollow"), "Nginx template must preserve staging noindex policy.");
+for (const expected of [
+	"__ADMIN_OR_RUNTIME_CIDR__",
+	"__ADMIN_ACCESS_POLICY__",
+	"location = /api/public/leads",
+	"location = /api/internal/revalidate",
+	"staging_login",
+	"staging_leads",
+	"staging_internal",
+]) {
+	assert.ok(nginx.includes(expected), `Staging Nginx must include ${expected}.`);
+}
 assert.ok(operations.includes("immutable image"), "Operations must preserve immutable image rule.");
 assert.ok(releaseManifest.includes(".release"), "Release manifest must write local uncommitted evidence.");
 assert.ok(pnpmWorkspace.includes("confirmModulesPurge: false"), "Workspace must support non-interactive Docker builds.");
@@ -42,6 +53,9 @@ for (const expected of [
 	'deliveryProfile: "CRITICAL"',
 	'imageName: "don-city-next"',
 	'process.env.RELEASE_MODE ?? "REHEARSAL"',
+	'mode === "RELEASE"',
+	'assert.equal(branch, "main"',
+	'assert.equal(commit, originMain',
 ]) {
 	assert.ok(releaseManifest.includes(expected), `Release manifest must include ${expected}.`);
 }

@@ -33,6 +33,15 @@ const migrations = (await readdir(migrationDir))
 	.filter((file) => file.endsWith(".ts") || file.endsWith(".json"))
 	.sort();
 const status = git(["status", "--short"]);
+const branch = git(["branch", "--show-current"]);
+const commit = git(["rev-parse", "HEAD"]);
+const originMain = git(["rev-parse", "origin/main"]);
+
+if (mode === "RELEASE") {
+	assert.equal(branch, "main", "RELEASE manifest requires the canonical main branch");
+	assert.equal(commit, originMain, "RELEASE manifest requires exact origin/main");
+	assert.equal(status, "", "RELEASE manifest requires a clean worktree");
+}
 
 const manifest = {
 	project: packageJson.name,
@@ -41,9 +50,9 @@ const manifest = {
 	deliveryProfile: "CRITICAL",
 	mode,
 	source: {
-		branch: git(["branch", "--show-current"]),
-		commit: git(["rev-parse", "HEAD"]),
-		originMain: git(["rev-parse", "origin/main"]),
+		branch,
+		commit,
+		originMain,
 		clean: status.length === 0,
 	},
 	runtime: {
