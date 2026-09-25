@@ -8,9 +8,6 @@ $ErrorActionPreference = 'Stop'
 
 $config = Get-Content -LiteralPath $ConfigPath -Raw
 $requiredFragments = @(
-    'on:',
-    'push:',
-    'branches: []',
     'merge-standard:',
     'merge-risky:',
     'expected_commit_sha:',
@@ -25,12 +22,8 @@ foreach ($fragment in $requiredFragments) {
     }
 }
 
-if ($config -match '(?m)^\s*pull_request\s*:') {
-    throw 'Pull-request trigger is forbidden for the zero-CI policy.'
-}
-
-if ($config -notmatch '(?ms)push:\s*\r?\n\s*-\s*workflows:.*?\r?\n\s*filter:\s*\r?\n\s*branches:\s*\[\]') {
-    throw 'Push trigger must be explicitly disabled with an empty branch filter.'
+if ($config -match '(?m)^\s*(on|push|pull_request|schedule)\s*:') {
+    throw 'Automatic SourceCraft triggers are forbidden for the manual exact-head policy.'
 }
 
 Write-Output 'SourceCraft manual-gate contract: PASS'
