@@ -17,13 +17,13 @@ import {
 	buildHomeCatalogLinks,
 	buildR1Navigation,
 } from "../../../project/navigation.ts";
+import { seoRegistryById } from "../../../project/seo-registry.generated.ts";
 import { siteConfig } from "../../../project/site.config.ts";
 import {
 	buildNapContactLinks,
 	buildNapPhoneLink,
 	toPublicNapDTO,
 } from "../../../project/site-settings.ts";
-import { seoRegistryById } from "../../../project/seo-registry.generated.ts";
 import { buildPropertyUrl, projectUrls } from "../../../project/url-grammar.ts";
 import type {
 	PublicCatalogFacetsResult,
@@ -225,6 +225,14 @@ const dealTypeLabels = {
 	rent: "Аренда",
 } as const;
 
+const houseTypeLabels = {
+	house: "Дом",
+	cottage: "Коттедж",
+	townhouse: "Таунхаус",
+	dacha: "Дача",
+	part_of_house: "Часть дома",
+} as const;
+
 export function toPropertyFilterDTO(
 	result: PublicCatalogResult,
 	facets?: PublicCatalogFacetsResult,
@@ -299,7 +307,11 @@ export function toPropertyFilterDTO(
 		})),
 		rooms,
 		priceMinor,
-		buildingTypes: [],
+		buildingTypes:
+			facets?.houseTypes.map((bucket) => ({
+				value: bucket.value,
+				label: houseTypeLabels[bucket.value],
+			})) ?? [],
 		renovations: [],
 		landUseTypes: [],
 		commercialTypes: [],

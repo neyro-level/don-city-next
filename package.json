@@ -83,6 +83,7 @@
 		"verify:navigation": "node --experimental-strip-types scripts/verify-navigation.ts",
 		"verify:apartment-districts": "node --experimental-strip-types scripts/verify-apartment-districts.ts",
 		"verify:apartment-room-facets": "node --experimental-strip-types scripts/verify-apartment-room-facets.ts",
+		"verify:house-geo-page": "node --conditions=react-server --experimental-strip-types scripts/verify-house-geo-page.ts",
 		"verify:navigation-shell": "node --experimental-strip-types scripts/verify-navigation-shell.ts",
 		"verify:gateway-context": "node --experimental-strip-types scripts/verify-gateway-context.ts",
 		"verify:sitemap-indexnow": "node --experimental-strip-types scripts/verify-sitemap-indexnow.ts",

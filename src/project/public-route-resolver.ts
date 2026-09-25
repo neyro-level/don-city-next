@@ -4,6 +4,10 @@ import type {
 } from "@ams/realtbase-contracts";
 import type { NearbyGeoAvailability } from "../core/data-access/public/nearby-geo.ts";
 import type { PublicPropertyPageState } from "../core/data-access/public/provider.ts";
+import {
+	type HouseType,
+	isHouseType,
+} from "../platform/catalog/house-types.ts";
 import type { LandFacetSlug } from "../platform/catalog/land-facets.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
 import {
@@ -39,6 +43,7 @@ type CatalogQuery = {
 	geoSlug?: string;
 	districtSlug?: string;
 	rooms?: number[];
+	houseType?: HouseType;
 	landUse?: LandFacetSlug;
 };
 
@@ -316,6 +321,43 @@ async function applyApartmentRoomQuery(
 	};
 }
 
+function singleSearchParamValue(
+	value: PublicRouteSearchParams[string],
+): string | undefined {
+	if (typeof value === "string") return value;
+	return value?.length === 1 ? value[0] : undefined;
+}
+
+function applyHouseTypeQuery(
+	result: ResolvedPublicRoute,
+	key: Extract<PageKey, { kind: "categoryRoot" | "categoryGeo" }>,
+	searchParams: PublicRouteSearchParams,
+): ResolvedPublicRoute {
+	if (
+		result.kind !== "page" ||
+		key.category !== "doma" ||
+		(key.kind === "categoryGeo" && key.geo !== siteProfile.primaryGeo) ||
+		!Object.values(searchParams).some((value) =>
+			Array.isArray(value) ? value.length > 0 : Boolean(value),
+		)
+	) {
+		return result;
+	}
+
+	const rawHouseType = singleSearchParamValue(searchParams.houseType);
+	const houseType =
+		rawHouseType && isHouseType(rawHouseType) ? rawHouseType : undefined;
+
+	return {
+		...result,
+		robots: { indexing: "noindex", following: "follow" },
+		catalogQuery: {
+			...result.catalogQuery,
+			...(houseType ? { houseType } : {}),
+		},
+	};
+}
+
 async function resolveNearbyGeoPage(
 	key: Extract<PageKey, { kind: "geoHub" | "categoryGeo" }>,
 	dependencies: PublicRouteDependencies,
@@ -445,8 +487,17 @@ export async function resolveProjectPublicRoute(
 	}
 	if (key.kind !== "property") {
 		const result = await resolveRegistryPage(key, dependencies);
-		return key.kind === "categoryGeo"
-			? applyApartmentRoomQuery(result, key, searchParams, dependencies)
+		if (key.kind === "categoryGeo") {
+			const apartmentResult = await applyApartmentRoomQuery(
+				result,
+				key,
+				searchParams,
+				dependencies,
+			);
+			return applyHouseTypeQuery(apartmentResult, key, searchParams);
+		}
+		return key.kind === "categoryRoot"
+			? applyHouseTypeQuery(result, key, searchParams)
 			: result;
 	}
 

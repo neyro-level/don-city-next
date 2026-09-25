@@ -3,16 +3,12 @@ import "server-only";
 import type {
 	PropertyCategory,
 	PropertyDealType,
+	PropertyLocationDTO,
 	PropertySort,
 	PropertyView,
-	PropertyLocationDTO,
 } from "@ams/realtbase-contracts";
 import type { Payload, Where } from "payload";
 import { z } from "zod";
-import {
-	landFacetSlugs,
-	permittedUseForLandFacet,
-} from "../../../platform/catalog/land-facets.ts";
 import { sanitizeExplicitRedirectPath } from "@/core/seo/redirect-path";
 import type {
 	CitiesSelect,
@@ -26,6 +22,14 @@ import type {
 } from "@/project/payload-types";
 import { buildPropertyUrl } from "@/project/url-grammar";
 import {
+	type HouseType,
+	houseTypes,
+} from "../../../platform/catalog/house-types.ts";
+import {
+	landFacetSlugs,
+	permittedUseForLandFacet,
+} from "../../../platform/catalog/land-facets.ts";
+import {
 	aggregatePublicCatalogFacets,
 	findPublicPropertyLifecycleRow,
 	findPublicPropertyLifecycleRowByPublicUrlId,
@@ -35,9 +39,9 @@ import {
 } from "./payload-reads";
 import { publicGatewayPolicy } from "./policy";
 import {
+	type R1PublicPropertyCategory,
 	r1PublicPropertyCategories,
 	r1PublicPropertyPublicationClauses,
-	type R1PublicPropertyCategory,
 } from "./property-policy";
 
 const publicPropertySelect = {
@@ -85,40 +89,51 @@ const propertySortSchema = z.enum([
 ]);
 const propertyViewSchema = z.enum(["grid", "list", "map"]);
 const landUseFacetSchema = z.enum(landFacetSlugs);
+const houseTypeSchema = z.enum(houseTypes);
 
 const optionalPositiveInt = z.coerce.number().int().positive().optional();
 const optionalNonNegativeNumber = z.coerce.number().nonnegative().optional();
 
-export const catalogQuerySchema = z.object({
-	page: z.coerce.number().int().positive().default(1),
-	limit: z.coerce
-		.number()
-		.int()
-		.min(1)
-		.max(publicGatewayPolicy.maxLimit)
-		.default(24),
-	sort: propertySortSchema.default("recommended"),
-	view: propertyViewSchema.default("grid"),
-	query: z.string().trim().min(1).max(120).optional(),
-	category: propertyCategorySchema.optional(),
-	dealType: propertyDealTypeSchema.optional(),
-	geoSlug: z.string().trim().min(1).max(80).optional(),
-	districtSlug: z.string().trim().min(1).max(80).optional(),
-	rooms: z.array(optionalPositiveInt.unwrap()).max(8).optional(),
-	landUse: landUseFacetSchema.optional(),
-	priceFromMinor: optionalPositiveInt,
-	priceToMinor: optionalPositiveInt,
-	areaFrom: optionalNonNegativeNumber,
-	areaTo: optionalNonNegativeNumber,
-}).superRefine((value, context) => {
-	if (value.districtSlug && !value.geoSlug) {
-		context.addIssue({
-			code: "custom",
-			path: ["districtSlug"],
-			message: "districtSlug requires geoSlug.",
-		});
-	}
-});
+export const catalogQuerySchema = z
+	.object({
+		page: z.coerce.number().int().positive().default(1),
+		limit: z.coerce
+			.number()
+			.int()
+			.min(1)
+			.max(publicGatewayPolicy.maxLimit)
+			.default(24),
+		sort: propertySortSchema.default("recommended"),
+		view: propertyViewSchema.default("grid"),
+		query: z.string().trim().min(1).max(120).optional(),
+		category: propertyCategorySchema.optional(),
+		dealType: propertyDealTypeSchema.optional(),
+		geoSlug: z.string().trim().min(1).max(80).optional(),
+		districtSlug: z.string().trim().min(1).max(80).optional(),
+		rooms: z.array(optionalPositiveInt.unwrap()).max(8).optional(),
+		houseType: houseTypeSchema.optional(),
+		landUse: landUseFacetSchema.optional(),
+		priceFromMinor: optionalPositiveInt,
+		priceToMinor: optionalPositiveInt,
+		areaFrom: optionalNonNegativeNumber,
+		areaTo: optionalNonNegativeNumber,
+	})
+	.superRefine((value, context) => {
+		if (value.districtSlug && !value.geoSlug) {
+			context.addIssue({
+				code: "custom",
+				path: ["districtSlug"],
+				message: "districtSlug requires geoSlug.",
+			});
+		}
+		if (value.houseType && value.category !== "house") {
+			context.addIssue({
+				code: "custom",
+				path: ["houseType"],
+				message: "houseType requires category=house.",
+			});
+		}
+	});
 
 export type CatalogQueryInput = z.input<typeof catalogQuerySchema>;
 export type CatalogQuery = z.output<typeof catalogQuerySchema>;
@@ -193,6 +208,7 @@ export type PublicCatalogResult = {
 		city?: string;
 		district?: string;
 		rooms?: readonly number[];
+		buildingType?: HouseType;
 		priceFromMinor?: number;
 		priceToMinor?: number;
 		areaFrom?: number;
@@ -274,6 +290,7 @@ export type PublicCatalogFacetsResult = {
 	cities: readonly { value: string; count: number }[];
 	districts: readonly { value: string; count: number }[];
 	rooms: readonly { value: number; count: number }[];
+	houseTypes: readonly { value: HouseType; count: number }[];
 	priceMinor: {
 		min: number | null;
 		max: number | null;
@@ -315,7 +332,10 @@ function relationId(value: unknown): number | null {
 }
 
 function relationshipIds(
-	properties: readonly Pick<PublicCatalogSelectedProperty, "region" | "city" | "district">[],
+	properties: readonly Pick<
+		PublicCatalogSelectedProperty,
+		"region" | "city" | "district"
+	>[],
 ) {
 	const regions = new Set<number>();
 	const cities = new Set<number>();
@@ -333,7 +353,10 @@ function relationshipIds(
 
 async function loadPublicGeoIndex(
 	payload: Payload,
-	properties: readonly Pick<PublicCatalogSelectedProperty, "region" | "city" | "district">[],
+	properties: readonly Pick<
+		PublicCatalogSelectedProperty,
+		"region" | "city" | "district"
+	>[],
 ): Promise<PublicGeoIndex> {
 	const ids = relationshipIds(properties);
 	if (!ids.cities.size) {
@@ -342,7 +365,9 @@ async function loadPublicGeoIndex(
 
 	const citiesResult = await payload.find({
 		collection: "cities",
-		where: { and: [{ id: { in: [...ids.cities] } }, { isPublished: { equals: true } }] },
+		where: {
+			and: [{ id: { in: [...ids.cities] } }, { isPublished: { equals: true } }],
+		},
 		limit: ids.cities.size,
 		pagination: false,
 		depth: 0,
@@ -358,7 +383,12 @@ async function loadPublicGeoIndex(
 	const [regionsResult, districtsResult] = await Promise.all([
 		payload.find({
 			collection: "regions",
-			where: { and: [{ id: { in: [...ids.regions] } }, { isPublished: { equals: true } }] },
+			where: {
+				and: [
+					{ id: { in: [...ids.regions] } },
+					{ isPublished: { equals: true } },
+				],
+			},
 			limit: ids.regions.size,
 			pagination: false,
 			depth: 0,
@@ -449,10 +479,10 @@ function publicGeoForProperty(
 async function resolvePublishedCatalogGeo(
 	payload: Payload,
 	query: CatalogQuery,
-): Promise<
-	| { city?: PropertyLocationDTO["city"]; district?: NonNullable<PropertyLocationDTO["district"]> }
-	| null
-> {
+): Promise<{
+	city?: PropertyLocationDTO["city"];
+	district?: NonNullable<PropertyLocationDTO["district"]>;
+} | null> {
 	if (!query.geoSlug) return {};
 	const cityResult = await payload.find({
 		collection: "cities",
@@ -474,7 +504,9 @@ async function resolvePublishedCatalogGeo(
 	if (regionId == null) return null;
 	const regionResult = await payload.find({
 		collection: "regions",
-		where: { and: [{ id: { equals: regionId } }, { isPublished: { equals: true } }] },
+		where: {
+			and: [{ id: { equals: regionId } }, { isPublished: { equals: true } }],
+		},
 		limit: 1,
 		depth: 0,
 		select: publicRegionSelect,
@@ -484,10 +516,20 @@ async function resolvePublishedCatalogGeo(
 	const region = regionResult.docs[0] as PublicRegion | undefined;
 	if (!region?.isPublished) return null;
 	const publicCity: PropertyLocationDTO["city"] = {
-		id: String(city.id), slug: city.slug, name: city.name,
-		region: { id: String(region.id), slug: region.slug, name: region.name, shortName: region.shortName, isPublished: true },
-		nameGenitive: city.nameGenitive, nameLocative: city.nameLocative,
-		preposition: city.preposition, isPublished: true,
+		id: String(city.id),
+		slug: city.slug,
+		name: city.name,
+		region: {
+			id: String(region.id),
+			slug: region.slug,
+			name: region.name,
+			shortName: region.shortName,
+			isPublished: true,
+		},
+		nameGenitive: city.nameGenitive,
+		nameLocative: city.nameLocative,
+		preposition: city.preposition,
+		isPublished: true,
 	};
 	if (!query.districtSlug) return { city: publicCity };
 	const districtResult = await payload.find({
@@ -506,11 +548,14 @@ async function resolvePublishedCatalogGeo(
 		context: publicGatewayPolicy.context,
 	});
 	const district = districtResult.docs[0] as PublicDistrict | undefined;
-	if (!district?.isPublished || relationId(district.city) !== city.id) return null;
+	if (!district?.isPublished || relationId(district.city) !== city.id)
+		return null;
 	return {
 		city: publicCity,
 		district: {
-			id: String(district.id), slug: district.slug, name: district.name,
+			id: String(district.id),
+			slug: district.slug,
+			name: district.name,
 			type: district.type,
 			city: { id: publicCity.id, slug: publicCity.slug, name: publicCity.name },
 			...(district.nameLocative ? { nameLocative: district.nameLocative } : {}),
@@ -522,7 +567,10 @@ async function resolvePublishedCatalogGeo(
 
 function buildCatalogWhere(
 	query: CatalogQuery,
-	geo: { city?: PropertyLocationDTO["city"]; district?: NonNullable<PropertyLocationDTO["district"]> },
+	geo: {
+		city?: PropertyLocationDTO["city"];
+		district?: NonNullable<PropertyLocationDTO["district"]>;
+	},
 ): Where {
 	const and: Where[] = [publicPropertyPublicationWhere];
 
@@ -540,6 +588,7 @@ function buildCatalogWhere(
 	if (geo.city) and.push({ city: { equals: Number(geo.city.id) } });
 	if (geo.district) and.push({ district: { equals: Number(geo.district.id) } });
 	if (query.rooms?.length) and.push({ rooms: { in: query.rooms } });
+	if (query.houseType) and.push({ houseType: { equals: query.houseType } });
 	if (query.landUse) {
 		and.push({
 			permittedUse: {
@@ -583,6 +632,7 @@ function emptyCatalogResult(query: CatalogQuery): PublicCatalogResult {
 			category: query.category,
 			dealType: query.dealType,
 			rooms: query.rooms,
+			buildingType: query.houseType,
 			priceFromMinor: query.priceFromMinor,
 			priceToMinor: query.priceToMinor,
 			areaFrom: query.areaFrom,
@@ -602,6 +652,7 @@ function emptyCatalogFacetsResult(): PublicCatalogFacetsResult {
 		cities: [],
 		districts: [],
 		rooms: [],
+		houseTypes: [],
 		priceMinor: { min: null, max: null },
 	};
 }
@@ -699,7 +750,10 @@ export async function findPublicCatalogProperties(
 	const geoIndex = await loadPublicGeoIndex(payload, properties);
 	return {
 		items: properties.map((property) =>
-			toPublicCatalogProperty(property, publicGeoForProperty(property, geoIndex)),
+			toPublicCatalogProperty(
+				property,
+				publicGeoForProperty(property, geoIndex),
+			),
 		),
 		total: result.totalDocs,
 		page: result.page ?? query.page,
@@ -712,6 +766,7 @@ export async function findPublicCatalogProperties(
 			city: resolvedGeo.city?.name,
 			district: resolvedGeo.district?.name,
 			rooms: query.rooms,
+			buildingType: query.houseType,
 			priceFromMinor: query.priceFromMinor,
 			priceToMinor: query.priceToMinor,
 			areaFrom: query.areaFrom,
@@ -741,7 +796,10 @@ export async function findPublicPropertyBySlug(payload: Payload, slug: string) {
 
 	const selected = property as PublicCatalogSelectedProperty;
 	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
-	return toPublicCatalogProperty(selected, publicGeoForProperty(selected, geoIndex));
+	return toPublicCatalogProperty(
+		selected,
+		publicGeoForProperty(selected, geoIndex),
+	);
 }
 
 export async function findPublicPropertyByPublicUrlId(
@@ -769,7 +827,10 @@ export async function findPublicPropertyByPublicUrlId(
 	if (!property) return null;
 	const selected = property as PublicCatalogSelectedProperty;
 	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
-	return toPublicCatalogProperty(selected, publicGeoForProperty(selected, geoIndex));
+	return toPublicCatalogProperty(
+		selected,
+		publicGeoForProperty(selected, geoIndex),
+	);
 }
 
 export async function findPublicPropertyLifecycleByPublicUrlId(
@@ -846,7 +907,8 @@ export async function findPublicCatalogFacets(
 			row as Pick<PublicCatalogSelectedProperty, "city" | "district">,
 			facetGeoIndex,
 		);
-		if (geo?.city.name) cities.set(geo.city.name, (cities.get(geo.city.name) ?? 0) + 1);
+		if (geo?.city.name)
+			cities.set(geo.city.name, (cities.get(geo.city.name) ?? 0) + 1);
 		if (geo?.district?.name) {
 			districts.set(
 				geo.district.name,
@@ -862,6 +924,10 @@ export async function findPublicCatalogFacets(
 		const parsed = propertyDealTypeSchema.safeParse(bucket.value);
 		return parsed.success ? [{ value: parsed.data, count: bucket.count }] : [];
 	});
+	const availableHouseTypes = aggregate.houseTypes.flatMap((bucket) => {
+		const parsed = houseTypeSchema.safeParse(bucket.value);
+		return parsed.success ? [{ value: parsed.data, count: bucket.count }] : [];
+	});
 
 	return {
 		source: "payload-aggregate",
@@ -875,6 +941,7 @@ export async function findPublicCatalogFacets(
 			.sort(([left], [right]) => left.localeCompare(right, "ru"))
 			.map(([value, count]) => ({ value, count })),
 		rooms: aggregate.rooms,
+		houseTypes: availableHouseTypes,
 		priceMinor: {
 			min: aggregate.priceMin,
 			max: aggregate.priceMax,

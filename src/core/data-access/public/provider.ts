@@ -95,6 +95,7 @@ function emptyCatalog(
 			category: parsed.category,
 			dealType: parsed.dealType,
 			rooms: parsed.rooms,
+			buildingType: parsed.houseType,
 			priceFromMinor: parsed.priceFromMinor,
 			priceToMinor: parsed.priceToMinor,
 			areaFrom: parsed.areaFrom,

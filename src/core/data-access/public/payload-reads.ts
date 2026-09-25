@@ -28,6 +28,7 @@ type FacetRow = {
 	city?: unknown;
 	district?: unknown;
 	rooms?: number | null;
+	houseType?: string | null;
 	priceMinor?: number | null;
 };
 
@@ -43,6 +44,7 @@ export async function aggregatePublicCatalogFacets(
 	const categories = new Map<string, number>();
 	const dealTypes = new Map<string, number>();
 	const rooms = new Map<number, number>();
+	const houseTypes = new Map<string, number>();
 	let total = 0;
 	let priceMin: number | null = null;
 	let priceMax: number | null = null;
@@ -58,6 +60,7 @@ export async function aggregatePublicCatalogFacets(
 			city: true,
 			district: true,
 			rooms: true,
+			houseType: true,
 			priceMinor: true,
 		},
 		...access,
@@ -70,6 +73,7 @@ export async function aggregatePublicCatalogFacets(
 		if (typeof doc.rooms === "number" && doc.rooms > 0) {
 			rooms.set(doc.rooms, (rooms.get(doc.rooms) ?? 0) + 1);
 		}
+		if (doc.houseType) bump(houseTypes, doc.houseType);
 		if (typeof doc.priceMinor === "number") {
 			priceMin =
 				priceMin == null ? doc.priceMinor : Math.min(priceMin, doc.priceMinor);
@@ -93,6 +97,7 @@ export async function aggregatePublicCatalogFacets(
 		rooms: [...rooms.entries()]
 			.sort(([a], [b]) => a - b)
 			.map(([value, count]) => ({ value, count })),
+		houseTypes: toBuckets(houseTypes),
 	};
 }
 
@@ -285,7 +290,7 @@ export async function findPublicPropertyLifecycleRow(
 	payload: Payload,
 	slug: string,
 ): Promise<{
-		publicUrlId: number;
+	publicUrlId: number;
 	category: Property["category"];
 	status: "active" | "archived";
 	publishedAt: string | null;
@@ -321,7 +326,7 @@ export async function findPublicPropertyLifecycleRowByPublicUrlId(
 	payload: Payload,
 	publicUrlId: string,
 ): Promise<{
-		publicUrlId: number;
+	publicUrlId: number;
 	slug: string;
 	category: Property["category"];
 	status: "active" | "archived";
