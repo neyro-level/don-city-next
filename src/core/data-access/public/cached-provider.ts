@@ -1,16 +1,18 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
+import { publicCacheTags } from "../../../project/cache-tags.ts";
 import {
 	describePublicCatalogCache,
 	publicDataRevalidateSeconds,
 } from "../../cache/public-targets.ts";
-import { publicCacheTags } from "../../../project/cache-tags.ts";
 import {
 	getNearbyGeoAvailability,
 	getPublicCatalog,
 	getPublicDistrictParentSlug,
 	getPublicHomePage,
+	getPublicListingContentGateEvidence,
+	getPublicListingContentGateEvidenceMap,
 	getPublicNap,
 	getPublicPropertyByPublicUrlId,
 	type PublicCatalogRequest,
@@ -48,10 +50,7 @@ export function getCachedPublicPropertyByPublicUrlId(publicUrlId: string) {
 		["public-property", publicUrlId],
 		{
 			revalidate: publicDataRevalidateSeconds,
-			tags: [
-				publicCacheTags.properties,
-				publicCacheTags.property(publicUrlId),
-			],
+			tags: [publicCacheTags.properties, publicCacheTags.property(publicUrlId)],
 		},
 	)();
 }
@@ -81,6 +80,31 @@ export function getCachedPublicDistrictParentSlug(
 				publicCacheTags.geo(geoSlug),
 				publicCacheTags.district(geoSlug, districtSlug),
 			],
+		},
+	)();
+}
+
+export function getCachedPublicListingContentGateEvidence(registryId: string) {
+	return unstable_cache(
+		() => getPublicListingContentGateEvidence(registryId),
+		["public-listing-content-gate", registryId],
+		{
+			revalidate: publicDataRevalidateSeconds,
+			tags: [publicCacheTags.site, publicCacheTags.properties],
+		},
+	)();
+}
+
+export function getCachedPublicListingContentGateEvidenceMap(
+	registryIds: readonly string[],
+) {
+	const normalized = [...new Set(registryIds)].sort();
+	return unstable_cache(
+		() => getPublicListingContentGateEvidenceMap(normalized),
+		["public-listing-content-gate-map", ...normalized],
+		{
+			revalidate: publicDataRevalidateSeconds,
+			tags: [publicCacheTags.site, publicCacheTags.properties],
 		},
 	)();
 }

@@ -61,6 +61,7 @@ for (const collection of [
 	"import-issues",
 	"leads",
 	"lead-deliveries",
+	"listing-contents",
 	"media",
 	"redirects",
 ]) {
@@ -79,6 +80,7 @@ const collectionFileBySlug = {
 	"import-issues": "src/project/collections/ImportIssues.ts",
 	leads: "src/project/collections/Leads.ts",
 	"lead-deliveries": "src/project/collections/LeadDeliveries.ts",
+	"listing-contents": "src/project/collections/ListingContents.ts",
 	media: "src/project/collections/Media.ts",
 	redirects: "src/project/collections/Redirects.ts",
 };
@@ -86,6 +88,7 @@ const collectionFileBySlug = {
 const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
+	"listing-contents": "publicListingContentReadAccess",
 	redirects: "publicRedirectReadAccess",
 };
 
@@ -268,9 +271,9 @@ for (const required of [
 const nginxFiles = isClientProject
 	? ["deploy/clients/timeweb/nginx/site.conf.example"]
 	: [
-		"deploy/nginx/start-baza.ams24.ru.conf",
-		"deploy/clients/timeweb/nginx/site.conf.example",
-	];
+			"deploy/nginx/start-baza.ams24.ru.conf",
+			"deploy/clients/timeweb/nginx/site.conf.example",
+		];
 for (const nginxFile of nginxFiles) {
 	const nginx = read(nginxFile);
 	assert.ok(

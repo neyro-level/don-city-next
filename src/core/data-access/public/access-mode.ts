@@ -83,6 +83,14 @@ export const publicPageReadAccess: Access = ({ req }) =>
 		],
 	});
 
+export const publicListingContentReadAccess: Access = ({ req }) =>
+	roleOrPublicWhere(req, {
+		and: [
+			{ status: { equals: "approved" } },
+			{ approvedAt: { exists: true } },
+		],
+	});
+
 export const publicGlobalReadAccess: Access = ({ req }) =>
 	isOperator(req.user) || isPublicGatewayRead(req);
 

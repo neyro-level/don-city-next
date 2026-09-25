@@ -1,9 +1,9 @@
 import type { MarketingPageDTO } from "@ams/realtbase-contracts";
+import type { CatalogViewAnalyticsEvent } from "@ams/realtbase-ui/analytics";
 import {
 	CatalogPageView,
 	type CatalogPaginationItem,
 } from "@ams/realtbase-ui/starter/catalog-page";
-import type { CatalogViewAnalyticsEvent } from "@ams/realtbase-ui/analytics";
 import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
 import {
 	LegalDocumentView,
@@ -20,13 +20,13 @@ import {
 } from "@/core/data-access/public/cached-provider";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import { toMetadata } from "@/core/seo/page-metadata";
+import type { PageKey } from "@/platform/grammar/types";
 import { leadConsentContext } from "@/project/legal.config";
 import { getProjectLegalDocument } from "@/project/legal-documents";
 import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
 import { projectUrls } from "@/project/url-grammar";
-import type { PageKey } from "@/platform/grammar/types";
 
 function catalogAnalyticsEvent(key: PageKey): CatalogViewAnalyticsEvent {
 	if (key.kind === "geoHub") return "all_property_view";
@@ -213,6 +213,7 @@ export async function ResolvedPublicRoutePage({
 					eyebrow: siteConfig.brandName,
 					title: result.h1,
 					description: result.description,
+					introduction: result.introduction,
 					emptyMessage:
 						"Опубликованных объектов по этим условиям пока нет. Оставьте критерии — подготовим подборку.",
 					ctaTitle: "Получить подборку объектов",

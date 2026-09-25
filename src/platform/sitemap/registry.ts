@@ -73,7 +73,7 @@ export function buildRegistrySitemapEntries(
 	return registry
 		.filter(
 			(entry) =>
-				entry.status === "active" &&
+				(entry.status === "active" || entry.contentGateRequired === "true") &&
 				(!options.owner || registrySitemapOwner(entry) === options.owner) &&
 				isListingSitemapEligible(
 					entry,

@@ -73,6 +73,7 @@ export interface Config {
     regions: Region;
     cities: City;
     districts: District;
+    'listing-contents': ListingContent;
     'feed-sources': FeedSource;
     'import-runs': ImportRun;
     'import-issues': ImportIssue;
@@ -94,6 +95,7 @@ export interface Config {
     regions: RegionsSelect<false> | RegionsSelect<true>;
     cities: CitiesSelect<false> | CitiesSelect<true>;
     districts: DistrictsSelect<false> | DistrictsSelect<true>;
+    'listing-contents': ListingContentsSelect<false> | ListingContentsSelect<true>;
     'feed-sources': FeedSourcesSelect<false> | FeedSourcesSelect<true>;
     'import-runs': ImportRunsSelect<false> | ImportRunsSelect<true>;
     'import-issues': ImportIssuesSelect<false> | ImportIssuesSelect<true>;
@@ -493,6 +495,55 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listing-contents".
+ */
+export interface ListingContent {
+  id: number;
+  registryId:
+    | 'APT_DIST_VOR'
+    | 'APT_DIST_KALIN'
+    | 'APT_DIST_KIR'
+    | 'APT_DIST_PROL'
+    | 'APT_MICRO_TEXT'
+    | 'APT_ROOM_1'
+    | 'APT_ROOM_2'
+    | 'APT_DIST_LEN'
+    | 'APT_DIST_PETR'
+    | 'HOUSE_DIST_BUD'
+    | 'HOUSE_DIST_KIR'
+    | 'HOUSE_DIST_KUYB'
+    | 'APT_ROOM_3'
+    | 'APT_DIST_BUD'
+    | 'APT_DIST_KIEV'
+    | 'APT_DIST_KUYB'
+    | 'HOUSE_DIST_VOR'
+    | 'HOUSE_DIST_KALIN'
+    | 'HOUSE_DIST_KIEV'
+    | 'HOUSE_DIST_LEN'
+    | 'HOUSE_DIST_PETR'
+    | 'HOUSE_DIST_PROL'
+    | 'HOUSE_FACET_DACHI'
+    | 'LAND_FACET_IZHS'
+    | 'LAND_FACET_SNT';
+  status: 'draft' | 'approved';
+  /**
+   * Unique page-specific introduction. Approval requires at least 600 characters.
+   */
+  introduction: string;
+  contextFacts?:
+    | {
+        source: string;
+        checkedAt: string;
+        id?: string | null;
+      }[]
+    | null;
+  approvedAt?: string | null;
+  approvedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Owner operations: import warnings/errors with redacted messages and source links.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -838,6 +889,10 @@ export interface PayloadLockedDocument {
         value: number | District;
       } | null)
     | ({
+        relationTo: 'listing-contents';
+        value: number | ListingContent;
+      } | null)
+    | ({
         relationTo: 'feed-sources';
         value: number | FeedSource;
       } | null)
@@ -1092,6 +1147,26 @@ export interface DistrictsSelect<T extends boolean = true> {
         description?: T;
         noindex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listing-contents_select".
+ */
+export interface ListingContentsSelect<T extends boolean = true> {
+  registryId?: T;
+  status?: T;
+  introduction?: T;
+  contextFacts?:
+    | T
+    | {
+        source?: T;
+        checkedAt?: T;
+        id?: T;
+      };
+  approvedAt?: T;
+  approvedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

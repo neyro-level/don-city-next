@@ -23,7 +23,10 @@ import {
 	type InternalLink,
 } from "./navigation.ts";
 import { buildPublicPageIdentity } from "./public-page-identity.ts";
-import { seoRegistryByCanonicalPath } from "./seo-registry.generated.ts";
+import {
+	seoRegistry,
+	seoRegistryByCanonicalPath,
+} from "./seo-registry.generated.ts";
 import { siteConfig } from "./site.config.ts";
 import { siteProfile } from "./site.profile.ts";
 import {
@@ -56,6 +59,7 @@ export type ResolvedPublicPage = {
 	title: string;
 	description: string;
 	h1: string;
+	introduction?: string;
 	robots: PublicRobots;
 	catalogQuery?: CatalogQuery;
 	geoLinks?: readonly { href: string; label: string }[];
@@ -82,6 +86,9 @@ export type PublicRouteDependencies = {
 	loadListingContentGateEvidence?: (
 		registryId: string,
 	) => Promise<ListingContentGateEvidence | null>;
+	loadListingContentGateEvidenceMap?: (
+		registryIds: readonly string[],
+	) => Promise<Readonly<Record<string, ListingContentGateEvidence>>>;
 	loadDistrictParentSlug?: (
 		geoSlug: string,
 		districtSlug: string,
@@ -210,9 +217,32 @@ async function resolveRegistryPage(
 	const canonicalPath = buildProjectUrl(key);
 	const contract = seoRegistryByCanonicalPath.get(canonicalPath);
 	if (!contract) return { kind: "notFound", statusCode: 404 } as const;
-	const evidence = await dependencies.loadListingContentGateEvidence?.(
-		contract.registryId,
-	);
+	const category =
+		"category" in key
+			? domainCategory[key.category as keyof typeof domainCategory]
+			: undefined;
+	const gatedRegistryIds = seoRegistry
+		.filter(
+			(entry) =>
+				entry.contentGateRequired === "true" &&
+				"geo" in key &&
+				entry.geoSlug === key.geo &&
+				(!category || entry.category === category),
+		)
+		.map((entry) => entry.registryId);
+	const evidenceMap =
+		gatedRegistryIds.length > 0
+			? ((await dependencies.loadListingContentGateEvidenceMap?.(
+					gatedRegistryIds,
+				)) ?? {})
+			: {};
+	const evidence =
+		contract.contentGateRequired === "true"
+			? (evidenceMap[contract.registryId] ??
+				(await dependencies.loadListingContentGateEvidence?.(
+					contract.registryId,
+				)))
+			: undefined;
 	const parentSlug =
 		key.kind === "categoryGeoDistrict"
 			? await dependencies.loadDistrictParentSlug?.(key.geo, key.district)
@@ -233,7 +263,9 @@ async function resolveRegistryPage(
 		description: contract.description,
 		h1: contract.h1,
 		robots: robotsFromRegistry(contract, evidence),
+		...(evidence?.introduction ? { introduction: evidence.introduction } : {}),
 		catalogQuery: catalogQueryFor(key),
+		internalLinks: buildCatalogLinks(key, evidenceMap),
 		breadcrumbs: buildPageBreadcrumbs(key, contract.h1, {
 			districtParent: parentContract
 				? { label: parentContract.h1, href: parentContract.url }

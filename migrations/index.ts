@@ -14,6 +14,7 @@ import * as migration_20260924_141917_property_taxonomy from "./20260924_141917_
 import * as migration_20260924_144035_public_url_id from "./20260924_144035_public_url_id";
 import * as migration_20260924_161945_add_site_settings_global from "./20260924_161945_add_site_settings_global";
 import * as migration_20260925_093100_add_lead_business_context from "./20260925_093100_add_lead_business_context";
+import * as migration_20260925_114509 from "./20260925_114509";
 
 export const migrations = [
 	{
@@ -95,5 +96,10 @@ export const migrations = [
 		up: migration_20260925_093100_add_lead_business_context.up,
 		down: migration_20260925_093100_add_lead_business_context.down,
 		name: "20260925_093100_add_lead_business_context",
+	},
+	{
+		up: migration_20260925_114509.up,
+		down: migration_20260925_114509.down,
+		name: "20260925_114509",
 	},
 ];

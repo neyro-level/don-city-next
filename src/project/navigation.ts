@@ -4,7 +4,10 @@ import type {
 	SiteNavItemDTO,
 } from "@ams/realtbase-contracts";
 import type { PageKey } from "../platform/grammar/types.ts";
-import { isListingSitemapEligible } from "../platform/seo/content-gate.ts";
+import {
+	isListingSitemapEligible,
+	type ListingContentGateEvidence,
+} from "../platform/seo/content-gate.ts";
 import type { SeoRegistryEntry } from "../platform/seo/registry.ts";
 import { seoRegistry } from "./seo-registry.generated.ts";
 import { type SiteCategory, siteProfile } from "./site.profile.ts";
@@ -67,6 +70,7 @@ function registryLink(url: string): InternalLink | null {
 function gatePassedTopLinks(
 	geo: string,
 	category?: SiteCategory,
+	evidence: Readonly<Record<string, ListingContentGateEvidence>> = {},
 ): InternalLink[] {
 	return (seoRegistry as readonly SeoRegistryEntry[])
 		.filter(
@@ -74,7 +78,11 @@ function gatePassedTopLinks(
 				entry.geoSlug === geo &&
 				(!category || entry.category === propertyCategoryFor(category)) &&
 				(entry.pageType === "district" || entry.pageType === "facet") &&
-				isListingSitemapEligible(entry, siteProfile),
+				isListingSitemapEligible(
+					entry,
+					siteProfile,
+					evidence[entry.registryId],
+				),
 		)
 		.map((entry) => ({ href: entry.url, label: entry.h1 }));
 }
@@ -171,14 +179,17 @@ export function buildPageBreadcrumbs(
 	];
 }
 
-export function buildCatalogLinks(key: PageKey): InternalLink[] {
+export function buildCatalogLinks(
+	key: PageKey,
+	evidence: Readonly<Record<string, ListingContentGateEvidence>> = {},
+): InternalLink[] {
 	if (key.kind === "home") return buildHomeCatalogLinks();
 	if (key.kind === "geoHub") {
 		return [
 			...activePrimaryCategories().map((category) =>
 				categoryLink(key.geo, category),
 			),
-			...gatePassedTopLinks(key.geo),
+			...gatePassedTopLinks(key.geo, undefined, evidence),
 		];
 	}
 	if (
@@ -186,7 +197,7 @@ export function buildCatalogLinks(key: PageKey): InternalLink[] {
 		key.kind === "categoryGeoDistrict" ||
 		key.kind === "categoryGeoFacet"
 	) {
-		return gatePassedTopLinks(key.geo, key.category as SiteCategory);
+		return gatePassedTopLinks(key.geo, key.category as SiteCategory, evidence);
 	}
 	return [];
 }

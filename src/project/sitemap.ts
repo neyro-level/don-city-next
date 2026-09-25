@@ -1,3 +1,4 @@
+import type { ListingContentGateEvidence } from "../platform/seo/content-gate.ts";
 import {
 	buildRegistrySitemapEntries,
 	type RegistrySitemapOwner,
@@ -10,14 +11,21 @@ import { buildProjectUrl, parseProjectUrl } from "./url-grammar.ts";
 // Reviewed registry content revision. It is deliberately not request time.
 export const registryContentUpdatedAt = "2026-09-24T00:00:00.000Z";
 
-export const projectSitemapEntries = buildRegistrySitemapEntries(seoRegistry, {
-	contentUpdatedAt: registryContentUpdatedAt,
-	profile: siteProfile,
-	isCanonicalPath(path) {
-		const key = parseProjectUrl(path);
-		return key !== null && buildProjectUrl(key) === path;
-	},
-});
+export function projectSitemapEntriesForEvidence(
+	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>,
+) {
+	return buildRegistrySitemapEntries(seoRegistry, {
+		contentUpdatedAt: registryContentUpdatedAt,
+		profile: siteProfile,
+		contentGateEvidence,
+		isCanonicalPath(path) {
+			const key = parseProjectUrl(path);
+			return key !== null && buildProjectUrl(key) === path;
+		},
+	});
+}
+
+export const projectSitemapEntries = projectSitemapEntriesForEvidence();
 
 export const projectSitemapOwners = [
 	...registrySitemapOwners,
@@ -46,11 +54,15 @@ export function isProjectRegistrySitemapOwner(
 	return (registrySitemapOwners as readonly string[]).includes(owner);
 }
 
-export function projectRegistrySitemapEntries(owner: RegistrySitemapOwner) {
+export function projectRegistrySitemapEntries(
+	owner: RegistrySitemapOwner,
+	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>,
+) {
 	return buildRegistrySitemapEntries(seoRegistry, {
 		contentUpdatedAt: registryContentUpdatedAt,
 		profile: siteProfile,
 		owner,
+		contentGateEvidence,
 		isCanonicalPath(path) {
 			const key = parseProjectUrl(path);
 			return key !== null && buildProjectUrl(key) === path;

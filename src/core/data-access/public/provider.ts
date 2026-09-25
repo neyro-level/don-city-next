@@ -3,14 +3,18 @@ import "server-only";
 import type { PublicPageIdentityDTO } from "@ams/realtbase-contracts";
 
 import { resolvePropertyPageLifecycle } from "@/core/seo/property";
-import { type PublicUrlEntry, staticPublicUrlEntries } from "@/core/seo/site";
+import type { PublicUrlEntry } from "@/core/seo/site";
+import type { ListingContentGateEvidence } from "@/platform/seo/content-gate";
+import type { SeoRegistryEntry } from "@/platform/seo/registry";
 import { maxMeaningfulLastModified } from "@/platform/sitemap/registry";
 import { projectConfig } from "@/project/project.config";
+import { seoRegistry, seoRegistryById } from "@/project/seo-registry.generated";
 import { toPublicNapDTO } from "@/project/site-settings";
 import {
 	isProjectRegistrySitemapOwner,
 	type ProjectSitemapOwner,
 	projectRegistrySitemapEntries,
+	projectSitemapEntriesForEvidence,
 	propertyCategoryForSitemapOwner,
 } from "@/project/sitemap";
 import {
@@ -21,6 +25,7 @@ import {
 import {
 	type CatalogQueryInput,
 	catalogQuerySchema,
+	countPublicCatalogProperties,
 	findPublicCatalogFacets,
 	findPublicCatalogProperties,
 	findPublicPropertyByPublicUrlId,
@@ -39,6 +44,7 @@ import {
 	toPropertyListDTO,
 	toShellDTO,
 } from "./dto";
+import { findApprovedListingContent } from "./listing-content.ts";
 import {
 	findNearbyGeoAvailability,
 	type NearbyGeoAvailability,
@@ -112,25 +118,119 @@ function emptyCatalog(
 	};
 }
 
-function indexableStaticEntries(): PublicUrlEntry[] {
-	return staticPublicUrlEntries.filter((entry) => entry.indexable);
+function indexableStaticEntries(
+	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>,
+): PublicUrlEntry[] {
+	return projectSitemapEntriesForEvidence(contentGateEvidence).filter(
+		(entry) => entry.indexable,
+	);
 }
 
 function indexableRegistryEntries(
 	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
+	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>,
 ): PublicUrlEntry[] {
-	return projectRegistrySitemapEntries(owner).filter(
+	return projectRegistrySitemapEntries(owner, contentGateEvidence).filter(
 		(entry) => entry.indexable,
 	);
+}
+
+function listingCatalogQuery(
+	entry: SeoRegistryEntry,
+): CatalogQueryInput | null {
+	const category =
+		entry.category === "apartment" ||
+		entry.category === "house" ||
+		entry.category === "land"
+			? entry.category
+			: undefined;
+	if (!category || !entry.geoSlug) return null;
+	const query: CatalogQueryInput = {
+		category,
+		geoSlug: entry.geoSlug,
+		...(entry.districtSlug ? { districtSlug: entry.districtSlug } : {}),
+	};
+	if (entry.facetSlug === "odnokomnatnye") query.rooms = [1];
+	if (entry.facetSlug === "dvuhkomnatnye") query.rooms = [2];
+	if (entry.facetSlug === "trehkomnatnye") query.rooms = [3];
+	if (entry.facetSlug === "dachi") query.houseType = "dacha";
+	if (entry.facetSlug === "izhs" || entry.facetSlug === "snt") {
+		query.landUse = entry.facetSlug;
+	}
+	return query;
+}
+
+async function listingContentGateEvidenceFor(
+	payload: NonNullable<
+		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
+	>,
+	entry: SeoRegistryEntry,
+): Promise<ListingContentGateEvidence | null> {
+	const query = listingCatalogQuery(entry);
+	if (!query) return null;
+	const [content, activeObjects] = await Promise.all([
+		findApprovedListingContent(payload, entry.registryId),
+		countPublicCatalogProperties(payload, query),
+	]);
+	if (!content) return null;
+	return {
+		activeObjects,
+		introduction: content.introduction,
+		contextFacts: content.contextFacts,
+		serverRendered: true,
+		propertyLinksInHtml: activeObjects > 0,
+	};
+}
+
+async function listingContentGateEvidenceMap(
+	payload: NonNullable<
+		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
+	>,
+	registryIds: readonly string[],
+): Promise<Readonly<Record<string, ListingContentGateEvidence>>> {
+	const entries = registryIds
+		.map((registryId) => seoRegistryById.get(registryId))
+		.filter((entry): entry is SeoRegistryEntry => Boolean(entry));
+	const rows = await Promise.all(
+		entries.map(
+			async (entry) =>
+				[
+					entry.registryId,
+					await listingContentGateEvidenceFor(payload, entry),
+				] as const,
+		),
+	);
+	return Object.fromEntries(rows.filter((row) => row[1] !== null)) as Record<
+		string,
+		ListingContentGateEvidence
+	>;
+}
+
+export async function getPublicListingContentGateEvidence(
+	registryId: string,
+): Promise<ListingContentGateEvidence | null> {
+	const payload = await getOptionalPublicGatewayPayload();
+	const entry = seoRegistryById.get(registryId);
+	return payload && entry
+		? listingContentGateEvidenceFor(payload, entry)
+		: null;
+}
+
+export async function getPublicListingContentGateEvidenceMap(
+	registryIds: readonly string[],
+): Promise<Readonly<Record<string, ListingContentGateEvidence>>> {
+	const payload = await getOptionalPublicGatewayPayload();
+	return payload ? listingContentGateEvidenceMap(payload, registryIds) : {};
 }
 
 async function sitemapRegistryEntriesWithOwnedLastModified(
 	payload: NonNullable<
 		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
 	>,
+	entries: readonly PublicUrlEntry[] = indexableStaticEntries(),
 ): Promise<PublicUrlEntry[]> {
 	const listingDates = await findPublicSitemapListingLastModified(payload);
-	return indexableStaticEntries().map((entry) => {
+	return entries.map((entry) => {
 		const key = parseProjectUrl(entry.path);
 		if (key?.kind === "geoHub") {
 			return {
@@ -141,7 +241,11 @@ async function sitemapRegistryEntriesWithOwnedLastModified(
 				),
 			};
 		}
-		if (key?.kind === "categoryGeo") {
+		if (
+			key?.kind === "categoryGeo" ||
+			key?.kind === "categoryGeoDistrict" ||
+			key?.kind === "categoryGeoFacet"
+		) {
 			const category = Object.entries(listingDates.byCategory).find(
 				([propertyCategory]) =>
 					propertyCategoryToSlug(
@@ -163,11 +267,17 @@ async function logicalRegistryEntriesWithOwnedLastModified(
 	>,
 	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
 ): Promise<PublicUrlEntry[]> {
-	const allowedPaths = new Set(
-		indexableRegistryEntries(owner).map((entry) => entry.path),
-	);
-	return (await sitemapRegistryEntriesWithOwnedLastModified(payload)).filter(
-		(entry) => allowedPaths.has(entry.path),
+	const registryIds = seoRegistry
+		.filter(
+			(entry) =>
+				entry.contentGateRequired === "true" &&
+				(entry.pageType === "district" || entry.pageType === "facet"),
+		)
+		.map((entry) => entry.registryId);
+	const evidence = await listingContentGateEvidenceMap(payload, registryIds);
+	return sitemapRegistryEntriesWithOwnedLastModified(
+		payload,
+		indexableRegistryEntries(owner, evidence),
 	);
 }
 
@@ -246,7 +356,13 @@ export async function getPublicSitemapTotals() {
 			total: staticCount,
 		};
 	}
-	const staticCount = indexableStaticEntries().length;
+	const evidence = await listingContentGateEvidenceMap(
+		payload,
+		seoRegistry
+			.filter((entry) => entry.contentGateRequired === "true")
+			.map((entry) => entry.registryId),
+	);
+	const staticCount = indexableStaticEntries(evidence).length;
 	const properties = await countPublicSitemapProperties(payload);
 	return {
 		staticCount,
@@ -266,8 +382,19 @@ export async function getPublicSitemapShard(
 ): Promise<PublicUrlEntry[]> {
 	if (!Number.isInteger(id) || id < 0) return [];
 	const payload = await getOptionalPublicGatewayPayload();
+	const evidence = payload
+		? await listingContentGateEvidenceMap(
+				payload,
+				seoRegistry
+					.filter((entry) => entry.contentGateRequired === "true")
+					.map((entry) => entry.registryId),
+			)
+		: {};
 	const staticEntries = payload
-		? await sitemapRegistryEntriesWithOwnedLastModified(payload)
+		? await sitemapRegistryEntriesWithOwnedLastModified(
+				payload,
+				indexableStaticEntries(evidence),
+			)
 		: indexableStaticEntries();
 	if (!payload) {
 		const start = id * urlsPerShard;

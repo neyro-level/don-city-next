@@ -8,6 +8,8 @@ import {
 import {
 	getCachedNearbyGeoAvailability,
 	getCachedPublicDistrictParentSlug,
+	getCachedPublicListingContentGateEvidence,
+	getCachedPublicListingContentGateEvidenceMap,
 	getCachedPublicPropertyByPublicUrlId,
 } from "../data-access/public/cached-provider.ts";
 
@@ -18,6 +20,10 @@ export const resolvePublicRoute = cache(
 			{
 				loadProperty: getCachedPublicPropertyByPublicUrlId,
 				loadNearbyGeo: getCachedNearbyGeoAvailability,
+				loadListingContentGateEvidence:
+					getCachedPublicListingContentGateEvidence,
+				loadListingContentGateEvidenceMap:
+					getCachedPublicListingContentGateEvidenceMap,
 				loadDistrictParentSlug: getCachedPublicDistrictParentSlug,
 			},
 			searchParams,

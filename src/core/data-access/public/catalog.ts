@@ -948,3 +948,19 @@ export async function findPublicCatalogFacets(
 		},
 	};
 }
+
+export async function countPublicCatalogProperties(
+	payload: Payload,
+	input: CatalogQueryInput,
+): Promise<number> {
+	const query = catalogQuerySchema.parse({ ...input, limit: 1, page: 1 });
+	const geo = await resolvePublishedCatalogGeo(payload, query);
+	if (!geo) return 0;
+	const result = await payload.count({
+		collection: "properties",
+		where: buildCatalogWhere(query, geo),
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	return result.totalDocs;
+}

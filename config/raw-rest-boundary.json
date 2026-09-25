@@ -17,6 +17,7 @@
 		"import-issues": "deny-anonymous",
 		"leads": "deny-anonymous",
 		"lead-deliveries": "deny-anonymous",
+		"listing-contents": "deny-anonymous",
 		"media": "deny-anonymous",
 		"redirects": "deny-anonymous",
 		"payload-jobs": "system-only"
@@ -30,6 +31,7 @@
 		"import-issues",
 		"leads",
 		"lead-deliveries",
+		"listing-contents",
 		"media",
 		"redirects"
 	],

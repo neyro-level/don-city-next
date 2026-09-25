@@ -6,8 +6,8 @@ import type {
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
 import {
-	AnalyticsViewEvent,
 	type AnalyticsFilterKey,
+	AnalyticsViewEvent,
 	type CatalogViewAnalyticsEvent,
 } from "../../analytics";
 import { Badge } from "../../components/ui/badge";
@@ -19,6 +19,7 @@ export type CatalogPageCopy = {
 	eyebrow: string;
 	title: string;
 	description: string;
+	introduction?: string;
 	emptyMessage: string;
 	ctaTitle: string;
 	ctaDescription?: string;
@@ -122,6 +123,17 @@ export function CatalogPageView({
 					</p>
 				</Container>
 			</section>
+			{copy.introduction ? (
+				<section id="section-catalog-introduction">
+					<Section>
+						<Container size="narrow">
+							<p className="whitespace-pre-line text-body-large text-content-default">
+								{copy.introduction}
+							</p>
+						</Container>
+					</Section>
+				</section>
+			) : null}
 			<section id="section-catalog-filters" aria-label="Фильтры">
 				<Section>
 					<Container>
