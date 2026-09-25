@@ -5,12 +5,12 @@ import {
 	HomeProcessSection,
 	HomeServicesSection,
 	HomeTrustSection,
-} from "@ams/realtbase-ui";
-import { toMetadata } from "@/core/seo/page-metadata";
+} from "@ams/realtbase-ui/starter/home-page";
 import {
 	getCachedPublicHomePage,
 	getCachedPublicNap,
 } from "@/core/data-access/public/cached-provider";
+import { toMetadata } from "@/core/seo/page-metadata";
 import {
 	buildOrganizationJsonLd,
 	buildWebsiteJsonLd,

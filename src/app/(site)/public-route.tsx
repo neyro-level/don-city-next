@@ -2,10 +2,10 @@ import type { MarketingPageDTO } from "@ams/realtbase-contracts";
 import {
 	CatalogPageView,
 	type CatalogPaginationItem,
-	GonePropertyPageView,
-	MarketingPageView,
-	PropertyPageView,
-} from "@ams/realtbase-ui";
+} from "@ams/realtbase-ui/starter/catalog-page";
+import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
+import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
+import { PropertyPageView } from "@ams/realtbase-ui/starter/property-page";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import {

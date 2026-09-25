@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import type { PublicPropertyPageState } from "../src/core/data-access/public/provider.ts";
 import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.ts";
@@ -59,6 +60,11 @@ const [catalogView, catalogCard, imageAdapter, publicRoute, cacheProvider] =
 		readFile("src/app/(site)/public-route.tsx", "utf8"),
 		readFile("src/core/data-access/public/cached-provider.ts", "utf8"),
 	]);
+const [uiPackage, publicLayout, publicHeader] = await Promise.all([
+	readFile("packages/ui/package.json", "utf8"),
+	readFile("src/app/(site)/layout.tsx", "utf8"),
+	readFile("src/app/(site)/public-site-header.tsx", "utf8"),
+]);
 
 assert.doesNotMatch(catalogView, /^\s*["']use client["'];?/m);
 assert.doesNotMatch(catalogCard, /^\s*["']use client["'];?/m);
@@ -76,5 +82,16 @@ assert.match(
 assert.match(imageAdapter, /decoding="async"/);
 assert.match(cacheProvider, /unstable_cache/);
 assert.match(cacheProvider, /publicDataRevalidateSeconds/);
+assert.match(uiPackage, /"\.\/starter\/catalog-page"/);
+assert.doesNotMatch(publicRoute, /from "@ams\/realtbase-ui"/);
+assert.doesNotMatch(publicLayout, /from "@ams\/realtbase-ui"/);
+assert.doesNotMatch(publicHeader, /from "@ams\/realtbase-ui"/);
+const broadUiImport = spawnSync(
+	"git",
+	["grep", "-n", 'from "@ams/realtbase-ui"', "--", "src/app"],
+	{ encoding: "utf8" },
+);
+assert.equal(broadUiImport.status, 1);
+assert.equal(broadUiImport.stdout.trim(), "");
 
 console.log("EPIC-42 performance contract: PASS");
