@@ -186,11 +186,18 @@ function catalogQueryFor(key: PageKey): CatalogQuery | undefined {
 		key.kind === "categoryGeoFacet" && key.category === "uchastki"
 			? ({ izhs: "izhs", snt: "snt" } as const)[key.facet as LandFacetSlug]
 			: undefined;
+	const houseType =
+		key.kind === "categoryGeoFacet" &&
+		key.category === "doma" &&
+		key.facet === "dachi"
+			? ("dacha" satisfies HouseType)
+			: undefined;
 	return {
 		category,
 		geoSlug: key.kind === "categoryRoot" ? undefined : key.geo,
 		districtSlug: key.kind === "categoryGeoDistrict" ? key.district : undefined,
 		rooms,
+		...(houseType ? { houseType } : {}),
 		landUse,
 	};
 }
