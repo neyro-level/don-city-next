@@ -4,6 +4,7 @@ import type {
 	PropertyDetailsDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
+import { AnalyticsViewEvent } from "../../analytics";
 import { Button } from "../../components/ui/button";
 import {
 	Card,
@@ -33,6 +34,14 @@ export function PropertyPageView({
 }) {
 	return (
 		<>
+			<AnalyticsViewEvent
+				event={{
+					event: "property_open",
+					pageKey: pageIdentity?.pageKey,
+					geoSlug: pageIdentity?.geoSlug,
+					category: pageIdentity?.category,
+				}}
+			/>
 			<section
 				id="section-property-gallery"
 				data-analytics-event="property_open"
@@ -137,7 +146,10 @@ export function PropertyPageView({
 				</section>
 			) : null}
 			{legalSupport ? (
-				<section id="section-property-legal-check" className="bg-surface-raised">
+				<section
+					id="section-property-legal-check"
+					className="bg-surface-raised"
+				>
 					<Section>
 						<Container size="narrow">
 							<Card>
@@ -146,8 +158,8 @@ export function PropertyPageView({
 										Юридическая проверка объекта
 									</h2>
 									<CardDescription>
-										Перед сделкой можно обсудить документы и юридические вопросы по
-										вашей ситуации.
+										Перед сделкой можно обсудить документы и юридические вопросы
+										по вашей ситуации.
 									</CardDescription>
 								</CardHeader>
 								<CardContent>

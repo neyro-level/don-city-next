@@ -5,6 +5,7 @@
 	"type": "module",
 	"exports": {
 		".": "./src/index.ts",
+		"./analytics": "./src/analytics.tsx",
 		"./primitives": "./src/primitives.ts",
 		"./starter/catalog-page": "./src/views/catalog/StarterCatalogPageView.tsx",
 		"./starter/gone-property-page": "./src/views/property/GonePropertyPageView.tsx",

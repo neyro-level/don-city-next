@@ -2,6 +2,7 @@
 
 import type { LeadFormContext, LeadFormKind } from "@ams/realtbase-contracts";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
+import { AnalyticsViewEvent, emitAnalyticsEvent } from "../../analytics";
 import { Button } from "../../components/ui/button";
 import {
 	Card,
@@ -107,6 +108,11 @@ export function LeadFormView({
 
 		setStatus("submitting");
 		setFormError(undefined);
+		emitAnalyticsEvent({
+			event: "lead_submit",
+			pageKey: context.sourcePage,
+			formKind: context.formKind,
+		});
 		const submittedAt = new Date().toISOString();
 		try {
 			const response = await fetch("/api/public/leads", {
@@ -140,6 +146,12 @@ export function LeadFormView({
 				code?: string;
 			};
 			if (!response.ok || payload.accepted !== true) {
+				emitAnalyticsEvent({
+					event: "lead_error",
+					pageKey: context.sourcePage,
+					formKind: context.formKind,
+					outcomeCode: "rejected",
+				});
 				setStatus("server_error");
 				setFormError(
 					"Не удалось отправить заявку. Позвоните нам или попробуйте ещё раз.",
@@ -150,7 +162,19 @@ export function LeadFormView({
 			setRequestAttemptId(crypto.randomUUID());
 			setConsentAccepted(false);
 			setStatus("success");
+			emitAnalyticsEvent({
+				event: "lead_success",
+				pageKey: context.sourcePage,
+				formKind: context.formKind,
+				outcomeCode: "accepted",
+			});
 		} catch {
+			emitAnalyticsEvent({
+				event: "lead_error",
+				pageKey: context.sourcePage,
+				formKind: context.formKind,
+				outcomeCode: "network_error",
+			});
 			setStatus("server_error");
 			setFormError(
 				"Не удалось отправить заявку. Проверьте соединение и попробуйте ещё раз.",
@@ -159,128 +183,139 @@ export function LeadFormView({
 	}
 
 	return (
-		<form
-			id="lead-form"
-			aria-label="Форма заявки"
-			aria-describedby={formError ? ids.formError : undefined}
-			noValidate
-			onSubmit={onSubmit}
-		>
-			<Card elevation="raised">
-				<CardHeader>
-					<CardTitle>{title}</CardTitle>
-					<CardDescription>{description}</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<FieldGroup>
-						<input
-							type="text"
-							name="company"
-							tabIndex={-1}
-							autoComplete="off"
-							className="absolute left-[-9999px] h-0 w-0 overflow-hidden"
-							aria-hidden="true"
-						/>
-						<Field>
-							<FieldLabel htmlFor={ids.name}>Имя</FieldLabel>
-							<Input
-								ref={nameRef}
-								id={ids.name}
-								name="name"
-								autoComplete="name"
-								aria-invalid={Boolean(nameError)}
-								aria-describedby={nameError ? `${ids.name}-error` : undefined}
-								disabled={status === "submitting"}
-							/>
-							<FieldError id={`${ids.name}-error`}>{nameError}</FieldError>
-						</Field>
-						<Field>
-							<FieldLabel htmlFor={ids.phone}>Телефон</FieldLabel>
-							<Input
-								ref={phoneRef}
-								id={ids.phone}
-								name="phone"
-								type="tel"
-								inputMode="tel"
-								autoComplete="tel"
-								aria-invalid={Boolean(phoneError)}
-								aria-describedby={phoneError ? `${ids.phone}-error` : undefined}
-								disabled={status === "submitting"}
-							/>
-							<FieldError id={`${ids.phone}-error`}>{phoneError}</FieldError>
-						</Field>
-						<Field>
-							<FieldLabel htmlFor={ids.message}>Комментарий</FieldLabel>
-							<Textarea
-								id={ids.message}
-								name="message"
-								rows={4}
-								disabled={status === "submitting"}
-							/>
-							<FieldDescription>Необязательно.</FieldDescription>
-						</Field>
-						<Field>
-							<div className="flex items-start gap-3">
-								<Checkbox
-									ref={consentRef}
-									id={ids.consent}
-									checked={consentAccepted}
-									onCheckedChange={(value) =>
-										setConsentAccepted(value === true)
-									}
-									aria-invalid={Boolean(consentError)}
-									aria-describedby={`${ids.consent}-copy${consentError ? ` ${ids.consent}-error` : ""}`}
-									disabled={status === "submitting"}
-									required={context.consentRequired}
-								/>
-								<FieldLabel
-									htmlFor={ids.consent}
-									className="font-normal leading-step-copy"
-								>
-									<span id={`${ids.consent}-copy`}>
-										Даю согласие на обработку персональных данных в соответствии
-										с{" "}
-										<a
-											className="font-medium underline underline-offset-4"
-											href={context.consentHref}
-										>
-											условиями обработки персональных данных
-										</a>
-										.
-									</span>
-								</FieldLabel>
-							</div>
-							<FieldError id={`${ids.consent}-error`}>
-								{consentError}
-							</FieldError>
-						</Field>
-						{formError ? (
-							<p
-								id={ids.formError}
-								role="alert"
-								className="text-label text-[var(--status-danger)]"
-							>
-								{formError}
-							</p>
-						) : null}
-						{status === "success" ? (
-							<p
-								ref={successRef}
-								id={ids.success}
+		<>
+			<AnalyticsViewEvent
+				event={{
+					event: "lead_form_view",
+					pageKey: context.sourcePage,
+					formKind: context.formKind,
+				}}
+			/>
+			<form
+				id="lead-form"
+				aria-label="Форма заявки"
+				aria-describedby={formError ? ids.formError : undefined}
+				noValidate
+				onSubmit={onSubmit}
+			>
+				<Card elevation="raised">
+					<CardHeader>
+						<CardTitle>{title}</CardTitle>
+						<CardDescription>{description}</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<FieldGroup>
+							<input
+								type="text"
+								name="company"
 								tabIndex={-1}
-								className="text-label font-semibold text-action-primary"
-							>
-								Заявка принята. Мы свяжемся с вами.
-							</p>
-						) : null}
-					</FieldGroup>
-				</CardContent>
-				<CardFooter>
-					<Button type="submit" disabled={status === "submitting"}>
-						{status === "submitting" ? "Отправляем…" : submitLabel}
-					</Button>
-				</CardFooter>
-			</Card>
-		</form>
+								autoComplete="off"
+								className="absolute left-[-9999px] h-0 w-0 overflow-hidden"
+								aria-hidden="true"
+							/>
+							<Field>
+								<FieldLabel htmlFor={ids.name}>Имя</FieldLabel>
+								<Input
+									ref={nameRef}
+									id={ids.name}
+									name="name"
+									autoComplete="name"
+									aria-invalid={Boolean(nameError)}
+									aria-describedby={nameError ? `${ids.name}-error` : undefined}
+									disabled={status === "submitting"}
+								/>
+								<FieldError id={`${ids.name}-error`}>{nameError}</FieldError>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={ids.phone}>Телефон</FieldLabel>
+								<Input
+									ref={phoneRef}
+									id={ids.phone}
+									name="phone"
+									type="tel"
+									inputMode="tel"
+									autoComplete="tel"
+									aria-invalid={Boolean(phoneError)}
+									aria-describedby={
+										phoneError ? `${ids.phone}-error` : undefined
+									}
+									disabled={status === "submitting"}
+								/>
+								<FieldError id={`${ids.phone}-error`}>{phoneError}</FieldError>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor={ids.message}>Комментарий</FieldLabel>
+								<Textarea
+									id={ids.message}
+									name="message"
+									rows={4}
+									disabled={status === "submitting"}
+								/>
+								<FieldDescription>Необязательно.</FieldDescription>
+							</Field>
+							<Field>
+								<div className="flex items-start gap-3">
+									<Checkbox
+										ref={consentRef}
+										id={ids.consent}
+										checked={consentAccepted}
+										onCheckedChange={(value) =>
+											setConsentAccepted(value === true)
+										}
+										aria-invalid={Boolean(consentError)}
+										aria-describedby={`${ids.consent}-copy${consentError ? ` ${ids.consent}-error` : ""}`}
+										disabled={status === "submitting"}
+										required={context.consentRequired}
+									/>
+									<FieldLabel
+										htmlFor={ids.consent}
+										className="font-normal leading-step-copy"
+									>
+										<span id={`${ids.consent}-copy`}>
+											Даю согласие на обработку персональных данных в
+											соответствии с{" "}
+											<a
+												className="font-medium underline underline-offset-4"
+												href={context.consentHref}
+											>
+												условиями обработки персональных данных
+											</a>
+											.
+										</span>
+									</FieldLabel>
+								</div>
+								<FieldError id={`${ids.consent}-error`}>
+									{consentError}
+								</FieldError>
+							</Field>
+							{formError ? (
+								<p
+									id={ids.formError}
+									role="alert"
+									className="text-label text-[var(--status-danger)]"
+								>
+									{formError}
+								</p>
+							) : null}
+							{status === "success" ? (
+								<p
+									ref={successRef}
+									id={ids.success}
+									tabIndex={-1}
+									className="text-label font-semibold text-action-primary"
+								>
+									Заявка принята. Мы свяжемся с вами.
+								</p>
+							) : null}
+						</FieldGroup>
+					</CardContent>
+					<CardFooter>
+						<Button type="submit" disabled={status === "submitting"}>
+							{status === "submitting" ? "Отправляем…" : submitLabel}
+						</Button>
+					</CardFooter>
+				</Card>
+			</form>
+		</>
 	);
 }

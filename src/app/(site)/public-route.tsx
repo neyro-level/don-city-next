@@ -3,6 +3,7 @@ import {
 	CatalogPageView,
 	type CatalogPaginationItem,
 } from "@ams/realtbase-ui/starter/catalog-page";
+import type { CatalogViewAnalyticsEvent } from "@ams/realtbase-ui/analytics";
 import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
 import {
 	LegalDocumentView,
@@ -25,6 +26,21 @@ import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
 import { projectUrls } from "@/project/url-grammar";
+import type { PageKey } from "@/platform/grammar/types";
+
+function catalogAnalyticsEvent(key: PageKey): CatalogViewAnalyticsEvent {
+	if (key.kind === "geoHub") return "all_property_view";
+	if (key.kind === "categoryGeoDistrict") return "district_view";
+	if (key.kind === "categoryGeoFacet") return "facet_view";
+	return "category_catalog_view";
+}
+
+function analyticsFilterKeys(searchParams: PublicRouteSearchParams) {
+	return (["rooms", "houseType"] as const).filter((key) => {
+		const value = searchParams[key];
+		return Array.isArray(value) ? value.length > 0 : Boolean(value);
+	});
+}
 
 function catalogPageHref(canonicalPath: string, page: number): string {
 	const url = new URL(canonicalPath, "https://don-city.invalid");
@@ -212,6 +228,8 @@ export async function ResolvedPublicRoutePage({
 					catalog.list.totalPages,
 				)}
 				pageIdentity={catalog.identity}
+				analyticsEvent={catalogAnalyticsEvent(result.key)}
+				analyticsFilterKeys={analyticsFilterKeys(searchParams)}
 			/>
 		);
 	}

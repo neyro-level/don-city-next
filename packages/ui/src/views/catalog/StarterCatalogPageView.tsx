@@ -5,6 +5,11 @@ import type {
 	PropertyListDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
+import {
+	AnalyticsViewEvent,
+	type AnalyticsFilterKey,
+	type CatalogViewAnalyticsEvent,
+} from "../../analytics";
 import { Badge } from "../../components/ui/badge";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
 import { StarterPropertyCard } from "../property/StarterPropertyCardView";
@@ -46,6 +51,8 @@ export function CatalogPageView({
 	contextLinks = [],
 	pagination = [],
 	pageIdentity,
+	analyticsEvent,
+	analyticsFilterKeys = [],
 }: {
 	list: PropertyListDTO;
 	filters: PropertyFilterDTO;
@@ -55,13 +62,34 @@ export function CatalogPageView({
 	contextLinks?: readonly { label: string; href: string }[];
 	pagination?: readonly CatalogPaginationItem[];
 	pageIdentity?: PublicPageIdentityDTO;
+	analyticsEvent: CatalogViewAnalyticsEvent;
+	analyticsFilterKeys?: readonly AnalyticsFilterKey[];
 }) {
 	return (
 		<>
+			<AnalyticsViewEvent
+				event={{
+					event: analyticsEvent,
+					pageKey: pageIdentity?.pageKey,
+					geoSlug: pageIdentity?.geoSlug,
+					category: pageIdentity?.category,
+				}}
+			/>
+			{analyticsFilterKeys.length ? (
+				<AnalyticsViewEvent
+					event={{
+						event: "filter_apply",
+						pageKey: pageIdentity?.pageKey,
+						geoSlug: pageIdentity?.geoSlug,
+						category: pageIdentity?.category,
+						filterKeys: analyticsFilterKeys,
+					}}
+				/>
+			) : null}
 			<section
 				id="section-catalog-hero"
 				className="border-b border-border bg-surface-raised py-[var(--section-space-md)]"
-				data-analytics-event="category_catalog_view"
+				data-analytics-event={analyticsEvent}
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
 			>
