@@ -28,6 +28,7 @@ export function metadataRobotsForPolicy(policy: IndexingPolicy) {
 export function buildRobots(
 	policy: IndexingPolicy,
 	host: string,
+	sitemapPaths: readonly string[] = ["/sitemap.xml"],
 ): MetadataRoute.Robots {
 	if (policy === "noindex") {
 		return {
@@ -35,6 +36,9 @@ export function buildRobots(
 		};
 	}
 
+	const sitemapUrls = sitemapPaths.map((path) =>
+		new URL(path, host).toString(),
+	);
 	return {
 		rules: [
 			{
@@ -43,7 +47,7 @@ export function buildRobots(
 				disallow: ["/admin", "/api"],
 			},
 		],
-		sitemap: `${host}/sitemap.xml`,
+		sitemap: sitemapUrls.length === 1 ? sitemapUrls[0] : sitemapUrls,
 		host,
 	};
 }

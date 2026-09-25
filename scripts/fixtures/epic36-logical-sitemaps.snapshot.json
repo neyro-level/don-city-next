@@ -1,0 +1,16 @@
+{
+	"static": [
+		"/",
+		"/prodat-nedvizhimost/",
+		"/yurist/",
+		"/o-kompanii/",
+		"/kontakty/"
+	],
+	"geo": ["/donetsk/"],
+	"catalog": ["/donetsk/kvartiry/", "/donetsk/doma/", "/donetsk/uchastki/"],
+	"districts": [],
+	"facets": [],
+	"kvartiry": [],
+	"doma": [],
+	"uchastki": []
+}

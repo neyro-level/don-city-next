@@ -8,6 +8,12 @@ import { maxMeaningfulLastModified } from "@/platform/sitemap/registry";
 import { projectConfig } from "@/project/project.config";
 import { toPublicNapDTO } from "@/project/site-settings";
 import {
+	isProjectRegistrySitemapOwner,
+	type ProjectSitemapOwner,
+	projectRegistrySitemapEntries,
+	propertyCategoryForSitemapOwner,
+} from "@/project/sitemap";
+import {
 	buildPropertyUrl,
 	parseProjectUrl,
 	propertyCategoryToSlug,
@@ -110,6 +116,14 @@ function indexableStaticEntries(): PublicUrlEntry[] {
 	return staticPublicUrlEntries.filter((entry) => entry.indexable);
 }
 
+function indexableRegistryEntries(
+	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
+): PublicUrlEntry[] {
+	return projectRegistrySitemapEntries(owner).filter(
+		(entry) => entry.indexable,
+	);
+}
+
 async function sitemapRegistryEntriesWithOwnedLastModified(
 	payload: NonNullable<
 		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
@@ -141,6 +155,20 @@ async function sitemapRegistryEntriesWithOwnedLastModified(
 		}
 		return entry;
 	});
+}
+
+async function logicalRegistryEntriesWithOwnedLastModified(
+	payload: NonNullable<
+		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
+	>,
+	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
+): Promise<PublicUrlEntry[]> {
+	const allowedPaths = new Set(
+		indexableRegistryEntries(owner).map((entry) => entry.path),
+	);
+	return (await sitemapRegistryEntriesWithOwnedLastModified(payload)).filter(
+		(entry) => allowedPaths.has(entry.path),
+	);
 }
 
 async function listRange<T>(
@@ -293,6 +321,41 @@ export async function getPublicSitemapEntries() {
 		Array.from({ length: count }, (_, id) => getPublicSitemapShard(id)),
 	);
 	return shards.flat();
+}
+
+export async function getPublicLogicalSitemapEntries(
+	owner: ProjectSitemapOwner,
+): Promise<PublicUrlEntry[]> {
+	const payload = await getOptionalPublicGatewayPayload();
+	if (isProjectRegistrySitemapOwner(owner)) {
+		return payload
+			? logicalRegistryEntriesWithOwnedLastModified(payload, owner)
+			: indexableRegistryEntries(owner);
+	}
+	const propertyCategory = propertyCategoryForSitemapOwner(owner);
+	if (!propertyCategory) return [];
+	if (!payload) return [];
+	const count = await countPublicSitemapProperties(payload, propertyCategory);
+	const properties = await listRange(
+		(input) =>
+			listPublicSitemapPropertiesPage(payload, {
+				...input,
+				category: propertyCategory,
+			}),
+		0,
+		count,
+	);
+	return properties.map((property) => ({
+		path: buildPropertyUrl({
+			category: property.category,
+			semantic: property.slug,
+			publicUrlId: property.publicUrlId,
+		}),
+		lastModified: property.updatedAt,
+		changeFrequency: "daily" as const,
+		priority: 0.8,
+		indexable: true,
+	}));
 }
 
 export async function getPublicHomePage() {

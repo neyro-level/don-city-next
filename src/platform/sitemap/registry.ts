@@ -1,9 +1,9 @@
-import type { SeoRegistryEntry } from "../seo/registry.ts";
+import type { SiteProfile } from "../profile/types.ts";
 import {
 	isListingSitemapEligible,
 	type ListingContentGateEvidence,
 } from "../seo/content-gate.ts";
-import type { SiteProfile } from "../profile/types.ts";
+import type { SeoRegistryEntry } from "../seo/registry.ts";
 import type { PublicUrlEntry } from "../seo/site.ts";
 
 export type RegistrySitemapOptions = {
@@ -11,7 +11,37 @@ export type RegistrySitemapOptions = {
 	isCanonicalPath: (path: string) => boolean;
 	profile?: Pick<SiteProfile, "inventoryThreshold">;
 	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>;
+	owner?: RegistrySitemapOwner;
 };
+
+export const registrySitemapOwners = [
+	"static",
+	"geo",
+	"catalog",
+	"districts",
+	"facets",
+] as const;
+
+export type RegistrySitemapOwner = (typeof registrySitemapOwners)[number];
+
+export function registrySitemapOwner(
+	entry: Pick<SeoRegistryEntry, "pageType">,
+): RegistrySitemapOwner | undefined {
+	switch (entry.pageType) {
+		case "static":
+			return "static";
+		case "geo_all":
+			return "geo";
+		case "category_geo":
+			return "catalog";
+		case "district":
+			return "districts";
+		case "facet":
+			return "facets";
+		default:
+			return undefined;
+	}
+}
 
 function sitemapPresentation(
 	pageType: string,
@@ -43,6 +73,8 @@ export function buildRegistrySitemapEntries(
 	return registry
 		.filter(
 			(entry) =>
+				entry.status === "active" &&
+				(!options.owner || registrySitemapOwner(entry) === options.owner) &&
 				isListingSitemapEligible(
 					entry,
 					options.profile ?? { inventoryThreshold: {} },

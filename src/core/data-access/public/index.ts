@@ -43,6 +43,7 @@ export {
 	getPublicCatalog,
 	getPublicDistrictParentSlug,
 	getPublicHomePage,
+	getPublicLogicalSitemapEntries,
 	getPublicMarketingPage,
 	getPublicNap,
 	getPublicProperty,

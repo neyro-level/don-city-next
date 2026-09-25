@@ -1,11 +1,19 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { SaxesParser } from "saxes";
-import { maxMeaningfulLastModified } from "../src/platform/sitemap/registry.ts";
+import {
+	buildRegistrySitemapEntries,
+	maxMeaningfulLastModified,
+} from "../src/platform/sitemap/registry.ts";
 import { buildRobots } from "../src/project/indexing-policy.ts";
 import { buildProjectIndexNowPayload } from "../src/project/indexnow.ts";
+import { seoRegistry } from "../src/project/seo-registry.generated.ts";
+import { siteProfile } from "../src/project/site.profile.ts";
 import {
+	projectRegistrySitemapEntries,
 	projectSitemapEntries,
+	projectSitemapOwners,
+	projectSitemapPaths,
 	registryContentUpdatedAt,
 } from "../src/project/sitemap.ts";
 import {
@@ -17,6 +25,45 @@ const expectedPaths = JSON.parse(
 	readFileSync("scripts/fixtures/rp11-sitemap.snapshot.json", "utf8"),
 ) as string[];
 const actualPaths = projectSitemapEntries.map((entry) => entry.path);
+
+const expectedLogicalSitemaps = JSON.parse(
+	readFileSync(
+		"scripts/fixtures/epic36-logical-sitemaps.snapshot.json",
+		"utf8",
+	),
+) as Record<string, string[]>;
+const actualLogicalSitemaps = Object.fromEntries(
+	projectSitemapOwners.map((owner) => [
+		owner,
+		owner === "kvartiry" || owner === "doma" || owner === "uchastki"
+			? []
+			: projectRegistrySitemapEntries(owner).map((entry) => entry.path),
+	]),
+);
+
+assert.deepEqual(actualLogicalSitemaps, expectedLogicalSitemaps);
+assert.equal(
+	new Set(Object.values(actualLogicalSitemaps).flat()).size,
+	Object.values(actualLogicalSitemaps).flat().length,
+	"Logical registry sitemap owners must partition URLs without duplicates.",
+);
+assert.deepEqual(projectSitemapOwners, [
+	"static",
+	"geo",
+	"catalog",
+	"districts",
+	"facets",
+	"kvartiry",
+	"doma",
+	"uchastki",
+]);
+assert.equal(
+	projectSitemapOwners.some((owner) =>
+		["novostroyki", "ipoteka", "kommercheskaya"].includes(owner),
+	),
+	false,
+	"R2 sitemap owner leaked into the R1 map set.",
+);
 
 assert.deepEqual(actualPaths, expectedPaths);
 assert.ok(
@@ -80,6 +127,52 @@ assert.deepEqual(buildRobots("public", origin), {
 	sitemap: `${origin}/sitemap.xml`,
 	host: origin,
 });
+assert.deepEqual(buildRobots("public", origin, projectSitemapPaths), {
+	rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api"] }],
+	sitemap: projectSitemapPaths.map((path) => `${origin}${path}`),
+	host: origin,
+});
+
+const gatedDistrict = seoRegistry.find(
+	(entry) =>
+		entry.pageType === "district" && entry.contentGateRequired === "true",
+);
+assert.ok(gatedDistrict, "Expected a district Content Gate fixture.");
+const activatedDistrict = { ...gatedDistrict, status: "active" as const };
+assert.deepEqual(
+	buildRegistrySitemapEntries([activatedDistrict], {
+		contentUpdatedAt: registryContentUpdatedAt,
+		profile: siteProfile,
+		owner: "districts",
+		contentGateEvidence: {
+			[activatedDistrict.registryId]: {
+				activeObjects: Number(activatedDistrict.minActiveObjects),
+				introduction: "Д".repeat(600),
+				contextFacts: [
+					{ source: "verified fixture", checkedAt: "2026-09-25T00:00:00.000Z" },
+				],
+				serverRendered: true,
+				propertyLinksInHtml: true,
+			},
+		},
+		isCanonicalPath(path) {
+			const key = parseProjectUrl(path);
+			return key !== null && buildProjectUrl(key) === path;
+		},
+	}).map((entry) => entry.path),
+	[activatedDistrict.url],
+	"An active Gate-pass district must enter only the districts map.",
+);
+assert.deepEqual(
+	buildRegistrySitemapEntries([gatedDistrict], {
+		contentUpdatedAt: registryContentUpdatedAt,
+		profile: siteProfile,
+		owner: "districts",
+		isCanonicalPath: () => true,
+	}),
+	[],
+	"A candidate district must remain outside sitemap output.",
+);
 
 const fakeKey = "fixture-indexnow-key";
 for (const reason of [

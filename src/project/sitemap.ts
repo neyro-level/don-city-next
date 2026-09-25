@@ -1,4 +1,8 @@
-import { buildRegistrySitemapEntries } from "../platform/sitemap/registry.ts";
+import {
+	buildRegistrySitemapEntries,
+	type RegistrySitemapOwner,
+	registrySitemapOwners,
+} from "../platform/sitemap/registry.ts";
 import { seoRegistry } from "./seo-registry.generated.ts";
 import { siteProfile } from "./site.profile.ts";
 import { buildProjectUrl, parseProjectUrl } from "./url-grammar.ts";
@@ -14,3 +18,51 @@ export const projectSitemapEntries = buildRegistrySitemapEntries(seoRegistry, {
 		return key !== null && buildProjectUrl(key) === path;
 	},
 });
+
+export const projectSitemapOwners = [
+	...registrySitemapOwners,
+	"kvartiry",
+	"doma",
+	"uchastki",
+] as const;
+
+export type ProjectSitemapOwner = (typeof projectSitemapOwners)[number];
+export type PropertySitemapOwner = Extract<
+	ProjectSitemapOwner,
+	"kvartiry" | "doma" | "uchastki"
+>;
+
+export const projectSitemapDescriptors = projectSitemapOwners.map(
+	(owner, id) => ({ id, owner }),
+);
+
+export const projectSitemapPaths = projectSitemapDescriptors.map(
+	({ id }) => `/sitemap/${id}.xml`,
+);
+
+export function isProjectRegistrySitemapOwner(
+	owner: ProjectSitemapOwner,
+): owner is RegistrySitemapOwner {
+	return (registrySitemapOwners as readonly string[]).includes(owner);
+}
+
+export function projectRegistrySitemapEntries(owner: RegistrySitemapOwner) {
+	return buildRegistrySitemapEntries(seoRegistry, {
+		contentUpdatedAt: registryContentUpdatedAt,
+		profile: siteProfile,
+		owner,
+		isCanonicalPath(path) {
+			const key = parseProjectUrl(path);
+			return key !== null && buildProjectUrl(key) === path;
+		},
+	});
+}
+
+export function propertyCategoryForSitemapOwner(
+	owner: ProjectSitemapOwner,
+): "apartment" | "house" | "land" | undefined {
+	if (owner === "kvartiry") return "apartment";
+	if (owner === "doma") return "house";
+	if (owner === "uchastki") return "land";
+	return undefined;
+}

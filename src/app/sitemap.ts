@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { getPublicLogicalSitemapEntries } from "@/core/data-access/public";
+import { absoluteUrl } from "@/core/seo/site";
 import {
-	getPublicSitemapShard,
-	getPublicSitemapShardCount,
-} from "@/core/data-access/public";
-import { absoluteUrl, staticPublicUrlEntries } from "@/core/seo/site";
+	projectRegistrySitemapEntries,
+	projectSitemapDescriptors,
+} from "@/project/sitemap";
 
 export const revalidate = 3600;
 
@@ -20,33 +21,33 @@ function toSitemapEntries(
 		.filter((entry) => entry.indexable)
 		.map((entry) => ({
 			url: absoluteUrl(entry.path),
-			lastModified: entry.lastModified ? new Date(entry.lastModified) : undefined,
+			lastModified: entry.lastModified
+				? new Date(entry.lastModified)
+				: undefined,
 			changeFrequency: entry.changeFrequency,
 			priority: entry.priority,
 		}));
 }
 
 export async function generateSitemaps() {
-	try {
-		const count = await getPublicSitemapShardCount();
-		return Array.from({ length: Math.max(1, count) }, (_, id) => ({ id }));
-	} catch {
-		return [{ id: 0 }];
-	}
+	return projectSitemapDescriptors.map(({ id }) => ({ id }));
 }
 
 export default async function sitemap(props: {
 	id: Promise<string> | string;
 }): Promise<MetadataRoute.Sitemap> {
 	const rawId = typeof props.id === "string" ? props.id : await props.id;
-	const id = Number(rawId);
-	if (!Number.isInteger(id) || id < 0) return [];
+	const descriptor = projectSitemapDescriptors.find(
+		({ id }) => String(id) === rawId,
+	);
+	if (!descriptor) return [];
 
 	try {
-		return toSitemapEntries(await getPublicSitemapShard(id));
+		return toSitemapEntries(
+			await getPublicLogicalSitemapEntries(descriptor.owner),
+		);
 	} catch {
-		if (id !== 0) return [];
-		return toSitemapEntries([...staticPublicUrlEntries]);
+		if (descriptor.owner !== "static") return [];
+		return toSitemapEntries(projectRegistrySitemapEntries("static"));
 	}
 }
-

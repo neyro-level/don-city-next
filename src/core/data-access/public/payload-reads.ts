@@ -103,10 +103,11 @@ export async function aggregatePublicCatalogFacets(
 
 export async function countPublicSitemapProperties(
 	payload: Payload,
+	category?: "apartment" | "house" | "land",
 ): Promise<number> {
 	const result = await payload.count({
 		collection: "properties",
-		where: publicPropertyPublicationWhere,
+		where: sitemapPropertyWhere(category),
 		...access,
 	});
 	return result.totalDocs;
@@ -160,7 +161,11 @@ export async function findPublicSitemapListingLastModified(
 
 export async function listPublicSitemapPropertiesPage(
 	payload: Payload,
-	input: { limit: number; offset: number },
+	input: {
+		limit: number;
+		offset: number;
+		category?: "apartment" | "house" | "land";
+	},
 ): Promise<
 	readonly {
 		slug: string;
@@ -190,7 +195,7 @@ export async function listPublicSitemapPropertiesPage(
 	for (let page = 1; items.length < limit && page <= lastPage; page += 1) {
 		const result = await payload.find({
 			collection: "properties",
-			where: publicPropertyPublicationWhere,
+			where: sitemapPropertyWhere(input.category),
 			limit: pageSize,
 			page,
 			sort: "-updatedAt",
@@ -220,6 +225,18 @@ export async function listPublicSitemapPropertiesPage(
 		if (result.docs.length < pageSize) break;
 	}
 	return items;
+}
+
+function sitemapPropertyWhere(
+	category?: "apartment" | "house" | "land",
+): Where {
+	if (!category) return publicPropertyPublicationWhere;
+	return {
+		and: [
+			...(publicPropertyPublicationWhere.and ?? []),
+			{ category: { equals: category } },
+		],
+	};
 }
 
 const publicPublishedPagesWhere: Where = {

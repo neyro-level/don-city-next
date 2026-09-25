@@ -56,11 +56,10 @@ assert.deepEqual(
 	),
 	{ rules: [{ userAgent: "*", disallow: "/" }] },
 );
-assert.ok(
-	readFileSync("src/app/robots.ts", "utf8").includes(
-		"buildRobots(getProjectIndexingPolicy(), getSiteUrl())",
-	),
-);
+const robotsSource = readFileSync("src/app/robots.ts", "utf8");
+assert.ok(robotsSource.includes("buildRobots("));
+assert.ok(robotsSource.includes("getProjectIndexingPolicy()"));
+assert.ok(robotsSource.includes("projectSitemapPaths"));
 assert.ok(
 	readFileSync("src/app/layout.tsx", "utf8").includes(
 		"metadataRobotsForPolicy(getProjectIndexingPolicy())",
