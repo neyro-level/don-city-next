@@ -1,4 +1,4 @@
-import { Button, Container, Section } from "@ams/realtbase-ui";
+import { Button, Container, Section } from "@ams/realtbase-ui/primitives";
 import Link from "next/link";
 import { projectUrls } from "@/project/url-grammar";
 

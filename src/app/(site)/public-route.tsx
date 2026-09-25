@@ -1,10 +1,11 @@
 import type { MarketingPageDTO } from "@ams/realtbase-contracts";
 import {
 	CatalogPageView,
-	GonePropertyPageView,
-	MarketingPageView,
-	PropertyPageView,
-} from "@ams/realtbase-ui";
+	type CatalogPaginationItem,
+} from "@ams/realtbase-ui/starter/catalog-page";
+import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
+import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
+import { PropertyPageView } from "@ams/realtbase-ui/starter/property-page";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import {
@@ -18,6 +19,40 @@ import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
 import { projectUrls } from "@/project/url-grammar";
+
+function catalogPageHref(canonicalPath: string, page: number): string {
+	const url = new URL(canonicalPath, "https://don-city.invalid");
+	if (page <= 1) url.searchParams.delete("page");
+	else url.searchParams.set("page", String(page));
+	return `${url.pathname}${url.search}`;
+}
+
+function buildCatalogPagination(
+	canonicalPath: string,
+	currentPage: number,
+	totalPages: number,
+): CatalogPaginationItem[] {
+	if (totalPages <= 1) return [];
+	const pages = [
+		...new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages]),
+	]
+		.filter((page) => page >= 1 && page <= totalPages)
+		.sort((left, right) => left - right);
+	const items: CatalogPaginationItem[] = [];
+	for (const [index, page] of pages.entries()) {
+		const previous = pages[index - 1];
+		if (previous && page - previous > 1) {
+			items.push({ key: `gap-${previous}-${page}`, label: "…" });
+		}
+		items.push({
+			key: String(page),
+			label: String(page),
+			href: catalogPageHref(canonicalPath, page),
+			current: page === currentPage,
+		});
+	}
+	return items;
+}
 
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
@@ -93,7 +128,7 @@ export async function ResolvedPublicRoutePage({
 			query: {
 				...result.catalogQuery,
 				limit: 24,
-				page: 1,
+				page: result.catalogQuery.page ?? 1,
 			},
 		});
 		return (
@@ -118,6 +153,11 @@ export async function ResolvedPublicRoutePage({
 				}}
 				breadcrumbs={result.breadcrumbs}
 				contextLinks={result.internalLinks}
+				pagination={buildCatalogPagination(
+					result.canonicalPath,
+					catalog.list.page,
+					catalog.list.totalPages,
+				)}
 				pageIdentity={catalog.identity}
 			/>
 		);

@@ -1,5 +1,5 @@
+import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
 import { notFound } from "next/navigation";
-import { MarketingPageView } from "@ams/realtbase-ui";
 import { getPublicMarketingPage } from "@/core/data-access/public";
 import { toMetadata } from "@/core/seo/page-metadata";
 

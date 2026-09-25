@@ -1,5 +1,5 @@
+import { StarterSiteFooter } from "@ams/realtbase-ui/starter/site-shell";
 import type { ReactNode } from "react";
-import { StarterSiteFooter } from "@ams/realtbase-ui";
 import { getPublicShell } from "@/core/data-access/public";
 import { PublicSiteHeader } from "./public-site-header";
 

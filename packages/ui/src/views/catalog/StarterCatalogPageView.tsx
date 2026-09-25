@@ -20,6 +20,13 @@ export type CatalogPageCopy = {
 	ctaSubmitLabel?: string;
 };
 
+export type CatalogPaginationItem = {
+	key: string;
+	label: string;
+	href?: string;
+	current?: boolean;
+};
+
 const defaultCopy: CatalogPageCopy = {
 	eyebrow: "Каталог",
 	title: "Недвижимость",
@@ -37,6 +44,7 @@ export function CatalogPageView({
 	copy = defaultCopy,
 	breadcrumbs = [],
 	contextLinks = [],
+	pagination = [],
 	pageIdentity,
 }: {
 	list: PropertyListDTO;
@@ -45,6 +53,7 @@ export function CatalogPageView({
 	copy?: CatalogPageCopy;
 	breadcrumbs?: readonly BreadcrumbItemDTO[];
 	contextLinks?: readonly { label: string; href: string }[];
+	pagination?: readonly CatalogPaginationItem[];
 	pageIdentity?: PublicPageIdentityDTO;
 }) {
 	return (
@@ -140,6 +149,33 @@ export function CatalogPageView({
 								{copy.emptyMessage}
 							</p>
 						)}
+						{pagination.length ? (
+							<nav
+								aria-label="Страницы каталога"
+								className="mt-10 flex flex-wrap justify-center gap-2"
+							>
+								{pagination.map((item) =>
+									item.href ? (
+										<a
+											key={item.key}
+											href={item.href}
+											aria-current={item.current ? "page" : undefined}
+											className={`grid min-h-11 min-w-11 place-items-center rounded-md border px-3 font-semibold ${item.current ? "border-action-primary bg-action-primary text-white" : "border-border bg-surface-raised hover:border-action-primary hover:text-action-primary"}`}
+										>
+											{item.label}
+										</a>
+									) : (
+										<span
+											key={item.key}
+											aria-hidden
+											className="grid min-h-11 min-w-11 place-items-center"
+										>
+											{item.label}
+										</span>
+									),
+								)}
+							</nav>
+						) : null}
 					</Container>
 				</Section>
 			</section>

@@ -6,6 +6,12 @@
 	"exports": {
 		".": "./src/index.ts",
 		"./primitives": "./src/primitives.ts",
+		"./starter/catalog-page": "./src/views/catalog/StarterCatalogPageView.tsx",
+		"./starter/gone-property-page": "./src/views/property/GonePropertyPageView.tsx",
+		"./starter/home-page": "./src/views/home/StarterHomePageView.tsx",
+		"./starter/marketing-page": "./src/views/marketing/StarterMarketingPageView.tsx",
+		"./starter/property-page": "./src/views/property/StarterPropertyPageView.tsx",
+		"./starter/site-shell": "./src/views/starter/SiteShellView.tsx",
 		"./views": "./src/views.ts",
 		"./styles.css": "./src/styles.css"
 	},

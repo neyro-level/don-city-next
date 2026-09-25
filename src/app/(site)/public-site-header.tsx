@@ -1,7 +1,7 @@
 "use client";
 
 import type { SiteHeaderDTO } from "@ams/realtbase-contracts";
-import { StarterSiteHeader } from "@ams/realtbase-ui";
+import { StarterSiteHeader } from "@ams/realtbase-ui/starter/site-shell";
 import { usePathname } from "next/navigation";
 
 function canonicalPath(pathname: string) {
