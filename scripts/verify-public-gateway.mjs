@@ -150,6 +150,7 @@ for (const snippet of [
 	"loadPublicMediaIndex",
 	"media: true",
 	"publicMediaSelect",
+	"encodeURIComponent(media.filename)",
 	'mimeType: { contains: "image/" }',
 	"/\\/api\\/media\\/file\\//u",
 ]) {

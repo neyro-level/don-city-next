@@ -257,7 +257,7 @@ type PublicGeoIndex = {
 	>;
 };
 
-type PublicMedia = Pick<Media, "id" | "url">;
+type PublicMedia = Pick<Media, "filename" | "id">;
 type PublicMediaIndex = ReadonlyMap<number, string>;
 
 const publicRegionSelect = {
@@ -289,7 +289,7 @@ const publicDistrictSelect = {
 } satisfies DistrictsSelect<true>;
 
 const publicMediaSelect = {
-	url: true,
+	filename: true,
 } satisfies MediaSelect<true>;
 
 export type PublicCatalogFacetsResult = {
@@ -498,7 +498,14 @@ async function loadPublicMediaIndex(
 
 	return new Map(
 		(result.docs as PublicMedia[]).flatMap((media) =>
-			media.url ? [[media.id, media.url] as const] : [],
+			media.filename
+				? [
+						[
+							media.id,
+							`/api/media/file/${encodeURIComponent(media.filename)}`,
+						] as const,
+					]
+				: [],
 		),
 	);
 }
