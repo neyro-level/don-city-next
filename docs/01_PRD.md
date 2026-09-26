@@ -1,59 +1,82 @@
 # Product Requirements Document
 
-Status: Draft
-Version: 0.1
-Updated: 2026-09-23
+Status: Active
+Version: 1.0
+Updated: 2026-09-26
 
 ## 1. Product Summary
 
-Публичный сайт и каталог «ДОН СИТИ» для продажи вторичной недвижимости в Донецке и фактически присутствующих nearby geographies.
+«ДОН СИТИ» — публичный сайт и управляемый каталог вторичной недвижимости Донецка. Продукт объединяет витрину объектов, страницы агентства и услуг, сбор заявок и CMS для владельца.
 
 ## 2. Business Goal
 
-- Публиковать актуальный inventory агентства.
-- Получать заявки на покупку, продажу и юридическое сопровождение.
-- Создать устойчивую SEO-структуру без дублирующих landing pages.
+- Публиковать актуальный и проверяемый inventory агентства.
+- Получать обращения на покупку, продажу и юридическое сопровождение.
+- Развивать устойчивую city-first SEO-структуру без дублей страниц.
+- Сохранять безопасную границу между публичным сайтом, CMS, PII и системными интеграциями.
 
 ## 3. Users
 
-- Покупатель квартиры, дома или участка.
-- Продавец недвижимости.
-- Клиент юридического сопровождения.
-- Owner/editor в Payload Admin.
+- Покупатель недвижимости.
+- Продавец объекта.
+- Клиент юридических услуг.
+- Владелец/редактор каталога в Payload Admin.
+- Оператор, контролирующий импорт, заявки, delivery и recovery.
 
-## 4. Core Use Cases
+## 4. R1 Scope
 
-- Найти объект по категории, географии, району или утверждённому фасету.
-- Открыть карточку и оставить contextual lead.
-- Отправить заявку на продажу или юридическую консультацию.
-- Импортировать inventory без дублей и опасной массовой деактивации.
+- Главная, каталог Донецка, категории квартир, домов и участков.
+- Районные и разрешённые facet-страницы по реальному inventory.
+- Карточка объекта с медиагалереей и формой обращения.
+- Страницы продавца, юридических услуг, компании, контактов и правовой информации.
+- Payload Admin: объекты, география, контент, медиа, feed/import, заявки и delivery.
+- Safe ingest, lifecycle, SEO registry, sitemap/IndexNow, health и jobs.
+- Production через immutable image, host Nginx/TLS, managed PostgreSQL и private object storage.
 
-## 5. Release 1 Scope
+R2-модули `novostroyki`, `journal` и `agents` остаются выключенными.
 
-`secondary + sale + apartment|house|land`, Donetsk `SINGLE_GEO`, районы/Текстильщик, seller/lawyer/company/contacts/legal, leads, feeds, SEO/runtime/release readiness.
+## 5. Current Production State
 
-## 6. Out of Scope R1
+- Production live, но глобально `noindex`.
+- 12 опубликованных объектов и 92 фотографии.
+- Состав: 9 квартир и 3 дома/объекта с земельными участками; чистых земельных участков в текущем источнике не найдено.
+- Источник первых объявлений — официальная группа DON CITY во VK; provenance хранится в импортированных данных.
+- Реальный feed отключён. Заявки не должны считаться операционно готовыми до подключения независимого delivery/alert channel.
 
-Newbuild/ЖК, mortgage, commercial, rent, rooms, garages, journal, employees и дочерние lawyer routes. Их research-first scope находится в EPIC-50…52 или future section master plan.
+## 6. Functional Acceptance
 
-Owner decision 2026-09-25: если модуль сотрудников будет активирован, записи
-сотрудников после деактивации сохраняются в архиве бессрочно и не участвуют в
-автоматической retention-очистке объектов недвижимости.
+- Public UI читает только DTO через Public Gateway и не получает raw Payload documents.
+- Неопубликованный, архивный или удалённый объект возвращает установленный lifecycle-ответ.
+- Формы валидируются, rate-limit применён, PII не попадает в логи/аналитику.
+- Импорт идемпотентен, изолирован по source и не деактивирует объекты без threshold/approval.
+- Один runtime владеет jobs; staging и кандидаты не запускают параллельный polling.
+- SEO metadata, canonical и structured data соответствуют page contract; глобальный noindex имеет приоритет до разрешения индексации.
 
-## 7. Success Criteria
+## 7. Non-Functional Requirements
 
-- R1 routes и lifecycle отвечают HTTP/SEO contracts master plan.
-- Published data проходит Content Gate; unknown geo/district не искажается.
-- Leads фиксируются до delivery и не теряются при временном отказе integration.
-- P0/P1 security/architecture findings = 0 перед release candidate.
-- Production имеет rollback, backup, staging и external uptime proof.
+- `DELIVERY_PROFILE=CRITICAL`: exact-head review/gate, backup/restore и rollback evidence обязательны.
+- Секреты хранятся только в Secret Master и никогда не фиксируются в git/docs/logs.
+- Production host не собирает приложение и не выполняет `git pull`.
+- Доступность, queue movement, backup freshness и delivery контролируются без раскрытия PII.
+- Основные public flows доступны с клавиатуры и на мобильных разрешениях.
 
-## 8. Key Risks
+## 8. Current Risks and Blockers
 
-- Для одного существующего Don City server в Timeweb пока не подтверждён dedicated Secret Master access contour и database identity.
-- Domain/HTTP отвечает нестабильно; фактические server services, database placement и backup posture требуют read-only discovery.
-- 53 epics требуют строгого dependency graph и независимых safe waves.
+- Первый production owner ещё не создан.
+- Независимый alert/delivery channel и внешний uptime monitoring не подключены.
+- Provider DB backup существует, но durable health evidence и media backup/restore ещё не закрыты.
+- Канонический NAP заполнен в runtime, но требует проверки владельцем по внешним источникам.
+- Реальный feed и allowlists намеренно отключены до предоставления проверенных endpoints.
+- Для полноценной категории участков нужен отдельный подтверждённый inventory.
 
-## 9. Open Questions
+## 9. Success Criteria
 
-Нет открытых product/delivery решений, обязательных до финального аудита. `MERGE_AFTER_GATE` утверждён для implementation scope; production остаётся отдельной командой.
+До снятия noindex: закрыты blockers раздела 8, выполнен live smoke exact release, владелец отдельно разрешил индексацию. После запуска измеряются валидные обращения, актуальность каталога, успешность delivery и отсутствие утечек/дублей.
+
+## 10. Open Owner Decisions
+
+- Канонический NAP после внешней проверки.
+- Канал уведомлений и получатель заявок.
+- Реальный feed и дата его включения.
+- Политика media backup/retention.
+- Отдельное решение о снятии глобального `noindex`.

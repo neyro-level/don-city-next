@@ -1,129 +1,60 @@
 # DON CITY — Operations Contract
 
-Status: pre-deploy contract; no production is authorized.
+Status: active production, global noindex
+Updated: 2026-09-26
 
-## Runtime topology
+## Current Runtime
 
-- Existing Timeweb server is the only application target.
-- Host Nginx terminates TLS and proxies to the application on loopback.
-- Next.js + Payload runs from an immutable image built outside the server.
-- Timeweb Managed PostgreSQL 18 remains a separate private service.
-- The preferred database path is the provider private network; public database exposure is forbidden by default.
-- Staging is separate/noindex with separate database and secrets, even when its process shares the same VPS after capacity proof.
+- Production: `https://doncity-home.ru`, exact SHA `31367bfe4adf476925eca97b5dcb13088e31191e`, image `don-city-next:production-31367bfe4adf`.
+- One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`, staging loopback `3100`.
+- Managed PostgreSQL 18 and private Timeweb S3. Production and staging have separate database/secrets/storage prefixes.
+- Production is globally noindex. Staging is always noindex.
+- Exactly one jobs owner: production `JOBS_AUTORUN=true`; staging is false.
+- One prior image and compose file are retained as the immediate rollback point.
 
-## Jobs owner
+## Deploy and Rollback
 
-Exactly one application runtime has `JOBS_AUTORUN=true`. All other app/staging/candidate runtimes use `JOBS_AUTORUN=false`. The current repository does not yet prove a standalone worker entrypoint, so operations must not invent one.
+- Deploy only from clean canonical SourceCraft `main`, exact approved SHA and immutable image.
+- Build/install/`git pull` on the host are forbidden.
+- Before migrations bind the exact DB backup/restore proof, candidate image and rollback point to the release record.
+- Start a candidate with jobs disabled; prove readiness; stop the old owner; enable jobs on exactly one runtime; prove queue movement.
+- Application rollback restores the previous immutable image. Schema/data rollback follows the migration-specific plan; never test restore against production.
 
-Handover:
+## Backup Truth
 
-1. start candidate with jobs disabled;
-2. prove application readiness;
-3. stop the previous jobs owner and verify it is inactive;
-4. enable jobs on exactly one candidate runtime;
-5. prove queue polling/execution, scheduled dispatch and backlog movement.
+- Provider PostgreSQL backup exists and an isolated temporary restore/migration rehearsal passed; the temporary database was removed.
+- Authenticated health still lacks durable successful DB backup freshness and reports `backup_db_failure`.
+- Media backup/versioning and sampled restore are not yet proven; health reports `backup_media_failure`.
+- Until both signals are durable, health may remain `degraded` and indexing must remain disabled.
 
-## Deploy and rollback boundary
+## Feed, Leads and PII
 
-- Production deploy is allowed only from clean canonical `main`, exact approved SHA and immutable image digest/tag.
-- No `git pull`, dependency install or image build runs on the production host.
-- Database migrations run once from the approved release flow after backup/staging proof.
-- Rollback restores the prior immutable image; a schema/data rollback follows the migration-specific recovery plan.
+- Real feed sources remain disabled until the owner supplies a verified endpoint and outbound/image allowlists.
+- Feed URL credentials are secret references, never CMS/log values. Missing-object deactivation requires run-specific approval.
+- Lead delivery uses the existing outbox identity; retries never copy PII into diagnostics.
+- `ALERT_WEBHOOK_URL` and the approved delivery channel must be independent from the application server.
+- Logs, evidence and incident notes must not contain raw feed XML, PII, tokens, credentials or full database URLs.
 
-## Backup and restore
+## Health and Monitoring
 
-- Provider automatic PostgreSQL backup must have an explicit schedule and retention.
-- A backup is not considered proven until restored into staging and checked by application smoke.
-- Valuable production data needs a provider-independent/offsite recovery copy when the final retention policy is approved.
-- Media backup/versioning is defined only after the S3/media owner is selected.
+- Detailed `/api/internal/healthz` is authenticated; external monitoring uses only the intended public availability signal.
+- External uptime monitoring must run outside this VPS.
+- Alerts cover site down, suspicious/overdue import, stalled jobs, dead lead delivery and backup failure.
+- Release evidence captures exact SHA/image, jobs owner, queue movement, DB/media backup freshness and redacted smoke results.
 
-Before a migration, the release record must bind the exact database backup or
-snapshot identifier, immutable application image and rollback point. A release
-runner may create an encrypted custom-format dump with `pg_dump -Fc`, but the
-command output and retained evidence must not contain `DATABASE_URI` or other
-credentials. Restore proof uses an isolated staging database, `pg_restore` and
-the changed application smoke; it never targets production as a test.
+## Lifecycle and Retention
 
-If production activation temporarily retains local media, archive `MEDIA_DIR`
-to the approved encrypted offsite destination and verify a sampled restore
-before rollout. If managed object storage is activated instead, its native
-versioning/backup and restore evidence replace the local-media procedure. The
-repository currently proves neither production S3 activation nor a media
-restore, so both remain staging/release prerequisites.
+- Leads and archived property content are retained for 100 days before lifecycle purge.
+- `catalogLifecycle` owns archive/purge transitions; manual DB edits are forbidden.
+- Canonical 404/410 behavior is checked through route/lifecycle contracts.
 
-## Manual import
+## Current Blockers Before Indexing
 
-An owner or admin may queue one feed through the controlled
-`/:id/manual-import` Feed Sources endpoint. Confirm the source ID, disabled or
-enabled state and latest completed run first. Never paste credential-bearing
-feed URLs into the CMS or logs: `feedUrlRef` stores only a deployment secret
-reference. Observe the resulting Import Run and stop escalation if counts,
-hashes or source identity differ from the expected feed.
+- create the first production owner;
+- connect approved independent alert/delivery channel and external monitoring;
+- close durable DB/media backup freshness and sampled media restore;
+- verify canonical NAP externally with the owner;
+- run a production SEO/lifecycle crawl;
+- receive a separate owner command to remove global noindex.
 
-## Suspicious approval
-
-Missing-object deactivation above the source threshold remains suspended. An
-owner or admin reviews the exact Import Run, missing count and source scope,
-then uses `/:id/approve-deactivation` for that run only. Approval metadata is
-short-lived, auditable and single-use; it is not a standing bypass. The first
-full baseline never deactivates missing objects.
-
-## Stale/orphan recovery
-
-`jobsJanitor` owns interrupted or orphaned import recovery. Before intervening,
-inspect queue state through the System Gateway and distinguish a live future
-`waitUntil` job from an orphan. Do not edit Payload job rows directly. Recovery
-must retain redacted diagnostics and the original feed/run identity.
-
-## Delivery retry
-
-Only an owner may call the Lead Deliveries `/:id/retry` endpoint. Verify the
-delivery is retryable or safely recoverable and that the destination channel is
-still approved. The operation records the actor, clears only stale claim/job
-state and queues the existing delivery identity; it never copies lead PII into
-diagnostics.
-
-## Delivery recovery
-
-`recoverLeadDeliveries` owns stale `sending` recovery using the configured
-heartbeat threshold. Operators inspect status, attempts, `claimedAt`,
-`heartbeatAt` and redacted error state before retry. Raw payloads, response
-bodies, PII, credentials and tokens are forbidden in incident notes.
-Raw XML, PII, credentials и токены также запрещены в import/recovery evidence.
-
-## Catalog lifecycle operations
-
-`catalogLifecycle` archives stale records and purges content only under the
-configured retention policy. A missing retention decision fails closed. Manual
-database updates are forbidden; lifecycle state transitions and their canonical
-404/410 behavior must be exercised through the project job and route contracts.
-
-## Health and recovery evidence
-
-`GET /api/internal/healthz` is authenticated for detailed internal evidence;
-external monitoring consumes only its intended public availability signal.
-Release/recovery records capture exact SHA/image, jobs-owner state, database and
-media backup freshness, queue movement and redacted smoke results. The primary
-alert destination is configured by `ALERT_WEBHOOK_URL`, and an Independent alert
-channel must not share the failed application/server boundary.
-
-## Monitoring and incidents
-
-- External monitoring checks `/healthz`; monitoring on the same server is insufficient.
-- Independent alert channel covers site down, import suspicious/overdue, stalled jobs, dead lead delivery and backup failure.
-- Incident response preserves logs with redaction, exact release identity and recovery evidence; PII and secrets never enter diagnostics.
-
-## Current blockers before production readiness
-
-- complete a backup restore drill and expose trustworthy database/media backup
-  freshness to the authenticated health contract;
-- connect independent external uptime monitoring and an approved alert channel;
-- supply real feed-image, feed-outbound and lead-delivery hosts before enabling
-  their allowlists;
-- complete the full staging crawl, release rehearsal and exact-main release
-  candidate evidence in EPIC-46/47;
-- receive a separate explicit owner command for production.
-
-The temporary database credential rotation, separate staging PostgreSQL/S3/
-secrets, staging hostname, TLS and noindex runtime were completed in EPIC-45.
-Production remains untouched.
+Production may remain online in noindex mode while these blockers are open. Real feed stays off.

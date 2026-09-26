@@ -1,55 +1,49 @@
 # Backlog
 
-Status: Draft
-Version: 0.1
-Updated: 2026-09-24
+Status: Active
+Version: 1.0
+Updated: 2026-09-26
 
-## NOW
+## Delivered
 
-### REPLAN V4 — city-first contract
+- [x] Product Development Standard 2.0 и approved V4 contract.
+- [x] SourceCraft primary repository, manual exact-head gates и CRITICAL release contract.
+- [x] Next.js + Payload foundation, Platform/Project split, Site Profile и URL grammar.
+- [x] География, Public/System/Ingest gateways, каталог, карточки и lifecycle.
+- [x] Feed/import isolation, leads/outbox/delivery, SEO registry, sitemap и IndexNow contracts.
+- [x] Public UI, accessibility, responsive states, cache/invalidation и runtime health.
+- [x] Isolated staging: database, S3 prefix, Nginx/TLS и global noindex.
+- [x] Production Compose/Nginx/TLS, managed PostgreSQL/S3 secrets и manual SourceCraft release workflow.
+- [x] Exact-main production rollout `31367bfe4adf476925eca97b5dcb13088e31191e`, global noindex и rollback point.
+- [x] 12 VK-derived listings and 92 photos imported and verified: 9 apartments, 3 houses/land-attached.
+- [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
+- [x] Active product documentation reconciled with code and runtime.
 
-Goal: выполнить утверждённый V4 graph без потери закрытых V3 evidence и без
-скрытого production scope.
+## NOW — Production Readiness
 
-- [x] Private SourceCraft repository `integrator-p/don-city-next` создан.
-- [x] Windows checkout привязан к canonical `origin`.
-- [x] Product Development Standard 2.0 bootstrap создан.
-- [x] Secret Master/Git access names проверены без раскрытия values.
-- [x] Dedicated DON CITY SSH access, private NIC, managed PostgreSQL 18, backup posture, capacity and jobs-owner contract verified; authenticated read-only inventory confirms an empty database target. Temporary database credential is in Secret Master and requires rotation before deployment.
-- [x] SourceCraft starter access и exact `main` SHA проверены read-only.
-- [x] Starter transformation/UI preservation/page completeness contract согласован и внесён в master plan v3.
-- [x] Single Timeweb server strategy and Manrope/dark-green design direction внесены в master plan v4.
-- [x] OD-01 закрыт: `MERGE_AFTER_GATE` для implementation scope; OD-02 закрыт в пользу одного существующего Timeweb server.
-- [x] Final audit exact v5: найден task-graph blocker; v5 не импортировался.
-- [x] Re-audit exact v6: `PASS`, task-graph blocker resolved.
-- [x] V3 execution остановлен на source drift; WIP EPIC-08 сохранён отдельно.
-- [x] City-first revision packet интегрирован в master plan `v7 REVIEW` / product contract `4.0.1`.
-- [x] Финальный четырёхпроходный аудит V4 завершён: `READY_WITH_LIMITS`, blockers `0`, unresolved major `0`.
-- [x] V4 graph материализован и импортирован: `55` исполняемых эпиков, `265` задач, reconciliation `CLEAN`.
-- [x] Получена точная фраза владельца `План утвержден` для exact v7 snapshot.
-- [x] Replacement graph reconciled в существующем Beads store и передан Developer.
-- [x] RP-00 factual inventory delivered through PR 8, exact-head STANDARD Gate 9 and merge `2520bdc`.
-- [x] RP-01 Source of Truth, four ADRs and archive verification delivered through PR 9, exact-head STANDARD Gate 10 and merge `ff2c749`.
-- [x] RP-02 Platform/Project split delivered through PR 10, exact-head RISKY Gate 11 and merge `c6f612d`.
-- [x] RP-03 Typed Site Profile delivered through PR 11, exact-head RISKY Gate 12 and merge `b4dea6e`.
-- [x] RP-04 Canonical URL Grammar implemented and verified: eight typed `PageKey` variants, generated round trips, project registry, migrated URL consumers and literal-path guard; delivery pending exact-head RISKY gate.
+1. Создать первого production owner через безопасную bootstrap-команду.
+2. Выбрать и подключить независимый alert/delivery channel; проверить redacted lead delivery.
+3. Подключить внешний uptime monitoring вне production server.
+4. Закрыть media backup/versioning и sampled restore evidence; вывести DB/media freshness в health.
+5. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
+6. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
+7. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
 
-## NEXT
+## NEXT — Indexing Decision
 
-1. RP-04 — deliver verified Canonical URL Grammar through its exact-head RISKY gate.
-2. RP-05…RP-07 — geo, resolver and SEO contracts.
-3. RP-08…RP-12 — nearby geo, linking, gateway, sitemap and two-profile proof.
-4. Resume only remaining V4-adjusted main-line epics.
-
-Подробный порядок и зависимости — master plan §33A и §36.
+1. Выполнить production crawl и проверить canonical/robots/sitemap/structured data.
+2. Подтвердить queue movement, alerts, backup freshness и rollback readiness.
+3. Получить отдельное разрешение владельца на снятие global noindex.
+4. Выпустить один exact-main indexing release и повторить live smoke.
 
 ## LATER
 
-- Оставшиеся незавершённые EPIC-05…47 — public product, runtime quality, staging and release candidate; historical/superseded epics не перезапускаются.
-- EPIC-48 — production, only explicit release command.
-- EPIC-49 — post-launch Day-60.
-- EPIC-50…52 — R2 research and activation.
+- Post-launch Day-60 review и retention cleanup.
+- R2 research: `novostroyki`, `journal`, `agents`; включение только отдельным contract/epic.
+- Масштабирование географии — только после business/evidence решения и MULTI_GEO proof.
 
-## Technical Debt
+## Technical Debt / Known Drift
 
-Нет принятого technical debt. Неизвестные infrastructure credentials являются blocker/preflight, а не debt.
+- `clientReadinessConfig` намеренно остаётся fail-closed по Nginx/backup/monitoring до полного operational evidence.
+- Health имеет статус `degraded`, пока отсутствуют durable `backup_db` и `backup_media` freshness signals.
+- Старые локальные ветки/worktrees могут содержать уникальные или dirty изменения; их нельзя удалять силой без отдельной сверки/решения.

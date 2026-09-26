@@ -1,24 +1,28 @@
 # DON CITY
 
-Status: Replan approved; Task Manager handoff
-Version: 0.1
-Updated: 2026-09-24
+Status: Active — production live, global noindex
+Version: 1.0
+Updated: 2026-09-26
 
 ## Что создаём
 
-Новый сайт и каталог агентства недвижимости «ДОН СИТИ» для вторичного рынка Донецка: квартиры, дома, участки, страницы районов, заявки и юридическое сопровождение. Основа — отдельный client instance AMS Realty Platform на Next.js + Payload CMS + PostgreSQL.
+Сайт и каталог агентства недвижимости «ДОН СИТИ» для вторичного рынка Донецка: квартиры, дома и участки, страницы географии, карточки объектов, заявки и юридическое сопровождение. Реализация — отдельный client instance AMS Realty Platform на Next.js + Payload CMS + PostgreSQL.
 
 ## Бизнес-цель
 
-Получать проверяемые органические и прямые обращения, публиковать актуальные объекты и безопасно сопровождать заявки без зависимости public UI от raw CMS data.
+Публиковать проверяемые объекты и получать обращения, не раскрывая raw CMS data и персональные данные. Индексация пока глобально запрещена до закрытия операционных блокеров и отдельного решения владельца.
 
 ## Текущий статус
 
-Master plan `v7 APPROVED` / product contract `4.0.1` passed the four-pass Architect audit with `READY_WITH_LIMITS` and was approved by the owner on 2026-09-24. The V4 graph has `55` executable epics and `265` task cards; exact validation/import/reconciliation precede Developer claims. The prior v6 Task Manager graph remains immutable historical evidence. Production remains separately authorized only by an explicit release command.
+- Production работает на `https://doncity-home.ru` из exact `main` SHA `31367bfe4adf476925eca97b5dcb13088e31191e` и immutable image `don-city-next:production-31367bfe4adf`.
+- Глобальный `noindex` активен; `robots.txt` запрещает обход.
+- В каталоге 12 опубликованных объектов и 92 фотографии: 9 квартир и 3 дома/объекта с земельными участками. Отдельных объявлений категории «участки» пока нет.
+- Реальный feed отключён; production jobs включены только у одного runtime, staging jobs выключены.
+- До снятия `noindex`: создать первого owner-пользователя, подключить независимый канал уведомлений и мониторинг, подтвердить NAP, закрыть media-backup evidence и принять решение по реальному feed.
 
 ## Platform contract
 
-AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode `BUILD`, delivery profile `CRITICAL`.
+AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 
 ## Source of Truth
 
@@ -33,16 +37,6 @@ AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode `B
 | operations / runtime | `OPERATIONS.md` |
 | детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
 | долговечные архитектурные решения | `adr/README.md` |
-| история изменений contract | `CHANGELOG.md` |
+| история contract | `CHANGELOG.md` |
 
-`research/**`, `replan/**` и `archive/**` содержат evidence и исторические
-snapshots. Они не заменяют активные Source of Truth выше. Точный статус
-research-артефактов описан в `research/README.md`.
-
-## Current Focus
-
-V4 `v7` утверждён, импортирован и reconciled без drift. RP-00…RP-12 и EPIC-05
-доставлены в `main`. Актуальный READY-порядок и статус конкретных эпиков
-ведёт Task Manager Beads; этот документ не дублирует оперативный граф.
-Production, DNS и необратимые внешние действия остаются отдельно
-авторизуемыми.
+`research/**`, `replan/**` и `archive/**` — evidence и история, а не активный статус. Оперативная правда production фиксируется в `DELIVERY_STATE.yaml` и `OPERATIONS.md`.
