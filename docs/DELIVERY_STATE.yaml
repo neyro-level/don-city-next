@@ -1,11 +1,11 @@
 schema_version: 1
 program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
-plan_version: v7
-plan_status: APPROVED
-current_wave: PRODUCTION_STABILIZATION
-current_epic: dcv4-epic-48
+plan_version: v8
+plan_status: REVIEW
+current_wave: CORE_5_5_PLAN_ASSEMBLY
+current_epic: null
 current_task: null
-next_action: close-owner-readiness-blockers-before-indexing
+next_action: complete-cp-00-evidence-matrix-and-owner-decisions-before-final-audit
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
@@ -14,9 +14,9 @@ repository:
   active_branch: main
 task_manager:
   initialized: true
-  reconciliation: CLEAN
+  reconciliation: BLOCKED_SOURCE_DRIFT
   current_task: null
-  reason: implementation graph and noindex production release are delivered; remaining work is owner readiness and indexing decision
+  reason: v7 graph is delivered historical evidence; v8 Core 5.5 plan is REVIEW and must not be imported or claimed before final audit, owner approval and clean reconciliation
 evidence:
   rp_00:
     status: delivered

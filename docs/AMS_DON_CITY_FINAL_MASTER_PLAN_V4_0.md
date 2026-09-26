@@ -1,14 +1,14 @@
 # AMS MASTER PLAN — DON CITY — CITY-FIRST REPLAN
 
 Plan ID: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
-Version: v7
-Status: APPROVED
+Version: v8
+Status: REVIEW
 
 **Replaces:** `AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO v6` / product contract `3.0.1`
 **Superseded source SHA-256:** `091d0e2a8592bac4504b5b6f925487fc2bc8c192f288eab7243c00aecbc8a396`
-**Product contract version:** `4.0.1`
-**Date:** `2026-09-24`
-**Architect phase:** `APPROVAL_HANDOFF`
+**Product contract version:** `5.0.0-review`
+**Date:** `2026-09-27`
+**Architect phase:** `ASSEMBLY`
 **Target repository path:** `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`
 **Project:** агентство недвижимости «ДОН СИТИ»
 **Production domain:** `https://doncity-home.ru`
@@ -17,7 +17,8 @@ Status: APPROVED
 **Starter:** `https://sourcecraft.dev/integrator-p/ams-realty-baza-starter`
 **Verified starter mirror baseline:** `main@ca1b884d43e808d17e1eb18b05bad70ea358dd1c`
 **Verified runtime:** Next.js `16.3.5`, React `19.2.8`, Payload CMS `3.90.1`, pnpm `11.5.1`, Tailwind CSS `4.x`
-**Platform:** `AMS Realty Platform Core Standard 3.0 — Solo + AI`
+**Current platform baseline:** `AMS Realty Platform Core Standard 3.0 — Solo + AI`
+**Target conformance:** `AMS Realty Platform Core Standard 5.5`; `AMS UI Core 5.0` remains `NOT VERIFIED` until its canonical source is present
 **Project profile:** `catalog`, mode `BUILD`
 **Delivery profile:** `CRITICAL`
 **Implementation delivery mode:** one Epic = one PR; `MERGE_AFTER_GATE` for RP-00…RP-12 and all unfinished/non-superseded implementation epics; EPIC-48 production remains explicit-owner-only; EPIC-49 post-launch remains outside autonomous merge delivery
@@ -31,6 +32,24 @@ Status: APPROVED
 ---
 
 # ARCHITECT REVISION HISTORY
+
+## 5.0.0 / v8 REVIEW — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-REALTY-CORE-5.5-UI-CORE-5.0`
+
+- Source: owner-provided package `don-city-next — приведение к AMS REALTY CORE 5.5 + AMS UI CORE 5.0`.
+- Targets: release-level indexing override, robots/sitemap, social metadata and structured data, lifecycle/pagination, media/performance, jobs/import/leads safety, transport security, UI drift and project readiness documentation.
+- Accepted: the package is a new post-production hardening program on top of the delivered v7/V4 system; production remains live with global `noindex` only during remediation, real feed remains disabled until its own readiness gate, and all jobs/leads/schema/SQL/runtime changes are RISKY and staging-first.
+- Accepted with adaptation: one branch/PR is created per independent stream, not per smallest checklist item; `verify:daily` is required once for the completed STANDARD stream before delivery, while RISKY streams use the relevant risk-specific checks plus integration proof. Public staging remains edge-level `noindex`; public-mode SEO behavior is proved in an isolated test/crawler contour that cannot become indexable to external bots.
+- Already covered: current page policy already specifies pagination `page>=2 → noindex,follow + self-canonical`; production/staging topology, retention `100` days, global noindex, disabled real feed, Payload-only schema ownership and the existing Project Design System remain active Source of Truth.
+- Rejected: mechanically setting `clientReadinessConfig` flags to `true` from observed infrastructure alone. Nginx, jobs-owner, backup, monitoring, feed and allowlist readiness change only with durable evidence and fail-closed verification.
+- Owner clarification: the end state is a full production launch with public indexing enabled after the complete SEO/operations/readiness proof. This revision authorizes planning that launch, but the actual rollout still uses the explicit exact-SHA release gate. Real feed activation remains a separate decision.
+- Owner scope decision: for the first four months after public indexing, the active/indexable business scope is secondary apartments, houses, land plots, commercial real estate and the legal department. Newbuild/ЖК remains disabled and non-indexable, excluded from sitemap/indexable navigation; its namespace stays reserved for a separate post-four-month decision.
+- Needs owner: HSTS `preload` may change only after explicit confirmation that every applicable subdomain is permanently HTTPS-ready; raw-SQL deviations require either a supported Payload conditional operation or an approved ADR with atomicity proof.
+- Evidence status: local code search confirms the named SEO/jobs/UI/readiness surfaces exist, but individual defect claims remain `requires preflight` until exact tests/runtime evidence. The canonical AMS Realty Core 5.5 file exists; a canonical AMS UI Core 5.0 source was not found in this checkout.
+- Graph state: v7 remains immutable approved/delivered history. This v8 source drift is not imported into Beads; implementation claiming is blocked until final audit, exact owner approval and clean reconciliation.
+- Sections changed: plan metadata, revision history and §33D hardening program.
+- Result: assembly checkpoint `v8 REVIEW`; final four-pass audit, Task Manager import and Developer handoff are not authorized.
 
 ## 4.0.1 / v7 REVIEW — 2026-09-24
 
@@ -1944,6 +1963,341 @@ First task: Wordstat + SERP + official program-source verification. Only then de
 First task: Wordstat + SERP for office/retail/warehouse/PSN and sale/rent. Then decide routes/meta/facets and whether sale/rent activate together. No R1 commercial route.
 
 ---
+
+# 33D. CORE 5.5 POST-PRODUCTION HARDENING PROGRAM — v8 REVIEW
+
+This section is the canonical assembly draft for the owner packet received on
+2026-09-27. It does not reopen delivered v7 work without evidence and does not
+authorize production, indexing, a real feed, secret mutation or destructive
+data operations.
+
+## MASTER PLAN MAP
+
+Primary goal: bring DON CITY to evidence-backed AMS Realty Platform Core 5.5
+conformance and then release a complete production site with public indexing,
+correct SEO contracts and operational readiness, while preserving Payload
+ownership and the existing one-server topology.
+
+Non-goals: unrelated redesign, new product modules, new server, premature
+production/indexing before readiness, enabling a real feed without its own
+gate, replacement of Payload, unrelated cleanup and speculative readiness flags.
+
+Major outcomes:
+
+- release-level noindex wins over every route-level SEO contract;
+- robots/sitemap/metadata/structured data/lifecycle are deterministic and tested;
+- the first-four-month indexable inventory is limited to secondary apartments,
+  houses, land, commercial real estate and approved legal-department pages;
+- newbuild/ЖК stays disabled, noindex and absent from sitemap until a separate
+  review after four months;
+- jobs, retention and delivery recovery satisfy targeted proofs A/D/E/F/G;
+- media and request-path performance have measured budgets and reversible changes;
+- UI roles/accessibility converge without creating a second design system;
+- project/operations documentation reports facts and fail-closed unknowns;
+- final staging evidence is produced without making staging externally indexable;
+- one exact-main production release removes the global noindex only after every
+  required SEO, monitoring, backup, delivery, rollback and owner-readiness gate.
+
+Shared foundations: exact package versions, Core 5.5 hard contract, current
+Product Structure/Architecture/Operations, Project Design System, typed URL
+grammar, Public/System/Ingest gateways and existing verification scripts.
+
+Security-sensitive areas: leads/PII, raw SQL, Payload job recovery, runtime
+secrets, Origin checks, CSP, HSTS and Nginx rate limiting.
+
+Production boundary: CP-00…CP-08 stop after PR/merge-authorized evidence. CP-09
+is the dedicated production/indexing release and starts only from a clean exact
+`main` after its release command and final readiness proof. Feed activation is
+not implied by public indexing and keeps a separate gate.
+
+## REVISION PACKET TRIAGE
+
+| Packet area | Architect status | Reason |
+|---|---|---|
+| 1.1–1.6 indexing, sitemap, metadata, JSON-LD | `ACCEPTED_REQUIRES_PREFLIGHT` | Named surfaces exist; exact defect and route coverage require tests/runtime evidence. |
+| 1.7 title/description | `ACCEPTED_WITH_ADAPTATION` | Centralize policy, but preserve registry ownership and treat length as warning except invalid/empty metadata. |
+| 1.8 headings | `ACCEPTED` | Aligns with page/UI/accessibility contract. |
+| 1.9 pagination/filter policy | `ALREADY_COVERED + VERIFY` | Current Source of Truth already selects `noindex,follow` and self-canonical for page 2+; invalid/page=1 behavior still needs proof. |
+| 1.10 archived→gone | `ALREADY_COVERED + VERIFY` | Lifecycle contract and 100-day retention exist; boundary behavior requires regression proof. |
+| 1.11 staging crawl | `ACCEPTED_WITH_ADAPTATION` | Run public-mode application crawl in an isolated contour while edge staging remains `noindex`. |
+| Epic 2 media/performance | `ACCEPTED_REQUIRES_PREFLIGHT` | Select one media path after inventory; migration/backfill is dry-run-first and staging-only. |
+| 3.1 raw SQL | `NEEDS_OWNER_AT_DECISION` | Inventory first; prefer supported Payload conditional operations, otherwise ADR + atomicity proof before implementation. |
+| 3.2–3.6 jobs/leads/runtime | `ACCEPTED_RISKY` | Matches Core 5.5 §§9, 10, 14A and proofs A/D/E/F/G; staging and test DB are mandatory. |
+| 3.7 project collections | `ACCEPTED_WITH_ADAPTATION` | Document existing modules and access matrix; `ListingContents` remains project SEO content, not silently promoted to a new platform module. |
+| Epic 4 CSP/HSTS | `NEEDS_OWNER` | Nonce feasibility is version-sensitive; HSTS preload is an external irreversible commitment for applicable subdomains. |
+| Epic 5 UI drift | `ACCEPTED_WITH_ADAPTATION` | Reuse the current Project Design System; canonical UI Core 5.0 text is missing, so no unverified 5.0 conformance claim is allowed. |
+| 6.1 PROJECT/DESIGN docs | `ACCEPTED` | Required by Core 5.5 §21; migrate unique active meaning without duplicating Source of Truth. |
+| 6.2 readiness flags | `REJECTED_AS_MECHANICAL_UPDATE` | Facts become readiness only after durable evidence; current fail-closed values remain until proven. |
+| 6.3 reserved namespaces | `ACCEPTED` | `/novostroyki/*` and `/komplex/*` stay reserved and non-indexable for at least the first four months. |
+| First-four-month product/indexing scope | `OWNER_DECIDED` | Index only secondary apartments, houses, land, commercial real estate and approved legal-department pages; newbuild/ЖК is excluded. |
+
+## PROVISIONAL DELIVERY WAVES
+
+```text
+W1 FOUNDATION
+  CP-00 factual preflight / contract and evidence matrix
+
+W2 SEO SAFETY + DATA/PII SAFETY
+  CP-01 release-level indexing gate
+  CP-03 jobs/import/leads recovery (independent RISKY stream)
+
+W3 SEO SURFACE + MEDIA
+  CP-02A first-four-month indexable scope / commercial / legal
+  CP-02 sitemap/metadata/JSON-LD/lifecycle
+  CP-04 media/performance/proxy
+
+W4 UI + SECURITY DECISIONS
+  CP-05 UI Core drift/accessibility
+  CP-06 CSP/HSTS/transport decisions
+
+W5 DOCUMENTATION + CLOSURE
+  CP-07 Core 5.5 project/readiness documentation
+  CP-08 isolated staging proof and program closure
+
+W6 PRODUCTION + INDEXING
+  CP-09 exact-main production launch and public indexing
+```
+
+CP-01 and CP-03 may proceed in separate worktrees after CP-00 freezes shared
+contracts. CP-02A freezes the launch route/registry scope after evidence and
+precedes CP-02 because both own metadata/robots/sitemap contracts.
+CP-05 follows the metadata/heading slice of CP-02 where they share page/UI
+files. CP-03 remains serial internally because it changes shared jobs, lead
+state and data-recovery contracts. CP-08 depends on every accepted stream;
+CP-09 depends on a clean CP-08 result and the exact-main release gate.
+
+## COMMON STREAM CONTRACT
+
+- Base: fresh canonical SourceCraft `main`; one independent stream = one branch/worktree = one PR.
+- Entry: v8 exact plan is approved and reconciled; CP-00 evidence for the stream is available.
+- Required record: goal, Source of Truth, scope in/out, risk, acceptance,
+  verification, rollback/recovery, stop conditions and `EXECUTION_LEDGER_V1`.
+- STANDARD delivery: full diff review, `pnpm verify:daily`, relevant targeted
+  command and one exact-head STANDARD gate before merge.
+- RISKY delivery: full diff review, relevant targeted commands, explicit test
+  PostgreSQL/staging proof and one exact-head RISKY gate before merge.
+- Stop: unknown production identity, missing test DB/staging isolation, secret
+  exposure, unplanned migration, changed production indexing/feed, destructive
+  operation, unsupported pinned-version API or failed rollback evidence.
+
+## EPIC-66 / CP-00 — FACTUAL PREFLIGHT AND CONTRACT FREEZE
+
+Outcome: every owner-packet claim is classified as `CONFIRMED_DEFECT |
+ALREADY_COVERED | NOT_REPRODUCED | OWNER_DECISION | EXTERNAL_PROOF`, with exact
+file/test/runtime evidence and no product-code write.
+
+Scope: inspect installed Next `16.3.5`, Payload `3.90.1`, current route/page
+contracts, Core 5.5 sections, local UI source availability, existing tests,
+staging noindex boundary and shared-file ownership. Produce one evidence matrix
+inside this plan or a linked `docs/replan/` report; do not create a competing
+master plan.
+
+Acceptance: every 1.1–6.3 item has evidence, owner-decision flag, target stream,
+risk and exact verification surface; missing canonical UI Core 5.0 remains
+explicit. Gate: STANDARD docs-only checkpoint.
+
+## EPIC-67 / CP-01 — RELEASE-LEVEL INDEXING SAFETY
+
+Outcome: `productionIndexing=noindex` deterministically forces meta robots and
+`X-Robots-Tag: noindex, nofollow` for every response class without weakening
+page-level policy in public mode.
+
+Scope: central policy composition, static/marketing/legal routes, notFound/gone,
+edge headers and staging configuration. Preserve staging edge-level noindex.
+
+Acceptance: route matrix covers home, geo hub, category, district, facet,
+property, static, legal, 404 and gone in both noindex/public application modes;
+headers and HTML agree. Verification: targeted SEO contracts plus isolated HTTP
+smoke. Rollback: restore previous metadata/header policy. Gate: RISKY because a
+mistake can expose the whole live site to indexing.
+
+## EPIC-68 / CP-02A — FIRST-FOUR-MONTH INDEXABLE PRODUCT SCOPE
+
+Outcome: the public launch exposes and indexes only the owner-approved initial
+business scope: secondary apartments, houses, land plots, commercial real
+estate and the legal department. Newbuild/ЖК remains disabled and non-indexable.
+
+Scope: reconcile PRD, Product Structure, Site Profile, typed URL grammar, SEO
+registry, navigation, sitemap, structured data and content gates. Move commercial
+real estate from the former generic R2 bucket into the current launch scope,
+but freeze its exact SEO URL only after semantic/competitor evidence. Define the
+approved legal-department route set and ensure each route has a real service,
+content, CTA, metadata and factual structured data. Preserve `/novostroyki/*`
+and `/komplex/*` as reserved namespaces without enabling pages, menu links or
+sitemap entries.
+
+Acceptance: fixtures and crawl prove apartments/houses/land/commercial/legal
+owners resolve only when their data/content gates pass; no fake inventory page
+is indexed; newbuild/ЖК routes are `404` or explicit `noindex` according to the
+disabled-module contract and never appear in sitemap/indexable navigation;
+reserved namespaces cannot be occupied by CMS pages. A dated four-month review
+task exists, but it cannot activate newbuild without a new owner-approved plan.
+Gate: RISKY if Site Profile/schema/grammar changes; otherwise STANDARD for
+registry/content-only work.
+
+## EPIC-69 / CP-02 — SEO SURFACE, SITEMAP AND LIFECYCLE
+
+Outcome: robots, sitemap index/shards, Open Graph/Twitter, factual JSON-LD,
+title/description, headings, pagination/filter normalization and archived→gone
+behavior form one deterministic page contract.
+
+Scope: packet 1.2–1.10 after CP-00 evidence. Sitemap provider failures must not
+cache a false empty success. Public media path remains crawlable without opening
+private API surfaces. JSON-LD uses safe serialization and factual DTO/NAP only.
+
+Acceptance: unit/route snapshots for both indexing policies; `/sitemap.xml`
+lists only non-empty successful shards; provider failure is non-200; structured
+data and headings cover every page type; lifecycle boundary at day 100 is
+proven; no redirect chain or homepage fallback. Gate: STANDARD unless schema,
+gateway or critical runtime behavior changes, then RISKY.
+
+## EPIC-70 / CP-03 — JOBS, IMPORT AND LEAD SAFETY
+
+Outcome: import and lead recovery are atomic, race-safe and evidence-backed;
+retention removes/anonymizes linked PII; runtime secrets fail closed.
+
+Scope: raw-SQL inventory/decision, conditional run transitions, orphan job
+inspection, lead-delivery cleanup/recovery threshold, external heartbeat
+visibility, runtime clock, rate-limit eviction, lead Origin/Content-Type and
+Nginx rate limiting, public response minimization and collection access matrix.
+
+Acceptance: Core 5.5 proofs A/D/E/F/G pass on an explicit test database and
+isolated staging; migration/transaction and PII evidence is redacted; no raw SQL
+rewrite occurs before the CP-00 decision record. Rollback: task-specific
+migration/data recovery plus previous immutable application image. Gate: RISKY.
+
+## EPIC-71 / CP-04 — MEDIA AND REQUEST-PATH PERFORMANCE
+
+Outcome: object media uses one approved responsive/format strategy with stable
+cacheable URLs, existing media has an idempotent dry-run-first backfill, and
+property resolution avoids duplicate expensive reads.
+
+Scope: packet Epic 2; keep private S3 and controlled public delivery. Select
+Payload sizes or an approved Next loader based on exact runtime evidence, not
+both. Logo assets are right-sized without changing the approved brand original.
+
+Acceptance: representative imported media survives backfill/rollback; cache
+headers are safe for versioned URLs; before/after p95 is recorded; Lighthouse
+mobile evidence covers home, catalog and property with LCP ≤2.5s and CLS ≤0.1.
+Gate: RISKY for schema/media backfill; otherwise STANDARD for asset-only slice.
+
+## EPIC-72 / CP-05 — UI ROLE AND ACCESSIBILITY CONVERGENCE
+
+Outcome: the existing DON CITY Design System has one semantic typography/token
+language, project-owned component names and accessible navigation/lead forms,
+without a visual redesign.
+
+Scope: triage aliases before renaming; converge repeated arbitrary values and
+navigation/chip patterns through `REUSE → VARIANT → CREATE`; fix nav semantics,
+dropdown keyboard/outside-click behavior, form error relationships and starter
+naming. Payload Admin remains CMS-native.
+
+Acceptance: no second token/component system; UI/drift/a11y checks pass; mobile,
+desktop, keyboard, submit/error/success and reduced-motion evidence is recorded.
+Gate: STANDARD unless package public API or shared boundary changes, then RISKY.
+
+## EPIC-73 / CP-06 — TRANSPORT SECURITY DECISIONS
+
+Outcome: CSP and HSTS have explicit evidence-backed policies for the current
+Next/runtime/Nginx topology.
+
+Scope: pinned-version nonce CSP spike; current inline-script inventory; complete
+subdomain/TLS inventory for `includeSubDomains; preload`. A spike may conclude
+with an approved exception, but not with an unrecorded weakening.
+
+Acceptance: recommendation, compatibility evidence, rollout/rollback and
+residual risk are recorded. HSTS preload mutation remains blocked on owner
+decision. Gate: RISKY for any runtime/header change.
+
+## EPIC-74 / CP-07 — CORE 5.5 PROJECT AND READINESS DOCUMENTATION
+
+Outcome: `docs/PROJECT.md`, `docs/DESIGN.md`, Architecture, Operations, Backlog
+and Release Checklist describe one non-duplicated Core 5.5 contract and the
+actual fail-closed readiness state.
+
+Scope: migrate unique active meaning from `06_DESIGN_SYSTEM.md` without losing
+history; record profile, intervals, retention, channels/allowlists, cache mode,
+S3/DB, backup/monitoring, admin access, indexing/pagination/title policy and
+reserved namespaces. Validate `AMS_PROFILE` only after factual code preflight.
+
+Acceptance: source-of-truth guard passes; no readiness flag is promoted without
+linked evidence; disabled modules and reserved routes cannot be occupied by CMS
+or unrelated pages. Gate: STANDARD, or RISKY if env/runtime validation changes.
+
+## EPIC-75 / CP-08 — ISOLATED STAGING PROOF AND PROGRAM CLOSURE
+
+Outcome: the exact candidate proves all accepted Core 5.5 outcomes on isolated
+staging while public staging remains externally noindex, and produces a release
+candidate report without touching production.
+
+Scope: run full verification, targeted proofs A/D/E/F/G, public-mode application
+SEO crawl behind the isolated test contour, noindex edge smoke, sitemap/metadata/
+structured-data validators, performance and rollback rehearsal. Do not change
+production, DNS, feed, secrets or indexing.
+
+Acceptance: evidence is bound to exact SHA/image; every URL/error/redirect and
+proof result is recorded; unresolved owner/production gates remain explicit;
+program reconciliation is clean. Gate: RISKY. Next after merge: CP-09 exact-main
+production/indexing release. Feed activation remains separate even after PASS.
+
+## EPIC-76 / CP-09 — PRODUCTION LAUNCH AND PUBLIC INDEXING
+
+Outcome: the complete DON CITY site runs in production from one immutable
+exact-main artifact, global noindex is removed, public robots/sitemap/metadata/
+canonical/structured data are correct, and indexing is observable and reversible.
+
+Entry conditions: CP-08 PASS on the exact candidate; first production owner,
+independent lead/alert channel, external uptime monitoring, durable DB/media
+backup freshness and sampled restore, owner-verified NAP, healthy jobs ownership,
+rollback image and clean SourceCraft `main`. The release command authorizes the
+exact candidate only; any new commit invalidates the evidence.
+
+Scope: one release workflow builds/publishes one immutable artifact, performs
+backup preflight, rollout and jobs-owner handoff, switches production indexing
+policy to `public`, verifies edge headers and HTML, robots/sitemap shards,
+canonical/OG/JSON-LD, lead delivery, monitoring and rollback identity. Submit
+only canonical URLs after the live smoke. Do not enable a real feed unless it
+has separately passed its feed/allowlist/import safety gate.
+
+Acceptance: home, catalog, representative district/facet/property/static/legal,
+404 and gone routes return the intended public robots policy; `/robots.txt` and
+`/sitemap.xml` are valid and consistent; all sitemap locations return expected
+status; no redirect chain, duplicate canonical or false indexable route exists;
+the crawl contains only gated secondary apartments/houses/land/commercial and
+approved legal pages, with no newbuild/ЖК URL;
+external monitoring and redacted lead delivery are live; exact SHA/image/jobs
+owner/backup freshness/rollback point are recorded; post-release crawl passes.
+
+Rollback: restore the previous immutable noindex image and previous indexing
+policy without schema rollback unless the release-specific migration plan says
+otherwise. Stop on failed backup freshness, health, lead delivery, queue
+ownership, SEO crawl, wrong artifact identity or unavailable rollback point.
+Gate: one exact-main RISKY release workflow. This is the only epic that may
+remove global noindex for this program.
+
+## OWNER DECISION REGISTER — v8 ASSEMBLY
+
+| ID | Decision | Recommendation | Blocks | Deadline | Status |
+|---|---|---|---|---|---|
+| OD-03 | Raw SQL that cannot be replaced by a supported conditional Payload operation | Approve only a narrow ADR-backed exception with atomicity/concurrency tests | affected CP-03 implementation | before affected task | OPEN |
+| OD-04 | HSTS `preload` for the domain/subdomain estate | Do not preload until every applicable subdomain and long-term HTTPS commitment are proven | CP-06 header mutation | before CP-06 delivery | OPEN |
+| OD-05 | Canonical AMS UI Core 5.0 source | Provide/identify the normative file; until then verify only against the project Design System and available UI contract | 5.0 conformance claim, not safe local fixes | before final audit | OPEN |
+| OD-06 | End-state indexing policy | Launch the complete verified site as `public`; keep staging externally noindex and keep feed activation separate | CP-09 | decided 2026-09-27 | DECIDED: PUBLIC |
+| OD-07 | First-four-month indexable product scope | Secondary apartments, houses, land, commercial real estate and legal department; newbuild/ЖК remains disabled and non-indexable | CP-02A, CP-02, CP-09 | decided 2026-09-27 | DECIDED |
+| OD-08 | Exact commercial and legal route registry | Freeze exact URLs after semantic evidence; do not invent slugs during assembly | CP-02A | before final audit | OPEN |
+
+## ASSEMBLY READINESS
+
+Current result: `NOT_READY` for Task Manager import.
+
+- Final four-pass audit has not been requested.
+- CP-00 factual evidence matrix is not yet complete.
+- OD-05 is a before-approval source prerequisite; OD-03/OD-04 block only their
+  affected decisions and may be converted to explicit deferred gates after CP-00.
+- Existing v7 graph/history must not be overwritten; v8 requires a new stable
+  plan-scoped inventory after approval.
+- Production/indexing is now an explicit planned outcome in CP-09, isolated
+  behind exact-main readiness and release authorization rather than excluded.
 
 # 34. FUTURE AFTER EPIC-52
 
