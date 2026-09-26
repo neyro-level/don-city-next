@@ -53,10 +53,17 @@ const homeSeo = {
 } as const;
 const logo = {
 	kind: "managed" as const,
-	src: "/fixture/logo.svg",
-	alt: brandName,
-	width: 160,
-	height: 40,
+	src: "/brand/don-city-mark.png",
+	alt: `Знак ${brandName}`,
+	width: 512,
+	height: 512,
+};
+const footerLogo = {
+	kind: "managed" as const,
+	src: "/brand/don-city-logo-approved.jpg",
+	alt: `${brandName} — агентство недвижимости`,
+	width: 768,
+	height: 960,
 };
 
 function rub(priceMinor: number) {
@@ -345,7 +352,7 @@ export function toShellDTO(
 
 	const footer: SiteFooterDTO = {
 		brandName,
-		logo,
+		logo: footerLogo,
 		groups: [
 			{ title: "Недвижимость", links: propertyLinks },
 			{ title: "Разделы", links: links.slice(1) },

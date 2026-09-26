@@ -64,7 +64,9 @@ assert.equal(
 	false,
 	"root html must not enable a dark theme class",
 );
-assert.ok(read("src/app/layout.tsx").includes('icon: "/fixture/logo.svg"'));
+const rootLayout = read("src/app/layout.tsx");
+assert.ok(rootLayout.includes('icon: "/icon.png"'));
+assert.ok(rootLayout.includes('apple: "/apple-icon.png"'));
 
 const fallback = read("packages/ui/src/views/starter/MediaFallback.tsx");
 assert.ok(fallback.includes("aria-hidden"));

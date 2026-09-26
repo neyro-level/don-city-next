@@ -467,6 +467,7 @@ const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
 	"listing-contents": "publicListingContentReadAccess",
+	media: "publicMediaReadAccess",
 	redirects: "publicRedirectReadAccess",
 };
 for (const slug of boundary.anonymousDenyCollections ?? []) {

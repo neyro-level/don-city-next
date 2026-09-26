@@ -1,66 +1,93 @@
-# Design System
+# DON CITY Design System
 
-Status: Active — EPIC-16 intake completed for public UI foundation
-Version: 1.0
-Updated: 2026-09-24
+Status: Active — owner-approved brand direction
+Version: 2.0
+Updated: 2026-09-26
 
-## Policy
+## Назначение
 
-Новый public UI foundation проходит EPIC-16 design intake. Решение компонентов: `REUSE → VARIANT → CREATE`. Payload Admin сохраняет CMS-native интерфейс.
+Система задаёт единый премиальный язык публичного сайта DON CITY. Она сохраняет проверенную структуру, ритм, компоненты и поведение starter/Bastion foundation, но заменяет донорскую идентичность фирменными цветами и утверждённым логотипом DON CITY.
 
-Starter design is the first inventory source, not an automatic final design. Preserve proven visual character, accessible primitives, layout geometry and useful domain patterns where compatible. Replace donor identity, content, routes, menu, domains, metadata and unsafe data coupling.
+Payload Admin остаётся CMS-native и не получает публичную бренд-тему.
 
-## Owner-approved direction
+## Источник бренда
 
-- Typeface: `Manrope` for the public product, supplied with `next/font/google` using `cyrillic` and `latin`. Installed Next metadata confirms `cyrillic`, variable weight and 200–800. The font is distributed through the Google Fonts Manrope family under SIL Open Font License 1.1; source and licence evidence: <https://github.com/google/fonts/tree/main/ofl/manrope>.
-- Visual base: retain the starter's useful visual character, spacing rhythm, geometry and component behavior where compatible with DON CITY architecture and page intent.
-- Brand color: replace the starter's brand-red semantic role with a dark-green brand role after token inventory and contrast testing.
-- Safety colors: do not recolor error, destructive or critical warning states; their semantic red remains.
-- The dark-green action family is contrast-safe for white text (primary action 6.41:1). Exact numeric values live only in `src/app/globals.css`; this document does not duplicate them.
+- Утверждённый оригинал: `public/brand/don-city-logo-approved.jpg`.
+- Компактный знак для шапки: `public/brand/don-city-mark.png`.
+- Browser icons: `src/app/icon.png` и `src/app/apple-icon.png`.
+- Оригинал нельзя перекрашивать, деформировать, поворачивать, обрезать по контуру зданий или заменять набранным текстом.
+- Текстурный фон оригинала является частью логотипного изображения, а не фоном всего интерфейса.
+
+В шапке используется компактный знак и название, набранное Manrope. В подвале используется полный утверждённый вертикальный логотип с подписью «Агентство недвижимости». Это сохраняет читаемость меню и одновременно показывает официальный знак без изменений.
+
+## Характер системы
+
+Ключевые ассоциации: надёжность, недвижимость, спокойная премиальность, тёплый металл, архитектурная точность. Интерфейс не имитирует «золото» градиентами и блеском: премиальность создают глубокий хвойный цвет, тёплые фарфоровые поверхности, медные детали, свободное пространство и строгая типографика.
+
+## Цветовые роли
+
+Числовые значения цветов хранятся только в `src/app/globals.css`.
+
+- `brand-primary` — глубокий хвойный: основные действия, ссылки, focus и активные состояния.
+- `brand-copper` — медный акцент из логотипа: тонкие разделители, декоративные детали и редкие акценты; не используется как основной цвет длинного текста.
+- `brand-gold` — светлый металлический акцент из знака; только для небольших декоративных элементов.
+- `brand-ivory` — тёплая слоновая кость для контента на тёмном фоне.
+- `background` — фарфоровый фон страницы, мягче чистого белого.
+- `surface` — тёплая светлая поверхность карточек и диалогов.
+- `surface-dark` — матовый хвойный фон подвала и премиальных контрастных секций.
+
+Основные пары проходят WCAG AA: белый текст на primary — 10.30:1, основной текст на фоне страницы — 14.57:1, приглушённый текст на светлой поверхности — 4.75:1. Медь на светлом фоне применяется только в своей тёмной текстовой роли с контрастом 6.18:1. Цвета ошибок, destructive и критических предупреждений не перекрашиваются в брендовые.
+
+## Типографика
+
+- Единственная публичная гарнитура — `Manrope`, подключённая через `next/font/google` для Cyrillic и Latin.
+- Заголовки используют плотный трекинг и веса из существующей token scale.
+- Верхний регистр допустим для коротких eyebrow/label и названия бренда, но не для абзацев и длинных ссылок.
+- На каждой коммерческой странице остаётся один логический `h1`.
+
+## Логотип и охранное поле
+
+- Минимальная визуальная высота компактного знака в шапке — 40 px; favicon использует только знак без надписей.
+- Вокруг знака сохраняется свободное поле не меньше половины ширины самого узкого вертикального штриха.
+- На тёмных секциях полный логотип показывается в исходном фирменном поле; на светлых поверхностях — компактный прозрачный знак.
+- Alt-текст полного логотипа сообщает название и тип компании. Декоративный знак рядом с видимым названием получает пустой alt, чтобы скринридер не повторял бренд.
+
+## Компоненты и layout
+
+Решение компонентов: `REUSE → VARIANT → CREATE`.
+
+- Сохраняются `Container`, `Section`, `SectionHeader`, Button, Input, Select и Dialog.
+- Header и Footer — DON CITY variants существующего shell, а не новая параллельная оболочка.
+- Скругления умеренные; крупные «пузырьковые» формы не соответствуют бренду.
+- Медные рамки используются тонко: верхняя/нижняя граница, focus detail или один акцент в секции.
+- Тени мягкие и глубокие, без яркого свечения.
+- Motion остаётся спокойным, коротким и учитывает `prefers-reduced-motion`.
+
+## Состояния и доступность
+
+- Все интерактивные элементы доступны с клавиатуры и имеют заметный focus ring.
+- Не использовать один цвет как единственный носитель статуса.
+- Loading, empty, error, success, disabled и hover состояния используют существующие semantic tokens.
+- Light-only режим сохраняется; Tailwind dark variant class-based, класс `.dark` не устанавливается.
+- Обязательны responsive, 404 и platform error boundary.
+
+## Ownership и масштабирование
+
+```text
+numeric tokens → primitives → layout → shared shell → domain → page composition
+globals.css → Button/Input/Dialog → Container/Section → Header/Footer
+→ catalog/forms/cards → route pages
+```
+
+`src/app/globals.css` остаётся единственным числовым источником темы. Компоненты используют semantic roles, а не локальные hex-значения. Новая страница расширяет существующий набор ролей только при доказанной необходимости и не создаёт вторую цветовую систему.
 
 ## Disposition register
 
-Each starter token/component/section is classified during EPIC-16:
+- `REUSE`: сетка, spacing rhythm, responsive shell, доступные primitives.
+- `VARIANT`: header, footer, action palette, surfaces, borders, focus и брендовые assets.
+- `REPLACE`: донорский логотип, donor-red brand roles и холодные серые базовые поверхности.
+- `REMOVE`: декоративные текстуры вне утверждённого логотипа, псевдозолотые градиенты и дубли numeric tokens.
 
-- `REUSE` — safe and semantically compatible;
-- `VARIANT` — retained foundation with DON CITY tokens/content/behavior;
-- `REPLACE` — conflicts with product, accessibility, performance or architecture;
-- `REMOVE` — duplicate, unused or donor-only;
-- `REQUIRES_OWNER_DECISION` — material visual choice with no safe evidence.
+## Проверка изменений
 
-## Current constraints
-
-- Один project-owned semantic token source.
-- Light-only до отдельного решения; Tailwind dark mode class-based, `.dark` не устанавливается.
-- Один логический `h1` на коммерческой странице.
-- Обязательны responsive, focus, keyboard, loading/empty/error, 404 и platform error boundary.
-- Numeric tokens live only in the project token source; this document records their semantic policy and evidence.
-
-## Intake outcome
-
-- `src/app/globals.css` is the one numeric token source. Its semantic families cover surfaces, content, action, status, focus, containers, section rhythm, controls, typography, radii and motion.
-- Brand action, primary and focus-ring roles use the dark-green family. `error`, `destructive` and critical warning roles retain red/orange semantics.
-- Reused foundation: `Container`, `Section`, `SectionHeader`, Button, Input, Select and Dialog. Existing header/footer, catalog/cards/forms are variants until their DON CITY route/data contracts are implemented.
-- The public theme is light-only. Tailwind's class-based `dark` custom variant remains dormant and project-authored `dark:` styling is not added.
-- Motion is CSS/Tailwind based, uses the existing semantic duration/easing tokens and respects the platform's reduced-motion baseline through the existing UI foundation.
-
-## Ownership map and scaling rule
-
-```text
-primitives → layout → shared → domain → page-specific → route composition
-Button/Input/Select/Dialog → Container/Section → shell/lead form
-→ catalog filters/cards/pagination → Donetsk catalog copy → /donetsk/kvartiry/
-```
-
-The representative `/donetsk/kvartiry/` page proves the foundation with the
-approved title, description, canonical path, one logical H1, public DTO catalog,
-filters, empty state, property cards and contextual lead action. Future route
-families reuse or variant this system; they do not establish another visual
-language.
-
-## Deferred only to their owning epics
-
-- Exact R1 menu and NAP replacement — EPIC-17 / EPIC-07.
-- Canonical route resolver, full route skeleton and property detail paths — EPIC-15 / EPIC-18 / EPIC-28.
-- Browser, responsive, accessibility, metadata and media proof — EPIC-16 verification task.
-- The starter token-report script requires absent `docs/PROJECT.md`; do not fabricate that quality baseline in the design system.
+При изменении темы проверяются: контраст ключевых пар, header/footer на mobile и desktop, клавиатурный focus, favicon, отсутствие horizontal overflow, один `h1`, metadata/robots и отсутствие donor identity. Production остаётся `noindex` до отдельного решения владельца.

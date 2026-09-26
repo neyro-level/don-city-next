@@ -26,18 +26,24 @@ export function StarterSiteHeader({
 	activePath?: string;
 }) {
 	return (
-		<header className="sticky top-0 z-40 border-b border-border bg-[var(--surface-card)]/95 backdrop-blur-xl">
+		<header className="sticky top-0 z-40 border-b border-[var(--brand-copper-soft)] bg-[var(--surface-card)]/95 shadow-[var(--site-header-shadow-tertiary)] backdrop-blur-xl">
 			<Container className="flex min-h-17 items-center gap-5 py-3">
 				<a
 					href={header.homeHref}
-					className="shrink-0 text-body font-extrabold tracking-caps focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
+					className="group flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
 					aria-label={`${header.brandName} — на главную`}
 				>
-					<span
-						className="mr-2 inline-block size-3 rounded-[var(--site-radius-micro)] bg-action-primary"
+					<img
+						src={header.logo.src}
+						alt=""
+						width={header.logo.width}
+						height={header.logo.height}
+						className="size-11 object-contain transition-transform duration-200 group-hover:scale-[1.03]"
 						aria-hidden
 					/>
-					{header.brandName}
+					<span className="text-body font-extrabold tracking-caps text-content-strong">
+						{header.brandName}
+					</span>
 				</a>
 				<nav
 					className="ml-auto hidden items-center gap-1 lg:flex"
@@ -139,13 +145,18 @@ export function StarterSiteHeader({
 
 export function StarterSiteFooter({ footer }: { footer: SiteFooterDTO }) {
 	return (
-		<footer className="border-t border-[var(--dark-border)] bg-surface-inverse py-12 text-content-inverse">
+		<footer className="border-t border-[var(--brand-copper)] bg-surface-inverse py-12 text-content-inverse">
 			<Container>
 				<div className="grid gap-10 md:grid-cols-[1.2fr_2fr]">
 					<div>
-						<p className="text-body font-extrabold tracking-caps">
-							{footer.brandName}
-						</p>
+						<img
+							src={footer.logo.src}
+							alt={footer.logo.alt}
+							width={footer.logo.width}
+							height={footer.logo.height}
+							className="h-auto w-40 rounded-lg border border-[var(--dark-border)] object-cover shadow-[var(--site-header-shadow-primary)]"
+							loading="lazy"
+						/>
 						<p className="mt-3 max-w-sm text-label leading-step-copy text-[var(--text-dark)]">
 							Агентство недвижимости: подбор объектов, проверка документов и
 							сопровождение сделки.
