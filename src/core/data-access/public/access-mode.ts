@@ -94,6 +94,21 @@ export const publicListingContentReadAccess: Access = ({ req }) =>
 export const publicGlobalReadAccess: Access = ({ req }) =>
 	isOperator(req.user) || isPublicGatewayRead(req);
 
+export const publicMediaReadAccess: Access = ({ req }) => {
+	if (isOperator(req.user)) return true;
+	const pathname = (() => {
+		try {
+			return new URL(req.url ?? "", "http://payload.internal").pathname;
+		} catch {
+			return "";
+		}
+	})();
+	const isPublicFileRequest =
+		req.method === "GET" && /\/api\/media\/file\//u.test(pathname);
+	if (!isPublicGatewayRead(req) && !isPublicFileRequest) return false;
+	return { mimeType: { contains: "image/" } };
+};
+
 export const publicRedirectReadAccess: Access = ({ req }) =>
 	roleOrPublicWhere(req, true);
 

@@ -89,6 +89,7 @@ const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
 	"listing-contents": "publicListingContentReadAccess",
+	media: "publicMediaReadAccess",
 	redirects: "publicRedirectReadAccess",
 };
 
@@ -443,6 +444,16 @@ assert.equal(
 	isAnonymousDeniedRawRestPath("/api/public/leads"),
 	false,
 	"classified public lead intake must stay reachable",
+);
+assert.equal(
+	isAnonymousDeniedRawRestPath("/api/media/file/listing.webp"),
+	false,
+	"public image delivery must reach the media access policy",
+);
+assert.equal(
+	isAnonymousDeniedRawRestPath("/api/media"),
+	true,
+	"anonymous media metadata REST must stay denied",
 );
 
 const fakeSession = "aaaaaaaaaa.bbbbbbbbbb.cccccccccc";

@@ -5,7 +5,8 @@ import {
 	mediaOverwriteDisabled,
 	uniqueMediaFilename,
 } from "../../core/storage/local-fs.ts";
-import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
+import { ownersOnly } from "../../core/access/roles.ts";
+import { publicMediaReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { clientReadinessConfig } from "../client-readiness.config.ts";
 
 const allowedMimeTypes = [
@@ -30,7 +31,7 @@ export const Media: CollectionConfig = {
 	},
 	access: {
 		create: ownersOnly,
-		read: adminsAndOwners,
+		read: publicMediaReadAccess,
 		update: ownersOnly,
 		delete: ownersOnly,
 	},
