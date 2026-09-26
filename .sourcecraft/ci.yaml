@@ -42,5 +42,4 @@ workflows:
         cubes:
           - name: verify-release-main
             script:
-              - pnpm install --frozen-lockfile
               - sh scripts/verify-sourcecraft-release.sh
