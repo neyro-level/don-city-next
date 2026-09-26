@@ -4,19 +4,19 @@ plan_version: v7
 plan_status: APPROVED
 current_wave: W4_STAGING_RELEASE_CANDIDATE
 current_epic: dcv4-epic-45
-current_task: dcv4-task-45-implement
-next_action: complete-safe-staging-assets-then-record-external-live-gates
+current_task: dcv4-task-45-live-staging
+next_action: review-risky-gate-merge-and-redeploy-exact-main-to-staging
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: e2fafec266eedd20c14b0b40be11b3ff4916cbf8
-  active_branch: codex/epic-45-timeweb-staging
+  base_sha: e5350528e8a0afa3646edef72494c5355700534d
+  active_branch: codex/epic-45-live-staging
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcv4-task-45-implement
-  reason: EPIC-45 safe Git implementation active; live Timeweb proof awaits explicit external gates
+  current_task: dcv4-task-45-live-staging
+  reason: owner authorized isolated live staging; production remains forbidden
 evidence:
   rp_00:
     status: delivered
@@ -124,23 +124,36 @@ evidence:
       - docs/research/EPIC-06_VERIFICATION.md
       - docs/OPERATIONS.md
   epic_45:
-    status: safe-repository-implementation-active-live-proof-gated
-    branch: codex/epic-45-timeweb-staging
-    base_sha: e2fafec266eedd20c14b0b40be11b3ff4916cbf8
+    status: live-staging-candidate-pass-delivery-pending
+    branch: codex/epic-45-live-staging
+    base_sha: e5350528e8a0afa3646edef72494c5355700534d
     preflight_head: 2341b30cc76b42f0913ee1a422a5233fd81e6422
     implementation_head: 8dd361b8ec2a10e5beb29a7f7bd26c95662694f3
     artifact_contract_head: 740d3ba5b752cf74d420c9aa2f51ff75f18a52aa
     local_build: PASS
     rehearsal_manifest: PASS
-    docker_image: NOT_BUILT_DAEMON_UNAVAILABLE
-    live_staging: BLOCKED_OWNER_GATE
+    deployed_candidate_head: 9ad95e2fa9c4d84dc0bb2f1ce6467ac3fda3cd0d
+    docker_image: sha256:58958bc64c06cddf97a5064ec49ab0cf2c7a467426d619f153680fac9818da93
+    artifact_sha256: 4d05f9161bf260e8b4b1c6e03320ffc124d170b8fae107d34ed019aa6baf586d
+    preparation_merge: e5350528e8a0afa3646edef72494c5355700534d
+    preparation_pr: 58
+    preparation_gate_run: 60
+    live_staging: CANDIDATE_PASS
+    live_url: https://staging.doncity-home.ru
+    production_touched: false
+    owner_decisions:
+      lead_retention_days: 100
+      property_archive_retention_days: 100
+      employee_archive_retention: indefinite
+      production_authorized: false
     reports:
       - docs/research/EPIC-45_TIMEWEB_STAGING_PREFLIGHT.md
       - docs/research/EPIC-45_STAGING_IMPLEMENTATION.md
+      - docs/research/EPIC-45_LIVE_STAGING_VERIFICATION.md
       - deploy/clients/timeweb/proofs/STAGING_PROOF.md
 task_contract:
   goal: "Prepare the fail-closed DON CITY Timeweb staging contract and prove every safe local EPIC-45 scenario."
-  non_goals: "Production, public indexing, DNS, live server or Secret Master mutation, infrastructure provisioning and destructive database action."
+  non_goals: "Production, public indexing, production data reuse and destructive production database action."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
@@ -148,8 +161,8 @@ task_contract:
   boundaries: "Staging uses a separate database, secrets and media; jobs remain disabled and indexing stays noindex until later owner gates."
   data_changes: "No production data change; local proof uses sanitized fixtures and the existing isolated development database only where required."
   auth_pii: "No production PII or secret values enter Git, logs or staging fixtures."
-  integrations: "Live Timeweb, DNS, TLS, Secret Master and outbound delivery remain untouched until explicit authorization."
-  proof: "Static staging blueprint, client readiness, R1 route/geo/facet/lifecycle/feed/job/lead/cache checks, typecheck and later authorized live smoke."
+  integrations: "Timeweb staging, DNS/TLS and Secret Master writes are owner-authorized; external feed/lead delivery remains disabled until real destination hosts are supplied."
+  proof: "Static checks plus authorized live candidate: isolated DB/S3/secrets, migrations, HTTPS/noindex, authenticated health, 15/15 active routes and synthetic lead idempotency/cleanup. Final exact-main redeploy follows merge."
   gate: RISKY
   done_state: "EPIC-45 PR merged after one exact-head RISKY gate and authorized live staging evidence; otherwise task remains explicitly gated."
 production:

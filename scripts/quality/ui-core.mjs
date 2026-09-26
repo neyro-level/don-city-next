@@ -88,6 +88,7 @@ assert.deepEqual(
 	Object.keys(uiPackage.exports).sort(),
 	[
 		".",
+		"./analytics",
 		"./primitives",
 		"./starter/catalog-page",
 		"./starter/gone-property-page",

@@ -61,6 +61,17 @@ export async function GET(request: Request) {
 	}
 
 	const checkedAt = nowIso();
+	const usesRemoteMediaStorage = projectConfig.mediaStorage === "timeweb-s3";
+	const mediaReady = usesRemoteMediaStorage
+		? Boolean(
+				runtimeEnv.S3_ENDPOINT &&
+					runtimeEnv.S3_REGION &&
+					runtimeEnv.S3_BUCKET &&
+					runtimeEnv.S3_ACCESS_KEY_ID &&
+					runtimeEnv.S3_SECRET_ACCESS_KEY &&
+					runtimeEnv.S3_PREFIX,
+			)
+		: isLocalMediaReady();
 	const jobsOwner = {
 		identity: hostname(),
 		pid: process.pid,
@@ -71,7 +82,8 @@ export async function GET(request: Request) {
 		app: { status: "ok" as const },
 		database: { status: "unknown" as "ok" | "down" | "unknown" },
 		storage: {
-			status: isLocalMediaReady() ? ("ok" as const) : ("down" as const),
+			status: mediaReady ? ("ok" as const) : ("down" as const),
+			provider: usesRemoteMediaStorage ? ("remote" as const) : ("local" as const),
 		},
 		jobs: {
 			status: "ok" as const,
@@ -190,7 +202,8 @@ export async function GET(request: Request) {
 				abandoned: abandonedDeliveries.totalDocs,
 			},
 			storage: {
-				localMediaReady: isLocalMediaReady(),
+				mediaReady,
+				provider: usesRemoteMediaStorage ? "remote" : "local",
 			},
 			cache: {
 				invalidationStaleBeyondSla: isCacheInvalidationStaleBeyondSla(
@@ -218,7 +231,9 @@ export async function GET(request: Request) {
 					}
 				: undefined,
 			disk: {
-				freeRatio: readDataVolumeFreeRatio(),
+				freeRatio: usesRemoteMediaStorage
+					? null
+					: readDataVolumeFreeRatio(),
 			},
 			alerts: runtimeEnv.ALERT_WEBHOOK_URL
 				? {

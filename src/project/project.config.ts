@@ -18,6 +18,8 @@ export const projectConfig = {
 	approvalTtlMinutes: 240,
 	leadRetentionDays: clientReadinessConfig.leadRetentionDays,
 	archiveRetentionDays: clientReadinessConfig.archiveRetentionDays,
+	employeeArchiveRetention: clientReadinessConfig.employeeArchiveRetention,
+	mediaStorage: clientReadinessConfig.mediaStorage,
 	staleDataSlaMinutes: 30,
 	cacheInvalidationMode: "http" as const,
 	cacheProofStatus: "http" as const,

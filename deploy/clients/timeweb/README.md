@@ -61,5 +61,6 @@ S3, monitoring and smoke evidence remain external gates and are recorded in
   https://timeweb.cloud/docs/dbaas/dbaas-manage/backup and
   https://timeweb.cloud/docs/dbaas/dbaas-manage/logical-backups.
 
-Static compatibility: `PROVEN`. Real upload, migration, restore drill and live
-rollout: `NOT PROVEN` until first client staging.
+Static compatibility, managed PostgreSQL migration and the first isolated live
+staging rollout: `PROVEN`. Payload Admin media CRUD, backup restore and
+independent monitoring remain explicitly unproven.

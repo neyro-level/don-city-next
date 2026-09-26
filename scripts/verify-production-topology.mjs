@@ -26,12 +26,12 @@ for (const required of [
 }
 
 assert.ok(
-	!payloadConfig.includes("storage-s3"),
-	"S3 must not be activated before the storage owner is proven",
+	payloadConfig.includes("timewebS3Plugin"),
+	"Payload must activate the proven project-owned Timeweb S3 plugin",
 );
 assert.ok(
-	clientReadiness.includes("mediaStorage: null"),
-	"client readiness must fail closed until media storage is selected",
+	clientReadiness.includes('mediaStorage: "timeweb-s3"'),
+	"client readiness must record the selected Timeweb S3 storage owner",
 );
 assert.ok(
 	storageActivation.includes("@payloadcms/storage-s3") &&
@@ -59,23 +59,16 @@ for (const requiredEnv of [
 	"INTERNAL_HEALTH_SECRET=",
 	"JOBS_AUTORUN=false",
 	"CACHE_INVALIDATION_MODE=http",
+	"S3_ENDPOINT=",
+	"S3_REGION=",
+	"S3_BUCKET=",
+	"S3_ACCESS_KEY_ID=",
+	"S3_SECRET_ACCESS_KEY=",
+	"S3_PREFIX=",
 ]) {
 	assert.ok(
 		envExample.includes(requiredEnv),
 		`.env.example missing ${requiredEnv}`,
-	);
-}
-
-for (const forbiddenEnv of [
-	"S3_ENDPOINT=",
-	"S3_BUCKET=",
-	"S3_ACCESS_KEY=",
-	"S3_SECRET_KEY=",
-]) {
-	assert.equal(
-		envExample.includes(forbiddenEnv),
-		false,
-		`.env.example must not require unactivated S3 env ${forbiddenEnv}`,
 	);
 }
 
@@ -85,9 +78,9 @@ const dependencies = {
 	...(packageJson.devDependencies ?? {}),
 };
 assert.equal(
-	Object.hasOwn(dependencies, "@payloadcms/storage-s3"),
-	false,
-	"DON CITY must not declare @payloadcms/storage-s3 before activation",
+	dependencies["@payloadcms/storage-s3"],
+	"3.90.1",
+	"DON CITY must pin the Payload-compatible Timeweb S3 adapter version",
 );
 
 assert.ok(

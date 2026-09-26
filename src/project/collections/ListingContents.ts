@@ -5,7 +5,6 @@ import {
 	ownersOnly,
 } from "../../core/access/roles.ts";
 import { publicListingContentReadAccess } from "../../core/data-access/public/access-mode.ts";
-import { systemOverrideAccess } from "../../core/data-access/system/overrides.ts";
 import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
 import { publicCacheTags } from "../cache-tags.ts";
 import { buildListingContentQueue } from "../listing-content-queue.ts";
@@ -64,7 +63,7 @@ export const ListingContents: CollectionConfig = {
 					limit: 2,
 					depth: 0,
 					req,
-					...systemOverrideAccess("trusted-inspection"),
+					overrideAccess: false,
 				});
 				if (
 					duplicate.docs.some(

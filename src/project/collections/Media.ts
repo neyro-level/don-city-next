@@ -6,6 +6,7 @@ import {
 	uniqueMediaFilename,
 } from "../../core/storage/local-fs.ts";
 import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
+import { clientReadinessConfig } from "../client-readiness.config.ts";
 
 const allowedMimeTypes = [
 	"image/jpeg",
@@ -15,10 +16,12 @@ const allowedMimeTypes = [
 	"application/pdf",
 ];
 
+const usesRemoteMediaStorage = clientReadinessConfig.mediaStorage === "timeweb-s3";
+
 export const Media: CollectionConfig = {
 	slug: "media",
 	upload: {
-		staticDir: ensureMediaDirectory(),
+		...(usesRemoteMediaStorage ? {} : { staticDir: ensureMediaDirectory() }),
 		mimeTypes: allowedMimeTypes,
 	},
 	admin: {
@@ -36,7 +39,11 @@ export const Media: CollectionConfig = {
 			({ data, originalDoc }) => {
 				if (data?.filename && !originalDoc) {
 					data.filename = uniqueMediaFilename(String(data.filename));
-					if (mediaOverwriteDisabled && mediaFileExists(data.filename)) {
+					if (
+						!usesRemoteMediaStorage &&
+						mediaOverwriteDisabled &&
+						mediaFileExists(data.filename)
+					) {
 						throw new Error("Media overwrite is disabled.");
 					}
 				}

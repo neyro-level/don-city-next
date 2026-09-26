@@ -7,6 +7,7 @@ export type ClientReadinessConfig = {
 	jobsActiveRuntimeCount: number | null;
 	leadRetentionDays: number | null;
 	archiveRetentionDays: number | null;
+	employeeArchiveRetention: "indefinite";
 	legalContent: "approved" | "placeholder";
 	productionIndexing: "public" | "noindex" | null;
 	requiredHostAllowlists: {
@@ -28,11 +29,12 @@ export const clientReadinessConfig = {
 	domain: "doncity-home.ru",
 	deploymentTarget: "timeweb-vps",
 	database: "timeweb-managed-postgresql",
-	mediaStorage: null,
+	mediaStorage: "timeweb-s3",
 	feedImageSource: null,
 	jobsActiveRuntimeCount: null,
-	leadRetentionDays: null,
-	archiveRetentionDays: null,
+	leadRetentionDays: 100,
+	archiveRetentionDays: 100,
+	employeeArchiveRetention: "indefinite",
 	legalContent: "approved",
 	productionIndexing: "noindex",
 	requiredHostAllowlists: {

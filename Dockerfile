@@ -3,17 +3,21 @@
 FROM node:24.20.0-bookworm-slim AS build
 
 ENV CI=true \
-	NEXT_TELEMETRY_DISABLED=1
+	NEXT_TELEMETRY_DISABLED=1 \
+	npm_config_fetch_retries=5 \
+	npm_config_fetch_retry_maxtimeout=120000 \
+	npm_config_fetch_timeout=300000
 WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.5.1 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
-RUN pnpm install --frozen-lockfile --shamefully-hoist
+RUN --mount=type=cache,id=don-city-pnpm-store,target=/pnpm/store \
+	pnpm install --frozen-lockfile --shamefully-hoist --store-dir=/pnpm/store
 
 COPY . .
-RUN pnpm exec next build --webpack
+RUN ./node_modules/.bin/next build --webpack
 
 FROM node:24.20.0-bookworm-slim AS runtime
 
@@ -35,4 +39,4 @@ COPY --from=build --chown=nextjs:nodejs /app ./
 USER nextjs
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["./node_modules/.bin/next", "start"]

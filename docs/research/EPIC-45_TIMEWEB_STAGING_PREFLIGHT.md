@@ -2,7 +2,7 @@
 
 Date: 2026-09-25
 Base revision: `e2fafec266eedd20c14b0b40be11b3ff4916cbf8`
-Mode: staging contract and read-only discovery; no external mutation
+Mode: historical preflight, resolved by owner authorization on 2026-09-25
 
 ## Outcome contract
 
@@ -65,8 +65,13 @@ approved product plan does not override their explicit owner gates.
 - missing immutable image identity, backup/rollback point, one-jobs-owner proof
   or fail-closed staging `noindex` policy.
 
-## Preflight decision
+## Resolution
 
-`READY_WITH_EXTERNAL_GATES` — repository preparation may continue. Live
-Timeweb staging proof and EPIC-45 verification remain blocked until the gates
-above are resolved. Production is not authorized by this epic.
+`RESOLVED_FOR_STAGING` — the owner authorized the existing DON CITY server,
+separate staging database/secrets/media, credential rotation and required
+staging DNS/TLS changes. Retention is 100 days for leads and archived property
+objects; future employee records remain archived indefinitely. External
+delivery stays disabled until real hosts are provided.
+
+The resulting live evidence is recorded in
+`EPIC-45_LIVE_STAGING_VERIFICATION.md`. Production remains unauthorized.

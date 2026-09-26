@@ -13,11 +13,15 @@ const pnpmWorkspace = read("pnpm-workspace.yaml");
 for (const expected of [
 	"node:24.20.0-bookworm-slim",
 	"pnpm install --frozen-lockfile",
-	"pnpm exec next build --webpack",
-	'"pnpm", "start"',
+	"./node_modules/.bin/next build --webpack",
+	'"./node_modules/.bin/next", "start"',
 ]) {
 	assert.ok(dockerfile.includes(expected), `Dockerfile must include ${expected}.`);
 }
+assert.ok(
+	dockerfile.includes("id=don-city-pnpm-store"),
+	"Dockerfile must preserve the retry-safe pnpm BuildKit cache.",
+);
 
 assert.ok(!dockerfile.includes("DATABASE_URI="), "Dockerfile must not embed database credentials.");
 assert.ok(!compose.includes("DATABASE_URI="), "Compose template must not embed database credentials.");

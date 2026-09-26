@@ -37,7 +37,8 @@ export type OperationalHealthSnapshot = {
 		abandoned: number;
 	};
 	storage: {
-		localMediaReady: boolean;
+		mediaReady: boolean;
+		provider: "local" | "remote";
 	};
 	cache?: {
 		invalidationStaleBeyondSla: boolean;
@@ -137,12 +138,15 @@ export function buildOperationalAlerts(
 		});
 	}
 
-	if (!snapshot.storage.localMediaReady) {
+	if (!snapshot.storage.mediaReady) {
 		alerts.push({
-			code: "storage_media_dir_unavailable",
+			code: "storage_media_unavailable",
 			severity: "critical",
 			component: "storage",
-			message: "Local media directory is not available.",
+			message:
+				snapshot.storage.provider === "remote"
+					? "Remote media storage is not configured."
+					: "Local media directory is not available.",
 		});
 	}
 

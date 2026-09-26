@@ -221,20 +221,28 @@ assert.equal(
 	"owner feed operations must not call systemOverrideAccess",
 );
 
-const projectDoc = readFileSync(join(root, "docs", "PROJECT.md"), "utf8");
-assert.ok(
-	projectDoc.includes("DATABASE") && projectDoc.includes("DATABASE_URI"),
-	"PROJECT.md must map canonical DATABASE to DATABASE_URI",
+const publicEnvExample = readFileSync(join(root, ".env.example"), "utf8");
+const clientEnvExample = readFileSync(
+	join(root, "deploy", "clients", "timeweb", "env.client.example"),
+	"utf8",
 );
 assert.ok(
-	projectDoc.includes("NEXT_PUBLIC_SERVER_URL") &&
-		projectDoc.includes("MEDIA_DIR") &&
-		projectDoc.includes("LEAD_CHANNELS"),
-	"PROJECT.md must map public origin, media, and lead channels",
+	publicEnvExample.includes("DATABASE_URI=") &&
+		!/^DATABASE=/m.test(publicEnvExample),
+	"public env contract must use canonical DATABASE_URI, not DATABASE",
 );
 assert.ok(
-	projectDoc.includes("no CRM / telegram keys"),
-	"PROJECT.md mapping must exclude CRM/telegram keys",
+	publicEnvExample.includes("NEXT_PUBLIC_SERVER_URL=") &&
+		publicEnvExample.includes("MEDIA_DIR=") &&
+		publicEnvExample.includes("LEAD_CHANNELS="),
+	"public env contract must declare origin, starter media, and lead channels",
+);
+assert.ok(
+	clientEnvExample.includes("S3_BUCKET=") &&
+		!clientEnvExample.includes("MEDIA_DIR=") &&
+		!/^CRM_/m.test(clientEnvExample) &&
+		!/^TELEGRAM_/m.test(clientEnvExample),
+	"client runtime must use S3 and exclude local media and deferred CRM/telegram keys",
 );
 
 const envSource = readFileSync(join(root, "src", "project", "env.ts"), "utf8");

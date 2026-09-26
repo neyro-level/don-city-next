@@ -454,12 +454,14 @@ const denyAnonymousFiles = {
 	"import-issues": "src/project/collections/ImportIssues.ts",
 	leads: "src/project/collections/Leads.ts",
 	"lead-deliveries": "src/project/collections/LeadDeliveries.ts",
+	"listing-contents": "src/project/collections/ListingContents.ts",
 	media: "src/project/collections/Media.ts",
 	redirects: "src/project/collections/Redirects.ts",
 };
 const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
+	"listing-contents": "publicListingContentReadAccess",
 	redirects: "publicRedirectReadAccess",
 };
 for (const slug of boundary.anonymousDenyCollections ?? []) {

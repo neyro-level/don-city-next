@@ -57,6 +57,10 @@ stable boundaries and do not duplicate that registry.
 - System Gateway: only whitelisted system operations may use `overrideAccess:true`.
 - Ingest Gateway: low-level bulk path only with validation, idempotency and source isolation.
 - Leads/PII: transactional outbox, centralized redaction, no PII analytics/logging.
+- Owner retention policy: leads are retained for 100 days; archived property
+  content is retained for 100 days before lifecycle purge. A future employees
+  module keeps deactivated employee records archived indefinitely and must not
+  reuse the property-retention cleanup.
 - Production schema: migrations only; destructive changes require backup/staging/rollback proof.
 
 ## 5. Infrastructure / Deployment

@@ -36,6 +36,10 @@ Updated: 2026-09-23
 
 Newbuild/ЖК, mortgage, commercial, rent, rooms, garages, journal, employees и дочерние lawyer routes. Их research-first scope находится в EPIC-50…52 или future section master plan.
 
+Owner decision 2026-09-25: если модуль сотрудников будет активирован, записи
+сотрудников после деактивации сохраняются в архиве бессрочно и не участвуют в
+автоматической retention-очистке объектов недвижимости.
+
 ## 7. Success Criteria
 
 - R1 routes и lifecycle отвечают HTTP/SEO contracts master plan.

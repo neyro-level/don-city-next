@@ -13,12 +13,23 @@ if (!testUri) {
 }
 assertLocalTestDatabaseUri(testUri);
 
+execFileSync(
+	"pnpm",
+	["verify:client-readiness", "--mode=fixture-client"],
+	{
+		stdio: "inherit",
+		shell: process.platform === "win32",
+	},
+);
+
 execFileSync("pnpm", ["verify"], {
 	stdio: "inherit",
 	shell: process.platform === "win32",
 	env: {
 		...process.env,
 		AMS_REQUIRE_INTEGRATION_DB: "true",
+		AMS_EXPECT_CLIENT_READINESS_BLOCKERS:
+			"required-host-allowlists-missing,client-storage-deployment-contract-missing",
 		DATABASE_URI_TEST: testUri,
 		DATABASE_URI: testUri,
 	},

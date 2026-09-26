@@ -25,14 +25,15 @@ const alerts = buildOperationalAlerts({
 		abandoned: 1,
 	},
 	storage: {
-		localMediaReady: false,
+		mediaReady: false,
+		provider: "local",
 	},
 });
 
 assert.ok(alerts.some((alert) => alert.code === "feeds_suspicious_runs"));
 assert.ok(alerts.some((alert) => alert.code === "delivery_stale_sending"));
 assert.ok(
-	alerts.some((alert) => alert.code === "storage_media_dir_unavailable"),
+	alerts.some((alert) => alert.code === "storage_media_unavailable"),
 );
 
 const cacheAlerts = buildOperationalAlerts({
@@ -53,7 +54,8 @@ const cacheAlerts = buildOperationalAlerts({
 		abandoned: 0,
 	},
 	storage: {
-		localMediaReady: true,
+		mediaReady: true,
+		provider: "local",
 	},
 	cache: {
 		invalidationStaleBeyondSla: true,
@@ -100,7 +102,8 @@ assert.deepEqual(
 			abandoned: 0,
 		},
 		storage: {
-			localMediaReady: true,
+			mediaReady: true,
+			provider: "local",
 		},
 	}),
 	[],
@@ -127,7 +130,8 @@ assert.ok(
 			abandoned: 0,
 		},
 		storage: {
-			localMediaReady: true,
+			mediaReady: true,
+			provider: "local",
 		},
 		retention: { leadPolicyConfigured: false },
 	}).some((alert) => alert.code === "retention_policy_missing"),
@@ -151,7 +155,8 @@ const healthyBase = {
 		abandoned: 0,
 	},
 	storage: {
-		localMediaReady: true,
+		mediaReady: true,
+		provider: "local",
 	},
 };
 
@@ -235,7 +240,7 @@ assert.ok(
 	evaluateRuntimeEnv(
 		{ NODE_ENV: "production", AMS_PROFILE: "REALTY_BASE" },
 		"runtime",
-	).missing.includes("MEDIA_DIR"),
+	).missing.includes("S3_BUCKET"),
 );
 
 const productionLike = {
@@ -245,7 +250,12 @@ const productionLike = {
 	DATABASE_URI: "postgresql://127.0.0.1:5432/ams_realtbase",
 	PAYLOAD_SECRET: "fixture-runtime-payload-secret-at-least-32-chars",
 	NEXT_PUBLIC_SERVER_URL: "https://start-baza.ams24.ru",
-	MEDIA_DIR: "/var/lib/ams-realty-baza/media",
+	S3_ENDPOINT: "https://s3.example.test",
+	S3_REGION: "ru-1",
+	S3_BUCKET: "fixture-bucket",
+	S3_ACCESS_KEY_ID: "fixture-access-key",
+	S3_SECRET_ACCESS_KEY: "fixture-secret-key",
+	S3_PREFIX: "staging/media",
 	REVALIDATE_SECRET: "fixture-runtime-revalidate-secret-32chars",
 	INTERNAL_REVALIDATE_BASE_URL: "http://127.0.0.1:3000",
 };
@@ -323,7 +333,7 @@ assert.ok(
 	).missing.includes("LEAD_OUTBOUND_HOSTS"),
 );
 assert.ok(
-	evaluateRuntimeEnv(
+	!evaluateRuntimeEnv(
 		{
 			...productionLike,
 			LEAD_CHANNELS: "max",
@@ -334,7 +344,7 @@ assert.ok(
 		},
 		"runtime",
 	).missing.includes("LEAD_RETENTION_POLICY"),
-	"live lead channels must fail closed without the versioned retention policy",
+	"owner-approved retention days satisfy the versioned runtime policy",
 );
 assert.ok(
 	evaluateRuntimeEnv(

@@ -17,6 +17,21 @@ assert.ok(
 	),
 	"runtime retention policy must project the client-readiness owner decision",
 );
+assert.equal(
+	clientReadinessConfig.leadRetentionDays,
+	100,
+	"DON CITY owner-approved lead retention must remain 100 days",
+);
+assert.equal(
+	clientReadinessConfig.archiveRetentionDays,
+	100,
+	"DON CITY owner-approved property archive retention must remain 100 days",
+);
+assert.equal(
+	clientReadinessConfig.employeeArchiveRetention,
+	"indefinite",
+	"future employee records must remain archived indefinitely",
+);
 
 function domainOf(value) {
 	if (!value?.trim()) return null;
@@ -124,6 +139,7 @@ const validClientFixture = {
 	jobsActiveRuntimeCount: 1,
 	leadRetentionDays: 180,
 	archiveRetentionDays: 90,
+	employeeArchiveRetention: "indefinite",
 	legalContent: "approved",
 	productionIndexing: "public",
 	requiredHostAllowlists: {
@@ -149,6 +165,7 @@ function verifyFixtures() {
 		jobsActiveRuntimeCount: null,
 		leadRetentionDays: null,
 		archiveRetentionDays: null,
+		employeeArchiveRetention: "indefinite",
 		legalContent: "placeholder",
 		productionIndexing: null,
 		requiredHostAllowlists: {
@@ -219,6 +236,21 @@ const errors = validateClientReadiness({
 	brandName: siteConfig.brandName,
 	runtimeOrigin: process.env.NEXT_PUBLIC_SERVER_URL,
 });
+const expectedBlockers = process.env.AMS_EXPECT_CLIENT_READINESS_BLOCKERS
+	?.split(",")
+	.map((value) => value.trim())
+	.filter(Boolean);
+if (expectedBlockers?.length) {
+	assert.deepEqual(
+		errors,
+		expectedBlockers,
+		`Client readiness blocker drift: ${errors.join(", ")}`,
+	);
+	console.log(
+		`verify:client-readiness: EXPECTED_BLOCKERS (${errors.join(", ")})`,
+	);
+	process.exit(0);
+}
 assert.deepEqual(errors, [], `Client readiness failed: ${errors.join(", ")}`);
 console.log(
 	`verify:client-readiness: ${siteConfig.projectKind === "client" ? "PASS" : "not applicable (starter-demo)"}`,

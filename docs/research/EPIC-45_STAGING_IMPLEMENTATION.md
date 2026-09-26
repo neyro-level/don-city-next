@@ -19,15 +19,25 @@
   locations with the hardened Nginx policy, fixed the loopback port at `3100`
   end to end and made `RELEASE` manifests fail outside clean exact `main`.
 
-## Remaining live gates
+## Live staging activation
 
-The implementation intentionally does not provision infrastructure, mutate
-Secret Master, rotate credentials, write to the server, configure DNS/TLS or
-run migrations. Those actions need the owner/external decisions recorded in
-`EPIC-45_TIMEWEB_STAGING_PREFLIGHT.md` and an explicit staging rollout command.
+The owner authorized the isolated staging rollout on 2026-09-25. The existing
+DON CITY server now runs a separate loopback-only staging container backed by a
+dedicated PostgreSQL database, private S3 bucket and Secret Master `/staging`
+scope. DNS, TLS, migrations and the temporary database-password rotation were
+completed without changing the production runtime or production schema/data.
 
-Client readiness therefore remains fail-closed for retention, real host
-allowlists and the final storage/deployment/backup/monitoring contract.
+Redacted resource identities, immutable image/checksum evidence and live smoke
+results are recorded in `EPIC-45_LIVE_STAGING_VERIFICATION.md`.
+
+Owner approval on 2026-09-25 resolved retention at 100 days for leads and 100
+days for archived property content. Future employee records remain archived
+indefinitely. Staging external delivery remains disabled until real hosts are
+supplied; unknown outbound destinations continue to fail closed.
+
+Client readiness remains fail-closed for real host allowlists, backup restore
+proof and independent monitoring/alert delivery. Those gaps block production,
+not the isolated noindex staging runtime.
 
 ## Local evidence
 
@@ -41,9 +51,9 @@ allowlists and the final storage/deployment/backup/monitoring contract.
   guard: `PASS`.
 - Next.js 16.3.5 production build of the local candidate: `PASS` (23 static
   pages generated; dynamic application/API routes compiled).
-- Real client-readiness gate: expected `FAIL` with exactly four external
-  blockers: retention decisions, real host allowlists and the live
-  storage/deployment/backup/monitoring contract.
+- Real client-readiness gate before owner approval: expected `FAIL` with four
+  external blockers. Retention is now resolved; real host allowlists and the
+  live storage/deployment/backup/monitoring contract remain runtime evidence.
 
-These checks prove repository behavior only. They are not live Timeweb staging
-evidence and do not authorize rollout.
+The repository checks above are complemented by the authorized live Timeweb
+evidence. Production rollout remains outside EPIC-45 and is not authorized.

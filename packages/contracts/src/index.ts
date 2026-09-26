@@ -1,4 +1,4 @@
-export const contractVersion = "1.3.1" as const;
+export const contractVersion = "1.3.2" as const;
 export const contractState = "frozen" as const;
 
 export type {

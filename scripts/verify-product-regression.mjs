@@ -111,25 +111,36 @@ if (!isClientClone) {
 	}
 }
 
-const contractFeasibility = read("docs/CONTRACT_FEASIBILITY.md");
-assert.ok(
-	contractFeasibility.includes("Статус: `VERIFIED`"),
-	"contract feasibility must be verified",
+const contractLock = JSON.parse(
+	read("packages/contracts/contracts.lock.json"),
 );
+assert.equal(
+	contractLock.state,
+	"frozen",
+	"public contract lock must remain frozen",
+);
+const architecture = read("docs/03_ARCHITECTURE.md");
 assert.ok(
-	contractFeasibility.includes("DTO принадлежат"),
-	"contract feasibility must pin DTO ownership",
+	architecture.includes(
+		"Data boundary: DTO/ViewModel from Public Gateway",
+	),
+	"architecture must pin DTO ownership and the Public Gateway boundary",
 );
 
 const releaseChecklist = read("docs/05_RELEASE_CHECKLIST.md");
 assert.ok(
 	releaseChecklist.includes(
-		"Checklist PASS for a given SHA requires immutable image + live smoke",
-	),
+		"Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence",
+	) &&
+		releaseChecklist.includes(
+			"Immutable artifact built once and identified by exact SHA",
+		),
 	"production-only Definition of Success items must remain explicit SHA blockers",
 );
 assert.ok(
-	releaseChecklist.includes("production secrets берутся из Secret Master"),
+	releaseChecklist.includes(
+		"Secrets live only in dedicated Secret Master scope",
+	),
 	"release checklist must keep Secret Master as production secrets source",
 );
 

@@ -113,17 +113,17 @@ channel must not share the failed application/server boundary.
 - Independent alert channel covers site down, import suspicious/overdue, stalled jobs, dead lead delivery and backup failure.
 - Incident response preserves logs with redaction, exact release identity and recovery evidence; PII and secrets never enter diagnostics.
 
-## Current blockers before staging
+## Current blockers before production readiness
 
-- rotate the temporary managed-database credential that previously appeared in
-  owner conversation, then update its dedicated Secret Master values;
-- create or approve a separate staging database and staging runtime secrets;
-- decide and prove isolated staging media/S3 ownership;
-- render Nginx/runtime/monitoring configuration;
-- authorize the planned staging server writes and provide an approved staging
-  hostname when domain-level TLS/crawl proof is required;
-- approve retention, legal content and public indexing decisions.
+- complete a backup restore drill and expose trustworthy database/media backup
+  freshness to the authenticated health contract;
+- connect independent external uptime monitoring and an approved alert channel;
+- supply real feed-image, feed-outbound and lead-delivery hosts before enabling
+  their allowlists;
+- complete the full staging crawl, release rehearsal and exact-main release
+  candidate evidence in EPIC-46/47;
+- receive a separate explicit owner command for production.
 
-The existing private NIC route and authenticated read-only PostgreSQL 18.6
-connectivity were already proven in EPIC-03 and are entry evidence, not current
-blockers.
+The temporary database credential rotation, separate staging PostgreSQL/S3/
+secrets, staging hostname, TLS and noindex runtime were completed in EPIC-45.
+Production remains untouched.

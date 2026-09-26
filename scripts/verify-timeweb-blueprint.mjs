@@ -102,7 +102,7 @@ export function validateBlueprint(input) {
 		if (!allText.includes(marker)) add(`contract-marker:${marker}`);
 	}
 	for (const marker of [
-		"Real Managed PostgreSQL connection | NOT PROVEN",
+		"Real Managed PostgreSQL connection | PASS (STAGING)",
 		"Real Payload Admin S3 upload | NOT PROVEN",
 		"Restore drill | NOT PROVEN",
 	]) {
@@ -180,5 +180,5 @@ assert.ok(
 );
 
 console.log(
-	"verify:timeweb-blueprint: PASS (static contract; live provider states NOT PROVEN)",
+	"verify:timeweb-blueprint: PASS (static contract; live staging evidence tracked separately)",
 );
