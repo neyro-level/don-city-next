@@ -2,13 +2,15 @@
 
 Plan ID: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
 Version: v9
-Status: READY_FOR_OWNER_APPROVAL
+Status: APPROVED
 
 **Replaces:** `AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO v6` / product contract `3.0.1`
 **Superseded source SHA-256:** `091d0e2a8592bac4504b5b6f925487fc2bc8c192f288eab7243c00aecbc8a396`
-**Product contract version:** `5.0.1-ready`
+**Product contract version:** `5.0.1`
 **Date:** `2026-09-27`
-**Architect phase:** `FINAL_AUDIT`
+**Architect phase:** `APPROVAL_HANDOFF`
+**Approved by:** `owner`
+**Approved at:** `2026-09-27T01:03:39+03:00`
 **Target repository path:** `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`
 **Project:** агентство недвижимости «ДОН СИТИ»
 **Production domain:** `https://doncity-home.ru`
@@ -44,7 +46,8 @@ Revision input ID: `ARCHITECT-2026-09-27-CORE55-FINAL-AUDIT`
 - Executability finding accepted: CP-00 is completed assembly evidence and is not re-imported as implementation work. CP-01…CP-08 receive autonomous task cards; CP-09 remains a production-only parent with no autonomous implementation task.
 - External limit: the owner-authorized temporary SourceCraft PAT passed API and exact-SHA push in this session, but canonical Secret Master authentication must be rotated before a later session. Credential loss is a stop condition, not a reason to use another Git provider.
 - Sections changed: metadata, historical/current precedence, commercial/newbuild scope, §33D dependency matrix/audit/readiness, active execution order and Task Manager inventory contract.
-- Result: four-pass audit and graph validation pass; v9 is `READY_FOR_OWNER_APPROVAL`. Canonical `ValidateDraft` passed on the v9 REVIEW snapshot but its current enum rejects the required READY status; exact `APPROVED` validation remains mandatory before import. No approval, import or Developer handoff is implied until the owner says `План утверждён` or `План утвержден`.
+- Owner approval: exact phrase `план утвержден`, received `2026-09-27T01:03:39+03:00` for this v9 snapshot.
+- Result: four-pass audit and graph validation pass; exact v9 is `APPROVED`. Canonical `Validate → Init → Import → Reconcile` and a clean Developer handoff are now authorized; production, public indexing, real-feed activation and destructive/external actions remain outside this approval.
 
 ## 5.0.0 / v8 REVIEW — 2026-09-27
 
@@ -2418,7 +2421,7 @@ Safe bypass: a blocked raw-SQL/HSTS task releases its claim and the Developer co
 
 ## FINAL-AUDIT READINESS
 
-Current result: `READY_WITH_LIMITS`; exact v9 is `READY_FOR_OWNER_APPROVAL`.
+Current result: `READY_WITH_LIMITS`; exact v9 is owner-`APPROVED` and may enter canonical validation/import/reconciliation.
 
 - Four independent audit passes are recorded above; blocker findings are resolved in v9.
 - CP-00 factual evidence is complete and remains historical assembly evidence.

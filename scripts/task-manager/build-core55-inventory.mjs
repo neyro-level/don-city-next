@@ -11,6 +11,8 @@ const previous = JSON.parse(readFileSync(inventoryPath, 'utf8'))
 const sourceVersion = plan.match(/^Version:\s*(v\d+)\s*$/m)?.[1]
 const sourceStatus = plan.match(/^Status:\s*(DRAFT|REVIEW|READY_FOR_OWNER_APPROVAL|APPROVED)\s*$/m)?.[1]
 if (!sourceVersion || !sourceStatus) throw new Error('Plan version/status is missing or unsupported')
+const approvedBy = plan.match(/^\*\*Approved by:\*\*\s*`([^`]+)`\s*$/m)?.[1] ?? null
+const approvedAt = plan.match(/^\*\*Approved at:\*\*\s*`([^`]+)`\s*$/m)?.[1] ?? null
 
 const epicTitles = new Map()
 for (const match of plan.matchAll(/^## (EPIC-(?:6[7-9]|7[0-6])) \/ (CP-[0-9A-Z]+) — (.+)$/gm)) {
@@ -118,6 +120,7 @@ for (let number = 67; number <= 76; number += 1) {
 nodes.sort((a, b) => a.key.localeCompare(b.key, 'en'))
 const epicAnchors = nodes.filter((node) => node.type === 'epic').map((node) => node.source_anchor).sort((a, b) => a.localeCompare(b, 'en'))
 const approved = sourceStatus === 'APPROVED'
+if (approved && (!approvedBy || !approvedAt)) throw new Error('Approved plan must declare Approved by/at')
 const inventory = {
   schema_version: 2,
   beads_prefix: 'dc55',
@@ -126,8 +129,8 @@ const inventory = {
     path: planPath,
     version: sourceVersion,
     status: sourceStatus,
-    approved_by: approved ? 'owner' : null,
-    approved_at: approved ? new Date().toISOString() : null,
+    approved_by: approved ? approvedBy : null,
+    approved_at: approved ? approvedAt : null,
     sha256: createHash('sha256').update(Buffer.from(plan)).digest('hex'),
     epic_anchors: epicAnchors,
   },

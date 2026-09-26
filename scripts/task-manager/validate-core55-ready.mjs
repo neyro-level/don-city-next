@@ -17,11 +17,13 @@ const anchors = [...plan.matchAll(/^## (EPIC-(?:6[7-9]|7[0-6])) \/ CP-[0-9A-Z]+ 
   .sort((a, b) => a.localeCompare(b, 'en'))
 
 assert.equal(version, 'v9')
-assert.equal(status, 'READY_FOR_OWNER_APPROVAL')
+assert.equal(status, 'APPROVED')
 assert.equal(inventory.schema_version, 2)
 assert.equal(inventory.beads_prefix, 'dc55')
 assert.equal(inventory.source.version, version)
 assert.equal(inventory.source.status, status)
+assert.equal(inventory.source.approved_by, 'owner')
+assert.equal(inventory.source.approved_at, '2026-09-27T01:03:39+03:00')
 assert.equal(inventory.source.sha256, sha256)
 assert.deepEqual(inventory.source.epic_anchors, anchors)
 

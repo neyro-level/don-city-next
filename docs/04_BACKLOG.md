@@ -24,7 +24,7 @@ Updated: 2026-09-27
 - [x] Realty Core 5.5 and UI Core 5.0 normative sources are linked to project Source of Truth.
 - [x] CP-00 factual evidence and the four-pass Architect audit are complete.
 - [x] Draft Task Manager graph has `10/10` active epic coverage, `45` autonomous tasks and zero dependency cycles.
-- [ ] Owner approves exact master plan v9 with `План утверждён` / `План утвержден`.
+- [x] Owner approved exact master plan v9 at `2026-09-27T01:03:39+03:00`.
 - [ ] Only after approval: canonical `Validate → Init/Upgrade decision → Import → Reconcile` passes before Developer claim.
 
 No CP implementation, production indexing or Task Manager import is authorized by readiness alone.
