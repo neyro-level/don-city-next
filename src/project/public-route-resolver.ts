@@ -42,7 +42,7 @@ export type PublicRobots = {
 };
 
 type CatalogQuery = {
-	category?: "apartment" | "house" | "land";
+	category?: "apartment" | "house" | "land" | "commercial";
 	geoSlug?: string;
 	districtSlug?: string;
 	page?: number;

@@ -12,6 +12,7 @@ import { siteProfile } from "../src/project/site.profile.ts";
 import {
 	projectRegistrySitemapEntries,
 	projectSitemapEntries,
+	projectSitemapEntriesForEvidence,
 	projectSitemapOwners,
 	projectSitemapPaths,
 	registryContentUpdatedAt,
@@ -35,7 +36,10 @@ const expectedLogicalSitemaps = JSON.parse(
 const actualLogicalSitemaps = Object.fromEntries(
 	projectSitemapOwners.map((owner) => [
 		owner,
-		owner === "kvartiry" || owner === "doma" || owner === "uchastki"
+		owner === "kvartiry" ||
+		owner === "doma" ||
+		owner === "uchastki" ||
+		owner === "kommercheskaya"
 			? []
 			: projectRegistrySitemapEntries(owner).map((entry) => entry.path),
 	]),
@@ -56,13 +60,37 @@ assert.deepEqual(projectSitemapOwners, [
 	"kvartiry",
 	"doma",
 	"uchastki",
+	"kommercheskaya",
 ]);
 assert.equal(
 	projectSitemapOwners.some((owner) =>
-		["novostroyki", "ipoteka", "kommercheskaya"].includes(owner),
+		["novostroyki", "ipoteka"].includes(owner),
 	),
 	false,
-	"R2 sitemap owner leaked into the R1 map set.",
+	"Deferred sitemap owner leaked into the launch map set.",
+);
+
+const commercialEvidence = {
+	COMM_GEO: {
+		activeObjects: 10,
+		introduction: "К".repeat(600),
+		serverRendered: true,
+		propertyLinksInHtml: true,
+	},
+};
+assert.equal(
+	projectSitemapEntries.some(
+		(entry) => entry.path === "/donetsk/kommercheskaya/",
+	),
+	false,
+	"Commercial must stay outside sitemap before its factual gate passes.",
+);
+assert.equal(
+	projectSitemapEntriesForEvidence(commercialEvidence).some(
+		(entry) => entry.path === "/donetsk/kommercheskaya/",
+	),
+	true,
+	"Commercial must enter sitemap after its factual gate passes.",
 );
 
 assert.deepEqual(actualPaths, expectedPaths);

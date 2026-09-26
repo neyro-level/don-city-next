@@ -21,7 +21,13 @@ const publicHeaderSource = readFileSync(
 assert.equal(projectUrls.home, "/");
 assert.deepEqual(
 	navigation[0]?.children?.map((item) => item.href),
-	["/donetsk/", "/donetsk/kvartiry/", "/donetsk/doma/", "/donetsk/uchastki/"],
+	[
+		"/donetsk/",
+		"/donetsk/kvartiry/",
+		"/donetsk/doma/",
+		"/donetsk/uchastki/",
+		"/donetsk/kommercheskaya/",
+	],
 );
 assert.equal(
 	navigation.some((item) => item.href.includes("novostroyki")),

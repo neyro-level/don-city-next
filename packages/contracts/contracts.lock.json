@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 2,
-	"contractVersion": "1.3.2",
+	"contractVersion": "1.4.0",
 	"state": "frozen",
 	"algorithm": "sha256-normalized-lf",
 	"files": [
@@ -14,7 +14,7 @@
 		},
 		{
 			"path": "packages/contracts/src/fixtures.ts",
-			"sha256": "9cb916b272f75e2cd99888f46c3181b96f2cf857078c8b48b9e4e4abbae0ad1c"
+			"sha256": "dfc1118447caa18b56c86b996058163ec7f400f9892b765cb9e55dcc6eb0799a"
 		},
 		{
 			"path": "packages/contracts/src/geo.ts",
@@ -22,7 +22,7 @@
 		},
 		{
 			"path": "packages/contracts/src/index.ts",
-			"sha256": "de1232397695d2446ad31b3ffefc351d93783599c34f03f689f631990704b5e7"
+			"sha256": "9eb35223a7755a9f968549f819f89d24f79ebcc15a5cc098ab2caaf09f9bd761"
 		},
 		{
 			"path": "packages/contracts/src/lead.ts",
@@ -42,7 +42,7 @@
 		},
 		{
 			"path": "packages/contracts/src/property.ts",
-			"sha256": "d43fb1030021cbae6593348dcaf3afd00379aa7808f065e83184feb62244afda"
+			"sha256": "103dbddfb2a7b44ef67d7c0839cece30fe1451800ae6d2db3e454da1b68bdf8a"
 		},
 		{
 			"path": "packages/contracts/src/public-page.ts",
@@ -57,5 +57,5 @@
 			"sha256": "1242b3933c68ba857603cb5f8bb7dbc38f55678b9582d27474ee76e1d9e32250"
 		}
 	],
-	"aggregateSha256": "74a851da0671c2b99cd8db10a9c02b98cf0d03f2e5ba724b2a3b049818963996"
+	"aggregateSha256": "5486ceacea78d823829ac8c3dc912e3e3ab5bfd351fcc6932a93973f12548ba0"
 }

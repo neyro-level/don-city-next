@@ -18,6 +18,7 @@ for (const exportName of [
 	"DistrictDTO",
 	"PropertyLocationDTO",
 	"ApartmentPropertyDetailsDTO",
+	"CommercialPropertyDetailsDTO",
 	"HousePropertyDetailsDTO",
 	"LandPropertyDetailsDTO",
 	"PreparedCommercialPropertyDTO",
@@ -35,6 +36,10 @@ assert.equal(
 	"ИЖС",
 );
 assert.equal(
+	categorySpecificPropertyFixtures.commercial.market,
+	"secondary",
+);
+assert.equal(
 	categorySpecificPropertyFixtures.commercialPrepared.availability,
 	"prepared-off",
 );
@@ -45,7 +50,7 @@ assert.equal(
 assert.match(propertyPolicy, /"apartment"/);
 assert.match(propertyPolicy, /"house"/);
 assert.match(propertyPolicy, /"land"/);
-assert.doesNotMatch(propertyPolicy, /"commercial"/);
+assert.match(propertyPolicy, /"commercial"/);
 assert.doesNotMatch(propertyPolicy, /"newbuild"/);
 
 console.log("contracts DTO: PASS");

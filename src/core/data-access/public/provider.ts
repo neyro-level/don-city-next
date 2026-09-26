@@ -127,7 +127,10 @@ function indexableStaticEntries(
 }
 
 function indexableRegistryEntries(
-	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
+	owner: Exclude<
+		ProjectSitemapOwner,
+		"kvartiry" | "doma" | "uchastki" | "kommercheskaya"
+	>,
 	contentGateEvidence?: Readonly<Record<string, ListingContentGateEvidence>>,
 ): PublicUrlEntry[] {
 	return projectRegistrySitemapEntries(owner, contentGateEvidence).filter(
@@ -141,7 +144,8 @@ function listingCatalogQuery(
 	const category =
 		entry.category === "apartment" ||
 		entry.category === "house" ||
-		entry.category === "land"
+		entry.category === "land" ||
+		entry.category === "commercial"
 			? entry.category
 			: undefined;
 	if (!category || !entry.geoSlug) return null;
@@ -265,7 +269,10 @@ async function logicalRegistryEntriesWithOwnedLastModified(
 	payload: NonNullable<
 		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
 	>,
-	owner: Exclude<ProjectSitemapOwner, "kvartiry" | "doma" | "uchastki">,
+	owner: Exclude<
+		ProjectSitemapOwner,
+		"kvartiry" | "doma" | "uchastki" | "kommercheskaya"
+	>,
 ): Promise<PublicUrlEntry[]> {
 	const registryIds = seoRegistry
 		.filter(

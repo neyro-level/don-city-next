@@ -66,8 +66,15 @@ assert.equal(
 );
 assert.deepEqual(
 	menu[0]?.children?.map((item) => item.href),
-	["/donetsk/", "/donetsk/kvartiry/", "/donetsk/doma/", "/donetsk/uchastki/"],
+	[
+		"/donetsk/",
+		"/donetsk/kvartiry/",
+		"/donetsk/doma/",
+		"/donetsk/uchastki/",
+		"/donetsk/kommercheskaya/",
+	],
 );
+assert.equal(JSON.stringify(menu).includes("novostroyki"), false);
 
 const seedLinks = [
 	...menu.flatMap((item) => [item, ...(item.children ?? [])]),

@@ -110,8 +110,8 @@ assert.deepEqual(districts.headers, [
 
 assert.equal(
 	seo.rows.length,
-	40,
-	"SEO registry must contain the frozen 40 R1 rows",
+	42,
+	"SEO registry must contain the 40 frozen R1 rows plus two CP-02A commercial owners",
 );
 assert.equal(
 	districts.rows.length,
@@ -140,6 +140,8 @@ assert.deepEqual(
 		"APT_ROOT",
 		"CONSENT",
 		"CONTACTS",
+		"COMM_GEO",
+		"COMM_ROOT",
 		"HOME",
 		"HOUSE_DIST_BUD",
 		"HOUSE_DIST_KALIN",
@@ -222,7 +224,7 @@ for (const row of seo.rows) {
 	if (row.status === "active") {
 		assert.doesNotMatch(
 			row.url,
-			/^\/(?:kvartiry|doma|uchastki)\/donetsk(?:\/|$)/,
+			/^\/(?:kvartiry|doma|uchastki|kommercheskaya)\/donetsk(?:\/|$)/,
 			`${row.registryId} must not retain a category-first V3 URL`,
 		);
 	}
@@ -244,9 +246,9 @@ for (const row of seo.rows) {
 		);
 		if (row.tier === "TEST") {
 			assert.equal(row.broad, "", `${row.registryId} TEST broad must be blank`);
-			assert.equal(
-				row.source,
-				"fallback_no_wordstat",
+			assert.ok(
+				row.source === "fallback_no_wordstat" ||
+					(row.registryId === "COMM_GEO" && row.source === "owner_scope_cp02a"),
 				`${row.registryId} TEST source mismatch`,
 			);
 			assert.equal(

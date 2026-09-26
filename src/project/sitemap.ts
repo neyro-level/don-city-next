@@ -32,12 +32,13 @@ export const projectSitemapOwners = [
 	"kvartiry",
 	"doma",
 	"uchastki",
+	"kommercheskaya",
 ] as const;
 
 export type ProjectSitemapOwner = (typeof projectSitemapOwners)[number];
 export type PropertySitemapOwner = Extract<
 	ProjectSitemapOwner,
-	"kvartiry" | "doma" | "uchastki"
+	"kvartiry" | "doma" | "uchastki" | "kommercheskaya"
 >;
 
 export const projectSitemapDescriptors = projectSitemapOwners.map(
@@ -72,9 +73,10 @@ export function projectRegistrySitemapEntries(
 
 export function propertyCategoryForSitemapOwner(
 	owner: ProjectSitemapOwner,
-): "apartment" | "house" | "land" | undefined {
+): "apartment" | "house" | "land" | "commercial" | undefined {
 	if (owner === "kvartiry") return "apartment";
 	if (owner === "doma") return "house";
 	if (owner === "uchastki") return "land";
+	if (owner === "kommercheskaya") return "commercial";
 	return undefined;
 }
