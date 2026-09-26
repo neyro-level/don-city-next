@@ -21,6 +21,9 @@ const s3MediaMigration = read(
 );
 const migrationIndex = read("migrations/index.ts");
 const payloadImportMap = read("src/app/(payload)/admin/importMap.js");
+const payloadAdminLayout = read(
+	"src/app/(payload)/admin/[[...segments]]/layout.tsx",
+);
 
 for (const required of [
 	"one existing DON CITY Timeweb server",
@@ -135,6 +138,12 @@ assert.ok(
 assert.ok(
 	productionCompose.includes("- /app/.next/cache"),
 	"Read-only production runtime must provide a writable Next.js cache tmpfs",
+);
+assert.ok(
+	payloadAdminLayout.includes(
+		"const serverFunction: ServerFunctionClient = async function (args)",
+	) && payloadAdminLayout.includes('"use server";'),
+	"Payload Admin server function must preserve the Next.js server-action contract",
 );
 
 console.log("verify-production-topology: ok");

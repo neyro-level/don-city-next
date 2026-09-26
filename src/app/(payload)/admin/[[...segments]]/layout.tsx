@@ -9,14 +9,17 @@ type AdminLayoutProps = {
 	children: ReactNode;
 };
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
-	const serverFunction: ServerFunctionClient = (args) =>
-		handleServerFunctions({
-			...args,
-			config: configPromise,
-			importMap,
-		});
+const serverFunction: ServerFunctionClient = async function (args) {
+	"use server";
 
+	return handleServerFunctions({
+		...args,
+		config: configPromise,
+		importMap,
+	});
+};
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
 	return (
 		<RootLayout
 			config={configPromise}
