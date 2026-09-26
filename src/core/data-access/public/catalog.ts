@@ -15,6 +15,8 @@ import type {
 	City,
 	District,
 	DistrictsSelect,
+	Media,
+	MediaSelect,
 	PropertiesSelect,
 	Property,
 	Region,
@@ -73,6 +75,7 @@ const publicPropertySelect = {
 	images: {
 		kind: true,
 		url: true,
+		media: true,
 		alt: true,
 		order: true,
 	},
@@ -254,6 +257,9 @@ type PublicGeoIndex = {
 	>;
 };
 
+type PublicMedia = Pick<Media, "id" | "url">;
+type PublicMediaIndex = ReadonlyMap<number, string>;
+
 const publicRegionSelect = {
 	name: true,
 	shortName: true,
@@ -281,6 +287,10 @@ const publicDistrictSelect = {
 	preposition: true,
 	isPublished: true,
 } satisfies DistrictsSelect<true>;
+
+const publicMediaSelect = {
+	url: true,
+} satisfies MediaSelect<true>;
 
 export type PublicCatalogFacetsResult = {
 	source: "payload-aggregate";
@@ -460,6 +470,37 @@ async function loadPublicGeoIndex(
 		});
 	}
 	return { cities, districts };
+}
+
+async function loadPublicMediaIndex(
+	payload: Payload,
+	properties: readonly Pick<PublicCatalogSelectedProperty, "images">[],
+): Promise<PublicMediaIndex> {
+	const ids = new Set<number>();
+	for (const property of properties) {
+		for (const image of property.images ?? []) {
+			const mediaId = relationId(image.media);
+			if (image.kind === "managed" && mediaId != null) ids.add(mediaId);
+		}
+	}
+	if (!ids.size) return new Map();
+
+	const result = await payload.find({
+		collection: "media",
+		where: { id: { in: [...ids] } },
+		limit: ids.size,
+		pagination: false,
+		depth: 0,
+		select: publicMediaSelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+
+	return new Map(
+		(result.docs as PublicMedia[]).flatMap((media) =>
+			media.url ? [[media.id, media.url] as const] : [],
+		),
+	);
 }
 
 function publicGeoForProperty(
@@ -660,6 +701,7 @@ function emptyCatalogFacetsResult(): PublicCatalogFacetsResult {
 function toPublicCatalogProperty(
 	property: PublicCatalogSelectedProperty,
 	geo: PropertyLocationDTO | undefined,
+	mediaIndex: PublicMediaIndex,
 ): PublicCatalogProperty {
 	return {
 		id: property.id,
@@ -690,7 +732,10 @@ function toPublicCatalogProperty(
 		images:
 			property.images?.map((image) => ({
 				kind: image.kind,
-				url: image.url,
+				url:
+					image.url ??
+					mediaIndex.get(relationId(image.media) ?? -1) ??
+					null,
 				alt: image.alt,
 				order: image.order,
 				id: image.id,
@@ -747,12 +792,16 @@ export async function findPublicCatalogProperties(
 	});
 
 	const properties = result.docs as PublicCatalogSelectedProperty[];
-	const geoIndex = await loadPublicGeoIndex(payload, properties);
+	const [geoIndex, mediaIndex] = await Promise.all([
+		loadPublicGeoIndex(payload, properties),
+		loadPublicMediaIndex(payload, properties),
+	]);
 	return {
 		items: properties.map((property) =>
 			toPublicCatalogProperty(
 				property,
 				publicGeoForProperty(property, geoIndex),
+				mediaIndex,
 			),
 		),
 		total: result.totalDocs,
@@ -795,10 +844,14 @@ export async function findPublicPropertyBySlug(payload: Payload, slug: string) {
 	if (!property) return null;
 
 	const selected = property as PublicCatalogSelectedProperty;
-	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
+	const [geoIndex, mediaIndex] = await Promise.all([
+		loadPublicGeoIndex(payload, [selected]),
+		loadPublicMediaIndex(payload, [selected]),
+	]);
 	return toPublicCatalogProperty(
 		selected,
 		publicGeoForProperty(selected, geoIndex),
+		mediaIndex,
 	);
 }
 
@@ -826,10 +879,14 @@ export async function findPublicPropertyByPublicUrlId(
 	const property = result.docs[0];
 	if (!property) return null;
 	const selected = property as PublicCatalogSelectedProperty;
-	const geoIndex = await loadPublicGeoIndex(payload, [selected]);
+	const [geoIndex, mediaIndex] = await Promise.all([
+		loadPublicGeoIndex(payload, [selected]),
+		loadPublicMediaIndex(payload, [selected]),
+	]);
 	return toPublicCatalogProperty(
 		selected,
 		publicGeoForProperty(selected, geoIndex),
+		mediaIndex,
 	);
 }
 

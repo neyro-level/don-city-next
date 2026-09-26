@@ -18,6 +18,7 @@ export function parsePublicGatewayQuery(
 export {
 	propertyLifecycleReadAccess,
 	publicGatewayReadAccess,
+	publicMediaReadAccess,
 } from "./access-mode";
 export type {
 	CatalogQuery,

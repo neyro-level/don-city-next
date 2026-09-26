@@ -13,10 +13,13 @@ const systemOnlyCollections = new Set(
 const anonymousAuthAllowPaths = new Set(rawRestBoundary.anonymousAuthAllowPaths);
 
 export function isAnonymousDeniedRawRestPath(pathname: string): boolean {
-	const [, api, collection] = pathname.split("/");
+	const [, api, collection, operation, filename] = pathname.split("/");
 
 	if (api !== "api" || !collection) return false;
 	const slug = collection.toLowerCase();
+	if (slug === "media" && operation === "file" && filename) {
+		return false;
+	}
 	const denied =
 		anonymousDenyCollections.has(slug) || systemOnlyCollections.has(slug);
 	if (!denied) return false;

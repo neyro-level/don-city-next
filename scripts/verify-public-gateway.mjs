@@ -34,6 +34,7 @@ const redirectsSource = readFileSync(
 	"src/project/collections/Redirects.ts",
 	"utf8",
 );
+const mediaSource = readFileSync("src/project/collections/Media.ts", "utf8");
 const rawRestBoundary = JSON.parse(
 	readFileSync("config/raw-rest-boundary.json", "utf8"),
 );
@@ -136,11 +137,24 @@ for (const [file, source, accessName] of [
 	["Pages", pagesSource, "publicPageReadAccess"],
 	["Cities", citiesSource, "publicGeoReadAccess"],
 	["Redirects", redirectsSource, "publicRedirectReadAccess"],
+	["Media", mediaSource, "publicMediaReadAccess"],
 ]) {
 	if (!source.includes(`read: ${accessName}`)) {
 		throw new Error(
 			`${file} must authorize only its context-aware Public Gateway read access`,
 		);
+	}
+}
+
+for (const snippet of [
+	"loadPublicMediaIndex",
+	"media: true",
+	"publicMediaSelect",
+	'mimeType: { contains: "image/" }',
+	"/\\/api\\/media\\/file\\//u",
+]) {
+	if (!catalogSource.includes(snippet) && !accessSource.includes(snippet)) {
+		throw new Error(`Public managed-media boundary missing: ${snippet}`);
 	}
 }
 
