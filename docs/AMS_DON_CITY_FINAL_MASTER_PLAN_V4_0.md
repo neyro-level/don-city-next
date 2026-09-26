@@ -2096,6 +2096,14 @@ Acceptance: every 1.1–6.3 item has evidence, owner-decision flag, target strea
 risk and exact verification surface; missing canonical UI Core 5.0 remains
 explicit. Gate: STANDARD docs-only checkpoint.
 
+Assembly evidence: `docs/replan/CORE55_CP00_EVIDENCE.md` records the complete
+factual matrix for repository snapshot `9087e43c1effd1a11216cf09fd1153b1248252e8`.
+Confirmed high-priority defects include contradictory live robots metadata,
+missing root sitemap, fail-open empty sitemap shards, incomplete social/JSON-LD
+wiring, jobs/retention/recovery races and missing Core 5.5 project operations
+documentation. CP-00 evidence is complete for assembly; implementation remains
+blocked until exact v8 approval/import.
+
 ## EPIC-67 / CP-01 — RELEASE-LEVEL INDEXING SAFETY
 
 Outcome: `productionIndexing=noindex` deterministically forces meta robots and
@@ -2284,7 +2292,7 @@ remove global noindex for this program.
 | OD-05 | Canonical AMS UI Core 5.0 source | Provide/identify the normative file; until then verify only against the project Design System and available UI contract | 5.0 conformance claim, not safe local fixes | before final audit | OPEN |
 | OD-06 | End-state indexing policy | Launch the complete verified site as `public`; keep staging externally noindex and keep feed activation separate | CP-09 | decided 2026-09-27 | DECIDED: PUBLIC |
 | OD-07 | First-four-month indexable product scope | Secondary apartments, houses, land, commercial real estate and legal department; newbuild/ЖК remains disabled and non-indexable | CP-02A, CP-02, CP-09 | decided 2026-09-27 | DECIDED |
-| OD-08 | Exact commercial and legal route registry | Freeze exact URLs after semantic evidence; do not invent slugs during assembly | CP-02A | before final audit | OPEN |
+| OD-08 | Exact commercial and legal route registry | Preserve `/donetsk/kommercheskaya/`; launch legal department at `/yurist/`; child legal routes stay absent/non-indexable until a factual service/content contract | CP-02A | decided 2026-09-27 | DECIDED |
 
 ## ASSEMBLY READINESS
 
