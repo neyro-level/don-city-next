@@ -13,6 +13,6 @@ if [ "$checkout" != "$origin_main" ]; then
 fi
 
 node scripts/verify-release-artifact.mjs
-node --conditions=react-server ./node_modules/payload/bin.js run scripts/import-doncity-listings.ts -- --verify-catalog
+node scripts/verify-doncity-catalog.mjs
 
 printf '%s\n' "Exact-main noindex release attestation passed: $checkout"
