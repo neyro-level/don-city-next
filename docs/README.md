@@ -2,7 +2,7 @@
 
 Status: Active — production live, global noindex
 Version: 1.0
-Updated: 2026-09-26
+Updated: 2026-09-27
 
 ## Что создаём
 
@@ -22,12 +22,16 @@ Updated: 2026-09-26
 
 ## Platform contract
 
-AMS Realty Platform Core 3.0 + AMS Payload Platform. Profile: `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
+Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload Platform. Profile: `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
+
+The production implementation is not yet declared conformant. Exact Core 5.5/UI 5.0 gaps and the staged remediation program are recorded in `replan/CORE55_CP00_EVIDENCE.md` and `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` v8 REVIEW.
 
 ## Source of Truth
 
 | Область | Source of Truth |
 |---|---|
+| normative Realty platform baseline | `../AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md` |
+| normative UI baseline | `../AMS_UI_CORE_v5.0_FINAL.md` |
 | продукт и scope | `01_PRD.md` |
 | страницы, URL, flows, SEO policy | `02_PRODUCT_STRUCTURE.md` |
 | техника, data, security, infrastructure | `03_ARCHITECTURE.md` |

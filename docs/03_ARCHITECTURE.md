@@ -2,7 +2,15 @@
 
 Status: Active
 Version: 1.0
-Updated: 2026-09-26
+Updated: 2026-09-27
+
+## Normative Baseline and Conformance
+
+- Platform baseline: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md`.
+- UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
+- Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
+- Current conformance status: `REVIEW`, not certified. The exact delta is owned by `replan/CORE55_CP00_EVIDENCE.md` and the v8 program in `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
+- Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
 

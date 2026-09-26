@@ -18,15 +18,15 @@ Status: REVIEW
 **Verified starter mirror baseline:** `main@ca1b884d43e808d17e1eb18b05bad70ea358dd1c`
 **Verified runtime:** Next.js `16.3.5`, React `19.2.8`, Payload CMS `3.90.1`, pnpm `11.5.1`, Tailwind CSS `4.x`
 **Current platform baseline:** `AMS Realty Platform Core Standard 3.0 — Solo + AI`
-**Target conformance:** `AMS Realty Platform Core Standard 5.5`; `AMS UI Core 5.0` remains `NOT VERIFIED` until its canonical source is present
+**Target conformance:** `AMS Realty Platform Core Standard 5.5` + `AMS UI Core 5.0`; both canonical sources are present, current implementation remains `PARTIAL / REVIEW`
 **Project profile:** `catalog`, mode `BUILD`
 **Delivery profile:** `CRITICAL`
 **Implementation delivery mode:** one Epic = one PR; `MERGE_AFTER_GATE` for RP-00…RP-12 and all unfinished/non-superseded implementation epics; EPIC-48 production remains explicit-owner-only; EPIC-49 post-launch remains outside autonomous merge delivery
 **UI:** starter-based public UI foundation; Manrope; фирменный red accent → dark green через EPIC-16 token intake
 **Secrets:** Secret Master / Infisical
 **Infrastructure:** один существующий сервер DON CITY в Timeweb; точное размещение БД/storage/services определяется read-only discovery
-**Release 1:** вторичка, продажа, квартиры, дома, участки, районы/микрорайоны, продавец, юрист
-**R2:** новостройки/ЖК, ипотека, коммерческая недвижимость
+**First four months after indexing:** вторичка, продажа, квартиры, дома, участки, коммерческая недвижимость, районы/микрорайоны, продавец, юридический отдел
+**Deferred:** новостройки/ЖК remain disabled and non-indexable until a separate post-four-month owner decision; ипотека and any new module require separate scope
 **Production:** только по отдельной явной owner-команде
 
 ---
@@ -46,9 +46,9 @@ Revision input ID: `OWNER-2026-09-27-REALTY-CORE-5.5-UI-CORE-5.0`
 - Owner clarification: the end state is a full production launch with public indexing enabled after the complete SEO/operations/readiness proof. This revision authorizes planning that launch, but the actual rollout still uses the explicit exact-SHA release gate. Real feed activation remains a separate decision.
 - Owner scope decision: for the first four months after public indexing, the active/indexable business scope is secondary apartments, houses, land plots, commercial real estate and the legal department. Newbuild/ЖК remains disabled and non-indexable, excluded from sitemap/indexable navigation; its namespace stays reserved for a separate post-four-month decision.
 - Needs owner: HSTS `preload` may change only after explicit confirmation that every applicable subdomain is permanently HTTPS-ready; raw-SQL deviations require either a supported Payload conditional operation or an approved ADR with atomicity proof.
-- Evidence status: local code search confirms the named SEO/jobs/UI/readiness surfaces exist, but individual defect claims remain `requires preflight` until exact tests/runtime evidence. The canonical AMS Realty Core 5.5 file exists; a canonical AMS UI Core 5.0 source was not found in this checkout.
+- Evidence status: local code search and CP-00 targeted checks classify the named SEO/jobs/UI/readiness surfaces. The owner-provided Realty Core 5.5 is line-identical to the existing project copy (line-ending format only); the owner-provided UI Core 5.0 is now stored at the project root with SHA-256 `3A68E274674C1BB6D652843BE6963E9732EDEF4126D5B3A2DD0457F0D3B4B39A`. Current implementation is only partially conformant.
 - Graph state: v7 remains immutable approved/delivered history. This v8 source drift is not imported into Beads; implementation claiming is blocked until final audit, exact owner approval and clean reconciliation.
-- Sections changed: plan metadata, revision history and §33D hardening program.
+- Sections changed: plan metadata, normative-source evidence, revision history, Source of Truth links and §33D hardening program.
 - Result: assembly checkpoint `v8 REVIEW`; final four-pass audit, Task Manager import and Developer handoff are not authorized.
 
 ## 4.0.1 / v7 REVIEW — 2026-09-24
@@ -2025,7 +2025,7 @@ not implied by public indexing and keeps a separate gate.
 | 3.2–3.6 jobs/leads/runtime | `ACCEPTED_RISKY` | Matches Core 5.5 §§9, 10, 14A and proofs A/D/E/F/G; staging and test DB are mandatory. |
 | 3.7 project collections | `ACCEPTED_WITH_ADAPTATION` | Document existing modules and access matrix; `ListingContents` remains project SEO content, not silently promoted to a new platform module. |
 | Epic 4 CSP/HSTS | `NEEDS_OWNER` | Nonce feasibility is version-sensitive; HSTS preload is an external irreversible commitment for applicable subdomains. |
-| Epic 5 UI drift | `ACCEPTED_WITH_ADAPTATION` | Reuse the current Project Design System; canonical UI Core 5.0 text is missing, so no unverified 5.0 conformance claim is allowed. |
+| Epic 5 UI drift | `ACCEPTED_REQUIRES_REMEDIATION` | Canonical UI Core 5.0 is present. Reuse the current Project Design System, reduce typography/token drift, close navigation/error-boundary/starter-name gaps and extend mechanical proof before claiming conformance. |
 | 6.1 PROJECT/DESIGN docs | `ACCEPTED` | Required by Core 5.5 §21; migrate unique active meaning without duplicating Source of Truth. |
 | 6.2 readiness flags | `REJECTED_AS_MECHANICAL_UPDATE` | Facts become readiness only after durable evidence; current fail-closed values remain until proven. |
 | 6.3 reserved namespaces | `ACCEPTED` | `/novostroyki/*` and `/komplex/*` stay reserved and non-indexable for at least the first four months. |
@@ -2087,14 +2087,14 @@ ALREADY_COVERED | NOT_REPRODUCED | OWNER_DECISION | EXTERNAL_PROOF`, with exact
 file/test/runtime evidence and no product-code write.
 
 Scope: inspect installed Next `16.3.5`, Payload `3.90.1`, current route/page
-contracts, Core 5.5 sections, local UI source availability, existing tests,
+contracts, Core 5.5 and UI Core 5.0 sections, existing tests,
 staging noindex boundary and shared-file ownership. Produce one evidence matrix
 inside this plan or a linked `docs/replan/` report; do not create a competing
 master plan.
 
 Acceptance: every 1.1–6.3 item has evidence, owner-decision flag, target stream,
-risk and exact verification surface; missing canonical UI Core 5.0 remains
-explicit. Gate: STANDARD docs-only checkpoint.
+risk and exact verification surface; canonical source hashes and any remaining
+UI conformance gaps are explicit. Gate: STANDARD docs-only checkpoint.
 
 Assembly evidence: `docs/replan/CORE55_CP00_EVIDENCE.md` records the complete
 factual matrix for repository snapshot `9087e43c1effd1a11216cf09fd1153b1248252e8`.
@@ -2289,7 +2289,7 @@ remove global noindex for this program.
 |---|---|---|---|---|---|
 | OD-03 | Raw SQL that cannot be replaced by a supported conditional Payload operation | Approve only a narrow ADR-backed exception with atomicity/concurrency tests | affected CP-03 implementation | before affected task | OPEN |
 | OD-04 | HSTS `preload` for the domain/subdomain estate | Do not preload until every applicable subdomain and long-term HTTPS commitment are proven | CP-06 header mutation | before CP-06 delivery | OPEN |
-| OD-05 | Canonical AMS UI Core 5.0 source | Provide/identify the normative file; until then verify only against the project Design System and available UI contract | 5.0 conformance claim, not safe local fixes | before final audit | OPEN |
+| OD-05 | Canonical AMS UI Core 5.0 source | Use the owner-provided `AMS_UI_CORE_v5.0_FINAL.md` as the normative UI baseline; retain project-specific values in the Design System/globals.css | resolved source prerequisite; implementation conformance remains CP-05 work | decided 2026-09-27 | DECIDED: PROVIDED |
 | OD-06 | End-state indexing policy | Launch the complete verified site as `public`; keep staging externally noindex and keep feed activation separate | CP-09 | decided 2026-09-27 | DECIDED: PUBLIC |
 | OD-07 | First-four-month indexable product scope | Secondary apartments, houses, land, commercial real estate and legal department; newbuild/ЖК remains disabled and non-indexable | CP-02A, CP-02, CP-09 | decided 2026-09-27 | DECIDED |
 | OD-08 | Exact commercial and legal route registry | Preserve `/donetsk/kommercheskaya/`; launch legal department at `/yurist/`; child legal routes stay absent/non-indexable until a factual service/content contract | CP-02A | decided 2026-09-27 | DECIDED |
@@ -2299,9 +2299,8 @@ remove global noindex for this program.
 Current result: `NOT_READY` for Task Manager import.
 
 - Final four-pass audit has not been requested.
-- CP-00 factual evidence matrix is not yet complete.
-- OD-05 is a before-approval source prerequisite; OD-03/OD-04 block only their
-  affected decisions and may be converted to explicit deferred gates after CP-00.
+- CP-00 factual evidence matrix is complete for assembly, including the provided UI Core 5.0 source and project delta.
+- OD-03/OD-04 block only their affected implementation decisions and may be converted to explicit deferred gates during final audit.
 - Existing v7 graph/history must not be overwritten; v8 requires a new stable
   plan-scoped inventory after approval.
 - Production/indexing is now an explicit planned outcome in CP-09, isolated

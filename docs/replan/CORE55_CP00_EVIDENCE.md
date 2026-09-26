@@ -40,9 +40,11 @@ Classification:
   [Payload Local API](https://payloadcms.com/docs/local-api/overview).
 - Payload `imageSizes` and `formatOptions` are supported and backed by `sharp`:
   [Payload uploads](https://payloadcms.com/docs/upload/overview).
-- Canonical AMS Realty Core 5.5 exists in the checkout. A canonical AMS UI Core
-  5.0 source was not found in the repository or `$CODEX_HOME`; 5.0 conformance
-  remains `NOT VERIFIED`.
+- Canonical AMS Realty Core 5.5 exists in the checkout. The owner-provided copy
+  is line-identical to it; only line-ending format differs. Canonical AMS UI
+  Core 5.0 is now stored as `AMS_UI_CORE_v5.0_FINAL.md`, SHA-256
+  `3A68E274674C1BB6D652843BE6963E9732EDEF4126D5B3A2DD0457F0D3B4B39A`.
+  The source prerequisite is closed; implementation conformance remains partial.
 
 Docs status: `PARTIAL`. The concrete Next/Payload APIs above are officially
 supported, but atomic claim replacement and nonce-CSP compatibility require
@@ -101,6 +103,13 @@ mutation was used.
 | 5.3 lead-form errors | `ALREADY_COVERED + MANUAL_PROOF` | Inputs and consent use `aria-describedby`; consent has textual error; automated a11y passes. Manual submitting/server/success proof remains. | CP-05 STANDARD |
 | 5.4 starter names | `CONFIRMED_DRIFT` | `StarterPropertyMediaGallery`, starter view names and `@ams/realtbase-ui/starter/*` exports remain. | CP-05 STANDARD/RISKY if package API changes |
 | 5.5 drift audit | `PARTIAL` | `verify:drift` and `verify:ui-core` pass, but manual interaction and the owner packet's uncovered patterns remain outside current scanners. | CP-05 |
+| UI Core 3 Technical Core | `PARTIAL` | Runtime, data, SEO, locale and delivery facts exist across Architecture/Product Structure/Design System, but the UI Core 5.0 technical contract is not yet represented as one complete project-owned mapping. Consolidate by reference without duplicating values. | CP-05/CP-07 STANDARD |
+| UI Core 4 Design System | `PARTIAL` | Project Design System exists and `globals.css` owns numeric values, but the approved v5 role set, Intake status, representative page, surfaces/media policy and approved exceptions are incomplete as an auditable contract. | CP-05 STANDARD |
+| UI Core 5 token source | `CONFIRMED_DRIFT` | One token source is preserved, but `globals.css` contains a large parallel `--site-type-*` scale and aliases beyond the compact approved roles; dead/reserved status is not proven. | CP-05 STANDARD |
+| UI Core 7 ownership | `PARTIAL` | Project-local UI package and closed exports exist, aliases are mechanically checked, and duplicate primitive ownership is scanned. Public routes still import `starter/*` owners, so project ownership/naming is incomplete. | CP-05 STANDARD/RISKY if package API changes |
+| UI Core 12 accessibility | `PARTIAL` | Automated starter accessibility passes and form error associations exist. Mobile navigation semantics, Escape/outside interaction and manual state proof remain incomplete. | CP-05 STANDARD |
+| UI Core 16 mandatory pages | `PARTIAL` | Root 404, privacy, consent and thank-you routes exist. No root `error.tsx` or `global-error.tsx` was found, despite the project contract requiring a platform error boundary. | CP-05 STANDARD |
+| UI Core 18 scanner coverage | `CONFIRMED_DEFECT` | Current scripts baseline known literals and check a limited subset; they pass while confirmed typography, navigation and starter-name drift remains. Extend rules before conformance claim. | CP-05 STANDARD |
 | 6.1 Core 5.5 docs | `CONFIRMED_DEFECT` | `docs/PROJECT.md` and `docs/DESIGN.md` are absent; current information is split across Architecture/Operations/Design System. | CP-07 STANDARD |
 | 6.1 AMS_PROFILE | `ALREADY_COVERED` | `.env.example` contains `REALTY_BASE`; Zod uses an exact literal and runtime readiness validates it. | CP-07 regression only |
 | 6.2 readiness config | `PARTIAL / FAIL-CLOSED` | Nginx and jobs topology exist, but config intentionally remains false/null until durable evidence. Backup/media monitoring and allowlists are still incomplete. Do not flip mechanically. | CP-07 + readiness work |
@@ -121,7 +130,11 @@ mutation was used.
   `queue polling/execution` is missing.
 - `pnpm verify:operational-recovery` — FAIL: `OPERATIONS.md` is missing the
   required `Manual import` procedure.
-- `pnpm quality:docs-sot` — PASS before this report.
+- `pnpm quality:docs-sot` — PASS after normative-source integration and Source of Truth updates.
+- Exact UI Core transfer hash comparison — PASS; source and project copy both
+  `3A68E274674C1BB6D652843BE6963E9732EDEF4126D5B3A2DD0457F0D3B4B39A`.
+- Realty Core comparison — PASS line-by-line; the supplied and existing files
+  differ only in line-ending encoding, so no duplicate or semantic overwrite was made.
 
 These are local results only, not SourceCraft CI or staging proof.
 

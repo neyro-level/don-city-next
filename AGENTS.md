@@ -2,7 +2,8 @@
 
 ## Контекст
 
-- Platform: AMS Realty Platform Core 3.0 + Payload Platform.
+- Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + Payload Platform.
+- Current implementation: production baseline with documented Core 5.5/UI 5.0 drift; conformance work is governed by the v8 REVIEW plan and its evidence matrix.
 - Profile: `catalog`, `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 - Repository mode: `SOURCECRAFT_PRIMARY_GITHUB_MIRROR`.
 - UX: public commercial catalog + CMS-native Payload Admin.
@@ -11,9 +12,10 @@
 
 1. Глобальный `~/.codex/AGENTS.md`.
 2. `docs/README.md`.
-3. Текущий scope в `01_PRD.md`, `02_PRODUCT_STRUCTURE.md`, `03_ARCHITECTURE.md`.
-4. `docs/DELIVERY_STATE.yaml` и READY task в `04_BACKLOG.md`.
-5. Детальный execution contract: `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V3_0.md`.
+3. Normative baselines: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md` and `AMS_UI_CORE_v5.0_FINAL.md`.
+4. Текущий scope в `01_PRD.md`, `02_PRODUCT_STRUCTURE.md`, `03_ARCHITECTURE.md`.
+5. `docs/DELIVERY_STATE.yaml` и READY task в `04_BACKLOG.md`.
+6. Детальный execution contract: `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
 
 ## Инварианты
 

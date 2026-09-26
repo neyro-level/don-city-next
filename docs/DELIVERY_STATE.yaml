@@ -5,7 +5,7 @@ plan_status: REVIEW
 current_wave: CORE_5_5_PLAN_ASSEMBLY
 current_epic: null
 current_task: null
-next_action: provide-canonical-ui-core-5-0-source-or-explicitly-scope-it-out-before-final-audit
+next_action: complete-ui-core-5-0-delta-and-v8-assembly-before-owner-requested-final-audit
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git

@@ -2,7 +2,13 @@
 
 Status: Active — owner-approved brand direction
 Version: 2.0
-Updated: 2026-09-26
+Updated: 2026-09-27
+
+## Normative UI baseline
+
+The project UI contract is governed by `../AMS_UI_CORE_v5.0_FINAL.md`. This document remains the project-specific design policy; numeric values remain exclusively in `src/app/globals.css`.
+
+Current status is `PARTIAL CONFORMANCE`, not a completed UI Core 5.0 certification. The existing system is reused, while typography roles, starter naming, navigation semantics, error-boundary coverage and scanner blind spots are handled by CP-05 in the v8 master plan and the linked CP-00 evidence matrix.
 
 ## Назначение
 
