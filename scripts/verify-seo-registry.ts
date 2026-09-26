@@ -120,7 +120,9 @@ assert.ok(
 		.filter((entry) => entry.status === "active")
 		.every(
 			(entry) =>
-				!/^\/(?:kvartiry|doma|uchastki)\/donetsk(?:\/|$)/.test(entry.url),
+				!/^\/(?:kvartiry|doma|uchastki|kommercheskaya)\/donetsk(?:\/|$)/.test(
+					entry.url,
+				),
 		),
 	"Active registry must not contain category-first V3 URLs",
 );

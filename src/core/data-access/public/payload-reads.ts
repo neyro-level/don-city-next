@@ -103,7 +103,7 @@ export async function aggregatePublicCatalogFacets(
 
 export async function countPublicSitemapProperties(
 	payload: Payload,
-	category?: "apartment" | "house" | "land",
+	category?: "apartment" | "house" | "land" | "commercial",
 ): Promise<number> {
 	const result = await payload.count({
 		collection: "properties",
@@ -119,7 +119,7 @@ export async function findPublicSitemapListingLastModified(
 	all?: string;
 	byCategory: Partial<Record<Property["category"], string>>;
 }> {
-	const categories = ["apartment", "house", "land"] as const;
+	const categories = ["apartment", "house", "land", "commercial"] as const;
 	const [all, ...categoryResults] = await Promise.all([
 		payload.find({
 			collection: "properties",
@@ -164,7 +164,7 @@ export async function listPublicSitemapPropertiesPage(
 	input: {
 		limit: number;
 		offset: number;
-		category?: "apartment" | "house" | "land";
+		category?: "apartment" | "house" | "land" | "commercial";
 	},
 ): Promise<
 	readonly {
@@ -228,7 +228,7 @@ export async function listPublicSitemapPropertiesPage(
 }
 
 function sitemapPropertyWhere(
-	category?: "apartment" | "house" | "land",
+	category?: "apartment" | "house" | "land" | "commercial",
 ): Where {
 	if (!category) return publicPropertyPublicationWhere;
 	return {

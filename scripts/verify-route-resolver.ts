@@ -51,9 +51,16 @@ const cases = [
 	["/kvartiry/", 200, "noindex", "/kvartiry/"],
 	["/doma/", 200, "noindex", "/doma/"],
 	["/uchastki/", 200, "noindex", "/uchastki/"],
+	["/kommercheskaya/", 200, "noindex", "/kommercheskaya/"],
 	["/donetsk/kvartiry/", 200, "index", "/donetsk/kvartiry/"],
 	["/donetsk/doma/", 200, "index", "/donetsk/doma/"],
 	["/donetsk/uchastki/", 200, "index", "/donetsk/uchastki/"],
+	[
+		"/donetsk/kommercheskaya/",
+		200,
+		"noindex",
+		"/donetsk/kommercheskaya/",
+	],
 	[
 		"/donetsk/kvartiry/tekstilshchik/",
 		200,
@@ -93,6 +100,8 @@ for (const [path, statusCode, indexing, canonicalPath] of cases) {
 for (const path of [
 	"/kvartiry/donetsk/",
 	"/donetsk/novostroyki/",
+	"/komplex/test/",
+	"/yurist/nasledstvo/",
 	"/donetsk/kvartiry/tekstilshchik/odnokomnatnye/",
 	"/donetsk/kvartiry/neizvestnyy/",
 	"/donetsk/kvartiry/tekstilshchik/extra/",

@@ -1,6 +1,7 @@
 import type {
 	ApartmentPropertyDetailsDTO,
 	BreadcrumbDTO,
+	CommercialPropertyDetailsDTO,
 	HousePropertyDetailsDTO,
 	LandPropertyDetailsDTO,
 	LeadFormContext,
@@ -188,6 +189,12 @@ export const categorySpecificPropertyFixtures = {
 			communications: ["электричество"],
 		},
 	} satisfies LandPropertyDetailsDTO,
+	commercial: {
+		...propertyDetailsFixture,
+		category: "commercial",
+		market: "secondary",
+		geo: geoFixture,
+	} satisfies CommercialPropertyDetailsDTO,
 	commercialPrepared: {
 		...propertyDetailsFixture,
 		category: "commercial",

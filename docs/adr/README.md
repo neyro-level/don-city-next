@@ -13,3 +13,4 @@ Master plan остаётся источником полного contract; ADR �
 | [ADR-0006](ADR-0006-public-nap-contract.md) | Accepted | Public NAP DTO and one runtime source |
 | [ADR-0007](ADR-0007-public-geo-property-contracts.md) | Accepted | Public geo and category-specific property DTOs |
 | [ADR-0008](ADR-0008-lead-marketing-contract-reconciliation.md) | Accepted | Reconcile approved lead and marketing contract additions as 1.3.2 |
+| [ADR-0009](ADR-0009-commercial-public-contract.md) | Accepted | Activate commercial in the secondary-sale public contract as 1.4.0 |

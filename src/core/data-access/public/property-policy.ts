@@ -4,6 +4,7 @@ export const r1PublicPropertyCategories = [
 	"apartment",
 	"house",
 	"land",
+	"commercial",
 ] as const;
 
 export type R1PublicPropertyCategory =

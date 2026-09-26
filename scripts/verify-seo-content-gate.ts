@@ -74,4 +74,15 @@ assert.equal(
 	"/donetsk/kvartiry/",
 );
 
+const commercial = seoRegistryById.get("COMM_GEO");
+assert.ok(commercial, "commercial launch owner must exist");
+assert.equal(effectiveListingRobots(commercial, siteProfile), "noindex,follow");
+assert.equal(
+	evaluateListingContentGate(commercial, siteProfile, {
+		...evidence,
+		activeObjects: 10,
+	}).passed,
+	true,
+);
+
 console.log("SEO Content Gate verification passed.");

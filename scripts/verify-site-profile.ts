@@ -5,7 +5,10 @@ import {
 	selectActiveCategoryLinks,
 	validateSiteProfile,
 } from "../src/platform/profile/index.ts";
-import { siteProfile } from "../src/project/site.profile.ts";
+import {
+	type SiteCategory,
+	siteProfile,
+} from "../src/project/site.profile.ts";
 
 assert.deepEqual(validateSiteProfile(siteProfile), []);
 assert.equal(isGeoSwitcherVisible(siteProfile), false);
@@ -18,6 +21,17 @@ assert.equal(
 		.statusCode,
 	200,
 );
+assert.equal(
+	resolveCategoryRoute<SiteCategory>(
+		siteProfile,
+		siteProfile.primaryGeo,
+		"kommercheskaya",
+	)
+		.statusCode,
+	200,
+);
+assert.equal(siteProfile.marketStatus.newbuild, "PREPARED_OFF");
+assert.equal(siteProfile.categoryStatus.novostroyki, "PREPARED_OFF");
 
 const apartmentCandidate = {
 	category: "kvartiry" as const,

@@ -57,6 +57,7 @@ No CP implementation, production indexing or Task Manager import is authorized b
 ## LATER
 
 - Post-launch Day-60 review и retention cleanup.
+- Через четыре календарных месяца после фактического включения публичной индексации: review первоначального scope. Дату вычислить и зафиксировать как `PUBLIC_INDEXING_ENABLED_AT + 4 months`; новостройки/ЖК не включать без нового owner-approved plan.
 - R2 research: `novostroyki`, `journal`, `agents`; включение только отдельным contract/epic.
 - Масштабирование географии — только после business/evidence решения и MULTI_GEO proof.
 

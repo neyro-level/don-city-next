@@ -34,6 +34,7 @@ Updated: 2026-09-27
 - [ ] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
 - [ ] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
 - [ ] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
+- [ ] Record `PUBLIC_INDEXING_ENABLED_AT` and the four-month scope-review due date (`+4 calendar months`); the reminder must not enable newbuild/ЖК without a new owner-approved plan.
 
 ## Stop Conditions
 

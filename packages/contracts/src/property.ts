@@ -1,7 +1,6 @@
 import type {
 	PropertyCategory,
 	PropertyDealType,
-	PropertyMarket,
 } from "./common";
 import type { AppliedPropertyFiltersDTO } from "./filters";
 import type { PropertyLocationDTO } from "./geo";
@@ -90,11 +89,14 @@ export type LandPropertyDetailsDTO = PropertyDetailsDTO & {
 	};
 };
 
-/** Prepared-off: this type does not authorize a public R1 catalog or route. */
-export type PreparedCommercialPropertyDTO = PropertyDetailsDTO & {
+export type CommercialPropertyDetailsDTO = PropertyDetailsDTO & {
 	category: "commercial";
-	market: PropertyMarket;
+	market: "secondary";
 	geo: PropertyLocationDTO;
+};
+
+/** @deprecated Commercial is active in the owner-approved CP-02A launch scope. */
+export type PreparedCommercialPropertyDTO = CommercialPropertyDetailsDTO & {
 	availability: "prepared-off";
 };
 
@@ -108,7 +110,8 @@ export type PreparedDevelopmentDTO = {
 export type R1PropertyDetailsDTO =
 	| ApartmentPropertyDetailsDTO
 	| HousePropertyDetailsDTO
-	| LandPropertyDetailsDTO;
+	| LandPropertyDetailsDTO
+	| CommercialPropertyDetailsDTO;
 
 export type PropertyListDTO = {
 	items: readonly PropertyCardDTO[];

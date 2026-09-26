@@ -52,6 +52,7 @@ const categorySlugs = {
 	apartment: "kvartiry",
 	house: "doma",
 	land: "uchastki",
+	commercial: "kommercheskaya",
 };
 
 const staticKeys = {
