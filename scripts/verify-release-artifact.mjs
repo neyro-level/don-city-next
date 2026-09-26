@@ -57,9 +57,10 @@ for (const expected of [
 	'deliveryProfile: "CRITICAL"',
 	'imageName: "don-city-next"',
 	'process.env.RELEASE_MODE ?? "REHEARSAL"',
+	'process.env.RELEASE_INDEXING ?? "noindex"',
 	'mode === "RELEASE"',
-	'assert.equal(branch, "main"',
-	'assert.equal(commit, originMain',
+	'"RELEASE manifest requires the canonical main branch"',
+	'"RELEASE manifest requires exact origin/main"',
 ]) {
 	assert.ok(releaseManifest.includes(expected), `Release manifest must include ${expected}.`);
 }
