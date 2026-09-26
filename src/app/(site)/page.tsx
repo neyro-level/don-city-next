@@ -10,7 +10,7 @@ import {
 	getCachedPublicHomePage,
 	getCachedPublicNap,
 } from "@/core/data-access/public/cached-provider";
-import { toMetadata } from "@/core/seo/page-metadata";
+import { toMetadata } from "@/project/page-metadata";
 import {
 	buildOrganizationJsonLd,
 	buildWebsiteJsonLd,

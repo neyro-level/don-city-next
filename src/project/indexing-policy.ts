@@ -25,6 +25,19 @@ export function metadataRobotsForPolicy(policy: IndexingPolicy) {
 		: { index: false, follow: false };
 }
 
+export function composeMetadataRobots(
+	policy: IndexingPolicy,
+	pageRobots: { index: boolean; follow: boolean },
+) {
+	return policy === "noindex"
+		? metadataRobotsForPolicy(policy)
+		: pageRobots;
+}
+
+export function xRobotsTagForPolicy(policy: IndexingPolicy): string | null {
+	return policy === "noindex" ? "noindex, nofollow" : null;
+}
+
 export function buildRobots(
 	policy: IndexingPolicy,
 	host: string,

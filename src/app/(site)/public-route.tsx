@@ -19,7 +19,10 @@ import {
 	getCachedPublicNap,
 } from "@/core/data-access/public/cached-provider";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
-import { toMetadata } from "@/core/seo/page-metadata";
+import {
+	toMetadata,
+	withProjectIndexingPolicy,
+} from "@/project/page-metadata";
 import type { PageKey } from "@/platform/grammar/types";
 import { leadConsentContext } from "@/project/legal.config";
 import { getProjectLegalDocument } from "@/project/legal-documents";
@@ -109,20 +112,20 @@ export async function generateResolvedRouteMetadata(
 ): Promise<Metadata> {
 	const result = await resolvePublicRoute(segments, searchParams);
 	if (result.kind === "notFound") {
-		return {
+		return withProjectIndexingPolicy({
 			title: "Страница не найдена | ДОН СИТИ",
 			robots: { index: false, follow: false },
-		};
+		});
 	}
 	if (result.kind === "gone") {
-		return {
+		return withProjectIndexingPolicy({
 			title: "Объект снят с публикации | ДОН СИТИ",
 			description:
 				"Объект больше не публикуется. Перейдите в каталог актуальной недвижимости ДОН СИТИ.",
 			robots: { index: false, follow: true },
-		};
+		});
 	}
-	if (result.kind !== "page") return {};
+	if (result.kind !== "page") return withProjectIndexingPolicy({});
 	return toMetadata({
 		title: result.title,
 		description: result.description,

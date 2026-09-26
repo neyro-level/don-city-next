@@ -1,7 +1,7 @@
 import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
 import { notFound } from "next/navigation";
 import { getPublicMarketingPage } from "@/core/data-access/public";
-import { toMetadata } from "@/core/seo/page-metadata";
+import { toMetadata } from "@/project/page-metadata";
 
 export async function MarketingRoute({ slug }: { slug: string }) {
 	const page = await getPublicMarketingPage(slug);
