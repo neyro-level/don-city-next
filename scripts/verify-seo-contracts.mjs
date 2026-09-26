@@ -13,10 +13,16 @@ import {
 import { staticPublicUrlEntries } from "../src/core/seo/site.ts";
 import {
 	buildRobots,
+	composeMetadataRobots,
 	getProjectIndexingPolicy,
 	metadataRobotsForPolicy,
 	resolveIndexingPolicy,
+	xRobotsTagForPolicy,
 } from "../src/project/indexing-policy.ts";
+import {
+	toMetadata as toProjectMetadata,
+	withProjectIndexingPolicy,
+} from "../src/project/page-metadata.ts";
 import { projectUrls } from "../src/project/url-grammar.ts";
 
 const fixtureOrigin = "https://realty-client.example";
@@ -32,6 +38,36 @@ assert.deepEqual(metadataRobotsForPolicy("noindex"), {
 	index: false,
 	follow: false,
 });
+assert.deepEqual(
+	composeMetadataRobots("noindex", { index: true, follow: true }),
+	{ index: false, follow: false },
+);
+assert.deepEqual(
+	composeMetadataRobots("public", { index: false, follow: true }),
+	{ index: false, follow: true },
+);
+assert.equal(xRobotsTagForPolicy("noindex"), "noindex, nofollow");
+assert.equal(xRobotsTagForPolicy("public"), null);
+assert.deepEqual(
+	withProjectIndexingPolicy(
+		{ title: "Missing", robots: { index: false, follow: true } },
+		"noindex",
+	).robots,
+	{ index: false, follow: false },
+);
+assert.deepEqual(
+	toProjectMetadata(
+		{
+			title: "Page",
+			description: "Description",
+			canonicalPath: "/page/",
+			indexing: "index",
+			following: "follow",
+		},
+		"noindex",
+	).robots,
+	{ index: false, follow: false },
+);
 assert.deepEqual(buildRobots("noindex", fixtureOrigin), {
 	rules: [{ userAgent: "*", disallow: "/" }],
 });

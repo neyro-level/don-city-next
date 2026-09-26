@@ -1,22 +1,22 @@
 schema_version: 1
-program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
-plan_version: v7
+program: AMS-DON-CITY-CORE55-POSTPROD
+plan_version: v9
 plan_status: APPROVED
-current_wave: PRODUCTION_STABILIZATION
-current_epic: dcv4-epic-48
+current_wave: CORE_5_5_DEVELOPER_HANDOFF
+current_epic: null
 current_task: null
-next_action: close-owner-readiness-blockers-before-indexing
+next_action: start-developer-goal-and-claim-first-ready-task
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
   base_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
-  active_branch: main
+  active_branch: codex/master-plan-core-5-5
 task_manager:
   initialized: true
   reconciliation: CLEAN
   current_task: null
-  reason: implementation graph and noindex production release are delivered; remaining work is owner readiness and indexing decision
+  reason: collision-safe Core 5.5 graph imported with 10/10 coverage, 55 managed nodes, zero drift and zero cycles; Developer claim is authorized
 evidence:
   rp_00:
     status: delivered

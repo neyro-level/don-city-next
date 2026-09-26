@@ -82,6 +82,7 @@
 		"verify:max-adapter": "node --experimental-strip-types scripts/verify-max-adapter.mjs",
 		"verify:custom-webhook-adapter": "node --experimental-strip-types scripts/verify-custom-webhook-adapter.mjs",
 		"verify:seo-contracts": "node --experimental-strip-types scripts/verify-seo-contracts.mjs && node scripts/verify-seo-seeds.mjs && pnpm seo:registry:check && pnpm verify:seo-registry",
+		"verify:indexing-policy": "node --experimental-strip-types scripts/verify-indexing-policy-http.mjs",
 		"seo:registry:generate": "node --experimental-strip-types scripts/generate-seo-registry.mjs --write",
 		"seo:registry:check": "node --experimental-strip-types scripts/generate-seo-registry.mjs",
 		"verify:seo-registry": "node --experimental-strip-types scripts/verify-seo-registry.ts",

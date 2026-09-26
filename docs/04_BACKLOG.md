@@ -1,8 +1,8 @@
 # Backlog
 
 Status: Active
-Version: 1.0
-Updated: 2026-09-26
+Version: 1.1
+Updated: 2026-09-27
 
 ## Delivered
 
@@ -19,7 +19,25 @@ Updated: 2026-09-26
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Production Readiness
+## NOW — Core 5.5 v9 Approval Gate
+
+- [x] Realty Core 5.5 and UI Core 5.0 normative sources are linked to project Source of Truth.
+- [x] CP-00 factual evidence and the four-pass Architect audit are complete.
+- [x] Draft Task Manager graph has `10/10` active epic coverage, `45` autonomous tasks and zero dependency cycles.
+- [x] Owner approved exact master plan v9 at `2026-09-27T01:03:39+03:00`.
+- [ ] Only after approval: canonical `Validate → Init/Upgrade decision → Import → Reconcile` passes before Developer claim.
+
+No CP implementation, production indexing or Task Manager import is authorized by readiness alone.
+
+## AFTER APPROVAL — Core 5.5 Implementation
+
+1. CP-01 release-level indexing safety and CP-02A initial product/indexing scope.
+2. CP-03 jobs/import/lead safety, CP-04 media/performance and CP-06 security spike can progress in independent safe streams.
+3. CP-02 SEO surface follows the frozen CP-01/CP-02A contracts; CP-05 and CP-07 converge UI/docs afterward.
+4. CP-08 proves the exact integrated candidate on isolated staging.
+5. CP-09 remains production-only and requires a separate explicit release command.
+
+## Open Production Readiness
 
 1. Создать первого production owner через безопасную bootstrap-команду.
 2. Выбрать и подключить независимый alert/delivery channel; проверить redacted lead delivery.
@@ -29,7 +47,7 @@ Updated: 2026-09-26
 6. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
 7. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
 
-## NEXT — Indexing Decision
+## Production Indexing Gate
 
 1. Выполнить production crawl и проверить canonical/robots/sitemap/structured data.
 2. Подтвердить queue movement, alerts, backup freshness и rollback readiness.

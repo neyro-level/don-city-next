@@ -5,11 +5,22 @@ import {
 	parseAllowedImageHosts,
 	toNextImageRemotePatterns,
 } from "./src/core/ingest/image-hosts.ts";
+import {
+	getProjectIndexingPolicy,
+	xRobotsTagForPolicy,
+} from "./src/project/indexing-policy.ts";
 
 const allowedImageHosts = parseAllowedImageHosts(
 	process.env.EXTERNAL_IMAGE_HOSTS,
 );
 const imageCspSrc = buildImageCspSrc(allowedImageHosts);
+const releaseXRobotsTag = xRobotsTagForPolicy(getProjectIndexingPolicy());
+const releaseIndexingHeaders = releaseXRobotsTag
+	? [{ key: "X-Robots-Tag", value: releaseXRobotsTag }]
+	: [];
+const adminIndexingHeaders = [
+	{ key: "X-Robots-Tag", value: "noindex, nofollow" },
+];
 
 const baseSecurityHeaders = [
 	{ key: "X-Content-Type-Options", value: "nosniff" },
@@ -64,6 +75,7 @@ const nextConfig: NextConfig = {
 				source: "/admin",
 				headers: [
 					...baseSecurityHeaders,
+					...adminIndexingHeaders,
 					{ key: "Content-Security-Policy", value: adminCsp },
 				],
 			},
@@ -71,6 +83,7 @@ const nextConfig: NextConfig = {
 				source: "/admin/:path*",
 				headers: [
 					...baseSecurityHeaders,
+					...adminIndexingHeaders,
 					{ key: "Content-Security-Policy", value: adminCsp },
 				],
 			},
@@ -78,6 +91,7 @@ const nextConfig: NextConfig = {
 				source: "/((?!admin(?:/|$)).*)",
 				headers: [
 					...baseSecurityHeaders,
+					...releaseIndexingHeaders,
 					{ key: "Content-Security-Policy", value: publicCsp },
 				],
 			},
