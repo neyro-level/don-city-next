@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
 plan_version: v7
 plan_status: APPROVED
-current_wave: W4_STAGING_RELEASE_CANDIDATE
-current_epic: dcv4-epic-47
-current_task: dcv4-task-47-evidence
-next_action: create-pr-review-run-risky-gate-and-merge-epic-47
+current_wave: PRODUCTION_STABILIZATION
+current_epic: dcv4-epic-48
+current_task: null
+next_action: close-owner-readiness-blockers-before-indexing
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: d6359f3d8461014bf7e2946d914d7ea473102b5e
-  active_branch: codex/epic-47-release-rehearsal
+  base_sha: 31367bfe4adf476925eca97b5dcb13088e31191e
+  active_branch: main
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcv4-task-47-evidence
-  reason: traceability complete; delivery requires PR review exact-head RISKY gate and merge
+  current_task: null
+  reason: implementation graph and noindex production release are delivered; remaining work is owner readiness and indexing decision
 evidence:
   rp_00:
     status: delivered
@@ -199,5 +199,26 @@ task_contract:
   gate: RISKY
   done_state: "Exact-main immutable candidate survives deploy, rollback and redeploy on isolated staging, then EPIC-47 merges after one exact-head RISKY gate."
 production:
-  authorized: false
-  gate: explicit-owner-release-command
+  authorized: true
+  authorization_scope: production resources and global-noindex rollout
+  status: LIVE_NOINDEX
+  exact_main_sha: 31367bfe4adf476925eca97b5dcb13088e31191e
+  image_tag: don-city-next:production-31367bfe4adf
+  merge_gate_run: 78
+  release_attestation_run: 79
+  url: https://doncity-home.ru
+  properties: 12
+  media: 92
+  jobs_owner: production
+  staging_jobs: false
+  real_feed: disabled
+  indexing: noindex
+  rollback_image: don-city-next:production-e5e9210
+  health: degraded
+  blockers:
+    - first-production-owner
+    - independent-alert-and-lead-delivery-channel
+    - external-uptime-monitoring
+    - durable-database-and-media-backup-freshness
+    - owner-verified-canonical-nap
+    - explicit-indexing-authorization

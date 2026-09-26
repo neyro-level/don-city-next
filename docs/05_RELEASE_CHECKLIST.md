@@ -1,46 +1,39 @@
 # Release Checklist
 
-Status: Draft
-Version: 0.1
-Updated: 2026-09-25
+Status: Active — production noindex
+Version: 1.0
+Updated: 2026-09-26
 
-## Preconditions
+## Completed for Current Release
 
-- [ ] Exact master plan approved and Task Manager reconciliation CLEAN.
-- [ ] V4 is the only active detailed contract; V3 is `SUPERSEDED` and ADR-001…ADR-004 are accepted.
-- [ ] EPIC-47 release candidate complete.
-- [ ] Production command explicitly given by owner.
-- [ ] Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence.
+- [x] Approved product contract and completed implementation graph.
+- [x] Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence.
+- [x] Owner explicitly authorized production resources and noindex rollout.
+- [x] Immutable artifact built once and deployed through Compose + host Nginx/TLS.
+- [x] Immutable artifact built once and identified by exact SHA.
+- [x] Secrets live only in dedicated Secret Master scope.
+- [x] Production and staging isolated by database/secrets/storage; staging jobs disabled.
+- [x] Provider PostgreSQL backup exists; isolated restore and migration rehearsal passed and temporary DB was removed.
+- [x] Application rollback image and compose point retained.
+- [x] 12 listings / 92 media items verified; real feed remains disabled.
+- [x] Live HTTPS, global noindex and `robots.txt` disallow verified.
+- [x] SourceCraft release attestation run 79 passed for exact main SHA.
 
-## Product / Data
+## Required Before Indexing / Lead Operations
 
-- [ ] R1 critical flows and actual inventory verified.
-- [ ] Leads/outbox/delivery smoke passes without PII in logs.
-- [ ] Feed safe-deactivation and source-isolation proven.
-- [ ] NAP verified by owner against Yandex Business.
+- [ ] Create the first production owner user.
+- [ ] Verify NAP against external owner/Yandex Business truth.
+- [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
+- [ ] Connect external uptime monitoring outside the application server.
+- [ ] Implement and sample-restore media backup/versioning.
+- [ ] Expose trustworthy DB/media backup freshness in authenticated health; health must not be degraded.
+- [ ] Run full production crawl for canonical, robots, sitemap, JSON-LD, 404/410 and lifecycle.
+- [ ] Provide and approve a real feed endpoint/allowlist before enabling any source.
+- [ ] Obtain separate owner authorization to remove global noindex.
 
-## Security / Recovery
+## Stop Conditions
 
-- [ ] Secrets live only in dedicated Secret Master scope.
-- [ ] Backup and restore path verified.
-- [ ] Pending migrations reviewed and rehearsed on staging.
-- [ ] Rollback point and operator stop conditions recorded.
-
-## SEO / Runtime
-
-- [ ] Titles/H1/descriptions/canonicals/robots/sitemaps pass full crawl.
-- [ ] City-first V4 owner matrix passes; no category-first V3 listing URL is public.
-- [ ] Global property URLs resolve by `publicUrlId` and contain no geo segment.
-- [ ] SINGLE_GEO and MULTI_GEO profile matrices pass without product-code drift.
-- [ ] 301/308/404/410 and property lifecycle pass real HTTP proof.
-- [ ] Home/ALL/category/district/facet/property cache hits and event-driven invalidation pass staging proof within the stale-data SLA.
-- [ ] Representative Home/catalog page 1/catalog page 2/property staging traces record LCP element/breakdown, CLS sources, INP interaction and transferred JavaScript against the exact candidate SHA.
-- [ ] Staging remains noindex and isolated from production PII.
-- [ ] Immutable artifact built once and identified by exact SHA.
-
-## Post Deploy
-
-- [ ] Health/live smoke, leads, jobs, NAP/JSON-LD and changed flows verified.
-- [ ] Sitemap/robots/IndexNow/Webmaster checks completed.
-- [ ] External uptime and operational alerts active.
-- [ ] EPIC-49 monitoring schedule activated.
+- Do not enable indexing while any item above is open.
+- Do not enable a real feed or delivery host from an unverified URL.
+- Do not run migrations without bound backup, rehearsal and rollback evidence.
+- Do not expose secrets, PII, raw Payload documents or full database URLs in evidence.

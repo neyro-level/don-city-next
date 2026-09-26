@@ -1,148 +1,36 @@
 # Technical Architecture
 
-Status: Draft
-Version: 0.1
-Updated: 2026-09-25
+Status: Active
+Version: 1.0
+Updated: 2026-09-26
 
 ## 1. Architecture Summary
 
-Отдельный client instance: Next.js App Router + React + Payload CMS + PostgreSQL. Payload владеет Admin, auth, access, schema и migrations. Public data проходит `UI → DTO → Public Gateway → Payload`.
+DON CITY — отдельный client instance на Next.js App Router, React, Payload CMS и PostgreSQL. Payload — единственный владелец schema, migrations, auth и Admin. Public path: `UI → DTO → Public Gateway → Payload`; raw business collections наружу не выдаются.
 
-## 2. Stack and Platform Contract
+## 2. Installed Stack
 
-- AMS Realty Platform Core 3.0 + AMS Payload Platform.
-- Project profile: `catalog`; mode: `BUILD`.
-- Planned baseline требует проверки в EPIC-01: Next.js 16.3.5, React 19.2.8, Payload 3.90.1, pnpm 11.5.1, Tailwind 4.x.
-- Prisma, второй backend/auth/Admin и anonymous raw Payload business REST запрещены.
+- Next.js 16.3.5, React 19.2.8, Payload 3.90.1.
+- Node.js 24.20, pnpm 11.5.1, TypeScript strict, Tailwind CSS 4.
+- PostgreSQL 18, Payload migrations; Prisma запрещён.
+- Repository: SourceCraft primary, GitHub read-only mirror.
+- `DELIVERY_PROFILE=CRITICAL` из-за auth, PII, production data и интеграций.
 
-### Starter provenance
+Фактические версии определяются `package.json`, lockfile и runtime image. Major upgrades выполняются отдельной задачей.
 
-- Source: `https://sourcecraft.dev/integrator-p/ams-realty-baza-starter`.
-- Verified baseline: `main@ca1b884d43e808d17e1eb18b05bad70ea358dd1c`.
-- Starter остаётся read-only; в DON CITY импортируется только проверенный tracked tree без Git metadata, secrets, caches, artifacts и Task Manager state.
-- Package/runtime truth определяется после fetch из package/lockfile/runtime config; заявленные версии до EPIC-01 являются плановым baseline, а не установленным runtime.
+## 3. Ownership and Modules
 
-## 3. Module Map
+| Module | Owner | Public contract |
+|---|---|---|
+| catalog/geo | Payload Properties/Regions/Cities/Districts | filtered DTO queries |
+| content/SEO | Pages, ListingContents, redirects, registry | metadata, canonical, sitemap |
+| ingest | FeedSources, ImportRuns, ImportIssues | normalized source-isolated offers |
+| leads | Leads, LeadDeliveries | validated intake + outbox |
+| settings | SiteSettings global + project config | NAP and site DTO |
+| media | Payload Media + private S3 | controlled file route and media DTO |
+| runtime | app, jobs, health, cache | internal operations |
 
-| Module | Purpose | Ownership | Public contract | Dependencies |
-|---|---|---|---|---|
-| catalog | public listings/detail | Payload properties/geo | DTO queries | public gateway, SEO |
-| ingest | feed normalization/import | feed sources/import runs | normalized offers | safe outbound, Payload DB |
-| geo | regions/cities/districts | Payload collections | geo DTO | catalog, SEO |
-| seo | registry/content gate/sitemap | registry seeds + computed state | metadata/indexability | catalog, geo |
-| leads | intake/outbox/delivery | leads + lead-deliveries | narrow form commands | jobs, integrations |
-| settings | NAP/domain/config | site-settings Global | NAP DTO | public pages, JSON-LD |
-| media | manual/project media | verified project storage + Payload Media | media DTO | catalog/content |
-| runtime | cache/jobs/observability | project runtime | internal operations | all enabled modules |
-
-### Platform / Project split
-
-Decision record: `docs/adr/ADR-003-platform-project-split.md`.
-
-- `src/platform/**` owns portable grammar, resolver, geo, SEO, catalog, gate,
-  sitemap and IndexNow behavior and contains no DON CITY/Donetsk literals.
-- `src/project/**` owns Site Profile, brand/content and registry inputs.
-- Platform may not import Project; the application composition root injects
-  typed project inputs into platform modules.
-- Site Profile is the sole owner of geo mode, category/market statuses,
-  thresholds and facet whitelist.
-
-URL ownership decisions are recorded in ADR-001, ADR-002 and ADR-004. The
-master plan remains the exact grammar/metadata registry; ADRs explain the
-stable boundaries and do not duplicate that registry.
-
-## 4. Data and Security Boundaries
-
-- Public Gateway: `overrideAccess:false`, explicit select/depth/limit, publication filters, DTO.
-- System Gateway: only whitelisted system operations may use `overrideAccess:true`.
-- Ingest Gateway: low-level bulk path only with validation, idempotency and source isolation.
-- Leads/PII: transactional outbox, centralized redaction, no PII analytics/logging.
-- Owner retention policy: leads are retained for 100 days; archived property
-  content is retained for 100 days before lifecycle purge. A future employees
-  module keeps deactivated employee records archived indefinitely and must not
-  reuse the property-retention cleanup.
-- Production schema: migrations only; destructive changes require backup/staging/rollback proof.
-
-## 5. Infrastructure / Deployment
-
-EPIC-03 discovery confirms one existing DON CITY Timeweb server and one separate managed PostgreSQL 18 cluster in the same Timeweb account. The server is a clean Ubuntu deployment target with no Nginx, container runtime, Node.js, application service or local PostgreSQL. The database is private-only with automatic backups. Both services were already attached to the same provider VPC, but Ubuntu had not configured the server's existing private NIC. An owner-authorized, isolated Netplan definition restored the private route. Authenticated `READ ONLY` inventory confirms PostgreSQL 18.6, one empty `default_db/public` database and zero user tables/views/materialized views. Exact identities and credentials remain outside git in the dedicated `DonCity Server/prod` Secret Master scope.
-
-The existing server remains the presumed production target and the verified database route is the existing private VPC; public database exposure, a second server, database move or new S3 resource is not implied. The database connection is stored in Secret Master and must be rotated before deployment because the temporary password appeared in the owner conversation. `doncity-home.ru` currently resolves elsewhere and does not return a usable site response. Production, DNS, further network mutation and secret mutation still require their own authorized task and recovery proof. Detailed evidence is in `docs/research/EPIC-03_DISCOVERY.md`.
-
-Target shape: host Nginx → immutable Next.js + Payload image on loopback → existing PostgreSQL over the verified private route. Staging stays separate/noindex with separate database and secrets. Operational detail: `docs/OPERATIONS.md` and `docs/research/EPIC-06_INFRASTRUCTURE_CONTRACT.md`.
-
-### Public cache contract
-
-- The public App Router uses the Next.js 16 previous-model Data Cache around
-  Public Gateway reads; `cacheComponents` stays disabled until a separate
-  rendering-model decision.
-- Home, ALL, category, district, facet and property reads have deterministic
-  input keys and a 3600-second safety TTL.
-- Canonical tags are `site`, `properties`, `geo:{slug}`,
-  `geo:{slug}:cat:{category}`, `district:{city}:{slug}` and
-  `property:{publicUrlId}`. Facets are separate keyed variants and inherit
-  geo/category invalidation instead of creating another tag grammar.
-- CMS writes invalidate through the authenticated, rate-limited and allowlisted
-  internal HTTP route. Feed imports emit one batched invalidation and must not
-  perform one request per changed row.
-- Proxy and lifecycle HTTP reads stay outside the Data Cache. A cache failure
-  does not expose data or abort a CMS write; health alerts and the TTL bound the
-  stale-data window.
-
-### Jobs ownership contract
-
-- Exactly one deployed runtime owns Payload queue polling/execution with `JOBS_AUTORUN=true`; every other runtime uses `false`.
-- The current proven owner is one Next.js + Payload application runtime. A standalone worker is not claimed until a real worker entrypoint is implemented and verified.
-- Payload `autoRun` cron `* * * * *` polls explicit queues. `dispatchDueFeeds` = `*/5 * * * *`; maintenance tasks including `recoverLeadDeliveries` = `*/15 * * * *`.
-- Static queues keep `disableScheduling=false`; programmatic queues keep `disableScheduling=true`.
-- `enableConcurrencyControl=true` remains mandatory.
-- Jobs-owner handover is stop-old-before-enable-new; simultaneous owners and a public jobs endpoint are forbidden.
-
-### Public performance contract
-
-- Catalog and card composition remain React Server Components. Client
-  boundaries are limited to explicit interactions and public app imports use
-  narrow UI package entrypoints instead of the aggregate package barrel.
-- Catalog page 2+ is fetched through the Public Gateway, linked by
-  server-rendered anchors, marked `noindex,follow`, and self-canonical. Page 1
-  keeps the clean canonical URL.
-- Listing media reserves layout space with an explicit aspect ratio and
-  intrinsic dimensions. Below-the-fold images are lazy/async; priority is only
-  assigned to an identified above-the-fold candidate.
-- Local build and client-reference measurements are regression evidence, not
-  Web Vitals. LCP/CLS/INP acceptance requires a throttled staging trace against
-  an exact candidate SHA.
-
-## 6. Quality / Testing
-
-WORK uses targeted diagnostics. PR creation runs no CI. Before merge: AI review + one exact-head `STANDARD` or risk-specific `RISKY` SourceCraft gate. `.sourcecraft/ci.yaml` keeps both gates manual-only, requires `expected_commit_sha` and rejects a run whose `SOURCECRAFT_COMMIT_SHA` differs from that full SHA. Release reuses valid evidence and builds one immutable artifact.
-
-## 6.1 UI runtime profile
-
-- UX scope: `PUBLIC_COMMERCIAL` for site/catalog; `CMS_NATIVE_ADMIN` for Payload Admin.
-- UI input: verified starter snapshot, then one-time Design Intake.
-- Typeface direction: Manrope; source/license, Cyrillic coverage and required weights are verified during intake.
-- Color direction: starter visual theme is preserved where compatible; its brand-red semantic role becomes a contrast-safe dark-green brand role. Error/destructive red is retained.
-- Ownership: `primitives → layout → shared → domain → page-specific → composition`.
-- Styling: actual Tailwind 4 baseline and one project-owned semantic token source; no second UI library.
-- Component decision: `REUSE → VARIANT → CREATE` after starter inventory.
-- Default rendering: Server Components; client boundary only at interactive leaves.
-- Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents forbidden in reusable UI.
-- Representative page: `/donetsk/kvartiry/` before mass route scaling.
-- SEO owner: Product Structure/master registry; UI preserves one H1, metadata/canonical/structured-data compatibility.
-- States: responsive mobile/tablet/desktop plus loading/empty/error/success and catalog-specific partial/stale states where applicable.
-- Theme: light-only until a separate decision; class-based dark variant, `.dark` not installed.
-- Icon system: reuse actual starter system if single/consistent; otherwise Lucide default after intake.
-
-## 7. Delivery Profile
-
-`DELIVERY_PROFILE = CRITICAL`
-
-Reason: real leads/PII, production database, owner/editor auth, imports and business-critical integrations. Paid exact-head SourceCraft gate is mandatory before merge.
-
-## 8. Constraints
-
-### Optional module governance
+`src/platform/**` не содержит DON CITY literals и не импортирует Project. `src/project/**` владеет брендом, Site Profile, URL/SEO inputs и client readiness. Application composition root внедряет project config в portable platform modules.
 
 <!-- MODULE_GOVERNANCE_BEGIN -->
 | Module | State | Manifest |
@@ -152,13 +40,65 @@ Reason: real leads/PII, production database, owner/editor auth, imports and busi
 | `agents` | `disabled` | `none` |
 <!-- MODULE_GOVERNANCE_END -->
 
-Disabled means no runtime route, collection or Project module may exist. A
-module receives `docs/modules/<module>.md` only when its research/activation
-epic enables it and supplies the complete module contract.
+## 4. Data and Security Boundaries
 
-- Production and DNS changes require separate owner command.
-- Dedicated Secret Master scope per project; no cross-project fallback.
-- R2 modules remain prepared-off until research-first contract.
-- Exact package/API compatibility is verified from installed versions and official docs in EPIC-01.
-- Starter visuals may be preserved, but donor routes/menu/content/domain/metadata never override DON CITY Product Structure.
-- Every planned route must satisfy the page completeness/domain/metadata gate before the related Epic closes.
+- Public Gateway: `overrideAccess:false`, publication filters, explicit select/depth/limit и DTO.
+- System Gateway: только allowlisted operations могут использовать повышенный доступ.
+- Ingest Gateway: validation, idempotency, safe outbound и source isolation.
+- Lead intake: validation, rate limit, transactional outbox и централизованная redaction.
+- GraphQL выключен. Anonymous raw Payload REST для business collections запрещён.
+- Lead и archived property retention — 100 дней; lifecycle purge выполняет job, а не ручной SQL.
+- Production schema меняется только migrations после backup/restore/rehearsal evidence.
+
+## 5. Runtime Topology
+
+- Один существующий Timeweb VPS `doncity-server`.
+- Host Nginx завершает TLS и проксирует production на loopback `3000`, staging — на `3100`.
+- Production и staging используют один immutable image exact SHA, но разные env/database/storage prefixes.
+- Production: managed PostgreSQL 18, private Timeweb S3 prefix, `JOBS_AUTORUN=true`.
+- Staging: отдельная изолированная database/schema contract, отдельный storage prefix, `JOBS_AUTORUN=false`, всегда noindex.
+- Production image: `don-city-next:production-31367bfe4adf`; сохранён один предыдущий image/compose как rollback point.
+- Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
+
+Текущий repository readiness config остаётся fail-closed для `nginx`, `automaticBackup` и `externalMonitoring`, пока эти возможности не представлены полным durable evidence. Это не отменяет факт работающего host Nginx и provider DB backup; расхождение закрывается после media backup, health freshness и независимого monitoring proof.
+
+## 6. Jobs, Cache and Lifecycle
+
+- Ровно один runtime владеет Payload queue polling; handover — stop-old-before-enable-new.
+- `dispatchDueFeeds` планируется каждые 5 минут, maintenance/recovery — каждые 15 минут.
+- Feed sources по умолчанию disabled; реальный feed включается только после owner-approved endpoint/allowlist.
+- Public Gateway reads используют deterministic cache keys, 3600-second safety TTL и tags `site`, `properties`, `geo:*`, `district:*`, `property:*`.
+- CMS/import invalidation батчируется; lifecycle и proxy reads не кэшируются.
+
+## 7. SEO and UI Contracts
+
+- UX: `PUBLIC_COMMERCIAL`; Payload Admin: `CMS_NATIVE_ADMIN`.
+- Site Profile: `SINGLE_GEO` Donetsk; активны secondary market и категории `kvartiry`, `doma`, `uchastki`.
+- Server Components по умолчанию; client boundaries только для интерактивных leaves.
+- Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
+- Один project-owned semantic token source; light-only, `.dark` не устанавливается.
+- Global production noindex является release override над page-level SEO contracts.
+
+## 8. Delivery and Recovery
+
+- Branch/PR не запускают платный CI автоматически.
+- Перед merge: review и один manual exact-head SourceCraft `STANDARD` либо risk-specific `RISKY` gate.
+- Release: один manual exact-main workflow, один immutable artifact, один rollout и live smoke.
+- Database rollback связан с конкретной migration/backup evidence; application rollback использует предыдущий immutable image.
+- Provider DB backup и изолированный restore/migration proof подтверждены. Media backup/restore и durable health freshness остаются открытыми.
+
+## 9. Current Operational Gaps
+
+- production owner user не создан;
+- независимый alert/delivery channel и внешний monitoring не подключены;
+- media backup/restore evidence отсутствует;
+- NAP требует внешней проверки владельцем;
+- реальный feed отключён;
+- internal health остаётся degraded из-за отсутствия durable DB/media backup freshness signals.
+
+## 10. Constraints
+
+- Один сервер и существующие managed services; второй сервер или перенос не подразумеваются.
+- Секреты — только dedicated Secret Master scope, без значений в git/docs/logs.
+- DNS, снятие noindex, destructive migrations и включение production integrations требуют отдельного owner decision.
+- Подробная URL/SEO grammar — Product Structure, seeds, ADR и approved master plan; этот документ не дублирует реестр.
