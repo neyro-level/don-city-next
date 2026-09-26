@@ -111,9 +111,9 @@ export function PropertyPageView({
 							<aside id="section-property-actions">
 								<Card elevation="raised" className="sticky top-32">
 									<CardHeader>
-										<h2 className="text-display-small font-semibold leading-tight-copy">
+										<p className="text-display-small font-semibold leading-tight-copy">
 											{property.price?.label ?? "Цена по запросу"}
-										</h2>
+										</p>
 										<CardDescription>{property.address}</CardDescription>
 									</CardHeader>
 									<CardContent>

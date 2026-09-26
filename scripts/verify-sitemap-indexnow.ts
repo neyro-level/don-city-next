@@ -14,7 +14,6 @@ import {
 	projectSitemapEntries,
 	projectSitemapEntriesForEvidence,
 	projectSitemapOwners,
-	projectSitemapPaths,
 	registryContentUpdatedAt,
 } from "../src/project/sitemap.ts";
 import {
@@ -151,13 +150,14 @@ assert.deepEqual(buildRobots("noindex", `${origin}/`), {
 	rules: [{ userAgent: "*", disallow: "/" }],
 });
 assert.deepEqual(buildRobots("public", origin), {
-	rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api"] }],
+	rules: [
+		{
+			userAgent: "*",
+			allow: ["/", "/api/media/file/"],
+			disallow: ["/admin/", "/api/"],
+		},
+	],
 	sitemap: `${origin}/sitemap.xml`,
-	host: origin,
-});
-assert.deepEqual(buildRobots("public", origin, projectSitemapPaths), {
-	rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api"] }],
-	sitemap: projectSitemapPaths.map((path) => `${origin}${path}`),
 	host: origin,
 });
 

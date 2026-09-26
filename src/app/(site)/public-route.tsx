@@ -20,12 +20,16 @@ import {
 } from "@/core/data-access/public/cached-provider";
 import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import {
-	toMetadata,
-	withProjectIndexingPolicy,
-} from "@/project/page-metadata";
+	buildBreadcrumbJsonLd,
+	buildCatalogItemListJsonLd,
+	buildOrganizationJsonLd,
+	buildPropertyJsonLd,
+	JsonLdScript,
+} from "@/core/seo/structured-data";
 import type { PageKey } from "@/platform/grammar/types";
 import { leadConsentContext } from "@/project/legal.config";
 import { getProjectLegalDocument } from "@/project/legal-documents";
+import { toMetadata, withProjectIndexingPolicy } from "@/project/page-metadata";
 import type { PublicRouteSearchParams } from "@/project/public-route-resolver";
 import { siteConfig } from "@/project/site.config";
 import { buildStaticMarketingPage } from "@/project/static-page-composition";
@@ -106,6 +110,16 @@ function LegalLink({
 	);
 }
 
+function breadcrumbJsonLdItems(
+	items: readonly { label: string; href?: string }[],
+	canonicalPath: string,
+) {
+	return items.map((item) => ({
+		name: item.label,
+		path: item.href ?? canonicalPath,
+	}));
+}
+
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
 	searchParams: PublicRouteSearchParams = {},
@@ -132,6 +146,9 @@ export async function generateResolvedRouteMetadata(
 		canonicalPath: result.canonicalPath,
 		indexing: result.robots.indexing,
 		following: result.robots.following,
+		...(result.property?.primaryMedia
+			? { openGraph: { image: result.property.primaryMedia } }
+			: {}),
 	});
 }
 
@@ -178,17 +195,25 @@ export async function ResolvedPublicRoutePage({
 			},
 		};
 		return (
-			<PropertyPageView
-				property={result.property}
-				leadContext={leadPage.leadContext}
-				breadcrumbs={result.breadcrumbs}
-				contextLinks={result.internalLinks}
-				pageIdentity={result.identity}
-				legalSupport={{
-					href: projectUrls.lawyer,
-					formKind: "legal",
-				}}
-			/>
+			<>
+				<JsonLdScript data={buildPropertyJsonLd(result.property)} />
+				<JsonLdScript
+					data={buildBreadcrumbJsonLd(
+						breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),
+					)}
+				/>
+				<PropertyPageView
+					property={result.property}
+					leadContext={leadPage.leadContext}
+					breadcrumbs={result.breadcrumbs}
+					contextLinks={result.internalLinks}
+					pageIdentity={result.identity}
+					legalSupport={{
+						href: projectUrls.lawyer,
+						formKind: "legal",
+					}}
+				/>
+			</>
 		);
 	}
 	if (result.catalogQuery) {
@@ -200,41 +225,55 @@ export async function ResolvedPublicRoutePage({
 				page: result.catalogQuery.page ?? 1,
 			},
 		});
+		if (
+			(catalog.list.page > 1 && catalog.list.totalPages === 0) ||
+			catalog.list.page > catalog.list.totalPages
+		) {
+			notFound();
+		}
 		return (
-			<CatalogPageView
-				list={catalog.list}
-				filters={catalog.filters}
-				leadContext={{
-					formKind: "general",
-					sourcePage: result.canonicalPath,
-					category: result.catalogQuery.category,
-					district: result.catalogQuery.districtSlug,
-					city: result.catalogQuery.geoSlug,
-					...leadConsentContext(),
-				}}
-				copy={{
-					eyebrow: siteConfig.brandName,
-					title: result.h1,
-					description: result.description,
-					introduction: result.introduction,
-					emptyMessage:
-						"Опубликованных объектов по этим условиям пока нет. Оставьте критерии — подготовим подборку.",
-					ctaTitle: "Получить подборку объектов",
-					ctaDescription:
-						"Расскажите, какой объект нужен. Уточним критерии и предложим доступные варианты.",
-					ctaSubmitLabel: "Получить подборку",
-				}}
-				breadcrumbs={result.breadcrumbs}
-				contextLinks={result.internalLinks}
-				pagination={buildCatalogPagination(
-					result.canonicalPath,
-					catalog.list.page,
-					catalog.list.totalPages,
-				)}
-				pageIdentity={catalog.identity}
-				analyticsEvent={catalogAnalyticsEvent(result.key)}
-				analyticsFilterKeys={analyticsFilterKeys(searchParams)}
-			/>
+			<>
+				<JsonLdScript data={buildCatalogItemListJsonLd(catalog.list)} />
+				<JsonLdScript
+					data={buildBreadcrumbJsonLd(
+						breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),
+					)}
+				/>
+				<CatalogPageView
+					list={catalog.list}
+					filters={catalog.filters}
+					leadContext={{
+						formKind: "general",
+						sourcePage: result.canonicalPath,
+						category: result.catalogQuery.category,
+						district: result.catalogQuery.districtSlug,
+						city: result.catalogQuery.geoSlug,
+						...leadConsentContext(),
+					}}
+					copy={{
+						eyebrow: siteConfig.brandName,
+						title: result.h1,
+						description: result.description,
+						introduction: result.introduction,
+						emptyMessage:
+							"Опубликованных объектов по этим условиям пока нет. Оставьте критерии — подготовим подборку.",
+						ctaTitle: "Получить подборку объектов",
+						ctaDescription:
+							"Расскажите, какой объект нужен. Уточним критерии и предложим доступные варианты.",
+						ctaSubmitLabel: "Получить подборку",
+					}}
+					breadcrumbs={result.breadcrumbs}
+					contextLinks={result.internalLinks}
+					pagination={buildCatalogPagination(
+						result.canonicalPath,
+						catalog.list.page,
+						catalog.list.totalPages,
+					)}
+					pageIdentity={catalog.identity}
+					analyticsEvent={catalogAnalyticsEvent(result.key)}
+					analyticsFilterKeys={analyticsFilterKeys(searchParams)}
+				/>
+			</>
 		);
 	}
 
@@ -251,12 +290,19 @@ export async function ResolvedPublicRoutePage({
 		: undefined;
 	if (legalDocument && nap) {
 		return (
-			<LegalDocumentView
-				document={legalDocument}
-				legalName={nap.legalName}
-				email={nap.email}
-				linkRenderer={LegalLink}
-			/>
+			<>
+				<JsonLdScript
+					data={buildBreadcrumbJsonLd(
+						breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),
+					)}
+				/>
+				<LegalDocumentView
+					document={legalDocument}
+					legalName={nap.legalName}
+					email={nap.email}
+					linkRenderer={LegalLink}
+				/>
+			</>
 		);
 	}
 	const staticPage = buildStaticMarketingPage({
@@ -272,5 +318,15 @@ export async function ResolvedPublicRoutePage({
 		breadcrumbs: { items: result.breadcrumbs },
 		nap,
 	});
-	return <MarketingPageView page={staticPage} />;
+	return (
+		<>
+			{nap ? <JsonLdScript data={buildOrganizationJsonLd(nap)} /> : null}
+			<JsonLdScript
+				data={buildBreadcrumbJsonLd(
+					breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),
+				)}
+			/>
+			<MarketingPageView page={staticPage} />
+		</>
+	);
 }

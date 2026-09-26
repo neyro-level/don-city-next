@@ -210,7 +210,6 @@ for (const entry of seoRegistry) {
 
 for (const queryCase of [
 	{ path: "/donetsk/kvartiry/?rooms=1", canonical: "/donetsk/kvartiry/" },
-	{ path: "/donetsk/kvartiry/?page=1", canonical: "/donetsk/kvartiry/" },
 	{ path: "/donetsk/kvartiry/?page=2", canonical: "/donetsk/kvartiry/?page=2" },
 ]) {
 	const snapshot = await request(queryCase.path);
@@ -234,6 +233,14 @@ for (const queryCase of [
 		`unexpected robots ${actual.robots}`,
 	);
 }
+
+const pageOne = await request("/donetsk/kvartiry/?page=1");
+check(
+	pageOne.status === 301,
+	"query-page-one-redirect",
+	"/donetsk/kvartiry/?page=1",
+	`expected 301, received ${pageOne.status}`,
+);
 
 for (const path of [
 	"/kvartiry/donetsk/",
