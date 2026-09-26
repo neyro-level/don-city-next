@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { getPayload } from "payload";
 import config from "../payload.config.ts";
+import { systemOverrideAccess } from "../src/core/data-access/system/overrides.ts";
 import { calculatePropertyDerivedFields } from "../src/core/ingest/derived-fields.ts";
 import { requirePayloadRuntime } from "../src/project/env.ts";
 
@@ -218,10 +219,11 @@ if (sourceCheckOnly) {
 
 requirePayloadRuntime();
 const payload = await getPayload({ config });
+const maintenanceAccess = systemOverrideAccess("controlled-maintenance");
 const access = {
-	overrideAccess: true,
+	...maintenanceAccess,
 	context: {
-		systemGatewayOperation: "controlled-maintenance",
+		...maintenanceAccess.context,
 		source: "import",
 	},
 } as const;
