@@ -3,15 +3,18 @@ limit_req_zone $binary_remote_addr zone=doncity_leads:10m rate=10r/m;
 limit_req_zone $binary_remote_addr zone=doncity_internal:10m rate=30r/m;
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name www.doncity-home.ru;
+    add_header X-Robots-Tag "noindex, nofollow" always;
     ssl_certificate __TLS_CERTIFICATE_PATH__;
     ssl_certificate_key __TLS_PRIVATE_KEY_PATH__;
     return 308 https://doncity-home.ru$request_uri;
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name doncity-home.ru;
 
     client_max_body_size 20m;

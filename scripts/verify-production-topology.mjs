@@ -20,6 +20,7 @@ const s3MediaMigration = read(
 	"migrations/20260926_132000_s3_media_fields.ts",
 );
 const migrationIndex = read("migrations/index.ts");
+const payloadImportMap = read("src/app/(payload)/admin/importMap.js");
 
 for (const required of [
 	"one existing DON CITY Timeweb server",
@@ -124,6 +125,16 @@ for (const column of ['"prefix"', '"_objectkey"']) {
 assert.ok(
 	migrationIndex.includes('name: "20260926_132000_s3_media_fields"'),
 	"S3 media migration must remain registered",
+);
+assert.ok(
+	payloadImportMap.includes(
+		'"@payloadcms/storage-s3/client#S3ClientUploadHandler"',
+	),
+	"Payload Admin import map must include the production S3 client component",
+);
+assert.ok(
+	productionCompose.includes("- /app/.next/cache"),
+	"Read-only production runtime must provide a writable Next.js cache tmpfs",
 );
 
 console.log("verify-production-topology: ok");
