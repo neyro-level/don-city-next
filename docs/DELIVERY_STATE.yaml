@@ -10,7 +10,7 @@ repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 31367bfe4adf476925eca97b5dcb13088e31191e
+  base_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
   active_branch: main
 task_manager:
   initialized: true
@@ -202,10 +202,12 @@ production:
   authorized: true
   authorization_scope: production resources and global-noindex rollout
   status: LIVE_NOINDEX
-  exact_main_sha: 31367bfe4adf476925eca97b5dcb13088e31191e
-  image_tag: don-city-next:production-31367bfe4adf
-  merge_gate_run: 78
-  release_attestation_run: 79
+  exact_main_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
+  image_tag: don-city-next:production-cd5c74391265
+  server_image_id: sha256:db58836c84b3287c6a4c288dd81a2e7de6247c57a8240aa3483e8549e833d51c
+  artifact_sha256: 4d90a04f3e557d30fe21a44e9f939316cc95d5a76cd4d649d8f13e934ff2bc9c
+  merge_gate_run: 81
+  release_attestation_run: 82
   url: https://doncity-home.ru
   properties: 12
   media: 92
@@ -213,7 +215,7 @@ production:
   staging_jobs: false
   real_feed: disabled
   indexing: noindex
-  rollback_image: don-city-next:production-e5e9210
+  rollback_image: don-city-next:production-31367bfe4adf
   health: degraded
   blockers:
     - first-production-owner

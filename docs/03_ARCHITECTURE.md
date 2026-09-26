@@ -53,11 +53,13 @@ DON CITY — отдельный client instance на Next.js App Router, React, 
 ## 5. Runtime Topology
 
 - Один существующий Timeweb VPS `doncity-server`.
+- Managed PostgreSQL 18 доступен приложению через private VPC; публичное раскрытие БД запрещено.
+- Production runtime secrets принадлежат scope `DonCity Server/prod`; значения не хранятся в Git или документации.
 - Host Nginx завершает TLS и проксирует production на loopback `3000`, staging — на `3100`.
 - Production и staging используют один immutable image exact SHA, но разные env/database/storage prefixes.
 - Production: managed PostgreSQL 18, private Timeweb S3 prefix, `JOBS_AUTORUN=true`.
 - Staging: отдельная изолированная database/schema contract, отдельный storage prefix, `JOBS_AUTORUN=false`, всегда noindex.
-- Production image: `don-city-next:production-31367bfe4adf`; сохранён один предыдущий image/compose как rollback point.
+- Production image: `don-city-next:production-cd5c74391265`; предыдущий `don-city-next:production-31367bfe4adf` и его compose сохранены как единственная непосредственная rollback point.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 
 Текущий repository readiness config остаётся fail-closed для `nginx`, `automaticBackup` и `externalMonitoring`, пока эти возможности не представлены полным durable evidence. Это не отменяет факт работающего host Nginx и provider DB backup; расхождение закрывается после media backup, health freshness и независимого monitoring proof.

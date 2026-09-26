@@ -26,7 +26,7 @@ const payloadAdminLayout = read(
 );
 
 for (const required of [
-	"one existing DON CITY Timeweb server",
+	"Один существующий Timeweb VPS `doncity-server`",
 	"managed PostgreSQL 18",
 	"private VPC",
 	"DonCity Server/prod",

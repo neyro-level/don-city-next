@@ -7,7 +7,7 @@ Updated: 2026-09-26
 ## Completed for Current Release
 
 - [x] Approved product contract and completed implementation graph.
-- [x] Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence.
+- [x] Clean canonical `main`, exact SHA and green risk-classified SourceCraft evidence.
 - [x] Owner explicitly authorized production resources and noindex rollout.
 - [x] Immutable artifact built once and deployed through Compose + host Nginx/TLS.
 - [x] Immutable artifact built once and identified by exact SHA.
@@ -17,7 +17,8 @@ Updated: 2026-09-26
 - [x] Application rollback image and compose point retained.
 - [x] 12 listings / 92 media items verified; real feed remains disabled.
 - [x] Live HTTPS, global noindex and `robots.txt` disallow verified.
-- [x] SourceCraft release attestation run 79 passed for exact main SHA.
+- [x] SourceCraft release attestation run 82 passed for exact main SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d`.
+- [x] Approved logo, compact header mark, footer lockup and favicon are live; desktop/mobile visual smoke passed.
 
 ## Required Before Indexing / Lead Operations
 
