@@ -1,11 +1,11 @@
 schema_version: 1
-program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
+program: AMS-DON-CITY-CORE55-POSTPROD
 plan_version: v9
 plan_status: APPROVED
-current_wave: CORE_5_5_TASK_MANAGER_IMPORT
+current_wave: CORE_5_5_DEVELOPER_HANDOFF
 current_epic: null
 current_task: null
-next_action: canonical-validate-import-reconcile-then-start-developer-goal
+next_action: start-developer-goal-and-claim-first-ready-task
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
@@ -14,9 +14,9 @@ repository:
   active_branch: codex/master-plan-core-5-5
 task_manager:
   initialized: true
-  reconciliation: APPROVED_VALIDATION_PENDING
+  reconciliation: CLEAN
   current_task: null
-  reason: exact v9 is owner-approved; v7 graph remains immutable history; canonical validation/import/reconciliation must pass before Developer claim
+  reason: collision-safe Core 5.5 graph imported with 10/10 coverage, 55 managed nodes, zero drift and zero cycles; Developer claim is authorized
 evidence:
   rp_00:
     status: delivered

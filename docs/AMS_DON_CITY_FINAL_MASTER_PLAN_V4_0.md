@@ -1,6 +1,6 @@
 # AMS MASTER PLAN — DON CITY — CITY-FIRST REPLAN
 
-Plan ID: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
+Plan ID: AMS-DON-CITY-CORE55-POSTPROD
 Version: v9
 Status: APPROVED
 
@@ -10,7 +10,7 @@ Status: APPROVED
 **Date:** `2026-09-27`
 **Architect phase:** `APPROVAL_HANDOFF`
 **Approved by:** `owner`
-**Approved at:** `2026-09-27T01:03:39+03:00`
+**Approved at:** `2026-09-27T01:23:46+03:00`
 **Target repository path:** `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`
 **Project:** агентство недвижимости «ДОН СИТИ»
 **Production domain:** `https://doncity-home.ru`
@@ -46,7 +46,7 @@ Revision input ID: `ARCHITECT-2026-09-27-CORE55-FINAL-AUDIT`
 - Executability finding accepted: CP-00 is completed assembly evidence and is not re-imported as implementation work. CP-01…CP-08 receive autonomous task cards; CP-09 remains a production-only parent with no autonomous implementation task.
 - External limit: the owner-authorized temporary SourceCraft PAT passed API and exact-SHA push in this session, but canonical Secret Master authentication must be rotated before a later session. Credential loss is a stop condition, not a reason to use another Git provider.
 - Sections changed: metadata, historical/current precedence, commercial/newbuild scope, §33D dependency matrix/audit/readiness, active execution order and Task Manager inventory contract.
-- Owner approval: exact phrase `план утвержден`, received `2026-09-27T01:03:39+03:00` for this v9 snapshot.
+- Owner approval: exact phrase `план утвержден`, received `2026-09-27T01:03:39+03:00`; the owner then explicitly confirmed the collision-safe Plan ID `AMS-DON-CITY-CORE55-POSTPROD` at `2026-09-27T01:23:46+03:00` after canonical import detected the immutable v7 graph under the former identity.
 - Result: four-pass audit and graph validation pass; exact v9 is `APPROVED`. Canonical `Validate → Init → Import → Reconcile` and a clean Developer handoff are now authorized; production, public indexing, real-feed activation and destructive/external actions remain outside this approval.
 
 ## 5.0.0 / v8 REVIEW — 2026-09-27
@@ -1999,7 +1999,7 @@ must not reopen the route owner without a new owner decision.
 
 ---
 
-# 33D. CORE 5.5 POST-PRODUCTION HARDENING PROGRAM — v9 READY FOR OWNER APPROVAL
+# 33D. CORE 5.5 POST-PRODUCTION HARDENING PROGRAM — v9 APPROVED
 
 This section is the canonical assembly draft for the owner packet received on
 2026-09-27. It does not reopen delivered v7 work without evidence and does not
@@ -2418,6 +2418,7 @@ Safe bypass: a blocked raw-SQL/HSTS task releases its claim and the Developer co
 | OD-06 | End-state indexing policy | Launch the complete verified site as `public`; keep staging externally noindex and keep feed activation separate | CP-09 | decided 2026-09-27 | DECIDED: PUBLIC |
 | OD-07 | First-four-month indexable product scope | Secondary apartments, houses, land, commercial real estate and legal department; newbuild/ЖК remains disabled and non-indexable | CP-02A, CP-02, CP-09 | decided 2026-09-27 | DECIDED |
 | OD-08 | Exact commercial and legal route registry | Preserve `/donetsk/kommercheskaya/`; launch legal department at `/yurist/`; child legal routes stay absent/non-indexable until a factual service/content contract | CP-02A | decided 2026-09-27 | DECIDED |
+| OD-09 | Collision-safe execution identity for Core 5.5 | Use `AMS-DON-CITY-CORE55-POSTPROD`; preserve the former v7 plan identity and all historical ledgers unchanged in the same `.beads` store | Task Manager import and Developer handoff | decided 2026-09-27 | DECIDED |
 
 ## FINAL-AUDIT READINESS
 
@@ -2426,8 +2427,9 @@ Current result: `READY_WITH_LIMITS`; exact v9 is owner-`APPROVED` and may enter 
 - Four independent audit passes are recorded above; blocker findings are resolved in v9.
 - CP-00 factual evidence is complete and remains historical assembly evidence.
 - OD-03/OD-04 block only their affected implementation decisions, not approval or independent ready work.
-- Existing v7 graph/history must not be overwritten; v9 uses a new `dc55`
-  plan-scoped inventory and requires clean validation/reconciliation after approval.
+- Existing v7 graph/history must not be overwritten; v9 uses Plan ID
+  `AMS-DON-CITY-CORE55-POSTPROD` and a new `dc55` plan-scoped inventory, with
+  clean validation/reconciliation required before Developer claim.
 - The temporary SourceCraft credential is a declared external limit. Loss of
   access stops Git-dependent delivery until canonical Secret Master rotation;
   it never permits a fallback provider or secret exposure.

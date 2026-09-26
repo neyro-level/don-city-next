@@ -125,7 +125,7 @@ const inventory = {
   schema_version: 2,
   beads_prefix: 'dc55',
   source: {
-    plan_id: 'AMS-DON-CITY-REPLAN-V4-CITY-FIRST',
+    plan_id: 'AMS-DON-CITY-CORE55-POSTPROD',
     path: planPath,
     version: sourceVersion,
     status: sourceStatus,

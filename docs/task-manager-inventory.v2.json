@@ -2,13 +2,13 @@
   "schema_version": 2,
   "beads_prefix": "dc55",
   "source": {
-    "plan_id": "AMS-DON-CITY-REPLAN-V4-CITY-FIRST",
+    "plan_id": "AMS-DON-CITY-CORE55-POSTPROD",
     "path": "docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md",
     "version": "v9",
     "status": "APPROVED",
     "approved_by": "owner",
-    "approved_at": "2026-09-27T01:03:39+03:00",
-    "sha256": "a7754603f11dc2e0def9759e407d2f25db720e89a5ad6f391d7e797fa5e30a15",
+    "approved_at": "2026-09-27T01:23:46+03:00",
+    "sha256": "174b8d28821ce9131771f2ae97fb658b13d8671c339cb4dd876ebfdb400a9f49",
     "epic_anchors": [
       "EPIC-67",
       "EPIC-68",
