@@ -3,20 +3,20 @@ program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
 plan_version: v7
 plan_status: APPROVED
 current_wave: W4_STAGING_RELEASE_CANDIDATE
-current_epic: dcv4-epic-45
-current_task: dcv4-task-45-live-staging
-next_action: review-risky-gate-merge-and-redeploy-exact-main-to-staging
+current_epic: dcv4-epic-47
+current_task: dcv4-task-47-evidence
+next_action: create-pr-review-run-risky-gate-and-merge-epic-47
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: e5350528e8a0afa3646edef72494c5355700534d
-  active_branch: codex/epic-45-live-staging
+  base_sha: d6359f3d8461014bf7e2946d914d7ea473102b5e
+  active_branch: codex/epic-47-release-rehearsal
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcv4-task-45-live-staging
-  reason: owner authorized isolated live staging; production remains forbidden
+  current_task: dcv4-task-47-evidence
+  reason: traceability complete; delivery requires PR review exact-head RISKY gate and merge
 evidence:
   rp_00:
     status: delivered
@@ -151,20 +151,53 @@ evidence:
       - docs/research/EPIC-45_STAGING_IMPLEMENTATION.md
       - docs/research/EPIC-45_LIVE_STAGING_VERIFICATION.md
       - deploy/clients/timeweb/proofs/STAGING_PROOF.md
+  epic_46:
+    status: delivered
+    pull_request: 60
+    gate_run: 62
+    gated_head: cf3f889d6a4cbf364e3b9cc52aa68bc73675e330
+    merge_commit: d6359f3d8461014bf7e2946d914d7ea473102b5e
+    staging_runtime_candidate: d8b7d63dd7d594524bfcb0626a4fb1348d9e1765
+    full_crawl: PASS
+    lifecycle_fixture_cleanup: PASS
+    production_touched: false
+    reports:
+      - docs/research/EPIC-46_FULL_SEO_CRAWL_PREFLIGHT.md
+      - docs/research/EPIC-46_FULL_SEO_CRAWL_VERIFICATION.md
+      - deploy/clients/timeweb/proofs/STAGING_PROOF.md
+  epic_47:
+    status: application-rehearsal-pass
+    branch: codex/epic-47-release-rehearsal
+    base_sha: d6359f3d8461014bf7e2946d914d7ea473102b5e
+    target: existing-isolated-staging
+    exact_main_manifest: PASS
+    release_candidate_sha: d6359f3d8461014bf7e2946d914d7ea473102b5e
+    image_tag: don-city-next:staging-d6359f3
+    server_image_id: sha256:0d58d25a4173b865ff315581753ae8fe819aa9f6f16a43648ad7fe40211110eb
+    artifact_sha256: f06bf1522dda001fd2e04447e839eda0257bc2a2c5b9816b4a61b207fcd6d7f8
+    deploy_rollback_redeploy: PASS
+    final_full_crawl: PASS
+    targeted_verification: PASS
+    transport_cleanup: PASS
+    operations_readiness: PARTIAL
+    production_authorized: false
+    reports:
+      - docs/research/EPIC-47_RELEASE_REHEARSAL_PREFLIGHT.md
+      - docs/research/EPIC-47_RELEASE_REHEARSAL.md
 task_contract:
-  goal: "Prepare the fail-closed DON CITY Timeweb staging contract and prove every safe local EPIC-45 scenario."
-  non_goals: "Production, public indexing, production data reuse and destructive production database action."
+  goal: "Build one immutable exact-main artifact and prove staging deploy, rollback and redeploy without production action."
+  non_goals: "Production, DNS, public indexing, secret mutation, provider resource lifecycle and production data."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
   delivery_profile: CRITICAL
   realty_profile: "catalog / BUILD; modules deferred to approved epic scope."
   ux_scope: PUBLIC_COMMERCIAL
-  boundaries: "Staging uses a separate database, secrets and media; jobs remain disabled and indexing stays noindex until later owner gates."
-  data_changes: "No production data change; local proof uses sanitized fixtures and the existing isolated development database only where required."
-  auth_pii: "No production PII or secret values enter Git, logs or staging fixtures."
-  integrations: "Timeweb staging, DNS/TLS and Secret Master writes are owner-authorized; external feed/lead delivery remains disabled until real destination hosts are supplied."
-  proof: "Static checks plus authorized live candidate: isolated DB/S3/secrets, migrations, HTTPS/noindex, authenticated health, 15/15 active routes and synthetic lead idempotency/cleanup. Final exact-main redeploy follows merge."
+  boundaries: "Existing isolated staging only; separate database, secrets and media; jobs disabled; noindex preserved."
+  data_changes: "No migration delta and no production data change; app-image rollback only."
+  auth_pii: "No production PII, secret values or credential-bearing logs enter evidence."
+  integrations: "Existing staging runtime only; DNS, Secret Master mutation and external feed/lead delivery are out of scope."
+  proof: "Exact SHA/revision/checksum, immutable image, full verification, deploy health, rollback health and final candidate identity."
   gate: RISKY
-  done_state: "EPIC-45 PR merged after one exact-head RISKY gate and authorized live staging evidence; otherwise task remains explicitly gated."
+  done_state: "Exact-main immutable candidate survives deploy, rollback and redeploy on isolated staging, then EPIC-47 merges after one exact-head RISKY gate."
 production:
   authorized: false
   gate: explicit-owner-release-command
