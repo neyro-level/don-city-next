@@ -1,11 +1,13 @@
 import type { PageSEOContract } from "@ams/realtbase-contracts";
 import type { Metadata } from "next";
+import { absoluteUrl } from "../core/seo/site.ts";
 import { toMetadata as toPlatformMetadata } from "../platform/seo/page-metadata.ts";
 import {
 	composeMetadataRobots,
 	getProjectIndexingPolicy,
 	type IndexingPolicy,
 } from "./indexing-policy.ts";
+import { siteConfig } from "./site.config.ts";
 
 export function withProjectIndexingPolicy(
 	metadata: Metadata,
@@ -22,7 +24,11 @@ export function toMetadata(
 	seo: PageSEOContract,
 	policy: IndexingPolicy = getProjectIndexingPolicy(),
 ): Metadata {
-	const pageMetadata = toPlatformMetadata(seo);
+	const pageMetadata = toPlatformMetadata(seo, {
+		absoluteUrl,
+		brandName: siteConfig.brandName,
+		locale: siteConfig.locale,
+	});
 	return {
 		...pageMetadata,
 		robots: composeMetadataRobots(policy, {

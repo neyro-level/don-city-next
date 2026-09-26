@@ -372,13 +372,31 @@ function applyPaginationQuery(
 	result: ResolvedPublicRoute,
 	searchParams: PublicRouteSearchParams,
 ): ResolvedPublicRoute {
-	if (
-		result.kind !== "page" ||
-		!result.catalogQuery ||
-		!("page" in searchParams)
-	) {
+	if (result.kind !== "page" || !result.catalogQuery) {
 		return result;
 	}
+	const allowedKeys = new Set(["page"]);
+	if (result.key.kind === "categoryGeo" && result.key.category === "kvartiry") {
+		allowedKeys.add("rooms");
+	}
+	if (
+		(result.key.kind === "categoryRoot" || result.key.kind === "categoryGeo") &&
+		result.key.category === "doma"
+	) {
+		allowedKeys.add("houseType");
+	}
+	const normalizedResult = Object.keys(searchParams).some(
+		(key) => !allowedKeys.has(key),
+	)
+		? {
+				...result,
+				robots: {
+					indexing: "noindex" as const,
+					following: "follow" as const,
+				},
+			}
+		: result;
+	if (!("page" in searchParams)) return normalizedResult;
 
 	const raw = searchParams.page;
 	const values = Array.isArray(raw) ? raw : raw === undefined ? [] : [raw];
@@ -387,22 +405,25 @@ function applyPaginationQuery(
 		typeof value === "string" && /^[1-9]\d*$/.test(value)
 			? Number(value)
 			: Number.NaN;
-	const page = Number.isSafeInteger(pageNumber) ? pageNumber : 1;
+	if (!Number.isSafeInteger(pageNumber)) {
+		return { kind: "notFound", statusCode: 404 };
+	}
+	const page = pageNumber;
 
-	if (page <= 1) {
+	if (page === 1) {
 		return {
-			...result,
-			robots: { indexing: "noindex", following: "follow" },
-			catalogQuery: { ...result.catalogQuery, page: 1 },
+			kind: "redirect",
+			statusCode: 301,
+			destination: result.canonicalPath,
 		};
 	}
 
-	const separator = result.canonicalPath.includes("?") ? "&" : "?";
+	const separator = normalizedResult.canonicalPath.includes("?") ? "&" : "?";
 	return {
-		...result,
-		canonicalPath: `${result.canonicalPath}${separator}page=${page}`,
+		...normalizedResult,
+		canonicalPath: `${normalizedResult.canonicalPath}${separator}page=${page}`,
 		robots: { indexing: "noindex", following: "follow" },
-		catalogQuery: { ...result.catalogQuery, page },
+		catalogQuery: { ...normalizedResult.catalogQuery, page },
 	};
 }
 

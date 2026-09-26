@@ -28,23 +28,18 @@ const repeatedPage = await resolveProjectPublicRoute(
 	dependencies,
 	{ page: ["2", "3"] },
 );
-assert.equal(repeatedPage.kind, "page");
-if (repeatedPage.kind === "page") {
-	assert.equal(repeatedPage.canonicalPath, "/donetsk/kvartiry/");
-	assert.equal(repeatedPage.robots.indexing, "noindex");
-	assert.equal(repeatedPage.catalogQuery?.page, 1);
-}
+assert.deepEqual(repeatedPage, { kind: "notFound", statusCode: 404 });
 
 const pageOne = await resolveProjectPublicRoute(
 	["donetsk", "kvartiry"],
 	dependencies,
 	{ page: "1" },
 );
-assert.equal(pageOne.kind, "page");
-if (pageOne.kind === "page") {
-	assert.equal(pageOne.canonicalPath, "/donetsk/kvartiry/");
-	assert.equal(pageOne.catalogQuery?.page, 1);
-}
+assert.deepEqual(pageOne, {
+	kind: "redirect",
+	statusCode: 301,
+	destination: "/donetsk/kvartiry/",
+});
 
 const [catalogView, catalogCard, imageAdapter, publicRoute, cacheProvider] =
 	await Promise.all([

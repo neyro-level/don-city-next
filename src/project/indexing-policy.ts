@@ -29,9 +29,7 @@ export function composeMetadataRobots(
 	policy: IndexingPolicy,
 	pageRobots: { index: boolean; follow: boolean },
 ) {
-	return policy === "noindex"
-		? metadataRobotsForPolicy(policy)
-		: pageRobots;
+	return policy === "noindex" ? metadataRobotsForPolicy(policy) : pageRobots;
 }
 
 export function xRobotsTagForPolicy(policy: IndexingPolicy): string | null {
@@ -41,7 +39,6 @@ export function xRobotsTagForPolicy(policy: IndexingPolicy): string | null {
 export function buildRobots(
 	policy: IndexingPolicy,
 	host: string,
-	sitemapPaths: readonly string[] = ["/sitemap.xml"],
 ): MetadataRoute.Robots {
 	if (policy === "noindex") {
 		return {
@@ -49,18 +46,34 @@ export function buildRobots(
 		};
 	}
 
-	const sitemapUrls = sitemapPaths.map((path) =>
-		new URL(path, host).toString(),
-	);
 	return {
 		rules: [
 			{
 				userAgent: "*",
-				allow: "/",
-				disallow: ["/admin", "/api"],
+				allow: ["/", "/api/media/file/"],
+				disallow: ["/admin/", "/api/"],
 			},
 		],
-		sitemap: sitemapUrls.length === 1 ? sitemapUrls[0] : sitemapUrls,
+		sitemap: new URL("/sitemap.xml", host).toString(),
 		host,
 	};
+}
+
+export function buildRobotsText(policy: IndexingPolicy, host: string): string {
+	if (policy === "noindex") {
+		return ["User-agent: *", "Disallow: /", ""].join("\n");
+	}
+
+	const origin = new URL(host);
+	return [
+		"User-agent: *",
+		"Allow: /",
+		"Allow: /api/media/file/",
+		"Disallow: /admin/",
+		"Disallow: /api/",
+		"Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid /",
+		`Sitemap: ${new URL("/sitemap.xml", origin).toString()}`,
+		`Host: ${origin.host}`,
+		"",
+	].join("\n");
 }

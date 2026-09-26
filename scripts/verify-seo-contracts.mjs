@@ -75,8 +75,8 @@ assert.deepEqual(buildRobots("public", fixtureOrigin), {
 	rules: [
 		{
 			userAgent: "*",
-			allow: "/",
-			disallow: ["/admin", "/api"],
+			allow: ["/", "/api/media/file/"],
+			disallow: ["/admin/", "/api/"],
 		},
 	],
 	sitemap: `${fixtureOrigin}/sitemap.xml`,
@@ -92,10 +92,9 @@ assert.deepEqual(
 	),
 	{ rules: [{ userAgent: "*", disallow: "/" }] },
 );
-const robotsSource = readFileSync("src/app/robots.ts", "utf8");
-assert.ok(robotsSource.includes("buildRobots("));
+const robotsSource = readFileSync("src/app/robots.txt/route.ts", "utf8");
+assert.ok(robotsSource.includes("buildRobotsText("));
 assert.ok(robotsSource.includes("getProjectIndexingPolicy()"));
-assert.ok(robotsSource.includes("projectSitemapPaths"));
 assert.ok(
 	readFileSync("src/app/layout.tsx", "utf8").includes(
 		"metadataRobotsForPolicy(getProjectIndexingPolicy())",
@@ -249,10 +248,16 @@ assert.deepEqual(
 assert.equal(sanitizeExplicitRedirectPath("/"), null);
 assert.equal(sanitizeExplicitRedirectPath("/obekty/next"), "/obekty/next");
 
-const sitemapSource = readFileSync("src/app/sitemap.ts", "utf8");
-assert.ok(sitemapSource.includes("generateSitemaps"));
-assert.match(sitemapSource, /export const revalidate = 3600;/);
-assert.equal(sitemapSource.includes("limit: 1000"), false);
+const sitemapIndexSource = readFileSync("src/app/sitemap.xml/route.ts", "utf8");
+const sitemapShardSource = readFileSync(
+	"src/app/sitemap/[...id]/route.ts",
+	"utf8",
+);
+assert.ok(sitemapIndexSource.includes("createSitemapIndexResponse"));
+assert.ok(sitemapShardSource.includes("createSitemapShardResponse"));
+assert.ok(sitemapIndexSource.includes('dynamic = "force-dynamic"'));
+assert.ok(sitemapShardSource.includes('dynamic = "force-dynamic"'));
+assert.equal(sitemapIndexSource.includes("limit: 1000"), false);
 const catalogSource = readFileSync(
 	"src/core/data-access/public/catalog.ts",
 	"utf8",

@@ -13,6 +13,7 @@ import {
 } from "../../core/data-access/system/jobs/index.ts";
 import { systemOverrideAccess } from "../../core/data-access/system/overrides.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
+import { catalogRetentionThreshold } from "../../core/ingest/catalog-retention.ts";
 import { dispatchDueFeeds } from "../../core/ingest/dispatch-due-feeds.ts";
 import { fetchConditionalFeed } from "../../core/ingest/feed-fetcher.ts";
 import {
@@ -23,8 +24,8 @@ import {
 import { createPayloadFeedIngestRepository } from "../../core/ingest/payload-feed-ingest-repository.ts";
 import { runDeliverLeadTask } from "../../core/leads/deliver-lead.ts";
 import {
-	recoverStaleSendingDelivery,
 	type LeadDeliveryStateRecord,
+	recoverStaleSendingDelivery,
 } from "../../core/leads/delivery-state.ts";
 import { isLiveFuturePayloadJob } from "../../core/leads/job-liveness.ts";
 import {
@@ -44,8 +45,8 @@ import {
 } from "../../core/security/safe-outbound-client.ts";
 import { parseTestApprovedOrigins } from "../../core/security/test-destinations.ts";
 import { getRuntimeClock } from "../../core/time/clock.ts";
-import { projectConfig } from "../project.config.ts";
 import { runtimeEnv } from "../env.ts";
+import { projectConfig } from "../project.config.ts";
 import {
 	type PayloadJobTaskSlug,
 	payloadJobQueues,
@@ -478,8 +479,9 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					},
 				};
 			}
-			const threshold = new Date(
-				Date.now() - retentionDays * 24 * 60 * minuteInMs,
+			const threshold = catalogRetentionThreshold(
+				nowDate(),
+				retentionDays,
 			).toISOString();
 			const archivedProperties = await req.payload.find({
 				collection: "properties",

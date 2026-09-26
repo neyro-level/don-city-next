@@ -45,8 +45,12 @@ export const projectSitemapDescriptors = projectSitemapOwners.map(
 	(owner, id) => ({ id, owner }),
 );
 
-export const projectSitemapPaths = projectSitemapDescriptors.map(
-	({ id }) => `/sitemap/${id}.xml`,
+export function projectSitemapPath(id: number): string {
+	return `/sitemap/${id}.xml`;
+}
+
+export const projectSitemapPaths = projectSitemapDescriptors.map(({ id }) =>
+	projectSitemapPath(id),
 );
 
 export function isProjectRegistrySitemapOwner(
