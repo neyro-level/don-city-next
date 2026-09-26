@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import type { PublicPropertyPageState } from "../src/core/data-access/public/provider.ts";
 import { createPropertyGoneResponse } from "../src/core/http/property-gone-response.ts";
@@ -63,10 +64,7 @@ const states = new Map<string, PublicPropertyPageState>([
 			},
 		},
 	],
-	[
-		"1045",
-		{ lifecycle: { kind: "gone", statusCode: 410, robots: "noindex" } },
-	],
+	["1045", { lifecycle: { kind: "gone", statusCode: 410, robots: "noindex" } }],
 ]);
 
 async function resolve(path: string) {
@@ -127,5 +125,8 @@ assert.match(goneHtml, /<html lang="ru">/);
 assert.match(goneHtml, /<meta name="viewport"/);
 assert.match(goneHtml, /<main>/);
 assert.match(goneHtml, /<h1>Объект снят с публикации<\/h1>/);
+
+const proxySource = readFileSync("src/proxy.ts", "utf8");
+assert.match(proxySource, /createPropertyGoneResponse\(result\.publicUrlId\)/);
 
 console.log("EPIC-29 property lifecycle route matrix: PASS");

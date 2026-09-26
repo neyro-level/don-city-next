@@ -204,6 +204,11 @@ if (!existsSync(proxyPath)) {
 			"src/proxy.ts: anonymous raw REST denial must return notFound",
 		);
 	}
+	if (!proxy.includes("createPropertyGoneResponse")) {
+		violations.push(
+			"src/proxy.ts: canonical gone-property URLs must preserve HTTP 410",
+		);
+	}
 }
 if (existsSync(middlewarePath)) {
 	violations.push(

@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getPublicPropertyByPublicUrlId } from "@/core/data-access/public/provider";
+import { createPropertyGoneResponse } from "@/core/http/property-gone-response";
 import { resolveProjectPublicRoute } from "@/project/public-route-resolver";
 import { anonymousRawRestEdgeDecision } from "./core/security/anonymous-raw-rest.ts";
 
@@ -18,6 +19,9 @@ async function resolvePublicRequest(request: NextRequest) {
 			const result = await resolveProjectPublicRoute(segments, {
 				loadProperty: getPublicPropertyByPublicUrlId,
 			});
+			if (result.kind === "gone") {
+				return createPropertyGoneResponse(result.publicUrlId);
+			}
 			if (result.kind === "redirect" && result.statusCode === 301) {
 				return NextResponse.redirect(
 					new URL(result.destination, request.url),

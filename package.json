@@ -82,6 +82,7 @@
 		"seo:registry:check": "node --experimental-strip-types scripts/generate-seo-registry.mjs",
 		"verify:seo-registry": "node --experimental-strip-types scripts/verify-seo-registry.ts",
 		"verify:seo-content-gate": "node --experimental-strip-types scripts/verify-seo-content-gate.ts",
+		"verify:seo-crawl": "node --experimental-strip-types scripts/verify-full-seo-crawl.ts",
 		"verify:land-facet-query": "node --experimental-strip-types scripts/verify-land-facet-query.ts",
 		"verify:site-profile": "node --experimental-strip-types scripts/verify-site-profile.ts",
 		"verify:url-grammar": "node --experimental-strip-types scripts/verify-url-grammar.ts",

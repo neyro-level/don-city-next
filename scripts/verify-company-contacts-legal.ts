@@ -5,6 +5,7 @@ import {
 	getProjectLegalDocument,
 	projectLegalSlugs,
 } from "../src/project/legal-documents.ts";
+import { seoRegistryById } from "../src/project/seo-registry.generated.ts";
 import { toPublicNapDTO } from "../src/project/site-settings.ts";
 import { buildStaticMarketingPage } from "../src/project/static-page-composition.ts";
 import { projectUrls } from "../src/project/url-grammar.ts";
@@ -72,6 +73,11 @@ for (const slug of projectLegalSlugs) {
 
 const consent = getProjectLegalDocument(projectLegalSlugs[1], nap);
 assert.equal(consent?.version, legalConsentConfig.currentConsentVersion);
+assert.equal(
+	getProjectLegalDocument(projectLegalSlugs[0], nap)?.title,
+	seoRegistryById.get("PRIVACY")?.h1,
+);
+assert.equal(consent?.title, seoRegistryById.get("CONSENT")?.h1);
 
 const thanks = page("spasibo", "noindex", "nofollow");
 assert.equal(thanks.leadContext, undefined);

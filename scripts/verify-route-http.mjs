@@ -76,4 +76,14 @@ if (propertyId && propertySemantic) {
 	}
 }
 
+const gonePropertyId = process.env.ROUTE_TEST_GONE_PROPERTY_ID;
+const gonePropertySemantic = process.env.ROUTE_TEST_GONE_PROPERTY_SEMANTIC;
+if (gonePropertyId && gonePropertySemantic) {
+	const gonePath = `/kvartiry/${gonePropertySemantic}-${gonePropertyId}/`;
+	const gone = await request(gonePath);
+	assert.equal(gone.response.status, 410, gonePath);
+	assert.equal(metadata(gone.body).robots, "noindex, follow", gonePath);
+	assert.match(gone.body, /<h1>Объект снят с публикации<\/h1>/, gonePath);
+}
+
 console.log("RP-06 HTTP route matrix: PASS");

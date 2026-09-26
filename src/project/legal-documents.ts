@@ -36,7 +36,7 @@ function privacyPolicy(nap: PublicNapDTO): ProjectLegalDocument {
 	return {
 		id: "privacy-policy",
 		slug: projectLegalSlugs[0],
-		title: "Политика конфиденциальности и обработки персональных данных",
+		title: "Политика конфиденциальности",
 		shortTitle: "Политика конфиденциальности",
 		description:
 			"Правила обработки и защиты персональных данных пользователей сайта DON CITY.",
