@@ -6,6 +6,7 @@ Updated: 2026-09-26
 
 ## 1. URL Model
 
+- Production origin: `https://doncity-home.ru`.
 - `/` — бренд, агентство и основной коммерческий intent.
 - `/donetsk/` — вся недвижимость Донецка.
 - `/{geo}/{kvartiry|doma|uchastki}/` — город × категория.
