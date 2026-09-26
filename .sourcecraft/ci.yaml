@@ -28,3 +28,19 @@ workflows:
           - name: verify-sourcecraft-commit
             script:
               - sh scripts/verify-sourcecraft-gate.sh
+
+  release-main-noindex:
+    inputs:
+      expected_commit_sha:
+        type: string
+        required: true
+        description: Full lowercase SHA of the exact current canonical main commit.
+    tasks:
+      - name: attest-exact-main-noindex
+        env:
+          EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}
+        cubes:
+          - name: verify-release-main
+            script:
+              - pnpm install --frozen-lockfile
+              - sh scripts/verify-sourcecraft-release.sh

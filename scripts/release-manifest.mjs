@@ -8,10 +8,15 @@ const root = process.cwd();
 const outputDir = join(root, ".release");
 const outputFile = join(outputDir, "release-manifest.json");
 const mode = process.env.RELEASE_MODE ?? "REHEARSAL";
+const indexing = process.env.RELEASE_INDEXING ?? "noindex";
 
 assert.ok(
 	mode === "REHEARSAL" || mode === "RELEASE",
 	"RELEASE_MODE must be REHEARSAL or RELEASE",
+);
+assert.ok(
+	indexing === "noindex" || indexing === "public",
+	"RELEASE_INDEXING must be noindex or public",
 );
 
 function git(args) {
@@ -27,7 +32,9 @@ async function sha256(path) {
 	return createHash("sha256").update(content).digest("hex");
 }
 
-const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+const packageJson = JSON.parse(
+	await readFile(join(root, "package.json"), "utf8"),
+);
 const migrationDir = join(root, "migrations");
 const migrations = (await readdir(migrationDir))
 	.filter((file) => file.endsWith(".ts") || file.endsWith(".json"))
@@ -38,8 +45,16 @@ const commit = git(["rev-parse", "HEAD"]);
 const originMain = git(["rev-parse", "origin/main"]);
 
 if (mode === "RELEASE") {
-	assert.equal(branch, "main", "RELEASE manifest requires the canonical main branch");
-	assert.equal(commit, originMain, "RELEASE manifest requires exact origin/main");
+	assert.equal(
+		branch,
+		"main",
+		"RELEASE manifest requires the canonical main branch",
+	);
+	assert.equal(
+		commit,
+		originMain,
+		"RELEASE manifest requires exact origin/main",
+	);
 	assert.equal(status, "", "RELEASE manifest requires a clean worktree");
 }
 
@@ -63,7 +78,7 @@ const manifest = {
 			mode === "REHEARSAL"
 				? "disabled for isolated staging"
 				: "single production runtime only",
-		indexing: mode === "REHEARSAL" ? "noindex" : "owner-gated",
+		indexing,
 	},
 	artifact: {
 		format: "docker-image",
@@ -74,7 +89,7 @@ const manifest = {
 	checksums: {
 		"package.json": await sha256("package.json"),
 		"pnpm-lock.yaml": await sha256("pnpm-lock.yaml"),
-		"Dockerfile": await sha256("Dockerfile"),
+		Dockerfile: await sha256("Dockerfile"),
 		"next.config.ts": await sha256("next.config.ts"),
 	},
 	rollback: {

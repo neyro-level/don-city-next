@@ -5,9 +5,11 @@ const gateScript = readFileSync("scripts/verify-sourcecraft-gate.sh", "utf8");
 const required = [
 	"merge-standard:",
 	"merge-risky:",
+	"release-main-noindex:",
 	"expected_commit_sha",
 	"EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}",
 	"sh scripts/verify-sourcecraft-gate.sh",
+	"sh scripts/verify-sourcecraft-release.sh",
 ];
 const forbidden = [
 	/^\s*on\s*:/m,
@@ -23,7 +25,9 @@ const gateRequired = [
 	"Commit SHA must be exactly 40 characters",
 	"SourceCraft run commit does not match expected PR head",
 ];
-const missingGateProof = gateRequired.filter((value) => !gateScript.includes(value));
+const missingGateProof = gateRequired.filter(
+	(value) => !gateScript.includes(value),
+);
 
 if (missing.length || automatic.length || missingGateProof.length) {
 	console.error(

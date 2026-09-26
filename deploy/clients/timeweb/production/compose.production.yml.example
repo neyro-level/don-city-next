@@ -1,0 +1,24 @@
+services:
+  app-production:
+    image: "${IMAGE:?set the immutable exact-main image tag}"
+    container_name: doncity-production-app
+    restart: unless-stopped
+    env_file:
+      - "${PRODUCTION_ENV_FILE:?set the approved production env file path}"
+    environment:
+      NODE_ENV: production
+      JOBS_AUTORUN: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/internal/healthz',{headers:{authorization:'Bearer '+process.env.INTERNAL_HEALTH_SECRET}}).then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# Production is the only jobs owner. Candidate and staging runtimes must keep
+# JOBS_AUTORUN=false until the previous production owner has stopped.
