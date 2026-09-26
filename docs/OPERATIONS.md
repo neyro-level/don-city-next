@@ -5,7 +5,7 @@ Updated: 2026-09-26
 
 ## Current Runtime
 
-- Production: `https://doncity-home.ru`, exact SHA `31367bfe4adf476925eca97b5dcb13088e31191e`, image `don-city-next:production-31367bfe4adf`.
+- Production: `https://doncity-home.ru`, exact release SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d`, image `don-city-next:production-cd5c74391265`.
 - One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`, staging loopback `3100`.
 - Managed PostgreSQL 18 and private Timeweb S3. Production and staging have separate database/secrets/storage prefixes.
 - Production is globally noindex. Staging is always noindex.
@@ -23,6 +23,8 @@ Updated: 2026-09-26
 ## Backup Truth
 
 - Provider PostgreSQL backup exists and an isolated temporary restore/migration rehearsal passed; the temporary database was removed.
+- Обязательная независимая копия БД создаётся командой `pg_dump -Fc` и хранится offsite; до устойчивого расписания и freshness evidence это остаётся открытым blocker.
+- Если когда-либо активирован local-media fallback, перед rollout отдельно archive `MEDIA_DIR`; текущий production использует private S3 и не считает локальный каталог media backup.
 - Authenticated health still lacks durable successful DB backup freshness and reports `backup_db_failure`.
 - Media backup/versioning and sampled restore are not yet proven; health reports `backup_media_failure`.
 - Until both signals are durable, health may remain `degraded` and indexing must remain disabled.
@@ -37,6 +39,7 @@ Updated: 2026-09-26
 
 ## Health and Monitoring
 
+- Independent alert channel использует `ALERT_WEBHOOK_URL` и не должен зависеть от этого VPS.
 - Detailed `/api/internal/healthz` is authenticated; external monitoring uses only the intended public availability signal.
 - External uptime monitoring must run outside this VPS.
 - Alerts cover site down, suspicious/overdue import, stalled jobs, dead lead delivery and backup failure.

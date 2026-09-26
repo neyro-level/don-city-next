@@ -14,7 +14,7 @@ Updated: 2026-09-26
 - [x] Public UI, accessibility, responsive states, cache/invalidation и runtime health.
 - [x] Isolated staging: database, S3 prefix, Nginx/TLS и global noindex.
 - [x] Production Compose/Nginx/TLS, managed PostgreSQL/S3 secrets и manual SourceCraft release workflow.
-- [x] Exact-main production rollout `31367bfe4adf476925eca97b5dcb13088e31191e`, global noindex и rollback point.
+- [x] Exact-main production rollout `cd5c743912650525f84d2d110e6a43c4e6c6e35d`, premium brand assets, global noindex и rollback point.
 - [x] 12 VK-derived listings and 92 photos imported and verified: 9 apartments, 3 houses/land-attached.
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.

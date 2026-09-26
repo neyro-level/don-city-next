@@ -1,5 +1,17 @@
 # Contract changelog
 
+## 2026-09-26 — Premium brand system release
+
+- Owner-approved DON CITY logo was integrated as the compact header mark,
+  original footer lockup and browser icons; Manrope remains the public typeface.
+- The new porcelain, deep-pine, copper and warm-ivory semantic palette is
+  documented in Design System 2.0 and live on desktop/mobile without overflow.
+- SourceCraft PR 71 passed exact-head STANDARD gate run 81 and merged as
+  `cd5c743912650525f84d2d110e6a43c4e6c6e35d`; release attestation run 82 passed.
+- The same immutable image was proved on isolated staging and released to
+  production. Global noindex, one jobs owner and immediate rollback image were
+  preserved; transfer artifacts and stale image tags were cleaned up.
+
 ## 2026-09-26 — Production noindex and documentation reconciliation
 
 - Exact SourceCraft `main` SHA `31367bfe4adf476925eca97b5dcb13088e31191e`

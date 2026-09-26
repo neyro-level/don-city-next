@@ -14,7 +14,7 @@ Updated: 2026-09-26
 
 ## Текущий статус
 
-- Production работает на `https://doncity-home.ru` из exact `main` SHA `31367bfe4adf476925eca97b5dcb13088e31191e` и immutable image `don-city-next:production-31367bfe4adf`.
+- Production работает на `https://doncity-home.ru` из exact release SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d` и immutable image `don-city-next:production-cd5c74391265`.
 - Глобальный `noindex` активен; `robots.txt` запрещает обход.
 - В каталоге 12 опубликованных объектов и 92 фотографии: 9 квартир и 3 дома/объекта с земельными участками. Отдельных объявлений категории «участки» пока нет.
 - Реальный feed отключён; production jobs включены только у одного runtime, staging jobs выключены.
