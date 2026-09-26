@@ -1,22 +1,22 @@
 schema_version: 1
 program: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
-plan_version: v8
-plan_status: REVIEW
-current_wave: CORE_5_5_PLAN_ASSEMBLY
+plan_version: v9
+plan_status: READY_FOR_OWNER_APPROVAL
+current_wave: CORE_5_5_AWAITING_OWNER_APPROVAL
 current_epic: null
 current_task: null
-next_action: complete-ui-core-5-0-delta-and-v8-assembly-before-owner-requested-final-audit
+next_action: owner-say-plan-approved-to-authorize-import-reconcile-and-developer-handoff
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
   base_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
-  active_branch: main
+  active_branch: codex/master-plan-core-5-5
 task_manager:
   initialized: true
-  reconciliation: BLOCKED_SOURCE_DRIFT
+  reconciliation: READY_STRUCTURAL_PASS_CANONICAL_APPROVED_VALIDATION_REQUIRED
   current_task: null
-  reason: v7 graph is delivered historical evidence; v8 Core 5.5 plan is REVIEW and must not be imported or claimed before final audit, owner approval and clean reconciliation
+  reason: v7 graph is delivered immutable history; v9 Core 5.5 plan passed final audit and exact structural validation; current ValidateDraft enum omits READY, so import remains forbidden until owner approval, canonical APPROVED validation and clean reconciliation
 evidence:
   rp_00:
     status: delivered

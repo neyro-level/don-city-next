@@ -1,14 +1,14 @@
 # AMS MASTER PLAN — DON CITY — CITY-FIRST REPLAN
 
 Plan ID: AMS-DON-CITY-REPLAN-V4-CITY-FIRST
-Version: v8
-Status: REVIEW
+Version: v9
+Status: READY_FOR_OWNER_APPROVAL
 
 **Replaces:** `AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO v6` / product contract `3.0.1`
 **Superseded source SHA-256:** `091d0e2a8592bac4504b5b6f925487fc2bc8c192f288eab7243c00aecbc8a396`
-**Product contract version:** `5.0.0-review`
+**Product contract version:** `5.0.1-ready`
 **Date:** `2026-09-27`
-**Architect phase:** `ASSEMBLY`
+**Architect phase:** `FINAL_AUDIT`
 **Target repository path:** `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`
 **Project:** агентство недвижимости «ДОН СИТИ»
 **Production domain:** `https://doncity-home.ru`
@@ -21,7 +21,8 @@ Status: REVIEW
 **Target conformance:** `AMS Realty Platform Core Standard 5.5` + `AMS UI Core 5.0`; both canonical sources are present, current implementation remains `PARTIAL / REVIEW`
 **Project profile:** `catalog`, mode `BUILD`
 **Delivery profile:** `CRITICAL`
-**Implementation delivery mode:** one Epic = one PR; `MERGE_AFTER_GATE` for RP-00…RP-12 and all unfinished/non-superseded implementation epics; EPIC-48 production remains explicit-owner-only; EPIC-49 post-launch remains outside autonomous merge delivery
+**Implementation delivery mode:** one Epic = one PR; `MERGE_AFTER_GATE` for CP-01…CP-08; CP-09 production/public indexing remains explicit-release-command-only; historical v7 delivery is not replayed
+**Task Manager draft:** `dc55`, active EPIC-67…76, `10/10` coverage, `45` autonomous CP-01…08 task cards; CP-09 production-only
 **UI:** starter-based public UI foundation; Manrope; фирменный red accent → dark green через EPIC-16 token intake
 **Secrets:** Secret Master / Infisical
 **Infrastructure:** один существующий сервер DON CITY в Timeweb; точное размещение БД/storage/services определяется read-only discovery
@@ -32,6 +33,18 @@ Status: REVIEW
 ---
 
 # ARCHITECT REVISION HISTORY
+
+## 5.0.1 / v9 FINAL AUDIT — 2026-09-27
+
+Revision input ID: `ARCHITECT-2026-09-27-CORE55-FINAL-AUDIT`
+
+- Source: explicit owner continuation after v8 assembly and normative Core 5.5/UI Core 5.0 integration.
+- Logic finding accepted: the delivered v7 body still classified commercial real estate as R2 while OD-07/OD-08 and CP-02A place `/donetsk/kommercheskaya/` in the first-four-month launch scope. v9 makes §33D authoritative for the post-production program and marks the former EPIC-52 activation contract superseded.
+- Dependency finding accepted: the approved/delivered v7 inventory cannot be reused for v9. A new plan-scoped `dc55` draft inventory covers active EPIC-67…EPIC-76; historical v7 nodes and ledgers remain immutable in the existing `.beads` store.
+- Executability finding accepted: CP-00 is completed assembly evidence and is not re-imported as implementation work. CP-01…CP-08 receive autonomous task cards; CP-09 remains a production-only parent with no autonomous implementation task.
+- External limit: the owner-authorized temporary SourceCraft PAT passed API and exact-SHA push in this session, but canonical Secret Master authentication must be rotated before a later session. Credential loss is a stop condition, not a reason to use another Git provider.
+- Sections changed: metadata, historical/current precedence, commercial/newbuild scope, §33D dependency matrix/audit/readiness, active execution order and Task Manager inventory contract.
+- Result: four-pass audit and graph validation pass; v9 is `READY_FOR_OWNER_APPROVAL`. Canonical `ValidateDraft` passed on the v9 REVIEW snapshot but its current enum rejects the required READY status; exact `APPROVED` validation remains mandatory before import. No approval, import or Developer handoff is implied until the owner says `План утверждён` or `План утвержден`.
 
 ## 5.0.0 / v8 REVIEW — 2026-09-27
 
@@ -193,6 +206,14 @@ Revision input ID: `ARCHITECT-2026-09-23-FINAL-AUDIT-V5-TASK-GRAPH`
 
 Этот Master Plan — canonical execution plan и детальный contract registry. Он содержит полный SEO/URL/data/delivery baseline и не дублируется вторым master plan.
 
+Current execution precedence: delivered v7 sections remain historical contract
+evidence. For post-production Core 5.5 work, §33D plus the active project Source
+of Truth supersede older R1/R2, indexing and execution-order statements wherever
+they conflict. In particular, commercial real estate at
+`/donetsk/kommercheskaya/` is part of the first-four-month launch scope,
+EPIC-52 is superseded by CP-02A, and newbuild/ЖК remains disabled until a
+separate post-four-month owner-approved plan.
+
 Области Source of Truth разделены по AMS Product Development Standard 2.0:
 
 ```text
@@ -279,7 +300,7 @@ no speculative public modules
 
 ---
 
-# 4. RELEASE 1 PRODUCT SCOPE
+# 4. DELIVERED V7 RELEASE 1 PRODUCT SCOPE + CURRENT EXTENSION
 
 ```text
 market = secondary
@@ -287,10 +308,12 @@ dealType = sale
 category = apartment | house | land
 ```
 
+Core 5.5 public-indexing target after CP-02A adds `commercial` at
+`/donetsk/kommercheskaya/`, subject to real inventory/content gates.
+
 Prepared-off:
 
 ```text
-commercial
 room
 garage
 newbuild
@@ -300,7 +323,9 @@ journal
 employees
 ```
 
-Commercial is R2, not R1.
+Until CP-02A passes, commercial remains fail-closed in runtime. It is no longer
+an R2 product decision; OD-07/OD-08 already place it in the initial indexed
+scope once its factual gate passes.
 
 ---
 
@@ -631,7 +656,8 @@ Land:
 | `izhs` | ИЖС | TEST |  | fallback_no_wordstat |
 | `snt` | СНТ | TEST |  | fallback_no_wordstat |
 
-Commercial facet candidates are R2 and researched in EPIC-52.
+Commercial is a category owner, not an apartment/house facet. Its launch route
+and content/inventory gate are owned by CP-02A; EPIC-52 is superseded.
 
 ---
 
@@ -723,13 +749,15 @@ Page 2+ uses server-rendered HTML links, is `noindex,follow`, and self-canonical
 
 Single `properties` collection.
 
-R1 categories: `apartment | house | land`.
+Delivered v7 categories: `apartment | house | land`.
 
-Prepared-off: `commercial | room | garage`.
+Core 5.5 launch target after CP-02A: `apartment | house | land | commercial`.
+
+Prepared-off until its CP-02A gate: `commercial`. Deferred: `room | garage`.
 
 `market = secondary | newbuild`; `dealType = sale | rent`.
 
-R1 public predicate: `secondary + sale + apartment/house/land + published`.
+Current public predicate target: `secondary + sale + apartment/house/land/commercial + published`, with category-specific inventory/content gates.
 
 Actual geo is used; no global hardcoded `city=Donetsk`.
 
@@ -818,8 +846,9 @@ absorbs city-hub intent, and a geo hub never becomes a brand-home alias.
 Logo → `/`.
 
 Menu entries are derived from Site Profile and include only categories with
-`ACTIVE` status for `primaryGeo`. No R1 links to newbuild, mortgage,
-commercial, construction, journal or rent. The geo switcher is hidden when
+`ACTIVE` status for `primaryGeo`. Commercial appears only after CP-02A makes
+its factual category gate active. No links to newbuild, mortgage,
+construction, journal or rent. The geo switcher is hidden when
 `geoMode=SINGLE_GEO`.
 
 Breadcrumb contracts:
@@ -1111,7 +1140,8 @@ Reuse starter: users, pages, properties, feeds/imports, leads/deliveries, media,
 
 Add R1: site-settings, regions, cities, districts; property relations `region`, `city`, `district`, `districtRaw`, `publicUrlId`; house/land taxonomy fields.
 
-Prepared-off: commercial fields, room, garage, newbuild development relation.
+Commercial fields are activated only through CP-02A and its schema/profile
+proof. Room, garage and newbuild development relation remain prepared-off.
 
 ## 32A. Platform / Project ownership
 
@@ -1538,7 +1568,7 @@ canonical `main`. Common exit: one PR, scoped review, declared gate, exact-head
 merge evidence, clean main and `EXECUTION_LEDGER_V1`. Production/DNS/server/
 secret mutation and destructive database work remain forbidden.
 
-# EPIC-53 / RP-00 — CURRENT-STATE INVENTORY
+# HISTORICAL EPIC-53 / RP-00 — CURRENT-STATE INVENTORY
 
 Outcome: a factual impact inventory distinguishes `DONE_V3 | PARTIAL | ABSENT`
 for every affected route, href builder, project literal, `/obekty/` dependency,
@@ -1555,7 +1585,7 @@ Acceptance: every inventory row has status and file/runtime evidence; merged
 and WIP-only surfaces are distinguished; old EPIC-08 WIP is identified but not
 merged/discarded. Gate: `verify:merge-standard`.
 
-# EPIC-54 / RP-01 — V4 SOURCE OF TRUTH / ADR / ARCHIVE VERIFICATION
+# HISTORICAL EPIC-54 / RP-01 — V4 SOURCE OF TRUTH / ADR / ARCHIVE VERIFICATION
 
 Outcome: active project documentation consistently references this V4 plan,
 the archived V3 snapshot is marked `SUPERSEDED`, and four decisions are durable:
@@ -1570,7 +1600,7 @@ Architecture, Backlog, Release Checklist and changelog. This epic does not
 change plan approval or Beads authority. Active docs outside archive/changelog
 must contain no category-first listing owner. Gate: `verify:merge-standard`.
 
-# EPIC-55 / RP-02 — PLATFORM / PROJECT SPLIT AND HARDCODE GUARDS
+# HISTORICAL EPIC-55 / RP-02 — PLATFORM / PROJECT SPLIT AND HARDCODE GUARDS
 
 Outcome: portable modules own grammar/resolver/geo/SEO/catalog/gate/sitemap/
 IndexNow behavior; DON CITY values live only in Project inputs/data.
@@ -1585,7 +1615,7 @@ Acceptance: guards are green, dependency direction is proven, public behavior
 is unchanged, no new linter is introduced solely for this rule. Gate:
 `verify:merge-risky` + `verify:schema`.
 
-# EPIC-56 / RP-03 — TYPED SITE PROFILE
+# HISTORICAL EPIC-56 / RP-03 — TYPED SITE PROFILE
 
 Outcome: §32B typed Site Profile is the single owner of geo mode, category/
 market activation, thresholds, inventory gates and facet whitelist.
@@ -1595,7 +1625,7 @@ Acceptance: profile validation tests pass; switching `kvartiry` to
 without product-code edits and removes it from sitemap/menu/linking. Gate:
 `verify:merge-risky` + `verify:schema`.
 
-# EPIC-57 / RP-04 — CANONICAL URL GRAMMAR
+# HISTORICAL EPIC-57 / RP-04 — CANONICAL URL GRAMMAR
 
 Outcome: `src/platform/grammar` exposes typed `PageKey`, `buildUrl` and
 `parseUrl`; every internal/public URL consumer uses it.
@@ -1610,7 +1640,7 @@ grammar/tests.
 Acceptance: property-based round-trip `parseUrl(buildUrl(key)) ≡ key` for every
 key variant and all guards pass. Gate: `verify:merge-risky` + `verify:schema`.
 
-# EPIC-58 / RP-05 — GEO MODEL / UNIQUENESS / COLLISION MIGRATION
+# HISTORICAL EPIC-58 / RP-05 — GEO MODEL / UNIQUENESS / COLLISION MIGRATION
 
 Outcome: Regions/Cities/Districts satisfy §5 and feed matching is city-scoped.
 
@@ -1626,7 +1656,7 @@ PostgreSQL 18 data; seed is idempotent; city slug `kvartiry` and district slug
 `odnokomnatnye` are rejected; Textilshchik remains `parent=null`. Gate:
 `verify:merge-risky` + `verify:schema`.
 
-# EPIC-59 / RP-06 — RESOLVER AND NEXT.JS ROUTES
+# HISTORICAL EPIC-59 / RP-06 — RESOLVER AND NEXT.JS ROUTES
 
 Outcome: explicit static/service pages plus one catalog catch-all resolve only
 through §§7–8 and Site Profile; `generateMetadata` consumes the same result.
@@ -1641,7 +1671,7 @@ negative cases: category-first Donetsk apartments, prepared newbuild,
 district×facet and unknown third segment all return `404`. Gate:
 `verify:merge-risky` + `verify:schema`.
 
-# EPIC-60 / RP-07 — SEO REGISTRY / SEEDS / TEMPLATES
+# HISTORICAL EPIC-60 / RP-07 — SEO REGISTRY / SEEDS / TEMPLATES
 
 Outcome: stable registry IDs own new city-first URLs generated by grammar; all
 50 Wordstat owners resolve against fixture data.
@@ -1655,7 +1685,7 @@ Acceptance: Textilshchik renders exactly `Купить квартиру на Т�
 resolves `200` in fixtures; active registry contains no V3 URL. Gate:
 `verify:merge-risky` + `verify:schema`.
 
-# EPIC-61 / RP-08 — NEARBY GEO UNDER CITY-FIRST GRAMMAR
+# HISTORICAL EPIC-61 / RP-08 — NEARBY GEO UNDER CITY-FIRST GRAMMAR
 
 Outcome: non-primary city hub/category pages follow §28 without false Donetsk
 assignment or district publication.
@@ -1665,7 +1695,7 @@ Acceptance fixture `Макеевка, 2 квартиры`: `/makeevka/` and
 nearby district route are `404`; inbound links exist only from properties of
 that city. Replaces EPIC-30. Gate: `verify:merge-standard`.
 
-# EPIC-62 / RP-09 — NAVIGATION / BREADCRUMBS / INTERNAL LINKING
+# HISTORICAL EPIC-62 / RP-09 — NAVIGATION / BREADCRUMBS / INTERNAL LINKING
 
 Outcome: menu, breadcrumbs and linking follow §23 and are generated through
 grammar/Profile only.
@@ -1677,7 +1707,7 @@ category, district and `/yurist/`; no query link when a path owner exists.
 Acceptance: fixture crawl has no internal link to `404`, `301` or owned query
 equivalent; SINGLE_GEO switcher is hidden. Gate: `verify:merge-standard`.
 
-# EPIC-63 / RP-10 — GATEWAY / DTO / CACHE / ANALYTICS
+# HISTORICAL EPIC-63 / RP-10 — GATEWAY / DTO / CACHE / ANALYTICS
 
 Outcome: Public Gateway consumes `ParsedPath` or explicit geo/category inputs,
 never an implicit Donetsk default; downstream contracts carry geo identity.
@@ -1691,7 +1721,7 @@ Acceptance: DTO contract tests are updated/frozen and invalidation/analytics
 tests prove exact dimensions. Gate: `verify:merge-standard` unless exact diff
 changes schema or critical backend behavior, which escalates to RISKY.
 
-# EPIC-64 / RP-11 — SITEMAP / ROBOTS / INDEXNOW
+# HISTORICAL EPIC-64 / RP-11 — SITEMAP / ROBOTS / INDEXNOW
 
 Outcome: §28 logical sitemaps, robots and IndexNow expose only grammar-owned
 canonical URLs and meaningful lastmod.
@@ -1700,7 +1730,7 @@ Acceptance: fixture sitemap snapshot and XML validation pass; no V3 owner,
 nearby geo or category root leaks into sitemap; canonical move submits both
 old proven legacy URL and new URL. Gate: `verify:merge-standard`.
 
-# EPIC-65 / RP-12 — TWO-PROFILE PROOF AND REPLAN CLOSURE
+# HISTORICAL EPIC-65 / RP-12 — TWO-PROFILE PROOF AND REPLAN CLOSURE
 
 Outcome: `donetsk-single` and `multi-geo` fixtures prove that a second city is
 enabled by profile/data/registry changes only, with no product-code edit.
@@ -1754,7 +1784,7 @@ Do not assume the database is local to the app server. Do not run migrations, im
 
 No separate SEO-dobor T-A. Materialize SEO and district seed CSVs from this embedded registry. Freeze R1 candidates, tiers, Home/ALL split, no-vtorichka and `/yurist/` only. No `/yurist/[usluga]/`.
 
-# EPIC-05 — DOCS CONSOLIDATION / ARCHIVE
+# HISTORICAL EPIC-05 — DOCS CONSOLIDATION / ARCHIVE
 
 Make this file the only active master/SEO source of truth. Archive old SEO Passport and v2.2, mark SUPERSEDED. Project docs may reference but not duplicate the registry.
 
@@ -1762,7 +1792,7 @@ Make this file the only active master/SEO source of truth. Archive old SEO Passp
 
 Using the verified identity from EPIC-03, document the actual topology of the one existing DON CITY Timeweb server: OS/runtime, Nginx, application services, database placement/version, storage, backups, capacity and one jobs owner. Reuse this server as the presumed production target when it satisfies the contract. Do not create a second server, move the database or provision Managed PostgreSQL/S3 without evidence and a separate owner decision. Staging remains separate/noindex; secrets live only in a dedicated Don City Secret Master scope. Discovery remains read-only. Secret creation, DNS and production writes require their own authorized task and recovery proof.
 
-# EPIC-07 — SITE SETTINGS / NAP
+# HISTORICAL EPIC-07 — SITE SETTINGS / NAP
 
 Create site-settings Global including `brandName`, one NAP DTO, RealEstateAgent input, remove starter dummy identity.
 
@@ -1770,27 +1800,27 @@ Create site-settings Global including `brandName`, one NAP DTO, RealEstateAgent 
 
 Superseded by RP-05 for all unfinished scope. Preserve already merged evidence only; do not merge the pre-replan WIP branch directly.
 
-# EPIC-09 — PROPERTY TAXONOMY
+# HISTORICAL EPIC-09 — PROPERTY TAXONOMY
 
 Active apartment/house/land; prepared commercial/room/garage; houseType dacha/part_of_house; land enums/plotAreaSotka normalization.
 
-# EPIC-10 — PUBLIC URL ID
+# HISTORICAL EPIC-10 — PUBLIC URL ID
 
 Add stable publicUrlId; preserve on same external identity; canonical semantic resolver + one 301; price forbidden.
 
-# EPIC-11 — FEED TAXONOMY + GEO NORMALIZATION
+# HISTORICAL EPIC-11 — FEED TAXONOMY + GEO NORMALIZATION
 
 Explicit source mapping; city-scoped Textilshchik matcher; unknown districts needsReview while object remains visible.
 
-# EPIC-12 — CONTRACTS / DTO
+# HISTORICAL EPIC-12 — CONTRACTS / DTO
 
 Region/City/District + Apartment/House/Land DTO; prepared Commercial/Development DTO; freeze contracts after RP-10 geo-aware inputs.
 
-# EPIC-13 — PUBLIC GATEWAY
+# HISTORICAL EPIC-13 — PUBLIC GATEWAY
 
 Consume `ParsedPath` or explicit geo/category/district/facet inputs from RP-10; property by publicUrlId; actual published geographies rather than hardcoded city.
 
-# EPIC-14 — SEO ENGINE / CONTENT GATE / SEED LOAD
+# HISTORICAL EPIC-14 — SEO ENGINE / CONTENT GATE / SEED LOAD
 
 Load RP-07 seed CSVs and implement Profile-owned SINGLE_GEO, P1/TEST threshold logic, Content Gate, district/facet status, query canonical mapping and sitemap eligibility.
 
@@ -1802,7 +1832,7 @@ Superseded by RP-06. Preserve only evidence compatible with the city-first resol
 
 Execute §33B completely: inventory and classify starter UI; install/verify Manrope with Cyrillic coverage; map the starter brand-red role to a contrast-safe dark-green brand role while preserving semantic error/destructive red; normalize one DON CITY token source; update Project Design System and section ownership map; compile token/shadcn fixture; then build `/donetsk/kvartiry/` as the representative page. Verify responsive, accessibility, data boundary, exact metadata/H1/canonical and performance-sensitive media before scaling. `REUSE→VARIANT→CREATE`; no second design system.
 
-# EPIC-17 — NAVIGATION SHELL
+# HISTORICAL EPIC-17 — NAVIGATION SHELL
 
 Implement RP-09/§23 Profile-generated menu on desktop/mobile, logo → `/`, active/focus/keyboard behavior, header/footer NAP via safe DTO and no R2/donor links. Visual styling may reuse or variant the starter shell; information architecture may not.
 
@@ -1810,43 +1840,43 @@ Implement RP-09/§23 Profile-generated menu on desktop/mobile, logo → `/`, act
 
 Superseded by RP-06 catch-all/static route framework and §33C acceptance harness. Remaining work is page composition, never a second route grammar.
 
-# EPIC-19 — HOME
+# HISTORICAL EPIC-19 — HOME
 
 Exact HOME metadata; agency/realtor/brand intent.
 
-# EPIC-20 — `/donetsk/` ALL PROPERTY
+# HISTORICAL EPIC-20 — `/donetsk/` ALL PROPERTY
 
 Implement reusable `geoHub` template; Donetsk exact ALL metadata remains indexable and menu target `Вся недвижимость`.
 
-# EPIC-21 — APARTMENT GEO CATALOG
+# HISTORICAL EPIC-21 — APARTMENT GEO CATALOG
 
 `/kvartiry/` noindex root + `/donetsk/kvartiry/` index page; no vtorichka facet.
 
-# EPIC-22 — APARTMENT DISTRICTS / MICRODISTRICTS
+# HISTORICAL EPIC-22 — APARTMENT DISTRICTS / MICRODISTRICTS
 
 Dynamic district pages; Textilshchik parent=null; TEST rule; optional parent breadcrumbs without URL change.
 
-# EPIC-23 — APARTMENT ROOM FACETS
+# HISTORICAL EPIC-23 — APARTMENT ROOM FACETS
 
 1/2/3-room approved candidates; path navigation and query canonical ownership.
 
-# EPIC-24 — HOUSE GEO CATALOG
+# HISTORICAL EPIC-24 — HOUSE GEO CATALOG
 
 Root + Donetsk geo catalog with house subtype support.
 
-# EPIC-25 — HOUSE DISTRICTS / FACETS
+# HISTORICAL EPIC-25 — HOUSE DISTRICTS / FACETS
 
 P2 Kuibyshev/Budennovsky/Kirovsky; other six TEST with blank broad; dacha TEST.
 
-# EPIC-26 — LAND GEO / FACETS
+# HISTORICAL EPIC-26 — LAND GEO / FACETS
 
 Root + Donetsk geo; IZH/SNT TEST; land taxonomy/unit normalization.
 
-# EPIC-27 — PROPERTY CARD SYSTEM
+# HISTORICAL EPIC-27 — PROPERTY CARD SYSTEM
 
 Category-aware card, actual locality/district, category canonical href; no generic donor href.
 
-# EPIC-28 — PROPERTY DETAIL ROUTES
+# HISTORICAL EPIC-28 — PROPERTY DETAIL ROUTES
 
 Apartment/house/land global category routes; publicUrlId lookup; semantic or category mismatch gets one 301; factual unique blocks.
 
@@ -1860,7 +1890,7 @@ lead formKind=legal
 
 Verification status may be shown only from `documentCheckSummary`. If `documentCheckSummary` is empty, render a neutral CTA without any statement that the object has been checked.
 
-# EPIC-29 — LIFECYCLE / DONOR ROUTE COMPATIBILITY
+# HISTORICAL EPIC-29 — LIFECYCLE / DONOR ROUTE COMPATIBILITY
 
 Prove 404/200/archived/301/410. Handle donor `/obekty/[slug]` only if compatibility is needed; no duplicate canonical.
 
@@ -1868,11 +1898,11 @@ Prove 404/200/archived/301/410. Handle donor `/obekty/[slug]` only if compatibil
 
 Superseded by RP-08. Indexing remains deferred to EPIC-49 Day-60 review.
 
-# EPIC-31 — SELLER PAGE
+# HISTORICAL EPIC-31 — SELLER PAGE
 
 Exact SELL metadata and seller lead flow.
 
-# EPIC-32 — LAWYER PAGE
+# HISTORICAL EPIC-32 — LAWYER PAGE
 
 Only `/yurist/`, exact LAW metadata; no child service routes R1.
 
@@ -1882,89 +1912,91 @@ This route is the canonical target of the property-page block `Юридичес�
 formKind=legal
 ```
 
-# EPIC-33 — COMPANY / CONTACTS / LEGAL
+# HISTORICAL EPIC-33 — COMPANY / CONTACTS / LEGAL
 
 ABOUT/CONTACTS/PRIVACY/CONSENT/THANKS, NAP from site-settings.
 
-# EPIC-34 — LEADS
+# HISTORICAL EPIC-34 — LEADS
 
 Reuse starter engine; context category/district/city/property/formKind, including `formKind=legal`, with future mortgage/development fields nullable.
 
-# EPIC-35 — INDEXNOW / LASTMOD
+# HISTORICAL EPIC-35 — INDEXNOW / LASTMOD
 
 Use RP-04 grammar and RP-11 canonical-move behavior; meaningful sitemap lastmod; no deploy-wide spam.
 
-# EPIC-36 — SITEMAPS / ROBOTS
+# HISTORICAL EPIC-36 — SITEMAPS / ROBOTS
 
 Use RP-11 logical maps; include canonical Gate-pass pages only; no R2 maps.
 
-# EPIC-37 — INTERNAL LINKING
+# HISTORICAL EPIC-37 — INTERNAL LINKING
 
 Use RP-09 graph: Home→geo hub/category; hub→categories; categories→district/facet/property; property→actual geo/district/category/`yurist`; never link query equivalent when a path owner exists.
 
-# EPIC-38 — CONTENT / INVENTORY ACTIVATION
+# HISTORICAL EPIC-38 — CONTENT / INVENTORY ACTIVATION
 
 Apply fixed thresholds from §14: P1>=5, P2>=5, TEST>=10; activate only pages that pass Content Gate (§16A). P1 is processed before P2 in the content queue; threshold is identical.
 
-# EPIC-39 — FEED ONBOARDING
+# HISTORICAL EPIC-39 — FEED ONBOARDING
 
 Normalize taxonomy/geo, preserve publicUrlId, unknown values needsReview, safe first baseline run.
 
-# EPIC-40 — CACHE
+# HISTORICAL EPIC-40 — CACHE
 
 Home/ALL/category/district/facet/property targets.
 
-# EPIC-41 — ANALYTICS
+# HISTORICAL EPIC-41 — ANALYTICS
 
 all_property_view, category_catalog_view, district_view, facet_view, filter_apply, property_open, lead events, no PII.
 
-# EPIC-42 — PERFORMANCE
+# HISTORICAL EPIC-42 — PERFORMANCE
 
 RSC boundaries, catalog JS, pagination, media, DB/cache, LCP/CLS/INP.
 
-# EPIC-43 — UI / ACCESSIBILITY QA
+# HISTORICAL EPIC-43 — UI / ACCESSIBILITY QA
 
 Representative Home, ALL, apartment/house/land geo, P1 district, Textilshchik, room facet, property, lawyer, contacts, 404/410.
 
-# EPIC-44 — SECURITY / ARCHITECTURE AUDIT
+# HISTORICAL EPIC-44 — SECURITY / ARCHITECTURE AUDIT
 
 Payload boundaries, publicUrlId, district/facet guard, feed normalization, NAP, IndexNow key, lead PII, S3, backup; P0/P1=0.
 
-# EPIC-45 — TIMEWEB STAGING
+# HISTORICAL EPIC-45 — TIMEWEB STAGING
 
 Proof all R1 routes, districts/facets, nearby locality behavior, lifecycle, feeds/jobs/leads. Staging noindex.
 
-# EPIC-46 — FULL SEO CRAWL
+# HISTORICAL EPIC-46 — FULL SEO CRAWL
 
 Verify Title/Description/H1/canonical against V4 owner mapping, absence of V3 routes, resolver precedence, query canonical, pagination, category root noindex, sitemap/robots/lastmod, JSON-LD/NAP and 301/308/404/410.
 
-# EPIC-47 — RELEASE REHEARSAL + FINAL RELEASE CANDIDATE
+# HISTORICAL EPIC-47 — RELEASE REHEARSAL + FINAL RELEASE CANDIDATE
 
 Simulate deploy/rollback, full verify, exact SHA, immutable artifact and rollback point. No production action.
 
-# EPIC-48 — PRODUCTION CUTOVER
+# HISTORICAL EPIC-48 — PRODUCTION CUTOVER
 
 Explicit owner trigger only: backup→exact SHA→artifact→migrations→jobs→Nginx→smoke→lifecycle→NAP/JSON-LD→sitemap/robots→IndexNow live→Webmaster→owner approval→public indexing.
 
-# EPIC-49 — POST-LAUNCH / DAY-60 TEST REVIEW
+# HISTORICAL EPIC-49 — POST-LAUNCH / DAY-60 TEST REVIEW
 
 Monitor Day 1/3/7/14/30/60. At Day 60 use Yandex Webmaster actual queries/impressions to re-evaluate TEST apartment districts, TEST house districts, TEST facets and nearby geographies. Tier change requires new PR; never backfill invented broad.
 
-# EPIC-50 — R2 NEWBUILD / ЖК RESEARCH + ACTIVATION
+# DEFERRED EPIC-50 — R2 NEWBUILD / ЖК RESEARCH + ACTIVATION
 
 First task before coding: Wordstat + SERP for newbuild/ЖК/developers in Donetsk. Then define exact R2 URL/meta/thresholds and activate prepared developers/developments/property relation. No R1 assumptions.
 
-# EPIC-51 — R2 MORTGAGE RESEARCH + ACTIVATION
+# DEFERRED EPIC-51 — R2 MORTGAGE RESEARCH + ACTIVATION
 
 First task: Wordstat + SERP + official program-source verification. Only then decide `/ipoteka/` and exact metadata. Every rate/eligibility has `source + checkedAt`; no blanket 2% secondary claim without proof.
 
-# EPIC-52 — R2 COMMERCIAL RESEARCH + ACTIVATION
+# SUPERSEDED EPIC-52 — R2 COMMERCIAL RESEARCH + ACTIVATION
 
-First task: Wordstat + SERP for office/retail/warehouse/PSN and sale/rent. Then decide routes/meta/facets and whether sale/rent activate together. No R1 commercial route.
+Superseded by OD-07/OD-08 and CP-02A. The preserved canonical launch route is
+`/donetsk/kommercheskaya/`; semantic evidence may refine metadata/content but
+must not reopen the route owner without a new owner decision.
 
 ---
 
-# 33D. CORE 5.5 POST-PRODUCTION HARDENING PROGRAM — v8 REVIEW
+# 33D. CORE 5.5 POST-PRODUCTION HARDENING PROGRAM — v9 READY FOR OWNER APPROVAL
 
 This section is the canonical assembly draft for the owner packet received on
 2026-09-27. It does not reopen delivered v7 work without evidence and does not
@@ -2080,7 +2112,7 @@ CP-09 depends on a clean CP-08 result and the exact-main release gate.
   exposure, unplanned migration, changed production indexing/feed, destructive
   operation, unsupported pinned-version API or failed rollback evidence.
 
-## EPIC-66 / CP-00 — FACTUAL PREFLIGHT AND CONTRACT FREEZE
+## HISTORICAL EPIC-66 / CP-00 — FACTUAL PREFLIGHT AND CONTRACT FREEZE
 
 Outcome: every owner-packet claim is classified as `CONFIRMED_DEFECT |
 ALREADY_COVERED | NOT_REPRODUCED | OWNER_DECISION | EXTERNAL_PROOF`, with exact
@@ -2127,8 +2159,9 @@ estate and the legal department. Newbuild/ЖК remains disabled and non-indexabl
 
 Scope: reconcile PRD, Product Structure, Site Profile, typed URL grammar, SEO
 registry, navigation, sitemap, structured data and content gates. Move commercial
-real estate from the former generic R2 bucket into the current launch scope,
-but freeze its exact SEO URL only after semantic/competitor evidence. Define the
+real estate from the former generic R2 bucket into the current launch scope and
+preserve the owner-decided canonical route `/donetsk/kommercheskaya/`; semantic
+and competitor evidence refines metadata/content rather than reopening URL ownership. Define the
 approved legal-department route set and ensure each route has a real service,
 content, CTA, metadata and factual structured data. Preserve `/novostroyki/*`
 and `/komplex/*` as reserved namespaces without enabling pages, menu links or
@@ -2140,6 +2173,9 @@ is indexed; newbuild/ЖК routes are `404` or explicit `noindex` according to th
 disabled-module contract and never appear in sitemap/indexable navigation;
 reserved namespaces cannot be occupied by CMS pages. A dated four-month review
 task exists, but it cannot activate newbuild without a new owner-approved plan.
+Rollback: restore commercial to `PREPARED_OFF`, remove only CP-02A registry/menu
+activation and preserve the reserved newbuild namespaces; no invented inventory
+or redirect is retained.
 Gate: RISKY if Site Profile/schema/grammar changes; otherwise STANDARD for
 registry/content-only work.
 
@@ -2156,7 +2192,9 @@ private API surfaces. JSON-LD uses safe serialization and factual DTO/NAP only.
 Acceptance: unit/route snapshots for both indexing policies; `/sitemap.xml`
 lists only non-empty successful shards; provider failure is non-200; structured
 data and headings cover every page type; lifecycle boundary at day 100 is
-proven; no redirect chain or homepage fallback. Gate: STANDARD unless schema,
+proven; no redirect chain or homepage fallback. Rollback: restore the previous
+SEO handlers/registry projection while retaining the global noindex override;
+never fall back to a false empty sitemap or homepage redirect. Gate: STANDARD unless schema,
 gateway or critical runtime behavior changes, then RISKY.
 
 ## EPIC-70 / CP-03 — JOBS, IMPORT AND LEAD SAFETY
@@ -2202,6 +2240,8 @@ naming. Payload Admin remains CMS-native.
 
 Acceptance: no second token/component system; UI/drift/a11y checks pass; mobile,
 desktop, keyboard, submit/error/success and reduced-motion evidence is recorded.
+Rollback: revert the affected token/component contract as one scoped change;
+preserve the current Project Design System and existing accessible primitives.
 Gate: STANDARD unless package public API or shared boundary changes, then RISKY.
 
 ## EPIC-73 / CP-06 — TRANSPORT SECURITY DECISIONS
@@ -2215,7 +2255,9 @@ with an approved exception, but not with an unrecorded weakening.
 
 Acceptance: recommendation, compatibility evidence, rollout/rollback and
 residual risk are recorded. HSTS preload mutation remains blocked on owner
-decision. Gate: RISKY for any runtime/header change.
+decision. Rollback: restore the previous application/Nginx header pair and
+verify one authoritative value; a spike-only conclusion has no runtime rollback.
+Gate: RISKY for any runtime/header change.
 
 ## EPIC-74 / CP-07 — CORE 5.5 PROJECT AND READINESS DOCUMENTATION
 
@@ -2230,7 +2272,9 @@ reserved namespaces. Validate `AMS_PROFILE` only after factual code preflight.
 
 Acceptance: source-of-truth guard passes; no readiness flag is promoted without
 linked evidence; disabled modules and reserved routes cannot be occupied by CMS
-or unrelated pages. Gate: STANDARD, or RISKY if env/runtime validation changes.
+or unrelated pages. Rollback: git-revert the documentation/config slice;
+fail-closed readiness values remain unchanged unless their evidence is part of
+the same verified change. Gate: STANDARD, or RISKY if env/runtime validation changes.
 
 ## EPIC-75 / CP-08 — ISOLATED STAGING PROOF AND PROGRAM CLOSURE
 
@@ -2247,6 +2291,9 @@ Acceptance: evidence is bound to exact SHA/image; every URL/error/redirect and
 proof result is recorded; unresolved owner/production gates remain explicit;
 program reconciliation is clean. Gate: RISKY. Next after merge: CP-09 exact-main
 production/indexing release. Feed activation remains separate even after PASS.
+Rollback/recovery: restore the prior isolated staging image/config/database
+snapshot, remove temporary public-mode test exposure and confirm edge noindex;
+production remains untouched.
 
 ## EPIC-76 / CP-09 — PRODUCTION LAUNCH AND PUBLIC INDEXING
 
@@ -2283,7 +2330,82 @@ ownership, SEO crawl, wrong artifact identity or unavailable rollback point.
 Gate: one exact-main RISKY release workflow. This is the only epic that may
 remove global noindex for this program.
 
-## OWNER DECISION REGISTER — v8 ASSEMBLY
+## V9 DEPENDENCY MATRIX
+
+| Epic | Outcome dependency | Type / minimum blocking scope | Parallel-safe / fallback | Wave |
+|---|---|---|---|---|
+| CP-01 | CP-00 evidence | `CONTRACT`; only central indexing-policy implementation is gated by the frozen evidence | parallel with CP-02A/03/04/06 preflights; preserve global noindex on failure | W2 |
+| CP-02A | CP-00 + OD-07/08 | `CONTRACT`; route/scope registry only | parallel with CP-01/03/04/06; keep commercial `PREPARED_OFF` until its data/content gate passes | W3 |
+| CP-02 | CP-01 indexing composer + CP-02A route registry | `HARD` only for implementation touching shared metadata/robots/sitemap owners; preflight remains independent | no false empty sitemap fallback; retain noindex on provider failure | W3 |
+| CP-03 | CP-00 evidence; task-local OD-03 | `OWNER` only for the affected raw-SQL decision; other recovery work is independent | continue non-SQL tasks; stop on missing test DB/staging isolation | W2 |
+| CP-04 | CP-00 media/performance evidence | `CONTRACT`; schema/backfill slice is internally serial | parallel with CP-01/02A/03/06; asset-only slice may remain STANDARD | W3 |
+| CP-05 | CP-02 heading/page contract | `CONTRACT` only for shared heading/page files; inventory and scanner work starts independently | preserve current Design System; no redesign fallback | W4 |
+| CP-06 | pinned runtime + task-local OD-04 | `OWNER` only for HSTS preload mutation; CSP/HSTS spike is independent | conclude with documented exception/no-change if evidence rejects mutation | W4 |
+| CP-07 | factual outputs of CP-01…06 | `SOFT` for early document inventory, `HARD` only for final readiness synchronization | prepare skeleton early; never promote flags without evidence | W5 |
+| CP-08 | delivered CP-01…07 exact heads | `HARD`; staging proof must exercise one integrated exact candidate | no production fallback; preserve staging edge noindex | W5 |
+| CP-09 | CP-08 PASS + release prerequisites + explicit release command | `PRODUCTION`; isolated from autonomous implementation graph | rollback to previous immutable noindex image; real feed remains separate | W6 |
+
+Cycles: `0`. Shared owners are serialized only at the implementation/delivery
+task that touches them; independent preflight/evidence work remains ready.
+CP-03 is internally serial for jobs/lead state. CP-08 is the integration
+bottleneck by design; CP-09 is an explicit production gate, not an implementation
+dependency.
+
+## V9 FINAL-AUDIT FINDING REGISTER
+
+| ID | Severity | Evidence / impact | Resolution | Status |
+|---|---|---|---|---|
+| F-V8-01 | BLOCKER | Delivered v7 sections and EPIC-52 classified commercial as R2, contradicting OD-07/08 and CP-02A | §33D is current authority; EPIC-52 is superseded; `/donetsk/kommercheskaya/` is frozen for the initial launch scope | RESOLVED v9 |
+| F-V8-02 | BLOCKER | `task-manager-inventory.v2.json` described approved v7 and had no CP-01…09 graph | build a new `dc55` schema-v2 draft inventory for active EPIC-67…76; keep v7 Beads history immutable | RESOLVED v9; coverage/cycle validation PASS |
+| F-V8-03 | MAJOR | CP-02A said the commercial URL was still to be frozen after evidence, although OD-08 had already decided it | preserve the decided URL; research may refine metadata/content only | RESOLVED v9 |
+| F-V8-04 | QUESTION | direct `bd` lookup failed because it is not on PATH | canonical helper Doctor located `bd 1.2.2` and the initialized store | RESOLVED |
+| F-V8-05 | LIMIT | SourceCraft API/push works with the owner-authorized temporary PAT, while the canonical Secret Master credential is expired | rotate the PAT/Infisical machine credential before a later session; stop rather than switch provider if access disappears | ACCEPTED LIMIT |
+| F-V9-01 | LIMIT | Global Task Manager protocol defines `READY_FOR_OWNER_APPROVAL`, while current canonical `ValidateDraft` accepts only `DRAFT | REVIEW | APPROVED` | keep the exact plan READY, prohibit import, run exact structural graph checks now, and require canonical `Validate` on the owner-approved snapshot before any Beads write | ACCEPTED TOOLING LIMIT |
+
+## V9 FOUR-PASS SCORECARD
+
+```text
+Logic / Completeness
+  blockers: 0 after F-V8-01/F-V8-03 remediation
+  major: 0 open
+  result: PASS
+
+Architecture / Data / Security
+  blockers: 0
+  Payload ownership, DTO/Public Gateway, PII, migrations and production isolation: preserved
+  task-local decisions: OD-03 raw SQL; OD-04 HSTS preload
+  result: PASS
+
+Dependencies / Autonomy
+  cycles: 0
+  active epics: EPIC-67…76; EPIC-66 historical evidence
+  hard dependencies: CP-02 implementation, CP-08 integration, CP-09 production only
+  independent ready waves: CP-01, CP-02A, CP-03, CP-04 and CP-06 preflights
+  result: PASS WITH LIMITS
+
+Executability / Evidence / Delivery
+  CP-01…08: outcome, scope, acceptance, verification, rollback/stop and delivery gate present
+  CP-09: production-only outcome with exact entry, acceptance, rollback and stop conditions
+  inventory: dc55 schema v2 draft; coverage 10/10, 45 tasks
+  result: PASS WITH TOOLING LIMIT; REVIEW snapshot ValidateDraft PASS,
+          exact READY structural validation PASS, APPROVED Validate required before import
+```
+
+## V9 NIGHT RUN READINESS
+
+```text
+Result: READY_WITH_LIMITS
+Critical path: CP-01 + CP-02A → CP-02 → CP-05/07 → CP-08 → [PRODUCTION OWNER GATE] → CP-09
+Independent work: CP-03, CP-04 and CP-06 spike can proceed beside the SEO chain
+Owner decisions before approval: 0
+Later task-local owner decisions: OD-03, OD-04
+External prerequisite: SourceCraft credential currently proven, rotation required before a later session
+Tooling limit: canonical ValidateDraft enum omits READY; import remains forbidden until APPROVED Validate PASS
+Production-only stop: CP-09 and any removal of global noindex
+Safe bypass: a blocked raw-SQL/HSTS task releases its claim and the Developer continues another ready stream
+```
+
+## OWNER DECISION REGISTER — v9 FINAL AUDIT
 
 | ID | Decision | Recommendation | Blocks | Deadline | Status |
 |---|---|---|---|---|---|
@@ -2294,19 +2416,22 @@ remove global noindex for this program.
 | OD-07 | First-four-month indexable product scope | Secondary apartments, houses, land, commercial real estate and legal department; newbuild/ЖК remains disabled and non-indexable | CP-02A, CP-02, CP-09 | decided 2026-09-27 | DECIDED |
 | OD-08 | Exact commercial and legal route registry | Preserve `/donetsk/kommercheskaya/`; launch legal department at `/yurist/`; child legal routes stay absent/non-indexable until a factual service/content contract | CP-02A | decided 2026-09-27 | DECIDED |
 
-## ASSEMBLY READINESS
+## FINAL-AUDIT READINESS
 
-Current result: `NOT_READY` for Task Manager import.
+Current result: `READY_WITH_LIMITS`; exact v9 is `READY_FOR_OWNER_APPROVAL`.
 
-- Final four-pass audit has not been requested.
-- CP-00 factual evidence matrix is complete for assembly, including the provided UI Core 5.0 source and project delta.
-- OD-03/OD-04 block only their affected implementation decisions and may be converted to explicit deferred gates during final audit.
-- Existing v7 graph/history must not be overwritten; v8 requires a new stable
-  plan-scoped inventory after approval.
+- Four independent audit passes are recorded above; blocker findings are resolved in v9.
+- CP-00 factual evidence is complete and remains historical assembly evidence.
+- OD-03/OD-04 block only their affected implementation decisions, not approval or independent ready work.
+- Existing v7 graph/history must not be overwritten; v9 uses a new `dc55`
+  plan-scoped inventory and requires clean validation/reconciliation after approval.
+- The temporary SourceCraft credential is a declared external limit. Loss of
+  access stops Git-dependent delivery until canonical Secret Master rotation;
+  it never permits a fallback provider or secret exposure.
 - Production/indexing is now an explicit planned outcome in CP-09, isolated
   behind exact-main readiness and release authorization rather than excluded.
 
-# 34. FUTURE AFTER EPIC-52
+# 34. FUTURE AFTER THE CORE 5.5 PROGRAM
 
 Possible owner-approved modules: MULTI_GEO, residential rent, room, garage, cottage villages, journal, employees, and `/yurist/[service]/` only if Webmaster + actual service portfolio justify.
 
@@ -2349,7 +2474,8 @@ Possible owner-approved modules: MULTI_GEO, residential rent, room, garage, cott
 - [ ] Content Gate is defined only in §16A; other sections reference it.
 - [ ] Every property page contains the `Юридическая проверка объекта` block targeting `/yurist/`, with `formKind=legal`.
 - [ ] `/yurist/[service]/` absent R1.
-- [ ] R2 Wordstat checks are first tasks EPIC-50/51/52.
+- [ ] Newbuild/ЖК stays disabled and absent from sitemap/navigation for the first four months; any activation requires a new owner-approved plan.
+- [ ] Commercial launch owner is `/donetsk/kommercheskaya/`; metadata/content and inventory gate are proved by CP-02A.
 - [ ] houseType includes dacha + part_of_house.
 - [ ] room + garage PREPARED_OFF.
 - [ ] landCategory/permittedUse/plotAreaSotka implemented.
@@ -2377,75 +2503,21 @@ Possible owner-approved modules: MULTI_GEO, residential rent, room, garage, cott
 # 36. FINAL EXECUTION ORDER
 
 ```text
-RP-00    Current-state inventory
-RP-01    V4 Source of Truth / ADR / archive verification
-RP-02    Platform / Project split and hardcode guards
-RP-03    Typed Site Profile
-RP-04    Canonical URL grammar
-RP-05    Geo model / uniqueness / collision migration
-RP-06    Resolver and Next.js routes
-RP-07    SEO registry / seeds / templates
-RP-08    Nearby geo under city-first grammar
-RP-09    Navigation / breadcrumbs / internal linking
-RP-10    Gateway / DTO / cache / analytics
-RP-11    Sitemap / robots / IndexNow
-RP-12    Two-profile proof and replan closure
+HISTORICAL: v7 RP-00…RP-12 and EPIC-00…49 delivery evidence is reused, not replayed.
+DEFERRED: EPIC-50 newbuild/ЖК and EPIC-51 mortgage require separate owner-approved plans.
+SUPERSEDED: EPIC-52 commercial activation is replaced by CP-02A.
 
-Then resume only remaining V4-adjusted main-line work; completed V3 evidence is reused.
-
-EPIC-00  SourceCraft Repository / Workspace
-EPIC-01  Starter Baseline + Version/Doc Drift
-EPIC-02  Client Activation
-EPIC-03  Actual Inventory / Geo / NAP Baseline
-EPIC-04  Final SEO Freeze from v1.0 + v3.0 Contract
-EPIC-05  Docs Consolidation / Archive
-EPIC-06  Infrastructure / Secret Master
-EPIC-07  Site Settings / NAP
-EPIC-08  Geo Model / Districts / Tekstilshchik
-EPIC-09  Property Taxonomy
-EPIC-10  Public URL ID
-EPIC-11  Feed Taxonomy + Geo Normalization
-EPIC-12  Contracts / DTO
-EPIC-13  Public Gateway
-EPIC-14  SEO Engine / Content Gate / Seed Load
-EPIC-15  Route Resolver / Collision Guard / Trailing Slash
-EPIC-16  UI Intake
-EPIC-17  Navigation Shell
-EPIC-18  Route Skeleton
-EPIC-19  Home
-EPIC-20  /donetsk/ All Property
-EPIC-21  Apartment Geo Catalog
-EPIC-22  Apartment Districts / Microdistricts
-EPIC-23  Apartment Room Facets
-EPIC-24  House Geo Catalog
-EPIC-25  House Districts / Facets
-EPIC-26  Land Geo / Facets
-EPIC-27  Property Card System
-EPIC-28  Property Detail Routes
-EPIC-29  Lifecycle / Donor Route Compatibility
-EPIC-30  Nearby Geo Data / Noindex Routes
-EPIC-31  Seller Page
-EPIC-32  Lawyer Page
-EPIC-33  Company / Contacts / Legal
-EPIC-34  Leads
-EPIC-35  IndexNow / Lastmod
-EPIC-36  Sitemaps / Robots
-EPIC-37  Internal Linking
-EPIC-38  Content / Inventory Activation
-EPIC-39  Feed Onboarding
-EPIC-40  Cache
-EPIC-41  Analytics
-EPIC-42  Performance
-EPIC-43  UI / Accessibility QA
-EPIC-44  Security / Architecture Audit
-EPIC-45  Timeweb Staging
-EPIC-46  Full SEO Crawl
-EPIC-47  Release Rehearsal + Final Release Candidate
-EPIC-48  Production Cutover
-EPIC-49  Post-launch / Day-60 TEST Review
-EPIC-50  R2 Newbuild / ЖК Research + Activation
-EPIC-51  R2 Mortgage Research + Activation
-EPIC-52  R2 Commercial Research + Activation
+CP-00  Factual preflight / contract freeze — completed assembly evidence
+CP-01  Release-level indexing safety
+CP-02A First-four-month product/indexing scope
+CP-02  SEO surface / sitemap / lifecycle
+CP-03  Jobs / import / lead safety
+CP-04  Media / request-path performance
+CP-05  UI role / accessibility convergence
+CP-06  Transport-security decisions
+CP-07  Core 5.5 project/readiness documentation
+CP-08  Isolated staging proof / program closure
+CP-09  Production launch / public indexing — explicit release command only
 ```
 
 ---
@@ -2497,7 +2569,7 @@ INDEXNOW / LASTMOD
 +
 NAP / REAL ESTATE AGENT
 +
-PREPARED R2 DOMAINS
+DEFERRED NEWBUILD / MORTGAGE DOMAINS
 +
 SOURCECRAFT
 +
@@ -2516,7 +2588,7 @@ DON CITY V4
 
 Пятый: approved facet владеет path URL; query equivalent не становится главным внутренним SEO URL.
 
-Шестой: R2 не смешивается с R1; newbuild, mortgage и commercial начинают с нового research preflight в EPIC-50…52.
+Шестой: newbuild/ЖК и mortgage не смешиваются с текущим запуском; commercial входит в owner-approved first-four-month scope через CP-02A.
 
 Седьмой: единственный active master plan — `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
 

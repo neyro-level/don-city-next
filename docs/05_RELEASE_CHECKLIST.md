@@ -1,8 +1,8 @@
 # Release Checklist
 
 Status: Active — production noindex
-Version: 1.0
-Updated: 2026-09-26
+Version: 1.1
+Updated: 2026-09-27
 
 ## Completed for Current Release
 
@@ -31,6 +31,9 @@ Updated: 2026-09-26
 - [ ] Run full production crawl for canonical, robots, sitemap, JSON-LD, 404/410 and lifecycle.
 - [ ] Provide and approve a real feed endpoint/allowlist before enabling any source.
 - [ ] Obtain separate owner authorization to remove global noindex.
+- [ ] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
+- [ ] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
+- [ ] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
 
 ## Stop Conditions
 
