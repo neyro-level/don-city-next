@@ -12,6 +12,9 @@ const envExample = read(".env.example");
 const payloadConfig = read("payload.config.ts");
 const clientReadiness = read("src/project/client-readiness.config.ts");
 const storageActivation = read("scripts/clone-activate-timeweb-storage.mjs");
+const productionCompose = read(
+	"deploy/clients/timeweb/production/compose.production.yml.example",
+);
 
 for (const required of [
 	"one existing DON CITY Timeweb server",
@@ -95,5 +98,13 @@ assert.ok(
 assert.ok(architecture.includes("staging") && architecture.includes("noindex"));
 assert.ok(releaseChecklist.includes("backup") || releaseChecklist.includes("Backup"));
 assert.ok(releaseChecklist.includes("rollback") || releaseChecklist.includes("Rollback"));
+assert.ok(
+	productionCompose.includes("'x-ams-health-secret':process.env.INTERNAL_HEALTH_SECRET"),
+	"Production healthcheck must use the private health endpoint header contract",
+);
+assert.ok(
+	!productionCompose.includes("authorization:'Bearer '"),
+	"Production healthcheck must not use the unsupported Authorization header",
+);
 
 console.log("verify-production-topology: ok");
