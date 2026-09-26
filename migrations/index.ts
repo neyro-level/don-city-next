@@ -15,6 +15,7 @@ import * as migration_20260924_144035_public_url_id from "./20260924_144035_publ
 import * as migration_20260924_161945_add_site_settings_global from "./20260924_161945_add_site_settings_global";
 import * as migration_20260925_093100_add_lead_business_context from "./20260925_093100_add_lead_business_context";
 import * as migration_20260925_114509 from "./20260925_114509";
+import * as migration_20260926_132000_s3_media_fields from "./20260926_132000_s3_media_fields";
 
 export const migrations = [
 	{
@@ -101,5 +102,10 @@ export const migrations = [
 		up: migration_20260925_114509.up,
 		down: migration_20260925_114509.down,
 		name: "20260925_114509",
+	},
+	{
+		up: migration_20260926_132000_s3_media_fields.up,
+		down: migration_20260926_132000_s3_media_fields.down,
+		name: "20260926_132000_s3_media_fields",
 	},
 ];

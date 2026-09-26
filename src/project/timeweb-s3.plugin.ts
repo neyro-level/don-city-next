@@ -20,6 +20,7 @@ const enabled = Boolean(
 
 export const timewebS3Plugin = s3Storage({
 	enabled,
+	alwaysInsertFields: true,
 	collections: {
 		media: {
 			prefix: prefix ?? "build/media",

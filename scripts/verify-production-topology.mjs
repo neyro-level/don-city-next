@@ -15,6 +15,11 @@ const storageActivation = read("scripts/clone-activate-timeweb-storage.mjs");
 const productionCompose = read(
 	"deploy/clients/timeweb/production/compose.production.yml.example",
 );
+const timewebS3Plugin = read("src/project/timeweb-s3.plugin.ts");
+const s3MediaMigration = read(
+	"migrations/20260926_132000_s3_media_fields.ts",
+);
+const migrationIndex = read("migrations/index.ts");
 
 for (const required of [
 	"one existing DON CITY Timeweb server",
@@ -105,6 +110,20 @@ assert.ok(
 assert.ok(
 	!productionCompose.includes("authorization:'Bearer '"),
 	"Production healthcheck must not use the unsupported Authorization header",
+);
+assert.ok(
+	timewebS3Plugin.includes("alwaysInsertFields: true"),
+	"Timeweb S3 fields must remain present when build-time credentials are absent",
+);
+for (const column of ['"prefix"', '"_objectkey"']) {
+	assert.ok(
+		s3MediaMigration.includes(`ADD COLUMN ${column} varchar`),
+		`S3 media migration must add ${column}`,
+	);
+}
+assert.ok(
+	migrationIndex.includes('name: "20260926_132000_s3_media_fields"'),
+	"S3 media migration must remain registered",
 );
 
 console.log("verify-production-topology: ok");
