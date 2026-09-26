@@ -1,8 +1,8 @@
 # CORE55 CP-02A VERIFICATION
 
-Status: `LOCAL PASS`  
-Task: `dc55-task-68-verify`  
-Branch: `codex/dc55-epic-68`  
+Status: `LOCAL PASS`
+Task: `dc55-task-68-verify`
+Branch: `codex/dc55-epic-68`
 Verified implementation: `f468e8a57850767ca0259e06e6d46d2a80641fa9`
 
 ## Acceptance proof

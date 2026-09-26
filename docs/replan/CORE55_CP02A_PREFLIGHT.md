@@ -1,9 +1,9 @@
 # CORE55 CP-02A PREFLIGHT
 
-Status: `PASS / FROZEN`  
-Plan: `AMS-DON-CITY-CORE55-POSTPROD`, v9 `APPROVED`  
-Task: `dc55-task-68-preflight`  
-Branch: `codex/dc55-epic-68`  
+Status: `PASS / FROZEN`
+Plan: `AMS-DON-CITY-CORE55-POSTPROD`, v9 `APPROVED`
+Task: `dc55-task-68-preflight`
+Branch: `codex/dc55-epic-68`
 Base: `3d886d12f4816aace9682252c7872d4254a2fac8`
 
 ## Task Contract

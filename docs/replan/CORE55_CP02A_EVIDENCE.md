@@ -1,9 +1,9 @@
 # CORE55 CP-02A EVIDENCE
 
-Status: `READY_FOR_DELIVERY`  
-Plan: `AMS-DON-CITY-CORE55-POSTPROD` v9  
-Epic: `dc55-epic-68`  
-Branch: `codex/dc55-epic-68`  
+Status: `READY_FOR_DELIVERY`
+Plan: `AMS-DON-CITY-CORE55-POSTPROD` v9
+Epic: `dc55-epic-68`
+Branch: `codex/dc55-epic-68`
 Base main: `3d886d12f4816aace9682252c7872d4254a2fac8`
 
 ## Traceability

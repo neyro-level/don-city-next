@@ -85,8 +85,8 @@ for (const path of [
 	assert.deepEqual(
 		await resolveProjectPublicRoute(path, { loadProperty: noProperty }),
 		{
-		kind: "notFound",
-		statusCode: 404,
+			kind: "notFound",
+			statusCode: 404,
 		},
 	);
 }
