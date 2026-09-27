@@ -57,7 +57,7 @@ assert.match(backfill, /blocked in production/);
 assert.match(backfill, /previousSizes/);
 assert.match(backfill, /createdKeys/);
 assert.match(backfill, /DeleteObjectCommand/);
-assert.match(backfill, /doc\._objectKey/);
+assert.match(backfill, /objectKeyForMedia\(doc, prefix\)/);
 
 const migration = readFileSync(
 	"migrations/20260927_000349_core55_responsive_media_sizes.ts",

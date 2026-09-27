@@ -55,6 +55,19 @@ function objectKeyForVariant(originalKey: string, filename: string) {
 	return directory === "." ? filename : `${directory}/${filename}`;
 }
 
+function objectKeyForMedia(doc: Media, collectionPrefix: string) {
+	const filename = required(doc.filename ?? undefined, "media.filename");
+	const configuredPrefix = collectionPrefix.replace(/^\/+|\/+$/g, "");
+	const documentPrefix = (doc.prefix ?? "").replace(/^\/+|\/+$/g, "");
+	const effectivePrefix = documentPrefix
+		? documentPrefix === configuredPrefix ||
+			documentPrefix.startsWith(`${configuredPrefix}/`)
+			? documentPrefix
+			: `${configuredPrefix}/${documentPrefix}`
+		: configuredPrefix;
+	return effectivePrefix ? `${effectivePrefix}/${filename}` : filename;
+}
+
 function variantFilename(
 	originalFilename: string,
 	spec: (typeof variantSpecs)[number],
@@ -163,8 +176,7 @@ async function main() {
 			if (!result.hasNextPage) break;
 		}
 		const candidates = docs.filter(
-			(doc) =>
-				doc.mimeType?.startsWith("image/") && doc.filename && doc._objectKey,
+			(doc) => doc.mimeType?.startsWith("image/") && doc.filename,
 		);
 		const incomplete = candidates.filter((doc) =>
 			variantSpecs.some((spec) => !doc.sizes?.[spec.name]?.filename),
@@ -248,10 +260,7 @@ async function main() {
 		await saveManifest(manifestPath, manifest);
 
 		for (const doc of incomplete) {
-			const originalKey = required(
-				doc._objectKey ?? undefined,
-				"media._objectKey",
-			);
+			const originalKey = objectKeyForMedia(doc, prefix);
 			if (!originalKey.startsWith(`${prefix.replace(/\/$/, "")}/`)) {
 				throw new Error(`Media ${doc.id} is outside the approved prefix.`);
 			}
