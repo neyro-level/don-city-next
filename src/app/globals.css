@@ -287,7 +287,6 @@
   --status-danger: var(--error);
   --status-info: #0a66cc;
   --border-default: var(--border);
-  --container-copy-measure: 38ch;
   --container-overlay: min(92vw, 420px);
   --viewport-content-below-header: calc(100vh - 106px);
   --site-radius-micro: 4px;
@@ -298,14 +297,10 @@
   --site-radius-emphasis: 14px;
   --site-radius-media-switcher: 15px;
   --site-radius-floating-header: 18px;
+  --container-copy-measure: 38ch;
   --overlay-default: rgba(23, 22, 26, 0.42);
   --focus-ring: var(--ring);
   /* Component role tokens preserve the approved visual baseline without exposing raw values to UI code. */
-  --about-company-director-content-primary: #5e5a5f;
-  --about-company-director-surface-primary: #f9fafb;
-  --about-company-director-surface-secondary: #f5f6f6;
-  --about-company-team-content-primary: #5e5a5f;
-  --about-company-team-surface-primary: #f9fafb;
   --accordion-content-primary: #5b5860;
   --breadcrumb-content-primary: #777375;
   --breadcrumb-content-secondary: #aaa7a0;
@@ -319,11 +314,6 @@
   --catalog-mortgage-help-card-surface-action-hover: #2a292c;
   --catalog-new-building-selection-card-border-default: #e6dcdc;
   --catalog-new-building-selection-card-border-hover: #d8c9c9;
-  --corporate-form-section-views-border-primary: #e5e7eb;
-  --corporate-form-section-views-content-primary: #111827;
-  --corporate-form-section-views-content-secondary: #4b5563;
-  --corporate-form-section-views-content-tertiary: #5e5a5f;
-  --corporate-form-section-views-surface-primary: #f9fafb;
   --dialog-content-primary: #5b5860;
   --dialog-surface-primary: #f5f5f3;
   --dialog-surface-secondary: #ecebe8;
@@ -371,10 +361,6 @@
   --legal-hub-surface-secondary: #f5f5f3;
   --legal-hub-surface-tertiary: #222124;
   --legal-hub-surface-subtle: #3a383c;
-  --mortgage-programs-border-primary: #e9e8e6;
-  --mortgage-programs-content-primary: #3b3736;
-  --mortgage-programs-surface-primary: #f6f6f4;
-  --mortgage-programs-surface-secondary: #fafaf9;
   --new-building-map-content-strong: #5e5b5e;
   --property-card-surface-action-hover: #2a292c;
   --property-chat-border-danger: #f2c6c6;
@@ -389,12 +375,6 @@
   --property-sidebar-surface-action-hover: #2a292c;
   --property-viewing-request-content-success: #159947;
   --property-viewing-request-surface-selected: #ededeb;
-  --sale-negotiation-surface-primary: #f6f6f4;
-  --sale-preparation-content-primary: #686668;
-  --sale-preparation-surface-primary: #f6f6f4;
-  --sale-pricing-principles-surface-primary: #f6f6f4;
-  --sale-promotion-surface-primary: #f6f6f4;
-  --sale-reporting-surface-primary: #f6f6f4;
   --sheet-content-primary: #5b5860;
   --sheet-surface-primary: #f5f5f3;
   --sheet-surface-secondary: #ecebe8;
@@ -407,11 +387,9 @@
   --catalog-mortgage-help-card-shadow-panel: 0 4px 8px rgba(0,0,0,0.02),0 22px 52px rgba(0,0,0,0.10);
   --catalog-new-building-selection-card-shadow-card: 0 1px 2px rgba(0,0,0,0.03),0 18px 42px rgba(0,0,0,0.08);
   --catalog-new-building-selection-card-shadow-subtle: 0 1px 2px rgba(0,0,0,0.03);
-  --corporate-form-section-views-shadow-primary: 0 18px 50px rgba(17,24,39,0.06);
   --expert-request-modal-shadow-primary: 0 12px 26px rgba(23,22,26,0.14);
   --legal-hub-shadow-primary: 0 16px 46px rgba(28,27,31,0.045);
   --media-gallery-shadow-primary: 0 12px 30px rgba(0,0,0,0.16);
-  --mortgage-programs-shadow-primary: 0 16px 34px rgba(0,0,0,0.06);
   --property-card-shadow-raised: 0 4px 8px rgba(0,0,0,0.02),0 22px 52px rgba(0,0,0,0.10);
   --property-card-shadow-counter: 0 5px 14px rgba(0,0,0,0.12);
   --property-card-shadow-list-hover: 0 4px 8px rgba(0,0,0,0.02),0 20px 48px rgba(0,0,0,0.08);
@@ -429,8 +407,6 @@
   --property-related-shadow-card: 0 12px 28px rgba(0,0,0,0.08);
   --property-sidebar-shadow-panel: 0 18px 52px rgba(0,0,0,0.06);
   --property-viewing-request-shadow-subtle: 0 1px 2px rgba(0,0,0,0.02);
-  --sale-pricing-principles-shadow-primary: 0 16px 34px rgba(0,0,0,0.06);
-  --sale-reporting-shadow-primary: 0 14px 30px rgba(23,22,26,0.06);
   --sheet-shadow-primary: 0 28px 80px rgba(24,22,24,0.18);
   --site-header-shadow-primary: 0 14px 40px rgba(0,0,0,0.1);
   --site-header-shadow-tertiary: 0 1px 0 rgba(0,0,0,0.04);

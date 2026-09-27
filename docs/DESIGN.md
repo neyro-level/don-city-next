@@ -123,6 +123,10 @@ globals.css → Button/Input/Dialog → Container/Section → Header/Footer
 
 ## Disposition register
 
+- Historical `views/corporate` sections are `REMOVE`: after UI-01…05 they had
+  no route, package-export or runtime consumer. Their private token prefixes and
+  two private view-model aliases were removed with an executable absence guard.
+
 - `REUSE`: сетка, spacing rhythm, responsive shell, доступные primitives.
 - `VARIANT`: header, footer, action palette, surfaces, borders, focus и брендовые assets.
 - `REPLACE`: донорский логотип, donor-red brand roles и холодные серые базовые поверхности.

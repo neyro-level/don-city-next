@@ -34,18 +34,6 @@ export type HouseProjectPreviewDTO = {
 	backHref: string;
 };
 
-export type CorporateRelatedServiceDTO = {
-	label: string;
-	href: string;
-	description: string;
-};
-
-export type CorporateArticlePreviewDTO = {
-	slug: string;
-	title: string;
-	excerpt: string;
-};
-
 export type LegalDocumentSectionDTO = {
 	title: string;
 	paragraphs?: readonly string[];

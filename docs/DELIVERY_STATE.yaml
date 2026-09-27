@@ -3,20 +3,20 @@ program: AMS-DON-CITY-LIVE-CONFORMANCE
 plan_version: v13
 plan_status: APPROVED
 current_wave: LIVE_CONFORMANCE_W2
-current_epic: DC10-UI-05
-current_task: dc11-task-118-delivery
+current_epic: DC10-UI-06
+current_task: dc11-task-119-delivery
 next_action: continue-beads-ready-loop-without-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 4295a6388ab76e4ca6ed4ffd7fa074d35a7acc0c
-  active_branch: codex/dc11-118-distinct-marketing-pages
+  base_sha: 125483309c622fd751bae6c19cf643ca698213d1
+  active_branch: codex/dc11-119-token-dead-ui-audit
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-118-delivery
-  reason: exact-head page-composition proof is complete; canonical PR, one STANDARD gate and merge are in progress
+  current_task: dc11-task-119-delivery
+  reason: exact-head mechanical cleanup proof is complete; canonical PR, one STANDARD gate and merge are in progress
 historical_evidence:
   rp_00:
     status: delivered

@@ -12,10 +12,12 @@ const expectedExports = {
 	"./analytics": "./src/analytics.tsx",
 	"./primitives": "./src/primitives.ts",
 	"./public/catalog-page": "./src/views/catalog/StarterCatalogPageView.tsx",
-	"./public/gone-property-page": "./src/views/property/GonePropertyPageView.tsx",
+	"./public/gone-property-page":
+		"./src/views/property/GonePropertyPageView.tsx",
 	"./public/home-page": "./src/views/home/StarterHomePageView.tsx",
 	"./public/legal-document-page": "./src/views/legal/LegalDocumentView.tsx",
-	"./public/marketing-page": "./src/views/marketing/StarterMarketingPageView.tsx",
+	"./public/marketing-page":
+		"./src/views/marketing/StarterMarketingPageView.tsx",
 	"./public/property-page": "./src/views/property/StarterPropertyPageView.tsx",
 	"./public/site-shell": "./src/views/public-shell/PublicSiteShellView.tsx",
 	"./styles.css": "./src/styles.css",
@@ -49,7 +51,8 @@ const sourceFiles = (directory) =>
 		return /\.[cm]?[jt]sx?$/.test(entry.name) ? [path] : [];
 	});
 
-const forbiddenImport = /from\s+["']@ams\/realtbase-ui(?:["']|\/(?:views(?:["']|\/)|starter\/))/;
+const forbiddenImport =
+	/from\s+["']@ams\/realtbase-ui(?:["']|\/(?:views(?:["']|\/)|starter\/))/;
 for (const path of sourceFiles(join(root, "src", "app"))) {
 	assert.doesNotMatch(
 		readFileSync(path, "utf8"),
@@ -61,10 +64,12 @@ for (const path of sourceFiles(join(root, "src", "app"))) {
 const publicTargets = new Set(Object.values(expectedExports));
 for (const internalOnly of [
 	"./src/views/home/HomeNewBuildingsView.tsx",
-	"./src/views/corporate/MortgageCalculatorView.tsx",
 	"./src/views/legal/LegalHubView.tsx",
 ]) {
-	assert.ok(existsSync(join(uiRoot, internalOnly)), `expected internal module: ${internalOnly}`);
+	assert.ok(
+		existsSync(join(uiRoot, internalOnly)),
+		`expected internal module: ${internalOnly}`,
+	);
 	assert.equal(
 		publicTargets.has(internalOnly),
 		false,
