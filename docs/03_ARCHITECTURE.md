@@ -105,6 +105,10 @@ not duplicated configuration tables.
   primitives, семь активных public page/shell entrypoints и styles. Root barrel,
   `./views` и compatibility aliases `./starter/*` запрещены; будущие view modules
   остаются internal до отдельного activation contract.
+- `packages/ui/src/views/public-shell/PublicSiteShellView.tsx` — единственный
+  implementation owner header, footer и mobile navigation. Stable package
+  entrypoint `./public/site-shell` указывает только на него; legacy component
+  names допускаются исключительно как documented direct aliases в этом файле.
 - Один project-owned semantic token source; light-only, `.dark` не устанавливается.
 - Production публично индексируется; page-level registry/content gates, canonical policy и pagination `noindex,follow` остаются обязательными.
 - Consent fail-closed: server принимает только явное `consentAccepted=true` и

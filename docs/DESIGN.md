@@ -71,7 +71,9 @@ Payload Admin остаётся CMS-native и не получает публич�
 Решение компонентов: `REUSE → VARIANT → CREATE`.
 
 - Сохраняются `Container`, `Section`, `SectionHeader`, Button, Input, Select и Dialog.
-- Header и Footer — DON CITY variants существующего shell, а не новая параллельная оболочка.
+- Header, Footer и mobile navigation принадлежат одному DON CITY owner
+  `packages/ui/src/views/public-shell/PublicSiteShellView.tsx`; параллельная
+  оболочка запрещена.
 - Скругления умеренные; крупные «пузырьковые» формы не соответствуют бренду.
 - Медные рамки используются тонко: верхняя/нижняя граница, focus detail или один акцент в секции.
 - Тени мягкие и глубокие, без яркого свечения.

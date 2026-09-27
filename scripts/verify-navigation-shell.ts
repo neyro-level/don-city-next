@@ -10,7 +10,7 @@ import { projectUrls } from "../src/project/url-grammar.ts";
 const navigation = buildR1Navigation();
 const nap = toPublicNapDTO();
 const headerSource = readFileSync(
-	"packages/ui/src/views/starter/SiteShellView.tsx",
+	"packages/ui/src/views/public-shell/PublicSiteShellView.tsx",
 	"utf8",
 );
 const publicHeaderSource = readFileSync(

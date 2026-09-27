@@ -275,7 +275,7 @@ export function PublicSiteFooterView({ footer }: { footer: SiteFooterDTO }) {
 /** @deprecated Use PublicSiteFooterView. */
 export const StarterSiteFooter = PublicSiteFooterView;
 
-export function SiteShellView({
+export function PublicSiteShellView({
 	header,
 	footer,
 	children,
@@ -292,3 +292,6 @@ export function SiteShellView({
 		</div>
 	);
 }
+
+/** @deprecated Use PublicSiteShellView. */
+export const SiteShellView = PublicSiteShellView;

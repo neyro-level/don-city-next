@@ -17,7 +17,7 @@ const expectedExports = {
 	"./public/legal-document-page": "./src/views/legal/LegalDocumentView.tsx",
 	"./public/marketing-page": "./src/views/marketing/StarterMarketingPageView.tsx",
 	"./public/property-page": "./src/views/property/StarterPropertyPageView.tsx",
-	"./public/site-shell": "./src/views/starter/SiteShellView.tsx",
+	"./public/site-shell": "./src/views/public-shell/PublicSiteShellView.tsx",
 	"./styles.css": "./src/styles.css",
 };
 

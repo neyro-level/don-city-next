@@ -59,7 +59,6 @@
   --home-articles-chip-hover: #e9dfcf;
   --home-articles-media: #eee6da;
   --text-dark: var(--brand-ivory);
-  --text-dark-secondary: rgba(244, 232, 193, 0.72);
   --text-dark-muted: rgba(244, 232, 193, 0.5);
   --border: #dcd2c2;
   --dark-border: rgba(244, 232, 193, 0.18);
@@ -79,11 +78,6 @@
   --error: #9e1c1c;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.04);
   --shadow-dialog: 0 28px 80px rgba(24, 22, 24, 0.18);
-  --request-modal-shadow-panel: 0 24px 80px var(--shell-effect-subtle);
-  --request-modal-shadow-avatar: 0 12px 26px var(--shell-effect-strong);
-  --request-modal-shadow-focus: 0 0 0 3px var(--shell-effect-selected);
-  --request-modal-shadow-action: 0 4px 12px var(--shell-effect-emphasis);
-  --request-modal-shadow-action-hover: 0 6px 16px var(--shell-effect-contrast);
   --home-shadow-action: 0 4px 12px var(--home-action-shadow);
   --home-shadow-action-hover: 0 6px 16px var(--home-action-shadow-hover);
   --site-radius-sm: 8px;
@@ -94,7 +88,6 @@
   --radius: 8px;
   --site-font-weight-medium: 500;
   --site-font-weight-semibold: 600;
-  --site-font-weight-strong: 650;
   --site-font-weight-bold: 700;
   --site-font-weight-extrabold: 800;
   --site-frame-max: 1380px;
@@ -129,7 +122,6 @@
   --media-counter-surface: rgba(24, 24, 26, 0.82);
   --media-control-content: var(--text-dark);
   --motion-duration-fast: 180ms;
-  --motion-duration-short: 200ms;
   --motion-duration-standard: 250ms;
   --motion-duration-extended: 350ms;
   --motion-ease-standard: ease;
@@ -308,7 +300,6 @@
   --site-radius-emphasis: 14px;
   --site-radius-media-switcher: 15px;
   --site-radius-floating-header: 18px;
-  --overlay-soft: rgba(23, 22, 26, 0.18);
   --overlay-default: rgba(23, 22, 26, 0.42);
   --focus-ring: var(--ring);
   /* Component role tokens preserve the approved visual baseline without exposing raw values to UI code. */
@@ -330,19 +321,6 @@
   --catalog-mortgage-help-card-surface-action-hover: #2a292c;
   --catalog-new-building-selection-card-border-default: #e6dcdc;
   --catalog-new-building-selection-card-border-hover: #d8c9c9;
-  --city-switcher-border-primary: #e8e8e8;
-  --city-switcher-content-primary: #0a66cc;
-  --city-switcher-content-secondary: #8c8c8c;
-  --city-switcher-surface-primary: #f3f3f3;
-  --city-switcher-surface-secondary: #ebebeb;
-  --city-switcher-surface-tertiary: #f7f7f7;
-  --cookie-notice-border-primary: #e1e2e4;
-  --cookie-notice-content-primary: #222124;
-  --cookie-notice-content-secondary: #232124;
-  --cookie-notice-content-tertiary: #d9272e;
-  --cookie-notice-content-subtle: #9e171c;
-  --cookie-notice-icon-primary: #222124;
-  --cookie-notice-surface-primary: #681010;
   --corporate-form-section-views-border-primary: #e5e7eb;
   --corporate-form-section-views-content-primary: #111827;
   --corporate-form-section-views-content-secondary: #4b5563;
@@ -351,9 +329,6 @@
   --dialog-content-primary: #5b5860;
   --dialog-surface-primary: #f5f5f3;
   --dialog-surface-secondary: #ecebe8;
-  --expert-request-modal-border-primary: #f2c6c6;
-  --expert-request-modal-surface-primary: #fff7f7;
-  --expert-request-modal-surface-secondary: #2a292c;
   --field-content-primary: #777375;
   --house-project-preview-visual-primary: #c8c8c6;
   --html-sitemap-border-primary: #e7e7e3;
@@ -373,9 +348,6 @@
   --html-sitemap-listing-surface-subtle: #f3ecec;
   --html-sitemap-listing-surface-muted: #1f1e21;
   --html-sitemap-surface-primary: #f4f4f2;
-  --lead-success-notice-content-primary: #777375;
-  --lead-success-notice-content-secondary: #5f5b5d;
-  --lead-success-notice-surface-primary: #f4f3f1;
   --legal-document-border-primary: #dededa;
   --legal-document-content-primary: #1c1b1f;
   --legal-document-content-secondary: #b7b4b6;
@@ -401,20 +373,11 @@
   --legal-hub-surface-secondary: #f5f5f3;
   --legal-hub-surface-tertiary: #222124;
   --legal-hub-surface-subtle: #3a383c;
-  --mobile-menu-border-primary: #efefef;
-  --mobile-menu-border-secondary: #ebebeb;
-  --mobile-menu-border-tertiary: #f0f0f0;
-  --mobile-menu-content-primary: #1f1f1f;
-  --mobile-menu-content-secondary: #c4c4c4;
   --mortgage-programs-border-primary: #e9e8e6;
   --mortgage-programs-content-primary: #3b3736;
   --mortgage-programs-surface-primary: #f6f6f4;
   --mortgage-programs-surface-secondary: #fafaf9;
   --new-building-map-content-strong: #5e5b5e;
-  --phone-reveal-content-primary: #8c8c8c;
-  --phone-reveal-content-secondary: #0a66cc;
-  --phone-reveal-surface-primary: #f3f3f3;
-  --phone-reveal-surface-secondary: #ebebeb;
   --property-card-surface-action-hover: #2a292c;
   --property-chat-border-danger: #f2c6c6;
   --property-chat-surface-danger: #fff7f7;
@@ -446,11 +409,7 @@
   --catalog-mortgage-help-card-shadow-panel: 0 4px 8px rgba(0,0,0,0.02),0 22px 52px rgba(0,0,0,0.10);
   --catalog-new-building-selection-card-shadow-card: 0 1px 2px rgba(0,0,0,0.03),0 18px 42px rgba(0,0,0,0.08);
   --catalog-new-building-selection-card-shadow-subtle: 0 1px 2px rgba(0,0,0,0.03);
-  --city-switcher-shadow-primary: 0 12px 34px rgba(0,0,0,0.08);
-  --city-switcher-shadow-secondary: 0 22px 64px rgba(0,0,0,0.14);
-  --cookie-notice-shadow-primary: 0 18px 56px rgba(20,18,22,0.34);
   --corporate-form-section-views-shadow-primary: 0 18px 50px rgba(17,24,39,0.06);
-  --desktop-site-nav-shadow-primary: 0 22px 64px rgba(0,0,0,0.12);
   --expert-request-modal-shadow-primary: 0 12px 26px rgba(23,22,26,0.14);
   --legal-hub-shadow-primary: 0 16px 46px rgba(28,27,31,0.045);
   --media-gallery-shadow-primary: 0 12px 30px rgba(0,0,0,0.16);
@@ -476,7 +435,6 @@
   --sale-reporting-shadow-primary: 0 14px 30px rgba(23,22,26,0.06);
   --sheet-shadow-primary: 0 28px 80px rgba(24,22,24,0.18);
   --site-header-shadow-primary: 0 14px 40px rgba(0,0,0,0.1);
-  --site-header-shadow-secondary: 0 18px 58px rgba(0,0,0,0.12);
   --site-header-shadow-tertiary: 0 1px 0 rgba(0,0,0,0.04);
   --catalog-hero-overlay-horizontal-strong: rgba(16,16,17,0.84);
   --catalog-hero-overlay-horizontal-default: rgba(16,16,17,0.62);
@@ -489,23 +447,6 @@
   --home-action-shadow: color-mix(in srgb, var(--accent) 20%, transparent);
   --home-action-shadow-hover: color-mix(in srgb, var(--accent) 30%, transparent);
   --sheet-effect-primary: rgba(23,22,26,0.2);
-  --shell-effect-secondary: rgba(16, 16, 17, 0.24);
-  --shell-effect-tertiary: rgba(227, 227, 225, 0.88);
-  --shell-effect-subtle: rgba(23, 22, 26, 0.18);
-  --shell-effect-muted: rgba(255, 255, 255, 0.78);
-  --shell-effect-strong: rgba(23, 22, 26, 0.14);
-  --shell-effect-inverse: rgba(255, 255, 255, 0.72);
-  --shell-effect-selected: color-mix(in srgb, var(--accent) 12%, transparent);
-  --shell-effect-disabled: color-mix(in srgb, var(--error) 24%, transparent);
-  --shell-effect-overlay: color-mix(in srgb, var(--error) 6%, transparent);
-  --shell-effect-emphasis: color-mix(in srgb, var(--accent) 20%, transparent);
-  --shell-effect-contrast: color-mix(in srgb, var(--accent) 30%, transparent);
-  --shell-effect-elevated: rgba(255, 255, 255, 0.68);
-  --shell-effect-floating: rgba(255, 255, 255, 0.52);
-  --shell-effect-backdrop: rgba(255, 255, 255, 0.88);
-  --shell-effect-highlight: rgba(255, 255, 255, 0.92);
-  --shell-effect-lowlight: rgba(255, 255, 255, 0.06);
-  --shell-effect-outline: rgba(255, 255, 255, 0.54);
   /* End component role tokens. */
 }
 
@@ -675,6 +616,7 @@
   --radius-md: var(--site-radius-md);
   --radius-lg: var(--site-radius-lg);
   --radius-xl: var(--site-radius-xl);
+  --radius-full: var(--site-radius-full);
   --radius-micro: var(--site-radius-micro);
   --radius-tight: var(--site-radius-tight);
   --radius-compact: var(--site-radius-compact);

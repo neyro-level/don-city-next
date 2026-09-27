@@ -44,7 +44,9 @@ assert.ok(routeError.includes("<h1"));
 assert.ok(routeError.includes("onClick={reset}"));
 assert.equal(routeError.includes("error.message"), false);
 
-const publicShell = read("packages/ui/src/views/starter/SiteShellView.tsx");
+const publicShell = read(
+	"packages/ui/src/views/public-shell/PublicSiteShellView.tsx",
+);
 assert.ok(publicShell.includes('aria-label="Основная навигация"'));
 assert.ok(publicShell.includes('aria-label="Мобильная навигация"'));
 assert.ok(publicShell.includes("aria-expanded={openHref === item.href}"));

@@ -112,7 +112,15 @@ for (const path of walk(join(root, "src", "app"))) {
 }
 
 const shellSource = readFileSync(
-	join(root, "packages", "ui", "src", "views", "starter", "SiteShellView.tsx"),
+	join(
+		root,
+		"packages",
+		"ui",
+		"src",
+		"views",
+		"public-shell",
+		"PublicSiteShellView.tsx",
+	),
 	"utf8",
 );
 for (const requiredPattern of [
