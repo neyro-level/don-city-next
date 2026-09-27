@@ -49,6 +49,7 @@
 		"verify:client-clone-proof": "node scripts/verify-final-client-clone.mjs",
 		"verify:client-readiness": "node scripts/verify-timeweb-blueprint.mjs && node --experimental-strip-types scripts/verify-client-readiness.mjs",
 		"verify:a11y-starter": "node scripts/verify-a11y-starter.mjs",
+		"verify:ui-public-surface": "node scripts/verify-ui-public-surface.mjs",
 		"verify:ui-accessibility": "pnpm verify:a11y-starter && pnpm verify:home-page && pnpm verify:geo-hub-page && pnpm verify:apartment-geo-page && pnpm verify:apartment-districts && pnpm verify:apartment-room-facets && pnpm verify:house-geo-page && pnpm verify:land-facet-query && pnpm verify:property-detail-routes && pnpm verify:property-lifecycle-routes && pnpm verify:lawyer-page && pnpm verify:company-contacts-legal",
 		"verify:drift": "node scripts/quality/drift-audit.mjs",
 		"verify:ui-core": "node scripts/quality/ui-core.mjs && pnpm quality:design-tokens && pnpm verify:drift && pnpm verify:a11y-starter && pnpm verify:seo-contracts",

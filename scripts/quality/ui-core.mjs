@@ -87,7 +87,6 @@ const uiPackage = readJson(join(root, "packages", "ui", "package.json"));
 assert.deepEqual(
 	Object.keys(uiPackage.exports).sort(),
 	[
-		".",
 		"./analytics",
 		"./primitives",
 		"./public/catalog-page",
@@ -97,15 +96,7 @@ assert.deepEqual(
 		"./public/marketing-page",
 		"./public/property-page",
 		"./public/site-shell",
-		"./starter/catalog-page",
-		"./starter/gone-property-page",
-		"./starter/home-page",
-		"./starter/legal-document-page",
-		"./starter/marketing-page",
-		"./starter/property-page",
-		"./starter/site-shell",
 		"./styles.css",
-		"./views",
 	].sort(),
 	"UI package exports must stay intentional and closed",
 );
@@ -113,7 +104,7 @@ assert.deepEqual(
 for (const path of walk(join(root, "src", "app"))) {
 	if (!/\.[cm]?[jt]sx?$/.test(path)) continue;
 	const source = readFileSync(path, "utf8");
-	if (/@ams\/realtbase-ui\/starter\//.test(source)) {
+	if (/@ams\/realtbase-ui(?:["']|\/(?:views(?:["']|\/)|starter\/))/.test(source)) {
 		failures.push(
 			`public app must use canonical UI exports: ${relative(root, path).replaceAll("\\", "/")}`,
 		);

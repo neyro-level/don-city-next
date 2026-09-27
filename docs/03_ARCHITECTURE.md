@@ -101,6 +101,10 @@ not duplicated configuration tables.
 - Site Profile: `SINGLE_GEO` Donetsk; активны secondary market и категории `kvartiry`, `doma`, `uchastki`.
 - Server Components по умолчанию; client boundaries только для интерактивных leaves.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
+- Public API `@ams/realtbase-ui` закрыт десятью canonical entrypoints: analytics,
+  primitives, семь активных public page/shell entrypoints и styles. Root barrel,
+  `./views` и compatibility aliases `./starter/*` запрещены; будущие view modules
+  остаются internal до отдельного activation contract.
 - Один project-owned semantic token source; light-only, `.dark` не устанавливается.
 - Production публично индексируется; page-level registry/content gates, canonical policy и pagination `noindex,follow` остаются обязательными.
 - Consent fail-closed: server принимает только явное `consentAccepted=true` и
