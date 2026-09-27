@@ -141,7 +141,7 @@ const pageStyleFailures = componentCssFiles.flatMap((path) => {
 });
 
 const projectDoc = readFileSync(join(root, "docs/03_ARCHITECTURE.md"), "utf8");
-const designDoc = readFileSync(join(root, "docs/06_DESIGN_SYSTEM.md"), "utf8");
+const designDoc = readFileSync(join(root, "docs/DESIGN.md"), "utf8");
 
 export function resolveModuleTokenReservations({
 	designText,

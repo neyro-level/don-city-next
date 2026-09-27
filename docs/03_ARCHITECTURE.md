@@ -22,7 +22,12 @@ DON CITY — отдельный client instance на Next.js App Router, React, 
 - Node.js 24.20, pnpm 11.5.1, TypeScript strict, Tailwind CSS 4.
 - PostgreSQL 18, Payload migrations; Prisma запрещён.
 - Repository: SourceCraft primary, GitHub read-only mirror.
+- `PROJECT_CLASS=COMMERCIAL`: public business site, catalog and lead acquisition.
 - `DELIVERY_PROFILE=CRITICAL` из-за auth, PII, production data и интеграций.
+
+Project-specific profile/readiness choices are canonical in `PROJECT.md`; the
+active visual policy is `DESIGN.md`. Architecture owns boundaries and topology,
+not duplicated configuration tables.
 
 Фактические версии определяются `package.json`, lockfile и runtime image. Major upgrades выполняются отдельной задачей.
 
@@ -82,8 +87,11 @@ DON CITY — отдельный client instance на Next.js App Router, React, 
 
 ## 6. Jobs, Cache and Lifecycle
 
-- Ровно один runtime владеет Payload queue polling; handover — stop-old-before-enable-new.
-- `dispatchDueFeeds` планируется каждые 5 минут, maintenance/recovery — каждые 15 минут.
+- Ровно один runtime владеет Payload queue polling/execution; handover — stop-old-before-enable-new.
+- Payload jobs `autoRun` cron `* * * * *` только проверяет очереди; прикладное расписание задаёт registry.
+- Registry schedules: `dispatchDueFeeds` = `*/5 * * * *`; `recoverLeadDeliveries` = `*/15 * * * *`.
+- Static queues keep `disableScheduling=false`; programmatic import and delivery queues keep `disableScheduling=true`.
+- `enableConcurrencyControl=true` remains обязательным для конкурентной обработки Payload jobs.
 - Feed sources по умолчанию disabled; реальный feed включается только после owner-approved endpoint/allowlist.
 - Public Gateway reads используют deterministic cache keys, 3600-second safety TTL и tags `site`, `properties`, `geo:*`, `district:*`, `property:*`.
 - CMS/import invalidation батчируется; lifecycle и proxy reads не кэшируются.

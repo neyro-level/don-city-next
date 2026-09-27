@@ -19,17 +19,23 @@ Updated: 2026-09-27
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Core 5.5 v9 Approval Gate
+## NOW — Core 5.5 v9 Implementation
 
 - [x] Realty Core 5.5 and UI Core 5.0 normative sources are linked to project Source of Truth.
 - [x] CP-00 factual evidence and the four-pass Architect audit are complete.
-- [x] Draft Task Manager graph has `10/10` active epic coverage, `45` autonomous tasks and zero dependency cycles.
+- [x] Task Manager graph has `10/10` active epic coverage, `45` autonomous tasks and zero dependency cycles.
 - [x] Owner approved exact master plan v9 at `2026-09-27T01:03:39+03:00`.
-- [ ] Only after approval: canonical `Validate → Init/Upgrade decision → Import → Reconcile` passes before Developer claim.
+- [x] Canonical `Validate → Init/Upgrade decision → Import → Reconcile` passed and Developer execution started.
+- [x] CP-01 through CP-06 delivered through reviewed SourceCraft PRs and exact-head gates.
+- [x] CP-03 jobs/import/lead safety: narrow OD-03 exception approved; atomic concurrency and heartbeat proofs passed; PR 79 merged after RISKY gate 91.
+- [x] CP-04 media/request-path performance: delivered through PR 78 and exact-head RISKY gate 90.
+- [ ] CP-07 project/readiness documentation: exact-head delivery candidate is under review.
+- [ ] CP-08 integrated isolated-staging proof: hard-blocked until CP-07 is delivered.
 
-No CP implementation, production indexing or Task Manager import is authorized by readiness alone.
+Production indexing remains outside the autonomous implementation graph and
+requires a separate owner release command.
 
-## AFTER APPROVAL — Core 5.5 Implementation
+## Core 5.5 Delivery Order
 
 1. CP-01 release-level indexing safety and CP-02A initial product/indexing scope.
 2. CP-03 jobs/import/lead safety, CP-04 media/performance and CP-06 security spike can progress in independent safe streams.

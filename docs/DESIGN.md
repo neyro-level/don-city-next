@@ -1,0 +1,121 @@
+# DON CITY — Design Policy
+
+Status: Active — owner-approved brand direction
+Version: 2.0
+Updated: 2026-09-27
+
+## Normative UI baseline
+
+The project UI contract is governed by `../AMS_UI_CORE_v5.0_FINAL.md`. This document remains the project-specific design policy; numeric values remain exclusively in `src/app/globals.css`.
+
+Current status is `TARGETED CONFORMANCE`: CP-05 closed the approved typography,
+navigation, error-boundary, accessibility and scanner scope. This is not a claim
+that every future page or optional module is certified; new UI still follows the
+same gates and `REUSE → VARIANT → CREATE` rule.
+
+This file is the only active project design policy. Numeric values remain in
+`src/app/globals.css`; the superseded `06_DESIGN_SYSTEM.md` path is only a
+history pointer.
+
+## Назначение
+
+Система задаёт единый премиальный язык публичного сайта DON CITY. Она сохраняет проверенную структуру, ритм, компоненты и поведение starter/Bastion foundation, но заменяет донорскую идентичность фирменными цветами и утверждённым логотипом DON CITY.
+
+Payload Admin остаётся CMS-native и не получает публичную бренд-тему.
+
+## Источник бренда
+
+- Утверждённый оригинал: `public/brand/don-city-logo-approved.jpg`.
+- Компактный знак для шапки: `public/brand/don-city-mark.png`.
+- Browser icons: `src/app/icon.png` и `src/app/apple-icon.png`.
+- Оригинал нельзя перекрашивать, деформировать, поворачивать, обрезать по контуру зданий или заменять набранным текстом.
+- Текстурный фон оригинала является частью логотипного изображения, а не фоном всего интерфейса.
+
+В шапке используется компактный знак и название, набранное Manrope. В подвале используется полный утверждённый вертикальный логотип с подписью «Агентство недвижимости». Это сохраняет читаемость меню и одновременно показывает официальный знак без изменений.
+
+## Характер системы
+
+Ключевые ассоциации: надёжность, недвижимость, спокойная премиальность, тёплый металл, архитектурная точность. Интерфейс не имитирует «золото» градиентами и блеском: премиальность создают глубокий хвойный цвет, тёплые фарфоровые поверхности, медные детали, свободное пространство и строгая типографика.
+
+## Цветовые роли
+
+Числовые значения цветов хранятся только в `src/app/globals.css`.
+
+- `brand-primary` — глубокий хвойный: основные действия, ссылки, focus и активные состояния.
+- `brand-copper` — медный акцент из логотипа: тонкие разделители, декоративные детали и редкие акценты; не используется как основной цвет длинного текста.
+- `brand-gold` — светлый металлический акцент из знака; только для небольших декоративных элементов.
+- `brand-ivory` — тёплая слоновая кость для контента на тёмном фоне.
+- `background` — фарфоровый фон страницы, мягче чистого белого.
+- `surface` — тёплая светлая поверхность карточек и диалогов.
+- `surface-dark` — матовый хвойный фон подвала и премиальных контрастных секций.
+
+Основные пары проходят WCAG AA: белый текст на primary — 10.30:1, основной текст на фоне страницы — 14.57:1, приглушённый текст на светлой поверхности — 4.75:1. Медь на светлом фоне применяется только в своей тёмной текстовой роли с контрастом 6.18:1. Цвета ошибок, destructive и критических предупреждений не перекрашиваются в брендовые.
+
+## Типографика
+
+- Единственная публичная гарнитура — `Manrope`, подключённая через `next/font/google` для Cyrillic и Latin.
+- Заголовки используют плотный трекинг и веса из существующей token scale.
+- Верхний регистр допустим для коротких eyebrow/label и названия бренда, но не для абзацев и длинных ссылок.
+- На каждой коммерческой странице остаётся один логический `h1`.
+- Компоненты используют только публичные semantic-роли Tailwind `text-*`, `leading-*` и `tracking-*`. Внутренние `--site-type-*`, `--site-leading-*` и `--site-tracking-*` являются числовым источником и могут подключаться только один раз через `@theme inline`; прямое использование этих переменных в компонентах и CSS-модулях запрещено guard-проверкой.
+
+## Логотип и охранное поле
+
+- Минимальная визуальная высота компактного знака в шапке — 40 px; favicon использует только знак без надписей.
+- Вокруг знака сохраняется свободное поле не меньше половины ширины самого узкого вертикального штриха.
+- На тёмных секциях полный логотип показывается в исходном фирменном поле; на светлых поверхностях — компактный прозрачный знак.
+- Alt-текст полного логотипа сообщает название и тип компании. Декоративный знак рядом с видимым названием получает пустой alt, чтобы скринридер не повторял бренд.
+
+## Компоненты и layout
+
+Решение компонентов: `REUSE → VARIANT → CREATE`.
+
+- Сохраняются `Container`, `Section`, `SectionHeader`, Button, Input, Select и Dialog.
+- Header и Footer — DON CITY variants существующего shell, а не новая параллельная оболочка.
+- Скругления умеренные; крупные «пузырьковые» формы не соответствуют бренду.
+- Медные рамки используются тонко: верхняя/нижняя граница, focus detail или один акцент в секции.
+- Тени мягкие и глубокие, без яркого свечения.
+- Motion остаётся спокойным, коротким и учитывает `prefers-reduced-motion`.
+
+## Состояния и доступность
+
+- Все интерактивные элементы доступны с клавиатуры и имеют заметный focus ring.
+- Не использовать один цвет как единственный носитель статуса.
+- Loading, empty, error, success, disabled и hover состояния используют существующие semantic tokens.
+- Light-only режим сохраняется; Tailwind dark variant class-based, класс `.dark` не устанавливается.
+- Обязательны responsive, 404 и platform error boundary.
+
+## Ownership и масштабирование
+
+```text
+numeric tokens → primitives → layout → shared shell → domain → page composition
+globals.css → Button/Input/Dialog → Container/Section → Header/Footer
+→ catalog/forms/cards → route pages
+```
+
+`src/app/globals.css` остаётся единственным числовым источником темы. Компоненты используют semantic roles, а не локальные hex-значения. Новая страница расширяет существующий набор ролей только при доказанной необходимости и не создаёт вторую цветовую систему.
+
+## Page-level CSS, media, motion and approved exceptions
+
+- Page-level composition may use a project-owned stylesheet only for layout or
+  behavior that is not expressible through the shared semantic component API.
+  It cannot introduce a second token scale or raw brand values.
+- Property media preserves aspect ratio, alt policy, responsive sizing and
+  reduced layout shift. Decorative brand imagery never substitutes for listing
+  evidence.
+- Motion is short, calm and disabled/reduced through
+  `prefers-reduced-motion`; it cannot block navigation or form completion.
+- Approved exceptions are limited to the original textured logo inside its own
+  image asset and CMS-native Payload Admin styling. Neither exception may leak
+  numeric tokens or public brand overrides into reusable components.
+
+## Disposition register
+
+- `REUSE`: сетка, spacing rhythm, responsive shell, доступные primitives.
+- `VARIANT`: header, footer, action palette, surfaces, borders, focus и брендовые assets.
+- `REPLACE`: донорский логотип, donor-red brand roles и холодные серые базовые поверхности.
+- `REMOVE`: декоративные текстуры вне утверждённого логотипа, псевдозолотые градиенты и дубли numeric tokens.
+
+## Проверка изменений
+
+При изменении темы проверяются: контраст ключевых пар, header/footer на mobile и desktop, клавиатурный focus, favicon, отсутствие horizontal overflow, один `h1`, metadata/robots и отсутствие donor identity. Production остаётся `noindex` до отдельного решения владельца.

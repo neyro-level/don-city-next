@@ -22,9 +22,13 @@ Updated: 2026-09-27
 
 ## Platform contract
 
-Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload Platform. Profile: `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
+Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload Platform. Profile: `REALTY_BASE`, `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 
-The production implementation is not yet declared conformant. Exact Core 5.5/UI 5.0 gaps and the staged remediation program are recorded in `replan/CORE55_CP00_EVIDENCE.md` and `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` v8 REVIEW.
+The current implementation is partially converged, not fully certified. CP-01
+through CP-06 are delivered; CP-07 is the current documentation delivery
+candidate, and CP-08 integrated staging proof has not run. Exact gaps and evidence are recorded
+in `replan/CORE55_CP00_EVIDENCE.md` and the APPROVED v9 program in
+`AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
 
 ## Source of Truth
 
@@ -32,15 +36,18 @@ The production implementation is not yet declared conformant. Exact Core 5.5/UI 
 |---|---|
 | normative Realty platform baseline | `../AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md` |
 | normative UI baseline | `../AMS_UI_CORE_v5.0_FINAL.md` |
+| project profile, runtime choices and fail-closed readiness | `PROJECT.md` |
 | продукт и scope | `01_PRD.md` |
 | страницы, URL, flows, SEO policy | `02_PRODUCT_STRUCTURE.md` |
 | техника, data, security, infrastructure | `03_ARCHITECTURE.md` |
 | текущая работа | `04_BACKLOG.md` |
 | release | `05_RELEASE_CHECKLIST.md` |
-| UI | `06_DESIGN_SYSTEM.md` |
+| active project design policy | `DESIGN.md` |
 | operations / runtime | `OPERATIONS.md` |
 | детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
 | долговечные архитектурные решения | `adr/README.md` |
 | история contract | `CHANGELOG.md` |
 
-`research/**`, `replan/**` и `archive/**` — evidence и история, а не активный статус. Оперативная правда production фиксируется в `DELIVERY_STATE.yaml` и `OPERATIONS.md`.
+`06_DESIGN_SYSTEM.md` is a superseded history pointer. `research/**`,
+`replan/**` and `archive/**` are evidence/history, not active status. Operational
+production truth is recorded in `DELIVERY_STATE.yaml` and `OPERATIONS.md`.

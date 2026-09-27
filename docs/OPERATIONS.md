@@ -1,7 +1,7 @@
 # DON CITY — Operations Contract
 
 Status: active production, global noindex
-Updated: 2026-09-26
+Updated: 2026-09-27
 
 ## Current Runtime
 
@@ -36,6 +36,7 @@ Updated: 2026-09-26
 - Lead delivery uses the existing outbox identity; retries never copy PII into diagnostics.
 - `ALERT_WEBHOOK_URL` and the approved delivery channel must be independent from the application server.
 - Logs, evidence and incident notes must not contain raw feed XML, PII, tokens, credentials or full database URLs.
+- Raw XML, PII, credentials и токены запрещено сохранять в логах, evidence и incident notes.
 
 ## Health and Monitoring
 
@@ -47,6 +48,7 @@ Updated: 2026-09-26
 
 ## Lifecycle and Retention
 
+- **Catalog lifecycle operations.** Archive/purge выполняются только задачей `catalogLifecycle` по зафиксированным retention-правилам.
 - Leads and archived property content are retained for 100 days before lifecycle purge.
 - `catalogLifecycle` owns archive/purge transitions; manual DB edits are forbidden.
 - Canonical 404/410 behavior is checked through route/lifecycle contracts.
@@ -61,3 +63,60 @@ Updated: 2026-09-26
 - receive a separate owner command to remove global noindex.
 
 Production may remain online in noindex mode while these blockers are open. Real feed stays off.
+
+## Manual Import and Suspicious Approval
+
+- **Manual import.** Запуск разрешён только через контролируемую операцию Feed Sources.
+- **Suspicious approval.** Разрешение привязано к одному точному Import Run и ограничено TTL.
+
+1. Keep a source disabled until its secret reference and outbound/image hosts
+   are approved.
+2. Owner/admin may queue a manual import from the Feed Sources operation; never
+   paste a credential URL into CMS.
+3. Inspect the redacted Import Run/Issues record. Raw XML and credentials must
+   not enter evidence.
+4. A suspicious deactivation is approved only for the exact import run and only
+   inside the 240-minute approval TTL. The configured source threshold/cap
+   (defaults: 30% and 50) do not authorize bypassing source isolation.
+5. Missing, expired or mismatched approval means skip/fail closed; do not edit
+   rows manually.
+
+## Interrupted Jobs and Orphan Recovery
+
+- **Stale/orphan recovery.** Используется только именованная System/Ingest Gateway операция с сохранением audit identity.
+- Use authenticated Payload job diagnostics and project recovery commands to
+  inspect stalled/claimed work. Do not edit `payload-jobs` directly.
+- Recovery thresholds derive from the 15-minute maintenance interval and
+  observed task duration. Requeue/unstuck operations must retain audit identity.
+- Before jobs-owner handover, stop the old owner, verify it is no longer
+  scheduling, then enable the new owner and prove queue movement.
+- For interrupted imports, preserve run/source identity and resume or supersede
+  through the named System/Ingest Gateway operation; never replay raw SQL.
+
+## Lead Delivery Recovery and Channel Outage
+
+- **Delivery retry.** Повтор использует существующий outbox identity и не создаёт вторую заявку.
+- **Delivery recovery.** Stale `sending` и pending без живой job восстанавливаются штатной recovery-задачей.
+- Owner-only manual retry uses the controlled Lead Deliveries endpoint and the
+  existing outbox identity; it does not create a second lead or copy PII into
+  diagnostics.
+- Retry schedule is `0/1/5/15/60/240` minutes. Unknown delivery waits 60
+  minutes; stale `sending` recovery begins after 15 minutes.
+- If a channel or destination host is not approved, disable routing and retain
+  the outbox record. Do not add a temporary host outside `LEAD_OUTBOUND_HOSTS`.
+- During an outage, verify redaction, queue age and retry state, notify through
+  an independent approved channel, and resume only after a redacted smoke.
+
+## Incident Procedure
+
+Диагностика состояния доступна через authenticated `GET /api/internal/healthz` без публикации секретов и PII.
+
+1. Preserve exact SHA/image, time window and affected surface; redact secrets
+   and PII.
+2. Stop the unsafe integration or jobs owner when continued execution can cause
+   data loss; do not stop the public noindex site without evidence.
+3. Check authenticated health, queue/import/delivery diagnostics and external
+   availability separately.
+4. Roll back the immutable application image or follow the migration-specific
+   restore plan. Never improvise a production DB rollback.
+5. Record the proof, residual risk and follow-up in the owning Source of Truth.

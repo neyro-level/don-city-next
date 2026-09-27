@@ -22,6 +22,9 @@ Updated: 2026-09-27
 
 ## Required Before Indexing / Lead Operations
 
+- [x] Deliver CP-04 with its required DB/media/performance evidence.
+- [x] Deliver CP-03 after the approved narrow OD-03 exception and atomic DB concurrency evidence (PR 79, RISKY gate 91).
+- [ ] Pass CP-08 on one integrated exact candidate in isolated staging while edge noindex remains active.
 - [ ] Create the first production owner user.
 - [ ] Verify NAP against external owner/Yandex Business truth.
 - [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
@@ -42,3 +45,4 @@ Updated: 2026-09-27
 - Do not enable a real feed or delivery host from an unverified URL.
 - Do not run migrations without bound backup, rehearsal and rollback evidence.
 - Do not expose secrets, PII, raw Payload documents or full database URLs in evidence.
+- Documentation or observed infrastructure alone must not promote a fail-closed readiness flag; every promotion requires linked durable evidence.

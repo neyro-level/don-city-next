@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-CORE55-POSTPROD
 plan_version: v9
 plan_status: APPROVED
-current_wave: CORE_5_5_DEVELOPER_HANDOFF
-current_epic: null
-current_task: null
-next_action: start-developer-goal-and-claim-first-ready-task
+current_wave: CORE_5_5_DOCUMENTATION_DELIVERY
+current_epic: CP-07
+current_task: dc55-task-74-delivery
+next_action: review-gate-merge-cp07-then-start-cp08-isolated-staging-proof
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
-  active_branch: codex/master-plan-core-5-5
+  base_sha: 11474697ced75a7a0a50b0b04b26bf574c0a47a8
+  active_branch: codex/dc55-epic-74
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: null
-  reason: collision-safe Core 5.5 graph imported with 10/10 coverage, 55 managed nodes, zero drift and zero cycles; Developer claim is authorized
+  current_task: dc55-task-74-delivery
+  reason: CP-01 through CP-06 delivered; CP-07 is an exact-head delivery candidate; CP-08 waits only for CP-07 delivery
 evidence:
   rp_00:
     status: delivered
@@ -198,6 +198,44 @@ task_contract:
   proof: "Exact SHA/revision/checksum, immutable image, full verification, deploy health, rollback health and final candidate identity."
   gate: RISKY
   done_state: "Exact-main immutable candidate survives deploy, rollback and redeploy on isolated staging, then EPIC-47 merges after one exact-head RISKY gate."
+core55:
+  cp_01:
+    status: delivered
+  cp_02a:
+    status: delivered
+  cp_02:
+    status: delivered
+  cp_03:
+    status: delivered
+    branch: codex/dc55-epic-70
+    pull_request: 79
+    gate_run: 91
+    merge_commit: 11474697ced75a7a0a50b0b04b26bf574c0a47a8
+  cp_04:
+    status: delivered
+    branch: codex/dc55-epic-71
+    pull_request: 78
+    gate_run: 90
+    merge_commit: ee786deba8beba864dc12769759c085107f437ab
+  cp_05:
+    status: delivered
+    pull_request: 76
+    gate_run: 87
+    merge_commit: cc28f70d12874f7bbcb0fe77f27da26c153b8063
+  cp_06:
+    status: delivered
+    pull_request: 77
+    gate_run: 88
+    merge_commit: c8fe1a2077b46f66a933337a8950122f70c7864e
+  cp_07:
+    status: delivery-candidate
+    branch: codex/dc55-epic-74
+  cp_08:
+    status: blocked-dependencies
+    blocker: delivered exact head for CP-07
+  cp_09:
+    status: production-owner-gate
+    authorized: false
 production:
   authorized: true
   authorization_scope: production resources and global-noindex rollout

@@ -126,7 +126,7 @@ for (const column of ['"prefix"', '"_objectkey"']) {
 	);
 }
 assert.ok(
-	migrationIndex.includes('name: "20260926_132000_s3_media_fields"'),
+	/name:\s*["']20260926_132000_s3_media_fields["']/.test(migrationIndex),
 	"S3 media migration must remain registered",
 );
 assert.ok(
