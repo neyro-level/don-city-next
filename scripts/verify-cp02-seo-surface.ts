@@ -28,11 +28,12 @@ for (const directive of [
 	"Allow: /api/media/file/",
 	"Disallow: /api/",
 	"Sitemap: https://doncity-home.ru/sitemap.xml",
-	"Host: doncity-home.ru",
 	"Clean-param:",
+	"fbclid",
 ]) {
 	assert.ok(publicRobots.includes(directive), directive);
 }
+assert.doesNotMatch(publicRobots, /^Host:/m);
 assert.deepEqual(metadataRobotsForPolicy("noindex"), {
 	index: false,
 	follow: false,

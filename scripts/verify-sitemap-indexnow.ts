@@ -158,7 +158,6 @@ assert.deepEqual(buildRobots("public", origin), {
 		},
 	],
 	sitemap: `${origin}/sitemap.xml`,
-	host: origin,
 });
 
 const gatedDistrict = seoRegistry.find(
