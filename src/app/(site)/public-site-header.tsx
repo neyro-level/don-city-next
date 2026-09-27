@@ -1,7 +1,7 @@
 "use client";
 
 import type { SiteHeaderDTO } from "@ams/realtbase-contracts";
-import { StarterSiteHeader } from "@ams/realtbase-ui/starter/site-shell";
+import { PublicSiteHeaderView } from "@ams/realtbase-ui/public/site-shell";
 import { usePathname } from "next/navigation";
 
 function canonicalPath(pathname: string) {
@@ -11,7 +11,7 @@ function canonicalPath(pathname: string) {
 
 export function PublicSiteHeader({ header }: { header: SiteHeaderDTO }) {
 	return (
-		<StarterSiteHeader
+		<PublicSiteHeaderView
 			header={header}
 			activePath={canonicalPath(usePathname())}
 		/>

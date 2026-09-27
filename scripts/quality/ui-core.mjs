@@ -90,6 +90,13 @@ assert.deepEqual(
 		".",
 		"./analytics",
 		"./primitives",
+		"./public/catalog-page",
+		"./public/gone-property-page",
+		"./public/home-page",
+		"./public/legal-document-page",
+		"./public/marketing-page",
+		"./public/property-page",
+		"./public/site-shell",
 		"./starter/catalog-page",
 		"./starter/gone-property-page",
 		"./starter/home-page",
@@ -102,11 +109,44 @@ assert.deepEqual(
 	].sort(),
 	"UI package exports must stay intentional and closed",
 );
+
+for (const path of walk(join(root, "src", "app"))) {
+	if (!/\.[cm]?[jt]sx?$/.test(path)) continue;
+	const source = readFileSync(path, "utf8");
+	if (/@ams\/realtbase-ui\/starter\//.test(source)) {
+		failures.push(
+			`public app must use canonical UI exports: ${relative(root, path).replaceAll("\\", "/")}`,
+		);
+	}
+}
+
+const shellSource = readFileSync(
+	join(root, "packages", "ui", "src", "views", "starter", "SiteShellView.tsx"),
+	"utf8",
+);
+for (const requiredPattern of [
+	/aria-label="Основная навигация"/,
+	/aria-label="Мобильная навигация"/,
+	/aria-expanded=/,
+	/event\.key === "Escape"/,
+	/document\.addEventListener\("pointerdown"/,
+]) {
+	if (!requiredPattern.test(shellSource)) {
+		failures.push(`public navigation contract missing: ${requiredPattern}`);
+	}
+}
 const plainUsageCount = walk(join(root, "packages", "ui", "src"))
 	.filter((path) => /\.tsx$/.test(path))
-	.reduce((count, path) => count + (readFileSync(path, "utf8").match(/variant=["']plain["']/g)?.length ?? 0), 0);
+	.reduce(
+		(count, path) =>
+			count +
+			(readFileSync(path, "utf8").match(/variant=["']plain["']/g)?.length ?? 0),
+		0,
+	);
 if (plainUsageCount > clonePolicy.plain_usage_limit) {
-	failures.push(`plain primitive usage ${plainUsageCount} exceeds policy limit ${clonePolicy.plain_usage_limit}`);
+	failures.push(
+		`plain primitive usage ${plainUsageCount} exceeds policy limit ${clonePolicy.plain_usage_limit}`,
+	);
 }
 
 const primitiveRoot = join(root, "packages", "ui", "src", "components", "ui");
@@ -123,6 +163,23 @@ for (const path of walk(join(root, "packages", "ui", "src"))) {
 
 const layout = readFileSync(join(root, "src", "app", "layout.tsx"), "utf8");
 const globals = readFileSync(join(root, "src", "app", "globals.css"), "utf8");
+const themeBoundary = globals.indexOf("@theme inline");
+const privateTypographyReference = /var\(--site-(?:type|leading|tracking)-/;
+if (themeBoundary < 0)
+	failures.push("semantic typography: @theme inline is missing");
+if (privateTypographyReference.test(globals.slice(0, themeBoundary))) {
+	failures.push(
+		"semantic typography: private numeric source may only feed @theme roles",
+	);
+}
+for (const path of walk(join(root, "packages", "ui", "src"))) {
+	if (!/\.(?:css|tsx?)$/.test(path)) continue;
+	if (privateTypographyReference.test(readFileSync(path, "utf8"))) {
+		failures.push(
+			`semantic typography: UI consumer bypasses public role in ${relative(root, path).replaceAll("\\", "/")}`,
+		);
+	}
+}
 const fontToken = globals.match(/--font-sans:\s*([^;]+);/)?.[1]?.trim();
 const usesNextFont = /from\s+["']next\/font\//.test(layout);
 if (!fontToken) failures.push("font mapping: --font-sans is missing");

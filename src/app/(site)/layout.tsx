@@ -1,4 +1,4 @@
-import { StarterSiteFooter } from "@ams/realtbase-ui/starter/site-shell";
+import { PublicSiteFooterView } from "@ams/realtbase-ui/public/site-shell";
 import type { ReactNode } from "react";
 import { getPublicShell } from "@/core/data-access/public";
 import { PublicSiteHeader } from "./public-site-header";
@@ -23,7 +23,7 @@ export default async function PublicSiteLayout({
 			<main id="main-content" tabIndex={-1}>
 				{children}
 			</main>
-			<StarterSiteFooter footer={shell.footer} />
+			<PublicSiteFooterView footer={shell.footer} />
 		</div>
 	);
 }

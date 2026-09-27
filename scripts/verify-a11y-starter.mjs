@@ -36,7 +36,20 @@ assert.ok(layout.includes("<PublicSiteHeader"));
 assert.ok(layout.includes('href="#main-content"'));
 assert.ok(layout.includes('id="main-content"'));
 assert.ok(layout.includes("tabIndex={-1}"));
-assert.ok(layout.includes("<StarterSiteFooter"));
+assert.ok(layout.includes("<PublicSiteFooterView"));
+
+const routeError = read("src/app/error.tsx");
+assert.ok(routeError.includes('"use client"'));
+assert.ok(routeError.includes("<h1"));
+assert.ok(routeError.includes("onClick={reset}"));
+assert.equal(routeError.includes("error.message"), false);
+
+const publicShell = read("packages/ui/src/views/starter/SiteShellView.tsx");
+assert.ok(publicShell.includes('aria-label="Основная навигация"'));
+assert.ok(publicShell.includes('aria-label="Мобильная навигация"'));
+assert.ok(publicShell.includes("aria-expanded={openHref === item.href}"));
+assert.ok(publicShell.includes('event.key === "Escape"'));
+assert.ok(publicShell.includes('document.addEventListener("pointerdown"'));
 
 const notFound = read("src/app/not-found.tsx");
 assert.equal(
@@ -55,7 +68,7 @@ assert.ok(goneResponse.includes('<html lang="ru">'));
 assert.ok(goneResponse.includes('name="viewport"'));
 assert.ok(goneResponse.includes("<main>"));
 assert.ok(goneResponse.includes("<h1>Объект снят с публикации</h1>"));
-assert.ok(goneResponse.includes('status: 410'));
+assert.ok(goneResponse.includes("status: 410"));
 
 const globals = read("src/app/globals.css");
 assert.ok(globals.includes("prefers-reduced-motion"));

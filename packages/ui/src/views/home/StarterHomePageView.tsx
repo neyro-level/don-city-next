@@ -8,7 +8,7 @@ import {
 	CardTitle,
 } from "../../components/ui/card";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
-import { StarterPropertyCard } from "../property/StarterPropertyCardView";
+import { PublicPropertyCard } from "../property/StarterPropertyCardView";
 import { LeadFormView } from "../starter/LeadFormView";
 
 type HomeSectionProps = {
@@ -47,7 +47,7 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 					</div>
 				</div>
 				{featured ? (
-					<StarterPropertyCard property={featured} headingLevel="h2" priority />
+					<PublicPropertyCard property={featured} headingLevel="h2" priority />
 				) : (
 					<Card>
 						<CardHeader>
@@ -122,7 +122,7 @@ export function HomeFeaturedSection({
 					</h2>
 					{featured ? (
 						<div className="mt-8 max-w-xl">
-							<StarterPropertyCard property={featured} />
+							<PublicPropertyCard property={featured} />
 						</div>
 					) : (
 						<p className="mt-8 text-body-large text-content-default">

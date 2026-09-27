@@ -3,14 +3,14 @@ import type { CatalogViewAnalyticsEvent } from "@ams/realtbase-ui/analytics";
 import {
 	CatalogPageView,
 	type CatalogPaginationItem,
-} from "@ams/realtbase-ui/starter/catalog-page";
-import { GonePropertyPageView } from "@ams/realtbase-ui/starter/gone-property-page";
+} from "@ams/realtbase-ui/public/catalog-page";
+import { GonePropertyPageView } from "@ams/realtbase-ui/public/gone-property-page";
 import {
 	LegalDocumentView,
 	type SiteLinkRendererProps,
-} from "@ams/realtbase-ui/starter/legal-document-page";
-import { MarketingPageView } from "@ams/realtbase-ui/starter/marketing-page";
-import { PropertyPageView } from "@ams/realtbase-ui/starter/property-page";
+} from "@ams/realtbase-ui/public/legal-document-page";
+import { MarketingPageView } from "@ams/realtbase-ui/public/marketing-page";
+import { PropertyPageView } from "@ams/realtbase-ui/public/property-page";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";

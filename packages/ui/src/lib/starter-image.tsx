@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import type { SiteImageRendererProps } from "./adapters";
 import { cn } from "./utils";
 
-export function StarterFeedImage({
+export function PublicFeedImage({
 	src,
 	alt,
 	className,
@@ -42,3 +42,6 @@ export function StarterFeedImage({
 		/>
 	);
 }
+
+/** @deprecated Use PublicFeedImage. */
+export const StarterFeedImage = PublicFeedImage;

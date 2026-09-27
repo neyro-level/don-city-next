@@ -12,7 +12,7 @@ import {
 } from "../../analytics";
 import { Badge } from "../../components/ui/badge";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
-import { StarterPropertyCard } from "../property/StarterPropertyCardView";
+import { PublicPropertyCard } from "../property/StarterPropertyCardView";
 import { LeadFormView } from "../starter/LeadFormView";
 
 export type CatalogPageCopy = {
@@ -178,7 +178,7 @@ export function CatalogPageView({
 						{list.items.length ? (
 							<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 								{list.items.map((property) => (
-									<StarterPropertyCard key={property.id} property={property} />
+									<PublicPropertyCard key={property.id} property={property} />
 								))}
 							</div>
 						) : (

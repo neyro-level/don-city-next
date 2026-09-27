@@ -201,7 +201,6 @@ requireIncludes(
 const nextConfig = read("next.config.ts");
 for (const required of [
 	"Content-Security-Policy",
-	"Strict-Transport-Security",
 	"X-Content-Type-Options",
 	"Referrer-Policy",
 	"X-Frame-Options",
@@ -214,6 +213,11 @@ for (const required of [
 		`next.config.ts missing ${required}`,
 	);
 }
+assert.equal(
+	nextConfig.includes("Strict-Transport-Security"),
+	false,
+	"HSTS must be emitted once by the TLS terminator, not by Next.js",
+);
 assert.ok(
 	!nextConfig.includes("img-src 'self' data: blob: https:"),
 	"CSP img-src must not use a global https: wildcard",

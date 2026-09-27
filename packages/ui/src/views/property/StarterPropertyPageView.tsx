@@ -14,8 +14,8 @@ import {
 } from "../../components/ui/card";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
 import { LeadFormView } from "../starter/LeadFormView";
-import { StarterPropertyCard } from "./StarterPropertyCardView";
-import { StarterPropertyMediaGallery } from "./StarterPropertyMediaGallery";
+import { PublicPropertyCard } from "./StarterPropertyCardView";
+import { PublicPropertyMediaGallery } from "./StarterPropertyMediaGallery";
 
 export function PropertyPageView({
 	property,
@@ -68,7 +68,7 @@ export function PropertyPageView({
 						<div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
 							<div>
 								<div className="relative aspect-[16/9] overflow-hidden rounded-[var(--radius-lg)] bg-surface-subtle">
-									<StarterPropertyMediaGallery
+									<PublicPropertyMediaGallery
 										images={
 											property.gallery.length
 												? property.gallery
@@ -184,7 +184,7 @@ export function PropertyPageView({
 						{property.related.length ? (
 							<div className="mt-8 grid gap-6 md:grid-cols-2">
 								{property.related.map((item) => (
-									<StarterPropertyCard key={item.id} property={item} />
+									<PublicPropertyCard key={item.id} property={item} />
 								))}
 							</div>
 						) : (

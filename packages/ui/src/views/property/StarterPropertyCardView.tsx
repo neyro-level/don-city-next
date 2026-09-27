@@ -9,10 +9,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../components/ui/card";
-import { StarterFeedImage } from "../../lib/starter-image";
+import { PublicFeedImage } from "../../lib/starter-image";
 import { MediaFallback } from "../starter/MediaFallback";
 
-export function StarterPropertyCard({
+export function PublicPropertyCard({
 	property,
 	headingLevel = "h3",
 	priority = false,
@@ -37,7 +37,7 @@ export function StarterPropertyCard({
 			>
 				<span className="sr-only">Открыть объект: {property.title}</span>
 				{property.primaryMedia?.src ? (
-					<StarterFeedImage
+					<PublicFeedImage
 						src={property.primaryMedia.src}
 						alt={property.primaryMedia.alt || property.title}
 						width={900}
@@ -89,3 +89,6 @@ export function StarterPropertyCard({
 		</Card>
 	);
 }
+
+/** @deprecated Use PublicPropertyCard. */
+export const StarterPropertyCard = PublicPropertyCard;
