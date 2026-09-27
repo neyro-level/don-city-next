@@ -124,6 +124,7 @@ export function MediaGallery({
 									priority={priority && imageIndex === 0}
 									unoptimized={!shouldOptimizeImage(image.src)}
 									sizes={imageSizes}
+									srcSet={image.browserSrcSet}
 									className={imageClassName}
 								/>
 							</Button>

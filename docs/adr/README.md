@@ -14,3 +14,4 @@ Master plan остаётся источником полного contract; ADR �
 | [ADR-0007](ADR-0007-public-geo-property-contracts.md) | Accepted | Public geo and category-specific property DTOs |
 | [ADR-0008](ADR-0008-lead-marketing-contract-reconciliation.md) | Accepted | Reconcile approved lead and marketing contract additions as 1.3.2 |
 | [ADR-0009](ADR-0009-commercial-public-contract.md) | Accepted | Activate commercial in the secondary-sale public contract as 1.4.0 |
+| [ADR-0010](ADR-0010-responsive-media-contract.md) | Accepted | Add optional responsive variants to managed media contract 1.5.0 |

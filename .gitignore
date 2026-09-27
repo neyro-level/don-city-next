@@ -11,3 +11,4 @@ coverage/
 next-env.d.ts
 *.tsbuildinfo
 docs/proofs/epic-9/captures/
+artifacts/

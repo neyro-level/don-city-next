@@ -22,9 +22,7 @@ export const timewebS3Plugin = s3Storage({
 	enabled,
 	alwaysInsertFields: true,
 	collections: {
-		media: {
-			prefix: prefix ?? "build/media",
-		},
+		media: prefix ? { prefix } : true,
 	},
 	bucket: bucket ?? "build-disabled",
 	disableLocalStorage: true,

@@ -1,4 +1,4 @@
-export const contractVersion = "1.4.0" as const;
+export const contractVersion = "1.5.0" as const;
 export const contractState = "frozen" as const;
 
 export type {
@@ -31,7 +31,7 @@ export type {
 	MarketingPageDTO,
 	MarketingSectionDTO,
 } from "./marketing";
-export type { MediaDTO } from "./media";
+export type { MediaDTO, MediaVariantDTO } from "./media";
 export type { PublicNapDTO } from "./nap";
 export type {
 	ApartmentPropertyDetailsDTO,

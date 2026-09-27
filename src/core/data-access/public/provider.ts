@@ -72,6 +72,11 @@ export type PublicPropertyPageState =
 			property: PublicPropertyDetailsDTO;
 	  };
 
+export type PublicPropertyEdgeState = {
+	lifecycle: ReturnType<typeof resolvePropertyPageLifecycle>;
+	canonicalPath?: string;
+};
+
 const urlsPerShard = projectConfig.sitemapUrlsPerShard;
 const queryPageSize = projectConfig.sitemapQueryPageSize;
 
@@ -580,6 +585,31 @@ export async function getPublicPropertyByPublicUrlId(
 	return {
 		lifecycle,
 		property: toPropertyDetailsDTO(property, related),
+	};
+}
+
+export async function getPublicPropertyEdgeState(
+	publicUrlId: string,
+): Promise<PublicPropertyEdgeState | null> {
+	const payload = await getOptionalPublicGatewayPayload();
+	if (!payload) return null;
+	const lookup = await findPublicPropertyLifecycleByPublicUrlId(
+		payload,
+		publicUrlId,
+	);
+	const lifecycle = resolvePropertyPageLifecycle(lookup);
+	if (!lookup.found) return { lifecycle };
+	return {
+		lifecycle,
+		...(lookup.slug && lookup.category
+			? {
+					canonicalPath: buildPropertyUrl({
+						category: lookup.category,
+						semantic: lookup.slug,
+						publicUrlId: Number(publicUrlId),
+					}),
+				}
+			: {}),
 	};
 }
 

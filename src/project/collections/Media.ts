@@ -1,12 +1,12 @@
 import type { CollectionConfig } from "payload";
+import { ownersOnly } from "../../core/access/roles.ts";
+import { publicMediaReadAccess } from "../../core/data-access/public/access-mode.ts";
 import {
 	ensureMediaDirectory,
 	mediaFileExists,
 	mediaOverwriteDisabled,
 	uniqueMediaFilename,
 } from "../../core/storage/local-fs.ts";
-import { ownersOnly } from "../../core/access/roles.ts";
-import { publicMediaReadAccess } from "../../core/data-access/public/access-mode.ts";
 import { clientReadinessConfig } from "../client-readiness.config.ts";
 
 const allowedMimeTypes = [
@@ -17,13 +17,45 @@ const allowedMimeTypes = [
 	"application/pdf",
 ];
 
-const usesRemoteMediaStorage = clientReadinessConfig.mediaStorage === "timeweb-s3";
+const usesRemoteMediaStorage =
+	clientReadinessConfig.mediaStorage === "timeweb-s3";
+
+function versionedVariantName({
+	extension,
+	originalName,
+	sizeName,
+	width,
+}: {
+	extension: string;
+	originalName: string;
+	sizeName: string;
+	width: number;
+}) {
+	return `${originalName}-${sizeName}-${width}w.${extension}`;
+}
+
+const responsiveImageSizes = [
+	{ name: "thumb", width: 320 },
+	{ name: "card", width: 640 },
+	{ name: "detail", width: 1280 },
+].map(({ name, width }) => ({
+	name,
+	width,
+	withoutEnlargement: true,
+	formatOptions: {
+		format: "webp" as const,
+		options: { quality: 82 },
+	},
+	generateImageName: versionedVariantName,
+}));
 
 export const Media: CollectionConfig = {
 	slug: "media",
 	upload: {
 		...(usesRemoteMediaStorage ? {} : { staticDir: ensureMediaDirectory() }),
 		mimeTypes: allowedMimeTypes,
+		adminThumbnail: "thumb",
+		imageSizes: responsiveImageSizes,
 	},
 	admin: {
 		useAsTitle: "alt",

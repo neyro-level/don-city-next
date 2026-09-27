@@ -28,6 +28,7 @@ export type SiteImageRendererProps = {
 	width?: number;
 	height?: number;
 	sizes?: string;
+	srcSet?: string;
 	priority?: boolean;
 	fill?: boolean;
 	unoptimized?: boolean;

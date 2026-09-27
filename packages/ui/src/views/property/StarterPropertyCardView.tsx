@@ -42,6 +42,9 @@ export function StarterPropertyCard({
 						alt={property.primaryMedia.alt || property.title}
 						width={900}
 						height={600}
+						srcSet={property.primaryMedia.variants
+							?.map((variant) => `${variant.src} ${variant.width}w`)
+							.join(", ")}
 						sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
 						priority={priority}
 						className="h-full w-full object-cover"

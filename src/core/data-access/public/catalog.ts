@@ -181,11 +181,16 @@ type PublicCatalogSelectedProperty = Omit<
 
 export type PublicCatalogProperty = Omit<
 	PublicCatalogSelectedProperty,
-	"region" | "city" | "district" | "publishedAt" | "contentPurgedAt"
+	"region" | "city" | "district" | "publishedAt" | "contentPurgedAt" | "images"
 > & {
 	locality?: string | null;
 	district?: string | null;
 	geo?: PropertyLocationDTO;
+	images?: Array<
+		NonNullable<PublicCatalogSelectedProperty["images"]>[number] & {
+			variants?: readonly PublicMediaVariant[];
+		}
+	> | null;
 };
 
 export type PublicPropertyLifecycleLookup =
@@ -257,8 +262,18 @@ type PublicGeoIndex = {
 	>;
 };
 
-type PublicMedia = Pick<Media, "filename" | "id">;
-type PublicMediaIndex = ReadonlyMap<number, string>;
+type PublicMedia = Pick<
+	Media,
+	"filename" | "height" | "id" | "sizes" | "width"
+>;
+type PublicMediaVariant = { src: string; width: number; height?: number };
+type PublicMediaDescriptor = {
+	src: string;
+	width?: number;
+	height?: number;
+	variants: readonly PublicMediaVariant[];
+};
+type PublicMediaIndex = ReadonlyMap<number, PublicMediaDescriptor>;
 
 const publicRegionSelect = {
 	name: true,
@@ -290,7 +305,41 @@ const publicDistrictSelect = {
 
 const publicMediaSelect = {
 	filename: true,
+	width: true,
+	height: true,
+	sizes: true,
 } satisfies MediaSelect<true>;
+
+function mediaFileUrl(filename: string) {
+	return `/api/media/file/${encodeURIComponent(filename)}`;
+}
+
+function publicMediaDescriptor(
+	media: PublicMedia,
+): PublicMediaDescriptor | null {
+	if (!media.filename) return null;
+	const variants = [
+		media.sizes?.thumb,
+		media.sizes?.card,
+		media.sizes?.detail,
+	].flatMap((variant) =>
+		variant?.filename && variant.width
+			? [
+					{
+						src: mediaFileUrl(variant.filename),
+						width: variant.width,
+						...(variant.height ? { height: variant.height } : {}),
+					},
+				]
+			: [],
+	);
+	return {
+		src: mediaFileUrl(media.filename),
+		...(media.width ? { width: media.width } : {}),
+		...(media.height ? { height: media.height } : {}),
+		variants,
+	};
+}
 
 export type PublicCatalogFacetsResult = {
 	source: "payload-aggregate";
@@ -497,16 +546,10 @@ async function loadPublicMediaIndex(
 	});
 
 	return new Map(
-		(result.docs as PublicMedia[]).flatMap((media) =>
-			media.filename
-				? [
-						[
-							media.id,
-							`/api/media/file/${encodeURIComponent(media.filename)}`,
-						] as const,
-					]
-				: [],
-		),
+		(result.docs as PublicMedia[]).flatMap((media) => {
+			const descriptor = publicMediaDescriptor(media);
+			return descriptor ? ([[media.id, descriptor]] as const) : [];
+		}),
 	);
 }
 
@@ -737,16 +780,17 @@ function toPublicCatalogProperty(
 		description: property.description,
 		updatedAt: property.updatedAt,
 		images:
-			property.images?.map((image) => ({
-				kind: image.kind,
-				url:
-					image.url ??
-					mediaIndex.get(relationId(image.media) ?? -1) ??
-					null,
-				alt: image.alt,
-				order: image.order,
-				id: image.id,
-			})) ?? null,
+			property.images?.map((image) => {
+				const managed = mediaIndex.get(relationId(image.media) ?? -1);
+				return {
+					kind: image.kind,
+					url: image.url ?? managed?.src ?? null,
+					alt: image.alt,
+					order: image.order,
+					id: image.id,
+					...(managed?.variants.length ? { variants: managed.variants } : {}),
+				};
+			}) ?? null,
 	};
 }
 
