@@ -25,8 +25,8 @@ Updated: 2026-09-27
 Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload Platform. Profile: `REALTY_BASE`, `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 
 The current implementation is partially converged, not fully certified. CP-01
-through CP-06 are delivered; CP-07 is the current documentation delivery
-candidate, and CP-08 integrated staging proof has not run. Exact gaps and evidence are recorded
+through CP-07 are delivered; CP-08 integrated staging proof passed on the exact
+candidate and awaits PR/RISKY delivery. Exact gaps and evidence are recorded
 in `replan/CORE55_CP00_EVIDENCE.md` and the APPROVED v9 program in
 `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
 

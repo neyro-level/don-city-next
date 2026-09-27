@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-CORE55-POSTPROD
 plan_version: v9
 plan_status: APPROVED
-current_wave: CORE_5_5_DOCUMENTATION_DELIVERY
-current_epic: CP-07
-current_task: dc55-task-74-delivery
-next_action: review-gate-merge-cp07-then-start-cp08-isolated-staging-proof
+current_wave: CORE_5_5_STAGING_DELIVERY
+current_epic: CP-08
+current_task: dc55-task-75-delivery
+next_action: review-gate-merge-cp08-then-close-production-prerequisites
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 11474697ced75a7a0a50b0b04b26bf574c0a47a8
-  active_branch: codex/dc55-epic-74
+  base_sha: 01b3af8584bf79b2a3ab4efa507c42b40444a4ce
+  active_branch: codex/dc55-epic-75
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc55-task-74-delivery
-  reason: CP-01 through CP-06 delivered; CP-07 is an exact-head delivery candidate; CP-08 waits only for CP-07 delivery
+  current_task: dc55-task-75-delivery
+  reason: CP-01 through CP-07 delivered; CP-08 exact staging candidate passed and awaits RISKY delivery
 evidence:
   rp_00:
     status: delivered
@@ -228,14 +228,26 @@ core55:
     gate_run: 88
     merge_commit: c8fe1a2077b46f66a933337a8950122f70c7864e
   cp_07:
-    status: delivery-candidate
+    status: delivered
     branch: codex/dc55-epic-74
+    pull_request: 80
+    gate_run: 92
+    merge_commit: 01b3af8584bf79b2a3ab4efa507c42b40444a4ce
   cp_08:
-    status: blocked-dependencies
-    blocker: delivered exact head for CP-07
+    status: staging-pass-delivery-pending
+    branch: codex/dc55-epic-75
+    application_source_sha: c7926d044472fb718bdac9a7e1bd34c130bfb1b9
+    image_tag: don-city-next:staging-c7926d0
+    server_image_id: sha256:663965ef7926dd3846378ec2e6d77c3a87a6542dcd371dd776fcf2d21a8ec2a0
+    artifact_sha256: 3bb0f945e7551ea791c6cf38d4f78c7a05abca34fdb661bb50d2b5081a2344e7
+    full_crawl: PASS
+    integration_proofs: PASS
+    snapshot_restore: PASS
+    deploy_rollback_redeploy: PASS
+    transport_cleanup: PASS
   cp_09:
-    status: production-owner-gate
-    authorized: false
+    status: prerequisites-and-exact-main-gate
+    authorized: true
 production:
   authorized: true
   authorization_scope: production resources and global-noindex rollout
@@ -261,4 +273,3 @@ production:
     - external-uptime-monitoring
     - durable-database-and-media-backup-freshness
     - owner-verified-canonical-nap
-    - explicit-indexing-authorization

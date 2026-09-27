@@ -83,9 +83,13 @@ requireAll("docs/DELIVERY_STATE.yaml", [
 	"pull_request: 78",
 	"gate_run: 90",
 	"cp_07:",
-	"status: delivery-candidate",
+	"status: delivered",
+	"pull_request: 80",
+	"gate_run: 92",
 	"cp_08:",
-	"status: blocked-dependencies",
+	"status: staging-pass-delivery-pending",
+	"full_crawl: PASS",
+	"snapshot_restore: PASS",
 ]);
 
 const envExample = read(".env.example");

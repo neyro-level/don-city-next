@@ -17,6 +17,7 @@ import * as migration_20260925_093100_add_lead_business_context from './20260925
 import * as migration_20260925_114509 from './20260925_114509';
 import * as migration_20260926_132000_s3_media_fields from './20260926_132000_s3_media_fields';
 import * as migration_20260927_000349_core55_responsive_media_sizes from './20260927_000349_core55_responsive_media_sizes';
+import * as migration_20260927_103500_core55_listing_content_registry_ids from './20260927_103500_core55_listing_content_registry_ids';
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20260927_000349_core55_responsive_media_sizes.up,
     down: migration_20260927_000349_core55_responsive_media_sizes.down,
     name: '20260927_000349_core55_responsive_media_sizes',
+  },
+  {
+    up: migration_20260927_103500_core55_listing_content_registry_ids.up,
+    down: migration_20260927_103500_core55_listing_content_registry_ids.down,
+    name: '20260927_103500_core55_listing_content_registry_ids',
   },
 ];

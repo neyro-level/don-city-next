@@ -36,7 +36,7 @@ export const clientReadinessConfig = {
 	archiveRetentionDays: 100,
 	employeeArchiveRetention: "indefinite",
 	legalContent: "approved",
-	productionIndexing: "noindex",
+	productionIndexing: "public",
 	requiredHostAllowlists: {
 		outbound: [],
 		externalImages: [],

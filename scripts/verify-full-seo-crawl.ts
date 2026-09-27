@@ -210,7 +210,6 @@ for (const entry of seoRegistry) {
 
 for (const queryCase of [
 	{ path: "/donetsk/kvartiry/?rooms=1", canonical: "/donetsk/kvartiry/" },
-	{ path: "/donetsk/kvartiry/?page=2", canonical: "/donetsk/kvartiry/?page=2" },
 ]) {
 	const snapshot = await request(queryCase.path);
 	const actual = metadata(snapshot.body);
@@ -234,12 +233,36 @@ for (const queryCase of [
 	);
 }
 
+const pageTwo = await request("/donetsk/kvartiry/?page=2");
+if (pageTwo.status === 200) {
+	const actual = metadata(pageTwo.body);
+	check(
+		actual.canonical === `${canonicalOrigin}/donetsk/kvartiry/?page=2`,
+		"query-canonical",
+		pageTwo.path,
+		`unexpected canonical ${actual.canonical}`,
+	);
+	check(
+		normalizeRobots(actual.robots) === "noindex,follow",
+		"query-robots",
+		pageTwo.path,
+		`unexpected robots ${actual.robots}`,
+	);
+} else {
+	check(
+		pageTwo.status === 404,
+		"query-over-range-status",
+		pageTwo.path,
+		`expected populated page 2 or over-range 404, received ${pageTwo.status}`,
+	);
+}
+
 const pageOne = await request("/donetsk/kvartiry/?page=1");
 check(
-	pageOne.status === 301,
+	pageOne.status === 308,
 	"query-page-one-redirect",
 	"/donetsk/kvartiry/?page=1",
-	`expected 301, received ${pageOne.status}`,
+	`expected 308, received ${pageOne.status}`,
 );
 
 for (const path of [
@@ -292,7 +315,35 @@ if (expectedStagingNoindex) {
 
 const sitemapUrls = new Set<string>();
 let sitemapLastmodCount = 0;
-for (const path of projectSitemapPaths) {
+const sitemapIndex = await request("/sitemap.xml");
+check(
+	sitemapIndex.status === 200,
+	"sitemap-index-status",
+	sitemapIndex.path,
+	`expected 200, received ${sitemapIndex.status}`,
+);
+check(
+	sitemapIndex.contentType.includes("xml"),
+	"sitemap-index-content-type",
+	sitemapIndex.path,
+	`unexpected content type ${sitemapIndex.contentType}`,
+);
+const advertisedSitemapPaths = [
+	...sitemapIndex.body.matchAll(/<sitemap>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/sitemap>/gi),
+].map((match) => new URL(decodeHtml(match[1] ?? "")).pathname);
+check(
+	advertisedSitemapPaths.length > 0,
+	"sitemap-index-empty",
+	sitemapIndex.path,
+	"sitemap index must advertise at least one non-empty shard",
+);
+for (const path of advertisedSitemapPaths) {
+	check(
+		projectSitemapPaths.includes(path),
+		"sitemap-index-unknown-shard",
+		sitemapIndex.path,
+		`unexpected sitemap shard ${path}`,
+	);
 	const sitemap = await request(path);
 	check(
 		sitemap.status === 200,

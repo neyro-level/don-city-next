@@ -7,7 +7,7 @@ Updated: 2026-09-27
 ## Completed for Current Release
 
 - [x] Approved product contract and completed implementation graph.
-- [x] Clean canonical `main`, exact SHA and green risk-classified SourceCraft evidence.
+- [x] Clean canonical `main`, exact SHA and green RISKY SourceCraft evidence.
 - [x] Owner explicitly authorized production resources and noindex rollout.
 - [x] Immutable artifact built once and deployed through Compose + host Nginx/TLS.
 - [x] Immutable artifact built once and identified by exact SHA.
@@ -24,7 +24,7 @@ Updated: 2026-09-27
 
 - [x] Deliver CP-04 with its required DB/media/performance evidence.
 - [x] Deliver CP-03 after the approved narrow OD-03 exception and atomic DB concurrency evidence (PR 79, RISKY gate 91).
-- [ ] Pass CP-08 on one integrated exact candidate in isolated staging while edge noindex remains active.
+- [x] Pass CP-08 on one integrated exact candidate in isolated staging while edge noindex remains active.
 - [ ] Create the first production owner user.
 - [ ] Verify NAP against external owner/Yandex Business truth.
 - [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
@@ -33,10 +33,10 @@ Updated: 2026-09-27
 - [ ] Expose trustworthy DB/media backup freshness in authenticated health; health must not be degraded.
 - [ ] Run full production crawl for canonical, robots, sitemap, JSON-LD, 404/410 and lifecycle.
 - [ ] Provide and approve a real feed endpoint/allowlist before enabling any source.
-- [ ] Obtain separate owner authorization to remove global noindex.
-- [ ] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
-- [ ] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
-- [ ] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
+- [x] Obtain separate owner authorization to remove global noindex.
+- [x] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
+- [x] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
+- [x] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
 - [ ] Record `PUBLIC_INDEXING_ENABLED_AT` and the four-month scope-review due date (`+4 calendar months`); the reminder must not enable newbuild/ЖК without a new owner-approved plan.
 
 ## Stop Conditions

@@ -88,6 +88,18 @@ BEGIN
 
 	IF NOT EXISTS (
 		SELECT 1
+		FROM pg_enum enum_row
+		JOIN pg_type type_row ON type_row.oid = enum_row.enumtypid
+		JOIN pg_namespace namespace_row ON namespace_row.oid = type_row.typnamespace
+		WHERE namespace_row.nspname = 'public'
+			AND type_row.typname = 'enum_listing_contents_registry_id'
+			AND enum_row.enumlabel = 'COMM_GEO'
+	) THEN
+		RAISE EXCEPTION 'Missing COMM_GEO listing-content registry enum value';
+	END IF;
+
+	IF NOT EXISTS (
+		SELECT 1
 		FROM pg_constraint constraint_row
 		JOIN pg_attribute column_row
 			ON column_row.attrelid = constraint_row.conrelid

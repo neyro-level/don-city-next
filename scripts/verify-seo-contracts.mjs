@@ -26,7 +26,7 @@ import {
 import { projectUrls } from "../src/project/url-grammar.ts";
 
 const fixtureOrigin = "https://realty-client.example";
-assert.equal(getProjectIndexingPolicy(), "noindex");
+assert.equal(getProjectIndexingPolicy(), "public");
 assert.equal(
 	resolveIndexingPolicy({
 		projectKind: "starter-demo",

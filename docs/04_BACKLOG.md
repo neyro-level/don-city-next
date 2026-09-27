@@ -29,11 +29,12 @@ Updated: 2026-09-27
 - [x] CP-01 through CP-06 delivered through reviewed SourceCraft PRs and exact-head gates.
 - [x] CP-03 jobs/import/lead safety: narrow OD-03 exception approved; atomic concurrency and heartbeat proofs passed; PR 79 merged after RISKY gate 91.
 - [x] CP-04 media/request-path performance: delivered through PR 78 and exact-head RISKY gate 90.
-- [ ] CP-07 project/readiness documentation: exact-head delivery candidate is under review.
-- [ ] CP-08 integrated isolated-staging proof: hard-blocked until CP-07 is delivered.
+- [x] CP-07 project/readiness documentation: delivered through PR 80 and STANDARD gate 92.
+- [x] CP-08 integrated isolated-staging proof: exact candidate passed; PR/RISKY delivery pending.
 
-Production indexing remains outside the autonomous implementation graph and
-requires a separate owner release command.
+Production indexing remains outside the autonomous implementation graph. The
+owner release command is recorded; operational prerequisites and exact-main
+release evidence remain mandatory.
 
 ## Core 5.5 Delivery Order
 
