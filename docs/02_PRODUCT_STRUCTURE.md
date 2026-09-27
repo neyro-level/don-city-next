@@ -68,6 +68,20 @@ Production публично индексируется. Page-level registry/cont
 
 Pagination page 2+ использует self-canonical и `noindex,follow`. Search/query combinations вне approved registry не индексируются. Sitemap и IndexNow публикуют только разрешённые registry/content-gate URL.
 
+### 6.1 Agglomeration candidate recommendation
+
+Research dated 2026-09-28 recommends `makeevka` (Макеевка) as the only
+candidate for the later owner-gated R12-04 activation. Wordstat and Yandex SERP
+evidence support apartment and house purchase intent; land remains a lower
+priority, while a dedicated commercial-property page is not supported.
+
+This is not route approval. `/makeevka/`, `/makeevka/kvartiry/` and
+`/makeevka/doma/` remain unreachable and outside sitemap/navigation until the
+owner explicitly approves the locality/slug and the geo, inventory, content and
+indexability gates pass. District/facet routes and alternate canonical slugs are
+not approved. Detailed measurements and limitations are recorded in
+`docs/research/DC11_R12_03_AGGLOMERATION_SEO_RESEARCH.md`.
+
 ## 7. Canonical NAP in Runtime
 
 - Бренд: ДОН СИТИ.
