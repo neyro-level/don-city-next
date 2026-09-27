@@ -30,8 +30,7 @@
 		"clsx": "^2.1.1",
 		"embla-carousel-react": "8.6.0",
 		"lucide-react": "^1.21.0",
-		"tailwind-merge": "^3.6.0",
-		"yet-another-react-lightbox": "3.32.2"
+		"tailwind-merge": "^3.6.0"
 	},
 	"peerDependencies": {
 		"react": "^19.2.0",

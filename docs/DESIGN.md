@@ -74,6 +74,10 @@ Payload Admin остаётся CMS-native и не получает публич�
 - Header, Footer и mobile navigation принадлежат одному DON CITY owner
   `packages/ui/src/views/public-shell/PublicSiteShellView.tsx`; параллельная
   оболочка запрещена.
+- Property gallery overlay использует только project-owned Radix Dialog и
+  Button primitives; отдельная lightbox/modal library запрещена. Dialog владеет
+  focus trap и Escape, gallery contract — стрелками, focus restore, labelled
+  controls и reduced-motion proof.
 - Скругления умеренные; крупные «пузырьковые» формы не соответствуют бренду.
 - Медные рамки используются тонко: верхняя/нижняя граница, focus detail или один акцент в секции.
 - Тени мягкие и глубокие, без яркого свечения.

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import type { SlideImage } from "yet-another-react-lightbox";
 import type { SiteImageRenderer } from "../../lib/adapters";
 
-export type MediaGalleryImage = SlideImage & {
+export type MediaGalleryImage = {
+	src: string;
 	alt: string;
 	browserSrcSet?: string;
 };

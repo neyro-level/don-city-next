@@ -3,20 +3,20 @@ program: AMS-DON-CITY-LIVE-CONFORMANCE
 plan_version: v13
 plan_status: APPROVED
 current_wave: LIVE_CONFORMANCE_W2
-current_epic: DC10-UI-02
-current_task: dc11-task-115-delivery
+current_epic: DC10-UI-03
+current_task: dc11-task-116-delivery
 next_action: continue-beads-ready-loop-without-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: a2d0406b7ad0da9796c5aec1289d750dfbd88b63
-  active_branch: codex/dc11-115-canonical-shell
+  base_sha: e642eee5ef15295447b94ac73767c1d34b2f5ecb
+  active_branch: codex/dc11-116-lightbox-conformance
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-115-delivery
-  reason: canonical shell convergence and active-route proof are complete; exact-head STANDARD gate and merge are in progress without production
+  current_task: dc11-task-116-delivery
+  reason: exact-head lightbox proof is complete; canonical PR, one STANDARD gate and merge are in progress
 historical_evidence:
   rp_00:
     status: delivered

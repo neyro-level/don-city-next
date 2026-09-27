@@ -51,7 +51,6 @@
   --surface-card: #fffdf8;
   --surface-card-soft: #fbf7ef;
   --surface-dark: #0a2f27;
-  --surface-dark-strong: #061f1a;
   --text-primary: #14231f;
   --text-secondary: #40504a;
   --text-muted: #6b746f;
@@ -59,7 +58,6 @@
   --home-articles-chip-hover: #e9dfcf;
   --home-articles-media: #eee6da;
   --text-dark: var(--brand-ivory);
-  --text-dark-muted: rgba(244, 232, 193, 0.5);
   --border: #dcd2c2;
   --dark-border: rgba(244, 232, 193, 0.18);
   --brand-primary: #0e493d;
