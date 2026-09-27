@@ -107,6 +107,7 @@
 		"verify:geo-relation-backfill": "node --experimental-strip-types scripts/verify-geo-relation-backfill.mjs",
 		"verify:agglomeration-model": "node --experimental-strip-types scripts/verify-agglomeration-model.ts",
 		"verify:agglomeration-research": "node scripts/verify-agglomeration-seo-research.mjs",
+		"verify:factual-structured-data": "node --experimental-strip-types scripts/verify-factual-structured-data.ts",
 		"verify:public-geo-gateway": "node scripts/verify-public-geo-gateway.mjs",
 		"verify:nearby-geo": "node --experimental-strip-types scripts/verify-nearby-geo.ts",
 		"verify:navigation": "node --experimental-strip-types scripts/verify-navigation.ts",

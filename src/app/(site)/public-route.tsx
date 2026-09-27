@@ -22,6 +22,7 @@ import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import {
 	buildBreadcrumbJsonLd,
 	buildCatalogItemListJsonLd,
+	buildLawyerServiceJsonLd,
 	buildOrganizationJsonLd,
 	buildPropertyJsonLd,
 	JsonLdScript,
@@ -281,6 +282,7 @@ export async function ResolvedPublicRoutePage({
 	const needsNap = [
 		"kontakty",
 		"o-kompanii",
+		"yurist",
 		"politika-konfidencialnosti",
 		"soglasie-na-obrabotku-personalnyh-dannyh",
 	].includes(staticSlug);
@@ -321,6 +323,9 @@ export async function ResolvedPublicRoutePage({
 	return (
 		<>
 			{nap ? <JsonLdScript data={buildOrganizationJsonLd(nap)} /> : null}
+			{staticSlug === "yurist" && nap ? (
+				<JsonLdScript data={buildLawyerServiceJsonLd(staticPage, nap)} />
+			) : null}
 			<JsonLdScript
 				data={buildBreadcrumbJsonLd(
 					breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),
