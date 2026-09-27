@@ -128,6 +128,8 @@
 		"verify:transport-security": "node scripts/verify-transport-security.mjs",
 		"verify:product-regression": "node scripts/verify-product-regression.mjs",
 		"verify:production-topology": "node scripts/verify-production-topology.mjs",
+		"diagnostics:production-inventory": "node --conditions=react-server --experimental-strip-types ./node_modules/payload/bin.js run scripts/diagnostics/redacted-production-inventory.ts",
+		"verify:redacted-production-inventory": "node --experimental-strip-types scripts/verify-redacted-production-inventory.ts",
 		"verify:release-artifact": "node scripts/verify-release-artifact.mjs",
 		"release:manifest": "node scripts/release-manifest.mjs",
 		"quality:architecture": "dependency-cruiser src packages scripts --config .dependency-cruiser.mjs --output-type err",
