@@ -7,9 +7,9 @@ import {
 	claimQueuedImportRun,
 	consumeDeactivationApproval,
 	finishImportRun,
+	interruptRecoverableImportRun,
 	touchImportRunHeartbeat,
 } from "../../src/core/data-access/ingest/sql/index.ts";
-import { createPayloadFeedIngestRepository } from "../../src/core/ingest/payload-feed-ingest-repository.ts";
 import {
 	findPublicCatalogProperties,
 	findPublicPropertyBySlug,
@@ -18,8 +18,10 @@ import {
 import { submitPublicLead } from "../../src/core/data-access/public/leads.ts";
 import { findPublicPage } from "../../src/core/data-access/public/pages.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
+import { createPayloadFeedIngestRepository } from "../../src/core/ingest/payload-feed-ingest-repository.ts";
 import { runDeliverLeadTask } from "../../src/core/leads/deliver-lead.ts";
 import { defineLeadDeliveryPolicy } from "../../src/core/leads/delivery-policy.ts";
+import { pendingDeliveryOrphanThresholdMs } from "../../src/core/operations/recovery-thresholds.ts";
 import { resolvePropertyPageLifecycle } from "../../src/core/seo/property.ts";
 import {
 	getMediaDirectory,
@@ -1257,7 +1259,16 @@ assert.equal(crashPending.status, "pending");
 assert.equal(crashPending.jobId, null);
 assert.ok(crashPending.nextAttemptAt);
 
-clock.setIso(crashPending.nextAttemptAt ?? "2026-09-18T12:01:00.000Z");
+clock.setIso(
+	new Date(
+		new Date(
+			crashPending.nextAttemptAt ?? "2026-09-18T12:01:00.000Z",
+		).getTime() +
+			pendingDeliveryOrphanThresholdMs(
+				projectConfig.maintenanceIntervalMinutes,
+			),
+	).toISOString(),
+);
 const recoveryTask = payloadJobTasks.find(
 	(task) => task.slug === payloadJobTaskSlugs.recoverLeadDeliveries,
 );
@@ -1323,6 +1334,19 @@ const attachCrashDelivery = await createRetryFixture(
 	"attach-crash",
 	"+79990000006",
 );
+await payload.update({
+	collection: "lead-deliveries",
+	id: attachCrashDelivery.id,
+	data: {
+		nextAttemptAt: new Date(
+			clock.now().getTime() -
+				pendingDeliveryOrphanThresholdMs(
+					projectConfig.maintenanceIntervalMinutes,
+				),
+		).toISOString(),
+	},
+	...access,
+});
 const futureJob = await payload.jobs.queue({
 	task: payloadJobTaskSlugs.deliverLead,
 	queue: payloadJobQueues.leadDeliveries,
@@ -1345,6 +1369,71 @@ assert.equal(
 	(await findDeliveryJobs(attachCrashDelivery.id)).totalDocs,
 	1,
 	"live future job found by concurrency key must prevent duplicate requeue",
+);
+
+const recoveryRaceDelivery = await createRetryFixture(
+	"recovery-race",
+	"+79990000008",
+);
+await payload.update({
+	collection: "lead-deliveries",
+	id: recoveryRaceDelivery.id,
+	data: {
+		nextAttemptAt: new Date(
+			clock.now().getTime() -
+				pendingDeliveryOrphanThresholdMs(
+					projectConfig.maintenanceIntervalMinutes,
+				) -
+				1,
+		).toISOString(),
+		jobId: null,
+	},
+	...access,
+});
+const recoveryRaceResults = await Promise.all([
+	recoveryTask.handler({
+		req: { payload, user: undefined } as never,
+		input: {},
+		job: {} as never,
+	} as never),
+	recoveryTask.handler({
+		req: { payload, user: undefined } as never,
+		input: {},
+		job: {} as never,
+	} as never),
+]);
+assert.equal(
+	recoveryRaceResults.reduce(
+		(total, result) =>
+			total +
+			("output" in result
+				? Number((result.output as { queuedPending?: number }).queuedPending)
+				: 0),
+		0,
+	),
+	1,
+	"two recovery workers must produce exactly one lease winner",
+);
+const recoveryRaceAfter = await payload.findByID({
+	collection: "lead-deliveries",
+	id: recoveryRaceDelivery.id,
+	depth: 0,
+	...access,
+});
+assert.ok(
+	recoveryRaceAfter.jobId,
+	"the recovery lease winner must attach one replacement job",
+);
+const recoveryRaceJobs = await findDeliveryJobs(recoveryRaceDelivery.id);
+assert.equal(
+	recoveryRaceJobs.totalDocs,
+	1,
+	"two recovery workers must create exactly one replacement job",
+);
+assert.equal(
+	recoveryRaceJobs.docs[0]?.waitUntil,
+	recoveryRaceAfter.nextAttemptAt,
+	"the replacement job must wait for the same short lease recorded on the delivery",
 );
 
 const feedSource = await payload.create({
@@ -1455,25 +1544,59 @@ assert.equal(
 	1,
 	"two concurrent import contenders must produce exactly one claim winner",
 );
+const heartbeatVisibilityTransactionId = await payload.db.beginTransaction();
+assert.notEqual(heartbeatVisibilityTransactionId, null);
+if (heartbeatVisibilityTransactionId == null) {
+	throw new Error("Payload Postgres transaction support is required");
+}
+const heartbeatVisibilityIssueCode = `heartbeat-visibility-${suffix}`;
+await createPayloadFeedIngestRepository(
+	payload,
+	String(feedSource.id),
+	heartbeatVisibilityTransactionId,
+).createImportIssue({
+	feedSource: String(feedSource.id),
+	importRun: String(lifecycleRun.id),
+	severity: "warning",
+	code: "feed.offer_invalid",
+	externalId: heartbeatVisibilityIssueCode,
+	messageRedacted: "Heartbeat visibility transaction proof.",
+});
 const heartbeatAt = new Date("2026-09-18T12:01:00.000Z");
-assert.equal(
-	await touchImportRunHeartbeat(payload, {
-		importRunId: String(lifecycleRun.id),
-		now: heartbeatAt,
-	}),
-	true,
-	"the running claim owner must update its heartbeat",
-);
-const heartbeatRead = await payload.findByID({
-	collection: "import-runs",
-	id: lifecycleRun.id,
+try {
+	assert.equal(
+		await touchImportRunHeartbeat(payload, {
+			importRunId: String(lifecycleRun.id),
+			now: heartbeatAt,
+		}),
+		true,
+		"the running claim owner must update its heartbeat",
+	);
+	const heartbeatRead = await payload.findByID({
+		collection: "import-runs",
+		id: lifecycleRun.id,
+		depth: 0,
+		...access,
+	});
+	assert.equal(
+		heartbeatRead.heartbeatAt,
+		heartbeatAt.toISOString(),
+		"an independent Local API read must observe heartbeat while the ingest transaction remains open",
+	);
+} finally {
+	await payload.db.rollbackTransaction(heartbeatVisibilityTransactionId);
+}
+const heartbeatVisibilityRolledBack = await payload.find({
+	collection: "import-issues",
+	where: { externalId: { equals: heartbeatVisibilityIssueCode } },
+	limit: 1,
 	depth: 0,
 	...access,
 });
 assert.equal(
-	heartbeatRead.heartbeatAt,
-	heartbeatAt.toISOString(),
-	"an independent Local API read must observe the committed heartbeat",
+	heartbeatVisibilityRolledBack.totalDocs,
+	0,
+	"the independent heartbeat must survive rollback of the still-open ingest transaction",
 );
 assert.equal(
 	await finishImportRun(payload, {
@@ -1500,6 +1623,45 @@ assert.equal(
 	}),
 	undefined,
 	"a terminal import run must never restart",
+);
+
+const queuedRecoveryRace = await payload.create({
+	collection: "import-runs",
+	data: {
+		feedSource: feedSource.id,
+		status: "queued",
+		queuedAt: "2026-09-18T10:00:00.000Z",
+	},
+	...access,
+});
+const queuedRecoveryRaceResults = await Promise.all([
+	claimQueuedImportRun(payload, {
+		importRunId: String(queuedRecoveryRace.id),
+		now: new Date("2026-09-18T12:00:00.000Z"),
+	}),
+	interruptRecoverableImportRun(payload, {
+		importRunId: String(queuedRecoveryRace.id),
+		expectedStatus: "queued",
+		staleBefore: new Date("2026-09-18T11:45:00.000Z"),
+		now: new Date("2026-09-18T12:00:00.000Z"),
+		reason: "queued_without_job",
+	}),
+]);
+assert.equal(
+	queuedRecoveryRaceResults.filter(Boolean).length,
+	1,
+	"a concurrent worker claim and janitor transition must have exactly one winner",
+);
+const queuedRecoveryRaceAfter = await payload.findByID({
+	collection: "import-runs",
+	id: queuedRecoveryRace.id,
+	depth: 0,
+	...access,
+});
+assert.ok(
+	queuedRecoveryRaceAfter.status === "running" ||
+		queuedRecoveryRaceAfter.status === "interrupted",
+	"the import race must finish in exactly one allowed state",
 );
 await payload.update({
 	collection: "feed-sources",
@@ -1587,6 +1749,23 @@ const recovered = await payload.findByID({
 	...access,
 });
 assert.equal(recovered.status, "interrupted");
+const replacementRun = await payload.create({
+	collection: "import-runs",
+	data: {
+		feedSource: feedSource.id,
+		status: "queued",
+		queuedAt: clock.nowIso(),
+	},
+	...access,
+});
+assert.equal(
+	await claimQueuedImportRun(payload, {
+		importRunId: String(replacementRun.id),
+		now: clock.now(),
+	}),
+	String(replacementRun.id),
+	"a replacement import must execute after stale recovery interrupts the previous run",
+);
 
 resetRuntimeClock();
 await payload.destroy();

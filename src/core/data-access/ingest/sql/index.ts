@@ -17,7 +17,13 @@ export const approvedIngestSqlOperations = {
 		invariant:
 			"Exactly one queued-to-running transition can win for an import run.",
 		reason:
-			"Payload 3.89.0 bulk update reads before per-document updates and cannot prove an atomic conditional claim.",
+			"Payload 3.90.1 bulk update reads before per-document updates and cannot prove an atomic conditional claim.",
+	},
+	interruptRecoverableImportRun: {
+		invariant:
+			"A stale running or orphaned queued import run can be interrupted by at most one recovery worker while its recovery predicate still matches.",
+		reason:
+			"The status/timestamp predicate and terminal transition must be one conditional statement with an affected result.",
 	},
 	touchImportRunHeartbeat: {
 		invariant: "Only a running import run receives a heartbeat.",
@@ -211,6 +217,57 @@ export async function claimQueuedImportRun(
 			heartbeat_at = ${now}::timestamptz
 		WHERE id = ${input.importRunId}::integer
 			AND status = 'queued'
+		RETURNING id
+	`,
+	);
+	const id = rowsFrom(result)[0]?.id;
+	return id == null ? undefined : asString(id);
+}
+
+export async function interruptRecoverableImportRun(
+	payload: Payload,
+	input: {
+		importRunId: string;
+		expectedStatus: "queued" | "running";
+		staleBefore: Date;
+		now: Date;
+		reason:
+			| "running_heartbeat_stale"
+			| "running_heartbeat_missing"
+			| "queued_without_job"
+			| "queued_dead_job";
+	},
+): Promise<string | undefined> {
+	const now = input.now.toISOString();
+	const staleBefore = input.staleBefore.toISOString();
+	const result = await executeApprovedIngestSql(
+		payload,
+		"interruptRecoverableImportRun",
+		sql`
+		UPDATE import_runs
+		SET
+			status = 'interrupted',
+			finished_at = ${now}::timestamptz,
+			updated_at = ${now}::timestamptz,
+			last_error_redacted = ${`Recovered by jobsJanitor: ${input.reason}.`}
+		WHERE id = ${input.importRunId}::integer
+			AND status = ${input.expectedStatus}
+			AND (
+				(
+					${input.expectedStatus} = 'queued'
+					AND queued_at < ${staleBefore}::timestamptz
+				)
+				OR (
+					${input.expectedStatus} = 'running'
+					AND (
+						heartbeat_at < ${staleBefore}::timestamptz
+						OR (
+							heartbeat_at IS NULL
+							AND started_at < ${staleBefore}::timestamptz
+						)
+					)
+				)
+			)
 		RETURNING id
 	`,
 	);

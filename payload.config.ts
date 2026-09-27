@@ -17,20 +17,29 @@ import { Properties } from "./src/project/collections/Properties.ts";
 import { Redirects } from "./src/project/collections/Redirects.ts";
 import { Regions } from "./src/project/collections/Regions.ts";
 import { Users } from "./src/project/collections/Users.ts";
-import { runtimeEnv } from "./src/project/env.ts";
-import { timewebS3Plugin } from "./src/project/timeweb-s3.plugin.ts";
+import {
+	detectRuntimeEnvMode,
+	requirePayloadRuntime,
+	runtimeEnv,
+} from "./src/project/env.ts";
 import { SiteSettings } from "./src/project/globals/SiteSettings.ts";
 import { payloadJobsAutoRun } from "./src/project/jobs/queues.ts";
 import { payloadJobTasks } from "./src/project/jobs/tasks.ts";
+import { timewebS3Plugin } from "./src/project/timeweb-s3.plugin.ts";
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 
-const databaseUri =
-	runtimeEnv.DATABASE_URI ??
-	"postgresql://127.0.0.1:5432/ams_realtbase_not_configured";
-const payloadSecret =
-	runtimeEnv.PAYLOAD_SECRET ??
-	"build-only-payload-secret-replace-before-runtime";
+const payloadRuntime =
+	detectRuntimeEnvMode() === "build"
+		? {
+				databaseUri:
+					runtimeEnv.DATABASE_URI ??
+					"postgresql://127.0.0.1:5432/ams_realtbase_build_only",
+				payloadSecret:
+					runtimeEnv.PAYLOAD_SECRET ??
+					"build-only-payload-secret-replace-before-runtime",
+			}
+		: requirePayloadRuntime();
 
 export default buildConfig({
 	admin: {
@@ -63,7 +72,7 @@ export default buildConfig({
 	db: postgresAdapter({
 		migrationDir: resolve(projectRoot, "migrations"),
 		pool: {
-			connectionString: databaseUri,
+			connectionString: payloadRuntime.databaseUri,
 			max: runtimeEnv.DATABASE_POOL_MAX,
 		},
 		push:
@@ -81,7 +90,7 @@ export default buildConfig({
 		tasks: payloadJobTasks,
 		shouldAutoRun: async () => runtimeEnv.JOBS_AUTORUN,
 	},
-	secret: payloadSecret,
+	secret: payloadRuntime.payloadSecret,
 	serverURL: runtimeEnv.NEXT_PUBLIC_SERVER_URL,
 	sharp,
 	typescript: {

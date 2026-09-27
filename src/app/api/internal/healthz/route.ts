@@ -24,6 +24,7 @@ import {
 	isLocalMediaReady,
 	readDataVolumeFreeRatio,
 } from "../../../../core/storage/local-fs.ts";
+import { getRuntimeClock } from "../../../../core/time/clock.ts";
 import { runtimeEnv } from "../../../../project/env.ts";
 import {
 	programmaticPayloadJobTasks,
@@ -35,7 +36,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function nowIso() {
-	return new Date().toISOString();
+	return getRuntimeClock().nowIso();
 }
 
 function hasValidSecret(request: Request): boolean {
@@ -83,7 +84,9 @@ export async function GET(request: Request) {
 		database: { status: "unknown" as "ok" | "down" | "unknown" },
 		storage: {
 			status: mediaReady ? ("ok" as const) : ("down" as const),
-			provider: usesRemoteMediaStorage ? ("remote" as const) : ("local" as const),
+			provider: usesRemoteMediaStorage
+				? ("remote" as const)
+				: ("local" as const),
 		},
 		jobs: {
 			status: "ok" as const,
@@ -99,11 +102,12 @@ export async function GET(request: Request) {
 	try {
 		const payload = await getPayload({ config: configPromise });
 		const inspectionAccess = trustedInspectionAccess;
+		const now = getRuntimeClock().now();
 		const importStaleBefore = new Date(
-			Date.now() - importStaleThresholdMs(),
+			now.getTime() - importStaleThresholdMs(),
 		).toISOString();
 		const deliveryOrphanBefore = new Date(
-			Date.now() -
+			now.getTime() -
 				pendingDeliveryOrphanThresholdMs(
 					projectConfig.maintenanceIntervalMinutes,
 				),
@@ -231,9 +235,7 @@ export async function GET(request: Request) {
 					}
 				: undefined,
 			disk: {
-				freeRatio: usesRemoteMediaStorage
-					? null
-					: readDataVolumeFreeRatio(),
+				freeRatio: usesRemoteMediaStorage ? null : readDataVolumeFreeRatio(),
 			},
 			alerts: runtimeEnv.ALERT_WEBHOOK_URL
 				? {

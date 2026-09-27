@@ -93,6 +93,35 @@ const classifiedPublicReadAccess = {
 	redirects: "publicRedirectReadAccess",
 };
 
+const projectCollectionAccessMatrix = {
+	"src/project/collections/Regions.ts": "publicGeoReadAccess",
+	"src/project/collections/Cities.ts": "publicGeoReadAccess",
+	"src/project/collections/Districts.ts": "publicGeoReadAccess",
+	"src/project/collections/ListingContents.ts":
+		"publicListingContentReadAccess",
+};
+for (const [file, readAccess] of Object.entries(
+	projectCollectionAccessMatrix,
+)) {
+	const content = read(file);
+	for (const marker of [
+		"create: adminsAndOwners",
+		`read: ${readAccess}`,
+		"update: adminsAndOwners",
+		"delete: ownersOnly",
+	]) {
+		assert.ok(
+			content.includes(marker),
+			`${file}: access matrix missing ${marker}`,
+		);
+	}
+	assert.equal(
+		content.includes("read: () => true"),
+		false,
+		`${file}: anonymous unclassified read is forbidden`,
+	);
+}
+
 for (const slug of rawRestBoundary.anonymousDenyCollections) {
 	const file = collectionFileBySlug[slug];
 	assert.ok(
@@ -194,7 +223,7 @@ requireIncludes(
 );
 requireIncludes(
 	"src/project/jobs/tasks.ts",
-	"input: { leadDeliveryId: String(delivery.id) }",
+	"input: { leadDeliveryId: leasedId }",
 	"lead delivery jobs must queue identifiers only",
 );
 

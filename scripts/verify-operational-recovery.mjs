@@ -5,6 +5,10 @@ import { payloadJobTaskSlugs } from "../src/project/jobs/registry.ts";
 
 const operations = readFileSync("docs/OPERATIONS.md", "utf8");
 const jobs = readFileSync("src/project/jobs/tasks.ts", "utf8");
+const ingestSql = readFileSync(
+	"src/core/data-access/ingest/sql/index.ts",
+	"utf8",
+);
 const feedSources = readFileSync(
 	"src/project/collections/FeedSources.ts",
 	"utf8",
@@ -38,12 +42,18 @@ assert.equal(
 assert.equal(payloadJobTaskSlugs.catalogLifecycle, "catalogLifecycle");
 
 for (const required of [
-	"Recovered by jobsJanitor",
+	"interruptRecoverableImportRun",
+	"claimPendingDeliveryRecoveryLease",
 	"recoverStaleSendingDelivery",
 	"contentPurgedAt: purgedAt",
-	'status: "interrupted"',
 ]) {
 	assert.ok(jobs.includes(required), `jobs implementation missing ${required}`);
+}
+for (const required of ["Recovered by jobsJanitor", "status = 'interrupted'"]) {
+	assert.ok(
+		ingestSql.includes(required),
+		`ingest SQL recovery implementation missing ${required}`,
+	);
 }
 
 assert.ok(

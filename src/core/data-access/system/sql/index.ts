@@ -13,6 +13,12 @@ export const approvedSystemSqlOperations = {
 		reason:
 			"Claim, attempt increment, and affected result must be one conditional statement.",
 	},
+	claimPendingDeliveryRecoveryLease: {
+		invariant:
+			"Only one recovery worker can lease a sufficiently old pending delivery before enqueueing a replacement job.",
+		reason:
+			"The pending/age predicate, short lease, dead job reference clear, and affected result must be one conditional statement.",
+	},
 } as const;
 
 type ApprovedSystemSqlOperation = keyof typeof approvedSystemSqlOperations;
@@ -110,4 +116,38 @@ export async function claimLeadDeliveryRow(
 		idempotencyKey: String(row.idempotency_key),
 		jobId: row.job_id ? String(row.job_id) : undefined,
 	};
+}
+
+export async function claimPendingDeliveryRecoveryLease(
+	payload: Payload,
+	input: {
+		deliveryId: string;
+		orphanBefore: Date;
+		leaseUntil: Date;
+		now: Date;
+	},
+): Promise<string | undefined> {
+	const deliveryId = Number(input.deliveryId);
+	if (!Number.isInteger(deliveryId) || deliveryId < 1) {
+		return undefined;
+	}
+
+	const result = await executeApprovedSystemSql(
+		payload,
+		"claimPendingDeliveryRecoveryLease",
+		sql`
+		UPDATE lead_deliveries AS claimed
+		SET
+			next_attempt_at = ${input.leaseUntil.toISOString()}::timestamptz,
+			job_id = NULL,
+			updated_at = ${input.now.toISOString()}::timestamptz
+		WHERE claimed.id = ${deliveryId}
+			AND claimed.status = 'pending'
+			AND claimed.next_attempt_at IS NOT NULL
+			AND claimed.next_attempt_at <= ${input.orphanBefore.toISOString()}::timestamptz
+		RETURNING claimed.id
+	`,
+	);
+	const id = rowsFrom(result)[0]?.id;
+	return id == null ? undefined : String(id);
 }

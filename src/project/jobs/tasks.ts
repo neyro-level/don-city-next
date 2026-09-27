@@ -5,6 +5,7 @@ import {
 	claimQueuedImportRun,
 	consumeDeactivationApproval,
 	finishImportRun,
+	interruptRecoverableImportRun,
 	touchImportRunHeartbeat,
 } from "../../core/data-access/ingest/sql/index.ts";
 import {
@@ -13,6 +14,7 @@ import {
 } from "../../core/data-access/system/jobs/index.ts";
 import { systemOverrideAccess } from "../../core/data-access/system/overrides.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
+import { claimPendingDeliveryRecoveryLease } from "../../core/data-access/system/sql/index.ts";
 import { catalogRetentionThreshold } from "../../core/ingest/catalog-retention.ts";
 import { dispatchDueFeeds } from "../../core/ingest/dispatch-due-feeds.ts";
 import { fetchConditionalFeed } from "../../core/ingest/feed-fetcher.ts";
@@ -21,6 +23,7 @@ import {
 	parseImageHostEnv,
 	runImportFeed,
 } from "../../core/ingest/import-feed-runtime.ts";
+import { decideImportRunRecovery } from "../../core/ingest/import-recovery.ts";
 import { createPayloadFeedIngestRepository } from "../../core/ingest/payload-feed-ingest-repository.ts";
 import { runDeliverLeadTask } from "../../core/leads/deliver-lead.ts";
 import {
@@ -37,6 +40,7 @@ import {
 import {
 	importStaleThresholdMs,
 	observedSuccessfulDurationMs,
+	pendingDeliveryOrphanThresholdMs,
 	queuedImportOrphanThresholdMs,
 } from "../../core/operations/recovery-thresholds.ts";
 import {
@@ -60,6 +64,7 @@ type GenericPayloadJobTask = TaskConfig<{
 }>;
 
 const minuteInMs = 60_000;
+const pendingDeliveryRecoveryLeaseMinutes = 5;
 const jobAccess = systemOverrideAccess("system-job");
 
 function nowDate() {
@@ -72,6 +77,81 @@ function nowIso() {
 
 function addMinutes(date: Date, minutes: number) {
 	return new Date(date.getTime() + minutes * minuteInMs);
+}
+
+async function applyLeadRetentionTransaction({
+	req,
+	leadId,
+	retentionMode,
+	purgedAt,
+}: {
+	req: PayloadRequest;
+	leadId: number | string;
+	retentionMode: "delete" | "anonymize";
+	purgedAt: string;
+}) {
+	const transactionID = await req.payload.db.beginTransaction();
+	if (transactionID == null) {
+		throw new Error(
+			"Payload Postgres did not start a lead retention transaction.",
+		);
+	}
+	const transactionReq = { ...req, transactionID } as PayloadRequest;
+
+	try {
+		const deliveries = await req.payload.find({
+			collection: "lead-deliveries",
+			where: { lead: { equals: leadId } },
+			pagination: false,
+			depth: 0,
+			req: transactionReq,
+			...jobAccess,
+		});
+
+		for (const delivery of deliveries.docs) {
+			if (retentionMode === "delete") {
+				await req.payload.delete({
+					collection: "lead-deliveries",
+					id: delivery.id,
+					req: transactionReq,
+					...jobAccess,
+				});
+				continue;
+			}
+			await req.payload.update({
+				collection: "lead-deliveries",
+				id: delivery.id,
+				data: purgeDeliveryDiagnostics(purgedAt),
+				req: transactionReq,
+				...jobAccess,
+			});
+		}
+
+		if (retentionMode === "delete") {
+			await req.payload.delete({
+				collection: "leads",
+				id: leadId,
+				req: transactionReq,
+				...jobAccess,
+			});
+		} else {
+			await req.payload.update({
+				collection: "leads",
+				id: leadId,
+				data: anonymizeLeadFields(purgedAt),
+				req: transactionReq,
+				...jobAccess,
+			});
+		}
+
+		await req.payload.db.commitTransaction(transactionID);
+		return { deliveries: deliveries.docs.length };
+	} catch (error) {
+		await req.payload.db
+			.rollbackTransaction(transactionID)
+			.catch(() => undefined);
+		throw error;
+	}
 }
 
 export function computeNextDueAt({
@@ -351,9 +431,15 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 						},
 						{
 							and: [
+								{ status: { equals: "running" } },
+								{ heartbeatAt: { exists: false } },
+								{ startedAt: { less_than: importStaleBefore } },
+							],
+						},
+						{
+							and: [
 								{ status: { equals: "queued" } },
 								{ queuedAt: { less_than: queuedOrphanBefore } },
-								{ jobId: { exists: false } },
 							],
 						},
 					],
@@ -364,22 +450,57 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				...jobAccess,
 			});
 
+			let interruptedRuns = 0;
 			for (const run of staleRuns.docs) {
-				await req.payload.update({
-					collection: "import-runs",
-					id: run.id,
-					data: {
-						status: "interrupted",
-						finishedAt: nowIso(),
-						lastErrorRedacted:
-							"Recovered by jobsJanitor: stale or orphan import run.",
+				let referencedJob:
+					| {
+							waitUntil?: string | null;
+							completedAt?: string | null;
+							processing?: boolean | null;
+					  }
+					| null
+					| undefined;
+				if (run.status === "queued" && run.jobId) {
+					try {
+						const job = await inspectPayloadJob(req.payload, String(run.jobId));
+						referencedJob = {
+							waitUntil:
+								typeof job.waitUntil === "string" ? job.waitUntil : null,
+							completedAt:
+								typeof job.completedAt === "string" ? job.completedAt : null,
+							processing: Boolean((job as { processing?: boolean }).processing),
+						};
+					} catch {
+						referencedJob = null;
+					}
+				}
+				const decision = decideImportRunRecovery({
+					run: {
+						status: run.status,
+						queuedAt: run.queuedAt,
+						startedAt: run.startedAt,
+						heartbeatAt: run.heartbeatAt,
+						jobId: run.jobId,
 					},
-					req,
-					...systemOverrideAccess("system-job"),
+					importStaleBefore,
+					queuedOrphanBefore,
+					job: referencedJob,
+					now: nowDate(),
 				});
+				if (!decision.interrupt) continue;
+				const interruptedId = await interruptRecoverableImportRun(req.payload, {
+					importRunId: String(run.id),
+					expectedStatus: run.status === "queued" ? "queued" : "running",
+					staleBefore: new Date(
+						run.status === "queued" ? queuedOrphanBefore : importStaleBefore,
+					),
+					now: nowDate(),
+					reason: decision.reason,
+				});
+				if (interruptedId) interruptedRuns += 1;
 			}
 
-			return { output: { interruptedRuns: staleRuns.docs.length } };
+			return { output: { interruptedRuns } };
 		},
 	},
 	{
@@ -414,45 +535,21 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 			const purgedAt = nowIso();
 			let deleted = 0;
 			let anonymized = 0;
+			let purgedDeliveries = 0;
 
 			for (const lead of expiredLeads.docs) {
-				const deliveries = await req.payload.find({
-					collection: "lead-deliveries",
-					where: { lead: { equals: lead.id } },
-					limit: 50,
-					depth: 0,
+				const result = await applyLeadRetentionTransaction({
 					req,
-					...jobAccess,
+					leadId: lead.id,
+					retentionMode: lead.retentionMode,
+					purgedAt,
 				});
-
-				for (const delivery of deliveries.docs) {
-					await req.payload.update({
-						collection: "lead-deliveries",
-						id: delivery.id,
-						data: purgeDeliveryDiagnostics(purgedAt),
-						req,
-						...jobAccess,
-					});
-				}
+				purgedDeliveries += result.deliveries;
 
 				if (lead.retentionMode === "delete") {
-					await req.payload.delete({
-						collection: "leads",
-						id: lead.id,
-						req,
-						...jobAccess,
-					});
 					deleted += 1;
 					continue;
 				}
-
-				await req.payload.update({
-					collection: "leads",
-					id: lead.id,
-					data: anonymizeLeadFields(purgedAt),
-					req,
-					...jobAccess,
-				});
 				anonymized += 1;
 			}
 
@@ -461,6 +558,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					purgedLeads: deleted + anonymized,
 					deleted,
 					anonymized,
+					purgedDeliveries,
 				},
 			};
 		},
@@ -524,6 +622,12 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		schedule: getStaticSchedule(payloadJobTaskSlugs.recoverLeadDeliveries),
 		handler: async ({ req }) => {
 			const recoveryNowIso = nowIso();
+			const pendingOrphanBefore = new Date(
+				nowDate().getTime() -
+					pendingDeliveryOrphanThresholdMs(
+						projectConfig.maintenanceIntervalMinutes,
+					),
+			).toISOString();
 			const staleThreshold = new Date(
 				nowDate().getTime() -
 					projectConfig.leadDelivery.staleSendingThresholdMinutes * 60_000,
@@ -585,7 +689,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				where: {
 					and: [
 						{ status: { equals: "pending" } },
-						{ nextAttemptAt: { less_than_equal: nowIso() } },
+						{ nextAttemptAt: { less_than_equal: pendingOrphanBefore } },
 					],
 				},
 				limit: 20,
@@ -660,16 +764,29 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					continue;
 				}
 
+				const recoveryLeaseUntil = addMinutes(
+					new Date(recoveryNowIso),
+					pendingDeliveryRecoveryLeaseMinutes,
+				);
+				const leasedId = await claimPendingDeliveryRecoveryLease(req.payload, {
+					deliveryId: String(delivery.id),
+					orphanBefore: new Date(pendingOrphanBefore),
+					leaseUntil: recoveryLeaseUntil,
+					now: new Date(recoveryNowIso),
+				});
+				if (!leasedId) continue;
+
 				const queuedJob = (await queueTask({
 					req,
 					task: payloadJobTaskSlugs.deliverLead,
 					queue: payloadJobQueues.leadDeliveries,
-					input: { leadDeliveryId: String(delivery.id) },
+					input: { leadDeliveryId: leasedId },
+					waitUntil: recoveryLeaseUntil,
 				})) as { id: number | string };
 
 				await req.payload.update({
 					collection: "lead-deliveries",
-					id: delivery.id,
+					id: leasedId,
 					data: {
 						jobId: String(queuedJob.id),
 					},

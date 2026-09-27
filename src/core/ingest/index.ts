@@ -55,6 +55,11 @@ export {
 	runImportFeed,
 } from "./import-feed-runtime.ts";
 export {
+	decideImportRunRecovery,
+	type ImportRecoveryCandidate,
+	type ImportRecoveryDecision,
+} from "./import-recovery.ts";
+export {
 	applyPublishedSlugPolicy,
 	importOwnedFields,
 	returnFieldToFeed,
@@ -67,15 +72,15 @@ export {
 	requireMoneyMinor,
 } from "./numeric-invariants.ts";
 export {
-	normalizeHouseType,
-	normalizeLandAreaToSotka,
-	propertyHouseTypes,
-	type PropertyHouseType,
-} from "./property-taxonomy.ts";
-export {
 	approveSuspiciousDeactivation,
 	queueManualFeedImport,
 } from "./owner-feed-operations.ts";
+export {
+	normalizeHouseType,
+	normalizeLandAreaToSotka,
+	type PropertyHouseType,
+	propertyHouseTypes,
+} from "./property-taxonomy.ts";
 export {
 	parseYrlFeed,
 	type YrlFeedParseResult,

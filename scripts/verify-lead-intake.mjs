@@ -2,12 +2,14 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
 	buildFraudFingerprint,
+	createInProcessLeadRateLimiter,
 	evaluateLeadRateLimit,
 	hitInProcessLeadRateLimit,
 	normalizePhoneToE164,
 	prepareLeadIntake,
 	resolveEnabledLeadChannels,
 } from "../src/core/leads/index.ts";
+import { evaluatePublicLeadRequest } from "../src/core/security/public-lead-request.ts";
 import { getTrustedClientAddress } from "../src/core/security/trusted-client-address.ts";
 import { legalConsentConfig } from "../src/project/legal.config.ts";
 
@@ -111,10 +113,71 @@ const limitedInProcess = hitInProcessLeadRateLimit({
 });
 assert.equal(limitedInProcess?.code, "lead.rate_limited");
 
+const boundedLimiter = createInProcessLeadRateLimiter({
+	windowMs: 100,
+	maxBuckets: 2,
+});
+boundedLimiter({ key: "later-reset", limit: 1, now: 50 });
+boundedLimiter({ key: "earlier-reset", limit: 1, now: 0 });
+boundedLimiter({ key: "new", limit: 1, now: 1 });
+assert.equal(
+	boundedLimiter({ key: "later-reset", limit: 1, now: 2 })?.code,
+	"lead.rate_limited",
+	"capacity pruning must retain the later reset deadline",
+);
+assert.equal(
+	boundedLimiter({ key: "earlier-reset", limit: 1, now: 2 }),
+	undefined,
+	"capacity pruning must evict the oldest reset deadline",
+);
+
+const allowedLeadRequest = new Request(
+	"https://doncity-home.ru/api/public/leads",
+	{
+		method: "POST",
+		headers: {
+			"content-type": "application/json; charset=utf-8",
+			origin: "https://doncity-home.ru",
+			"sec-fetch-site": "same-origin",
+		},
+	},
+);
+assert.deepEqual(
+	evaluatePublicLeadRequest(allowedLeadRequest, "https://doncity-home.ru"),
+	{ allowed: true },
+);
+for (const [headers, reason] of [
+	[{ origin: "https://doncity-home.ru" }, "content_type"],
+	[
+		{
+			"content-type": "application/json",
+			origin: "https://evil.example",
+		},
+		"origin",
+	],
+	[
+		{
+			"content-type": "application/json",
+			origin: "https://doncity-home.ru",
+			"sec-fetch-site": "cross-site",
+		},
+		"fetch_site",
+	],
+]) {
+	assert.deepEqual(
+		evaluatePublicLeadRequest(
+			new Request("https://doncity-home.ru/api/public/leads", { headers }),
+			"https://doncity-home.ru",
+		),
+		{ allowed: false, reason },
+	);
+}
+
 const routeSource = readFileSync("src/app/api/public/leads/route.ts", "utf8");
 assert.equal(routeSource.includes("submitPublicLead"), true);
 assert.equal(routeSource.includes("getTrustedClientAddress"), true);
 assert.equal(routeSource.includes("x-forwarded-for"), false);
+assert.equal(routeSource.includes("reused: result.reused"), false);
 assert.equal(
 	getTrustedClientAddress(
 		new Request("https://example.test", {

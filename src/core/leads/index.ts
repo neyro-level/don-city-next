@@ -26,6 +26,19 @@ export {
 	sendMaxLead,
 } from "./adapters/max.ts";
 export {
+	type LeadChannelCapabilities,
+	type LeadChannelEnv,
+	leadChannelCapabilities,
+	parseLeadChannelIds,
+	resolveEnabledLeadChannels,
+} from "./channels.ts";
+export {
+	defineLeadDeliveryPolicy,
+	type LeadDeliveryPolicy,
+	type LeadDeliveryRoutingMode,
+	leadDeliveryMaxAttempts,
+} from "./delivery-policy.ts";
+export {
 	appendAttemptLog,
 	claimLeadDeliveryForSending,
 	completeLeadDeliveryAttempt,
@@ -34,26 +47,9 @@ export {
 	retryBackoffMs,
 } from "./delivery-state.ts";
 export {
-	defineLeadDeliveryPolicy,
-	leadDeliveryMaxAttempts,
-	type LeadDeliveryPolicy,
-	type LeadDeliveryRoutingMode,
-} from "./delivery-policy.ts";
-export {
-	leadChannelCapabilities,
-	parseLeadChannelIds,
-	resolveEnabledLeadChannels,
-	type LeadChannelCapabilities,
-	type LeadChannelEnv,
-} from "./channels.ts";
-export { hitInProcessLeadRateLimit } from "./in-process-rate-limit.ts";
-export { isLiveFuturePayloadJob } from "./job-liveness.ts";
-export {
-	assertNoPiiInDiagnostics,
-	evaluateProductionRetentionReadiness,
-	planLeadRetentionRun,
-	planRetentionActions,
-} from "./retention.ts";
+	createInProcessLeadRateLimiter,
+	hitInProcessLeadRateLimit,
+} from "./in-process-rate-limit.ts";
 export {
 	buildFraudFingerprint,
 	buildLeadIdempotencyKey,
@@ -63,6 +59,7 @@ export {
 	normalizePhoneToE164,
 	prepareLeadIntake,
 } from "./intake.ts";
+export { isLiveFuturePayloadJob } from "./job-liveness.ts";
 export {
 	accelerateLeadDeliveryJobs,
 	buildLeadDeliveryIdempotencyKey,
@@ -74,3 +71,9 @@ export {
 	type LeadRecord,
 	planRecoverableLeadDeliveryJobs,
 } from "./outbox.ts";
+export {
+	assertNoPiiInDiagnostics,
+	evaluateProductionRetentionReadiness,
+	planLeadRetentionRun,
+	planRetentionActions,
+} from "./retention.ts";
