@@ -109,7 +109,7 @@ for (const row of rows.filter(
 	const entry = apartmentEntries.find(
 		(candidate) => candidate.districtSlug === row.slug,
 	);
-	assert.equal(entry?.minActiveObjects, "10");
+	assert.equal(entry?.minActiveObjects, "3");
 }
 
 const withParent = await resolveProjectPublicRoute(

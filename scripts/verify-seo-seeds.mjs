@@ -253,8 +253,8 @@ for (const row of seo.rows) {
 			);
 			assert.equal(
 				row.minActiveObjects,
-				"10",
-				`${row.registryId} TEST threshold mismatch`,
+				"3",
+				`${row.registryId} unified threshold mismatch`,
 			);
 		} else {
 			assert.match(
@@ -269,8 +269,8 @@ for (const row of seo.rows) {
 			);
 			assert.equal(
 				row.minActiveObjects,
-				"5",
-				`${row.registryId} P1/P2 threshold mismatch`,
+				"3",
+				`${row.registryId} unified threshold mismatch`,
 			);
 		}
 	}

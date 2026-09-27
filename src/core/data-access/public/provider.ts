@@ -45,6 +45,7 @@ import {
 	toShellDTO,
 } from "./dto";
 import { findApprovedListingContent } from "./listing-content.ts";
+import { buildListingCatalogQuery } from "./listing-catalog-query.ts";
 import {
 	findNearbyGeoAvailability,
 	type NearbyGeoAvailability,
@@ -143,39 +144,13 @@ function indexableRegistryEntries(
 	);
 }
 
-function listingCatalogQuery(
-	entry: SeoRegistryEntry,
-): CatalogQueryInput | null {
-	const category =
-		entry.category === "apartment" ||
-		entry.category === "house" ||
-		entry.category === "land" ||
-		entry.category === "commercial"
-			? entry.category
-			: undefined;
-	if (!category || !entry.geoSlug) return null;
-	const query: CatalogQueryInput = {
-		category,
-		geoSlug: entry.geoSlug,
-		...(entry.districtSlug ? { districtSlug: entry.districtSlug } : {}),
-	};
-	if (entry.facetSlug === "odnokomnatnye") query.rooms = [1];
-	if (entry.facetSlug === "dvuhkomnatnye") query.rooms = [2];
-	if (entry.facetSlug === "trehkomnatnye") query.rooms = [3];
-	if (entry.facetSlug === "dachi") query.houseType = "dacha";
-	if (entry.facetSlug === "izhs" || entry.facetSlug === "snt") {
-		query.landUse = entry.facetSlug;
-	}
-	return query;
-}
-
 async function listingContentGateEvidenceFor(
 	payload: NonNullable<
 		Awaited<ReturnType<typeof getOptionalPublicGatewayPayload>>
 	>,
 	entry: SeoRegistryEntry,
 ): Promise<ListingContentGateEvidence | null> {
-	const query = listingCatalogQuery(entry);
+	const query = buildListingCatalogQuery(entry);
 	if (!query) return null;
 	const [content, activeObjects] = await Promise.all([
 		findApprovedListingContent(payload, entry.registryId),
@@ -188,6 +163,7 @@ async function listingContentGateEvidenceFor(
 		contextFacts: content.contextFacts,
 		serverRendered: true,
 		propertyLinksInHtml: activeObjects > 0,
+		lastThresholdPassedAt: content.lastThresholdPassedAt,
 	};
 }
 

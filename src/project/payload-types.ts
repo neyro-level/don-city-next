@@ -133,6 +133,7 @@ export interface Config {
       jobsJanitor: TaskJobsJanitor;
       leadRetentionCleanup: TaskLeadRetentionCleanup;
       catalogLifecycle: TaskCatalogLifecycle;
+      refreshListingContentGate: TaskRefreshListingContentGate;
       recoverLeadDeliveries: TaskRecoverLeadDeliveries;
       deliverLead: TaskDeliverLead;
       inline: {
@@ -575,6 +576,9 @@ export interface ListingContent {
       }[]
     | null;
   approvedAt?: string | null;
+  inventorySnapshot?: number | null;
+  inventoryEvaluatedAt?: string | null;
+  lastThresholdPassedAt?: string | null;
   approvedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -828,6 +832,7 @@ export interface PayloadJob {
           | 'jobsJanitor'
           | 'leadRetentionCleanup'
           | 'catalogLifecycle'
+          | 'refreshListingContentGate'
           | 'recoverLeadDeliveries'
           | 'deliverLead';
         taskID: string;
@@ -870,6 +875,7 @@ export interface PayloadJob {
         | 'jobsJanitor'
         | 'leadRetentionCleanup'
         | 'catalogLifecycle'
+        | 'refreshListingContentGate'
         | 'recoverLeadDeliveries'
         | 'deliverLead'
       )
@@ -1209,6 +1215,9 @@ export interface ListingContentsSelect<T extends boolean = true> {
         id?: T;
       };
   approvedAt?: T;
+  inventorySnapshot?: T;
+  inventoryEvaluatedAt?: T;
+  lastThresholdPassedAt?: T;
   approvedBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1634,6 +1643,14 @@ export interface TaskLeadRetentionCleanup {
  * via the `definition` "TaskCatalogLifecycle".
  */
 export interface TaskCatalogLifecycle {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRefreshListingContentGate".
+ */
+export interface TaskRefreshListingContentGate {
   input?: unknown;
   output?: unknown;
 }

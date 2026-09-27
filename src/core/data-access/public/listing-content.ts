@@ -8,6 +8,7 @@ export type ApprovedListingContent = {
 	registryId: string;
 	introduction: string;
 	contextFacts: readonly ListingContextFact[];
+	lastThresholdPassedAt: string | null;
 };
 
 export async function findApprovedListingContent(
@@ -30,6 +31,7 @@ export async function findApprovedListingContent(
 			registryId: true,
 			introduction: true,
 			contextFacts: { source: true, checkedAt: true },
+			lastThresholdPassedAt: true,
 		},
 		overrideAccess: publicGatewayPolicy.overrideAccess,
 		context: publicGatewayPolicy.context,
@@ -44,5 +46,6 @@ export async function findApprovedListingContent(
 				source: fact.source,
 				checkedAt: fact.checkedAt,
 			})) ?? [],
+		lastThresholdPassedAt: content.lastThresholdPassedAt ?? null,
 	};
 }

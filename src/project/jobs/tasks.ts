@@ -14,6 +14,8 @@ import {
 } from "../../core/data-access/system/jobs/index.ts";
 import { systemOverrideAccess } from "../../core/data-access/system/overrides.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
+import { countPublicCatalogProperties } from "../../core/data-access/public/catalog.ts";
+import { buildListingCatalogQuery } from "../../core/data-access/public/listing-catalog-query.ts";
 import { claimPendingDeliveryRecoveryLease } from "../../core/data-access/system/sql/index.ts";
 import { catalogRetentionThreshold } from "../../core/ingest/catalog-retention.ts";
 import { dispatchDueFeeds } from "../../core/ingest/dispatch-due-feeds.ts";
@@ -49,8 +51,11 @@ import {
 } from "../../core/security/safe-outbound-client.ts";
 import { parseTestApprovedOrigins } from "../../core/security/test-destinations.ts";
 import { getRuntimeClock } from "../../core/time/clock.ts";
+import { nextListingInventoryGateState } from "../../platform/seo/content-gate-state.ts";
 import { runtimeEnv } from "../env.ts";
 import { projectConfig } from "../project.config.ts";
+import { seoRegistryById } from "../seo-registry.generated.ts";
+import { siteProfile } from "../site.profile.ts";
 import {
 	type PayloadJobTaskSlug,
 	payloadJobQueues,
@@ -614,6 +619,54 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 			}
 
 			return { output: { purgedProperties: archivedProperties.docs.length } };
+		},
+	},
+	{
+		slug: payloadJobTaskSlugs.refreshListingContentGate,
+		label: "Refresh listing Content Gate state",
+		schedule: getStaticSchedule(payloadJobTaskSlugs.refreshListingContentGate),
+		handler: async ({ req }) => {
+			const rows = await req.payload.find({
+				collection: "listing-contents",
+				where: { status: { equals: "approved" } },
+				pagination: false,
+				depth: 0,
+				req,
+				...jobAccess,
+			});
+			const evaluatedAt = nowDate();
+			let updated = 0;
+
+			for (const row of rows.docs) {
+				const entry = seoRegistryById.get(row.registryId);
+				const query = entry ? buildListingCatalogQuery(entry) : null;
+				if (!entry?.tier || !query) continue;
+				const threshold =
+					siteProfile.inventoryThreshold[
+						entry.tier as keyof typeof siteProfile.inventoryThreshold
+					];
+				if (!Number.isInteger(threshold)) continue;
+				const activeObjects = await countPublicCatalogProperties(
+					req.payload,
+					query,
+				);
+				const state = nextListingInventoryGateState({
+					activeObjects,
+					threshold,
+					now: evaluatedAt,
+					lastThresholdPassedAt: row.lastThresholdPassedAt,
+				});
+				await req.payload.update({
+					collection: "listing-contents",
+					id: row.id,
+					data: state,
+					req,
+					...jobAccess,
+				});
+				updated += 1;
+			}
+
+			return { output: { evaluated: rows.docs.length, updated } };
 		},
 	},
 	{

@@ -11,6 +11,7 @@ export const payloadJobTaskSlugs = {
 	jobsJanitor: "jobsJanitor",
 	leadRetentionCleanup: "leadRetentionCleanup",
 	catalogLifecycle: "catalogLifecycle",
+	refreshListingContentGate: "refreshListingContentGate",
 	recoverLeadDeliveries: "recoverLeadDeliveries",
 	deliverLead: "deliverLead",
 } as const;
@@ -62,6 +63,14 @@ export const payloadJobRegistry = [
 			trigger: "static",
 			cron: "*/15 * * * *",
 			responsibility: "Apply archive retention, content purge, redirects, and 410 lifecycle.",
+		},
+		{
+			slug: payloadJobTaskSlugs.refreshListingContentGate,
+			queue: payloadJobQueues.maintenance,
+			trigger: "static",
+			cron: "*/15 * * * *",
+			responsibility:
+				"Persist inventory snapshots and threshold-pass time for the 30-day Content Gate grace state.",
 		},
 		{
 			slug: payloadJobTaskSlugs.recoverLeadDeliveries,

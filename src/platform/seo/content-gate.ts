@@ -12,6 +12,7 @@ export type ListingContentGateEvidence = {
 	contextFacts?: readonly ListingContextFact[];
 	serverRendered: boolean;
 	propertyLinksInHtml: boolean;
+	lastThresholdPassedAt?: string | null;
 };
 
 export type ListingContentGateDecision = {
@@ -21,6 +22,9 @@ export type ListingContentGateDecision = {
 };
 
 type ListingGateProfile = Pick<SiteProfile, "inventoryThreshold">;
+
+export const listingInventoryGraceDays = 30;
+const dayInMs = 24 * 60 * 60 * 1000;
 
 function isMaterialized(value: string): boolean {
 	return value.trim().length > 0 && !/[{}]/u.test(value);
@@ -47,6 +51,7 @@ export function evaluateListingContentGate(
 	entry: SeoRegistryEntry,
 	profile: ListingGateProfile,
 	evidence?: ListingContentGateEvidence | null,
+	now: Date = new Date(),
 ): ListingContentGateDecision {
 	if (entry.contentGateRequired !== "true") {
 		return { passed: true, threshold: 0, reasons: [] };
@@ -61,7 +66,21 @@ export function evaluateListingContentGate(
 	}
 
 	const reasons: string[] = [];
-	if (!Number.isInteger(evidence.activeObjects) || evidence.activeObjects < threshold) {
+	const lastPassedAt = evidence.lastThresholdPassedAt
+		? new Date(evidence.lastThresholdPassedAt)
+		: null;
+	const graceAge = lastPassedAt ? now.getTime() - lastPassedAt.getTime() : NaN;
+	const inventoryGraceActive =
+		evidence.activeObjects > 0 &&
+		evidence.activeObjects < threshold &&
+		lastPassedAt !== null &&
+		Number.isFinite(lastPassedAt.getTime()) &&
+		graceAge >= 0 &&
+		graceAge <= listingInventoryGraceDays * dayInMs;
+	if (
+		!Number.isInteger(evidence.activeObjects) ||
+		(evidence.activeObjects < threshold && !inventoryGraceActive)
+	) {
 		reasons.push("inventory_below_threshold");
 	}
 	if (

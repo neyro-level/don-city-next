@@ -87,6 +87,7 @@
 		"verify:lead-delivery-state": "node --experimental-strip-types scripts/verify-lead-delivery-state.mjs",
 		"verify:analytics": "node --experimental-strip-types scripts/verify-analytics.ts",
 		"verify:content-inventory": "node --experimental-strip-types scripts/verify-content-inventory-activation.ts",
+		"verify:content-gate-persistence": "node scripts/verify-content-gate-persistence.mjs",
 		"verify:content-inventory:integration": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/integration/listing-content-suite.ts",
 		"verify:max-adapter": "node --experimental-strip-types scripts/verify-max-adapter.mjs",
 		"verify:custom-webhook-adapter": "node --experimental-strip-types scripts/verify-custom-webhook-adapter.mjs",
