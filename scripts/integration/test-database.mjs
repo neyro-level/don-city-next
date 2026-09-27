@@ -12,6 +12,10 @@ import {
 	agglomerationModelDownSql,
 	agglomerationModelUpSql,
 } from "../../migrations/20260928_130000_agglomeration_model.ts";
+import {
+	districtCanonicalFormsDownSql,
+	districtCanonicalFormsUpSql,
+} from "../../migrations/20260928_233000_district_canonical_forms.ts";
 import { propertyNumericInvariantsUpSql } from "../../src/core/data-access/system/sql/property-numeric-invariants.ts";
 import { assertLocalTestDatabaseUri } from "./env.mjs";
 
@@ -438,6 +442,77 @@ export function proveAgglomerationModelMigration(testUri) {
 			"Agglomeration migration rollback changed existing city rows.",
 		);
 	}
+}
+
+export function proveDistrictCanonicalFormsMigration(testUri) {
+	psql(
+		testUri,
+		`
+		CREATE TABLE cities (
+			id serial PRIMARY KEY,
+			slug varchar NOT NULL UNIQUE
+		);
+		CREATE TABLE districts (
+			id serial PRIMARY KEY,
+			city_id integer NOT NULL REFERENCES cities(id),
+			slug varchar NOT NULL
+		);
+		INSERT INTO cities (id, slug) VALUES (1, 'donetsk'), (2, 'makeyevka');
+		INSERT INTO districts (id, city_id, slug) VALUES
+			(10, 1, 'budennovskiy'),
+			(11, 1, 'voroshilovskiy'),
+			(12, 1, 'kalininskiy'),
+			(13, 1, 'kievskiy'),
+			(14, 1, 'kirovskiy'),
+			(15, 1, 'kuybyshevskiy'),
+			(16, 1, 'leninskiy'),
+			(17, 1, 'petrovskiy'),
+			(18, 1, 'proletarskiy'),
+			(19, 1, 'tekstilshchik'),
+			(20, 2, 'kievskiy');
+	`,
+	);
+	psql(testUri, districtCanonicalFormsUpSql);
+	if (
+		psql(
+			testUri,
+			"SELECT count(*) FROM districts WHERE city_id = 1 AND name_genitive IS NOT NULL",
+		) !== "10"
+	) {
+		throw new Error("District migration did not backfill ten Donetsk genitive forms.");
+	}
+	if (psql(testUri, "SELECT count(*) FROM districts_synonyms") !== "30") {
+		throw new Error("District migration did not backfill thirty canonical synonyms.");
+	}
+	if (
+		psql(
+			testUri,
+			"SELECT name_genitive IS NULL FROM districts WHERE city_id = 2 AND slug = 'kievskiy'",
+		) !== "t"
+	) {
+		throw new Error("District migration crossed the Donetsk city boundary.");
+	}
+	psql(testUri, districtCanonicalFormsUpSql);
+	if (psql(testUri, "SELECT count(*) FROM districts_synonyms") !== "30") {
+		throw new Error("District migration repeat changed synonym cardinality.");
+	}
+	psql(testUri, districtCanonicalFormsDownSql);
+	if (
+		psql(
+			testUri,
+			"SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='districts' AND column_name='name_genitive'",
+		) !== "0" ||
+		psql(
+			testUri,
+			"SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_name='districts_synonyms'",
+		) !== "0"
+	) {
+		throw new Error("District migration rollback left canonical-form storage behind.");
+	}
+	if (psql(testUri, "SELECT count(*) FROM districts") !== "11") {
+		throw new Error("District migration rollback changed district identities.");
+	}
+	psql(testUri, districtCanonicalFormsUpSql);
 }
 
 export function provePayloadAuthSecurityMigration(testUri) {

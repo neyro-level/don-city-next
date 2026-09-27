@@ -31,6 +31,7 @@ import { createMemoryFeedRepository } from "./integration/memory-feed-repository
 import {
 	prepareIntegrationDatabase,
 	proveAgglomerationModelMigration,
+	proveDistrictCanonicalFormsMigration,
 	proveGeoRelationBackfillMigration,
 	proveLeadDeliveryRelationalMigration,
 	provePayloadAuthSecurityMigration,
@@ -272,6 +273,8 @@ await prepareIntegrationDatabase(preferredUri);
 proveGeoRelationBackfillMigration(preferredUri);
 await prepareIntegrationDatabase(preferredUri);
 proveAgglomerationModelMigration(preferredUri);
+await prepareIntegrationDatabase(preferredUri);
+proveDistrictCanonicalFormsMigration(preferredUri);
 const prepared = await prepareIntegrationDatabase(preferredUri);
 const testUri = prepared.uri;
 if (!process.env.PAYLOAD_SECRET && !prepared.fromZero) {

@@ -472,6 +472,13 @@ export interface District {
   sortOrder: number;
   preposition?: string | null;
   nameLocative?: string | null;
+  nameGenitive?: string | null;
+  synonyms?:
+    | {
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   ownerVerified: boolean;
   isPublished: boolean;
   publishedAt?: string | null;
@@ -1186,6 +1193,13 @@ export interface DistrictsSelect<T extends boolean = true> {
   sortOrder?: T;
   preposition?: T;
   nameLocative?: T;
+  nameGenitive?: T;
+  synonyms?:
+    | T
+    | {
+        value?: T;
+        id?: T;
+      };
   ownerVerified?: T;
   isPublished?: T;
   publishedAt?: T;

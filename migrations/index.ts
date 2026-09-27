@@ -21,6 +21,7 @@ import * as migration_20260927_103500_core55_listing_content_registry_ids from '
 import * as migration_20260928_003000_geo_relation_backfill from './20260928_003000_geo_relation_backfill';
 import * as migration_20260928_130000_agglomeration_model from './20260928_130000_agglomeration_model';
 import * as migration_20260928_230500_listing_content_gate_state from './20260928_230500_listing_content_gate_state';
+import * as migration_20260928_233000_district_canonical_forms from './20260928_233000_district_canonical_forms';
 
 export const migrations = [
   {
@@ -137,5 +138,10 @@ export const migrations = [
     up: migration_20260928_230500_listing_content_gate_state.up,
     down: migration_20260928_230500_listing_content_gate_state.down,
     name: '20260928_230500_listing_content_gate_state',
+  },
+  {
+    up: migration_20260928_233000_district_canonical_forms.up,
+    down: migration_20260928_233000_district_canonical_forms.down,
+    name: '20260928_233000_district_canonical_forms',
   },
 ];

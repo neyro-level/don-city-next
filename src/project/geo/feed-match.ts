@@ -47,15 +47,32 @@ function matchesLabel(
 	);
 }
 
-const textilshchikDistrictSlug = "tekstilshchik";
+type DistrictMatchCandidate = {
+	name?: string | null;
+	slug?: string | null;
+	nameGenitive?: string | null;
+	nameLocative?: string | null;
+	synonyms?: { value?: string | null }[] | null;
+};
 
-function isTextilshchikFeedDistrict(
-	city: { slug?: string | null },
-	districtRaw: string,
+function matchesDistrictLabel(
+	value: string,
+	candidate: DistrictMatchCandidate,
 ): boolean {
-	return (
-		normalizeGeoLabel(city.slug) === "donetsk" &&
-		normalizeGeoLabel(districtRaw).includes("текстильщик")
+	const normalized = normalizeGeoLabel(value);
+	if (!normalized) return false;
+	const aliases = [
+		candidate.name,
+		candidate.slug,
+		candidate.nameGenitive,
+		candidate.nameLocative,
+		...(candidate.synonyms?.map((item) => item.value) ?? []),
+	]
+		.map(normalizeGeoLabel)
+		.filter(Boolean);
+	const padded = ` ${normalized} `;
+	return aliases.some(
+		(alias) => normalized === alias || padded.includes(` ${alias} `),
 	);
 }
 
@@ -114,16 +131,10 @@ export async function resolveFeedGeo(
 			depth: 0,
 			...geoMatchSystemAccess,
 		});
-		const exactMatch = districts.docs.find((item) =>
-			matchesLabel(districtRaw, item),
+		const districtMatch = districts.docs.find((item) =>
+			matchesDistrictLabel(districtRaw, item),
 		);
-		const textilshchikMatch =
-			matchedCity && isTextilshchikFeedDistrict(matchedCity, districtRaw)
-				? districts.docs.find(
-						(item) => normalizeGeoLabel(item.slug) === textilshchikDistrictSlug,
-					)
-				: undefined;
-		district = numericId((exactMatch ?? textilshchikMatch)?.id);
+		district = numericId(districtMatch?.id);
 	}
 
 	return {

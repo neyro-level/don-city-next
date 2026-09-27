@@ -13,6 +13,8 @@ type DistrictSeed = {
 	parentSlug: string;
 	preposition: string;
 	nameLocative: string;
+	nameGenitive: string;
+	synonyms: string[];
 	isPublished: boolean;
 };
 
@@ -69,6 +71,11 @@ function loadDistrictSeeds(): DistrictSeed[] {
 			parentSlug: row.parentSlug,
 			preposition: row.preposition,
 			nameLocative: row.nameLocative,
+			nameGenitive: row.nameGenitive,
+			synonyms: row.synonyms
+				.split("|")
+				.map((value) => value.trim())
+				.filter(Boolean),
 			isPublished: row.isPublished === "true",
 		};
 	});
@@ -173,6 +180,8 @@ async function upsertGeo(payload: Payload) {
 			sortOrder: 100,
 			preposition: seed.preposition || null,
 			nameLocative: seed.nameLocative || null,
+			nameGenitive: seed.nameGenitive || null,
+			synonyms: seed.synonyms.map((value) => ({ value })),
 			ownerVerified: false,
 			isPublished: seed.isPublished,
 			publishedAt: seed.isPublished ? publishedAt : null,

@@ -104,7 +104,7 @@
 		"verify:land-facet-query": "node --experimental-strip-types scripts/verify-land-facet-query.ts",
 		"verify:site-profile": "node --experimental-strip-types scripts/verify-site-profile.ts",
 		"verify:url-grammar": "node --experimental-strip-types scripts/verify-url-grammar.ts",
-		"verify:geo-model": "pnpm verify:route-resolver && node --experimental-strip-types scripts/verify-geo-model.ts && pnpm verify:nearby-geo && pnpm verify:public-geo-gateway",
+		"verify:geo-model": "pnpm verify:route-resolver && node --experimental-strip-types scripts/verify-geo-model.ts && pnpm verify:apartment-districts && pnpm verify:house-districts-facets && pnpm verify:nearby-geo && pnpm verify:public-geo-gateway",
 		"verify:geo-relation-backfill": "node --experimental-strip-types scripts/verify-geo-relation-backfill.mjs",
 		"verify:agglomeration-model": "node --experimental-strip-types scripts/verify-agglomeration-model.ts",
 		"verify:agglomeration-research": "node scripts/verify-agglomeration-seo-research.mjs",
