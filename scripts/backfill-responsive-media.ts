@@ -149,177 +149,186 @@ async function main() {
 			`media-backfill-${environment}-${randomUUID()}.json`,
 		);
 	const payload = await getPayload({ config });
+	try {
+		const docs: Media[] = [];
+		for (let page = 1; ; page += 1) {
+			const result = await payload.find({
+				collection: "media",
+				page,
+				limit: 100,
+				depth: 0,
+				...maintenanceAccess,
+			});
+			docs.push(...result.docs);
+			if (!result.hasNextPage) break;
+		}
+		const candidates = docs.filter(
+			(doc) =>
+				doc.mimeType?.startsWith("image/") && doc.filename && doc._objectKey,
+		);
+		const incomplete = candidates.filter((doc) =>
+			variantSpecs.some((spec) => !doc.sizes?.[spec.name]?.filename),
+		);
+		if (!apply && !rollback) {
+			console.log(
+				JSON.stringify({
+					mode: "dry-run",
+					environment,
+					totalMedia: docs.length,
+					imageCandidates: candidates.length,
+					needsBackfill: incomplete.map((doc) => doc.id),
+				}),
+			);
+			return;
+		}
 
-	const docs: Media[] = [];
-	for (let page = 1; ; page += 1) {
-		const result = await payload.find({
-			collection: "media",
-			page,
-			limit: 100,
-			depth: 0,
-			...maintenanceAccess,
+		const endpoint = required(process.env.S3_ENDPOINT, "S3_ENDPOINT");
+		const region = required(process.env.S3_REGION, "S3_REGION");
+		const bucket = required(process.env.S3_BUCKET, "S3_BUCKET");
+		const accessKeyId = required(
+			process.env.S3_ACCESS_KEY_ID,
+			"S3_ACCESS_KEY_ID",
+		);
+		const secretAccessKey = required(
+			process.env.S3_SECRET_ACCESS_KEY,
+			"S3_SECRET_ACCESS_KEY",
+		);
+		const prefix = required(process.env.S3_PREFIX, "S3_PREFIX");
+		const client = new S3Client({
+			endpoint,
+			region,
+			forcePathStyle: true,
+			credentials: { accessKeyId, secretAccessKey },
 		});
-		docs.push(...result.docs);
-		if (!result.hasNextPage) break;
-	}
-	const candidates = docs.filter(
-		(doc) =>
-			doc.mimeType?.startsWith("image/") && doc.filename && doc._objectKey,
-	);
-	const incomplete = candidates.filter((doc) =>
-		variantSpecs.some((spec) => !doc.sizes?.[spec.name]?.filename),
-	);
-	if (!apply && !rollback) {
+
+		if (rollback) {
+			assertMutationBoundary({ environment, bucket, prefix });
+			const manifest = JSON.parse(
+				await readFile(required(argument("manifest"), "--manifest"), "utf8"),
+			) as Manifest;
+			if (
+				manifest.version !== 1 ||
+				manifest.environment !== environment ||
+				manifest.bucket !== bucket ||
+				manifest.prefix !== prefix
+			) {
+				throw new Error(
+					"Manifest target does not match the isolated runtime target.",
+				);
+			}
+			for (const entry of [...manifest.entries].reverse()) {
+				await payload.update({
+					collection: "media",
+					id: entry.mediaId,
+					data: { sizes: entry.previousSizes } as never,
+					...maintenanceAccess,
+				});
+				for (const key of entry.createdKeys) {
+					await client.send(
+						new DeleteObjectCommand({ Bucket: bucket, Key: key }),
+					);
+				}
+			}
+			console.log(
+				JSON.stringify({ mode: "rollback", restored: manifest.entries.length }),
+			);
+			return;
+		}
+
+		assertMutationBoundary({ environment, bucket, prefix });
+		const manifest: Manifest = {
+			version: 1,
+			runId: randomUUID(),
+			environment,
+			bucket,
+			prefix,
+			createdAt: new Date().toISOString(),
+			entries: [],
+		};
+		await saveManifest(manifestPath, manifest);
+
+		for (const doc of incomplete) {
+			const originalKey = required(
+				doc._objectKey ?? undefined,
+				"media._objectKey",
+			);
+			if (!originalKey.startsWith(`${prefix.replace(/\/$/, "")}/`)) {
+				throw new Error(`Media ${doc.id} is outside the approved prefix.`);
+			}
+			const original = await client.send(
+				new GetObjectCommand({ Bucket: bucket, Key: originalKey }),
+			);
+			const source = await bodyBuffer(original.Body);
+			const nextSizes: NonNullable<Media["sizes"]> = { ...(doc.sizes ?? {}) };
+			const createdKeys: string[] = [];
+			try {
+				for (const spec of variantSpecs) {
+					const output = await sharp(source)
+						.resize({ width: spec.width, withoutEnlargement: true })
+						.webp({ quality: 82 })
+						.toBuffer({ resolveWithObject: true });
+					const filename = variantFilename(
+						doc.filename ?? "media",
+						spec,
+						output.info.width,
+					);
+					const key = objectKeyForVariant(originalKey, filename);
+					if (!(await objectExists(client, bucket, key))) {
+						await client.send(
+							new PutObjectCommand({
+								Bucket: bucket,
+								Key: key,
+								Body: output.data,
+								ContentType: "image/webp",
+							}),
+						);
+						createdKeys.push(key);
+					}
+					nextSizes[spec.name] = {
+						filename,
+						width: output.info.width,
+						height: output.info.height,
+						mimeType: "image/webp",
+						filesize: output.data.byteLength,
+					} satisfies StoredSize;
+				}
+				manifest.entries.push({
+					mediaId: doc.id,
+					previousSizes: doc.sizes,
+					createdKeys,
+				});
+				await updateManifest(manifestPath, manifest);
+				await payload.update({
+					collection: "media",
+					id: doc.id,
+					data: { sizes: nextSizes } as never,
+					...maintenanceAccess,
+				});
+			} catch (error) {
+				for (const key of createdKeys) {
+					await client.send(
+						new DeleteObjectCommand({ Bucket: bucket, Key: key }),
+					);
+				}
+				throw error;
+			}
+		}
 		console.log(
 			JSON.stringify({
-				mode: "dry-run",
-				environment,
-				totalMedia: docs.length,
-				imageCandidates: candidates.length,
-				needsBackfill: incomplete.map((doc) => doc.id),
+				mode: "apply",
+				updated: manifest.entries.length,
+				manifestPath,
 			}),
 		);
-		return;
+	} finally {
+		await payload.destroy();
 	}
-
-	const endpoint = required(process.env.S3_ENDPOINT, "S3_ENDPOINT");
-	const region = required(process.env.S3_REGION, "S3_REGION");
-	const bucket = required(process.env.S3_BUCKET, "S3_BUCKET");
-	const accessKeyId = required(
-		process.env.S3_ACCESS_KEY_ID,
-		"S3_ACCESS_KEY_ID",
-	);
-	const secretAccessKey = required(
-		process.env.S3_SECRET_ACCESS_KEY,
-		"S3_SECRET_ACCESS_KEY",
-	);
-	const prefix = required(process.env.S3_PREFIX, "S3_PREFIX");
-	const client = new S3Client({
-		endpoint,
-		region,
-		forcePathStyle: true,
-		credentials: { accessKeyId, secretAccessKey },
-	});
-
-	if (rollback) {
-		assertMutationBoundary({ environment, bucket, prefix });
-		const manifest = JSON.parse(
-			await readFile(required(argument("manifest"), "--manifest"), "utf8"),
-		) as Manifest;
-		if (
-			manifest.version !== 1 ||
-			manifest.environment !== environment ||
-			manifest.bucket !== bucket ||
-			manifest.prefix !== prefix
-		) {
-			throw new Error(
-				"Manifest target does not match the isolated runtime target.",
-			);
-		}
-		for (const entry of [...manifest.entries].reverse()) {
-			await payload.update({
-				collection: "media",
-				id: entry.mediaId,
-				data: { sizes: entry.previousSizes } as never,
-				...maintenanceAccess,
-			});
-			for (const key of entry.createdKeys) {
-				await client.send(
-					new DeleteObjectCommand({ Bucket: bucket, Key: key }),
-				);
-			}
-		}
-		console.log(
-			JSON.stringify({ mode: "rollback", restored: manifest.entries.length }),
-		);
-		return;
-	}
-
-	assertMutationBoundary({ environment, bucket, prefix });
-	const manifest: Manifest = {
-		version: 1,
-		runId: randomUUID(),
-		environment,
-		bucket,
-		prefix,
-		createdAt: new Date().toISOString(),
-		entries: [],
-	};
-	await saveManifest(manifestPath, manifest);
-
-	for (const doc of incomplete) {
-		const originalKey = required(
-			doc._objectKey ?? undefined,
-			"media._objectKey",
-		);
-		if (!originalKey.startsWith(`${prefix.replace(/\/$/, "")}/`)) {
-			throw new Error(`Media ${doc.id} is outside the approved prefix.`);
-		}
-		const original = await client.send(
-			new GetObjectCommand({ Bucket: bucket, Key: originalKey }),
-		);
-		const source = await bodyBuffer(original.Body);
-		const nextSizes: NonNullable<Media["sizes"]> = { ...(doc.sizes ?? {}) };
-		const createdKeys: string[] = [];
-		try {
-			for (const spec of variantSpecs) {
-				const output = await sharp(source)
-					.resize({ width: spec.width, withoutEnlargement: true })
-					.webp({ quality: 82 })
-					.toBuffer({ resolveWithObject: true });
-				const filename = variantFilename(
-					doc.filename ?? "media",
-					spec,
-					output.info.width,
-				);
-				const key = objectKeyForVariant(originalKey, filename);
-				if (!(await objectExists(client, bucket, key))) {
-					await client.send(
-						new PutObjectCommand({
-							Bucket: bucket,
-							Key: key,
-							Body: output.data,
-							ContentType: "image/webp",
-						}),
-					);
-					createdKeys.push(key);
-				}
-				nextSizes[spec.name] = {
-					filename,
-					width: output.info.width,
-					height: output.info.height,
-					mimeType: "image/webp",
-					filesize: output.data.byteLength,
-				} satisfies StoredSize;
-			}
-			manifest.entries.push({
-				mediaId: doc.id,
-				previousSizes: doc.sizes,
-				createdKeys,
-			});
-			await updateManifest(manifestPath, manifest);
-			await payload.update({
-				collection: "media",
-				id: doc.id,
-				data: { sizes: nextSizes } as never,
-				...maintenanceAccess,
-			});
-		} catch (error) {
-			for (const key of createdKeys) {
-				await client.send(
-					new DeleteObjectCommand({ Bucket: bucket, Key: key }),
-				);
-			}
-			throw error;
-		}
-	}
-	console.log(
-		JSON.stringify({
-			mode: "apply",
-			updated: manifest.entries.length,
-			manifestPath,
-		}),
-	);
 }
 
-await main();
+try {
+	await main();
+	process.exit(0);
+} catch (error) {
+	console.error(error);
+	process.exit(1);
+}

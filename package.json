@@ -34,7 +34,7 @@
 		"verify:doncity-sources": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/import-doncity-listings.ts -- --source-check",
 		"payload:generate:types": "node --conditions=react-server ./node_modules/payload/bin.js generate:types",
 		"payload:generate:importmap": "node --conditions=react-server ./node_modules/payload/bin.js generate:importmap",
-		"payload:media:backfill": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/backfill-responsive-media.ts",
+		"payload:media:backfill": "node --conditions=react-server --experimental-strip-types scripts/backfill-responsive-media.ts",
 		"payload:migrate": "node --conditions=react-server ./node_modules/payload/bin.js migrate",
 		"payload:migrate:create": "node --conditions=react-server ./node_modules/payload/bin.js migrate:create",
 		"verify:schema": "node scripts/verify-schema.mjs",

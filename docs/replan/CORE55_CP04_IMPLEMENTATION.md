@@ -1,6 +1,6 @@
 # CORE 5.5 CP-04 implementation evidence
 
-Status: `CODE_COMPLETE_EXTERNAL_PROOF_BLOCKED`
+Status: `CODE_COMPLETE_PARTIAL_ISOLATED_PROOF`
 
 ## Boundary
 
@@ -50,26 +50,41 @@ Status: `CODE_COMPLETE_EXTERNAL_PROOF_BLOCKED`
 - `pnpm contracts:check` — PASS, frozen public contract `1.5.0`.
 - `pnpm typecheck` — PASS.
 - `pnpm lint` — PASS with pre-existing warnings only.
+- Native PostgreSQL `18.6` identity — PASS on loopback-only
+  `127.0.0.1:5432`; isolated database `don_city_cp04_test` is owned by the
+  existing non-superuser DON CITY role.
+- `pnpm payload:migrate` — PASS against the isolated database, including
+  `20260927_000349_core55_responsive_media_sizes`.
+- `pnpm verify:schema` — PASS against the migrated isolated database.
+- `pnpm payload:media:backfill -- --environment=test` — PASS in default
+  dry-run mode with no S3 credentials and no candidate mutations.
+- Invalid backfill environment — correctly returns non-zero after replacing the
+  Payload bin wrapper with the direct Node 24 TypeScript CLI entry.
 
 ## External proof still blocked
 
-The Secret Master credential is expired. Therefore no isolated DB/S3 identity
-can be established safely and the following acceptance evidence was not run:
+The Secret Master credential still returns `403`, but the isolated database
+part of the blocker was removed through the existing Windows-native PostgreSQL
+18 contour. No secret value was printed or persisted. The remaining proof needs
+an isolated S3-compatible target with representative test media; real Timeweb
+S3 remains forbidden for this implementation task. The following acceptance
+evidence was not run:
 
-- schema migration against the explicit test database;
 - representative imported-media dry-run/apply/rerun/rollback;
 - cold/warm request p50/p95 before and after;
 - mobile Lighthouse traces for home, catalog and property, including LCP
   subparts and CLS sources.
 
-`pnpm verify:schema` correctly stopped because `DATABASE_URI` was absent. This is
-not a production or code fallback. CP-04 must stay blocked until isolated access
-is restored; production and indexing remain outside this epic.
+The test database contains no representative media, so the successful dry-run
+reported zero candidates. This is not sufficient for CP-04 acceptance. CP-04
+stays blocked until the apply/idempotent-rerun/rollback and performance evidence
+is complete; production and indexing remain outside this epic.
 
 ## Isolated continuation
 
-After Secret Master access is restored, first bind the exact test DB and test or
-staging S3 prefix, then run the default dry-run. Apply is allowed only after the
-reported IDs and target identity are reviewed. The same run manifest is required
-for rollback rehearsal. Performance traces are recorded only after representative
-managed media has survived apply, idempotent rerun and rollback.
+Bind an isolated local/test S3-compatible target and a prefix containing `test`,
+then seed representative managed media and run the default dry-run. Apply is
+allowed only after the reported IDs and target identity are reviewed. The same
+run manifest is required for rollback rehearsal. Performance traces are recorded
+only after representative managed media has survived apply, idempotent rerun and
+rollback.
