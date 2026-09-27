@@ -27,6 +27,8 @@ Updated: 2026-09-27
 - [x] Historical CP-08 candidate proof passed; it does not define the v13 release candidate.
 - [ ] Create the first production owner user.
 - [ ] Verify NAP against external owner/Yandex Business truth.
+- [x] Keep unapproved terms and managed contract PDF in explicit `ABSENT`
+      state: no public route, footer/navigation/sitemap link or file URL.
 - [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
 - [ ] Implement and sample-restore media backup/versioning.
 - [ ] Expose trustworthy DB/media backup freshness in authenticated health; health must not be degraded.

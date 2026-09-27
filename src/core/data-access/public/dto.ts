@@ -11,7 +11,10 @@ import type {
 	SiteFooterDTO,
 	SiteHeaderDTO,
 } from "@ams/realtbase-contracts";
-import { leadConsentContext } from "../../../project/legal.config.ts";
+import {
+	buildProjectLegalLinks,
+	leadConsentContext,
+} from "../../../project/legal.config.ts";
 import {
 	buildGeoSwitcher,
 	buildHomeCatalogLinks,
@@ -362,16 +365,7 @@ export function toShellDTO(
 			{ title: "Разделы", links: links.slice(1) },
 		],
 		contacts: buildNapContactLinks(nap, projectUrls.contacts),
-		legalLinks: [
-			{
-				label: "Политика конфиденциальности",
-				href: projectUrls.privacy,
-			},
-			{
-				label: "Согласие на обработку данных",
-				href: projectUrls.consent,
-			},
-		],
+		legalLinks: buildProjectLegalLinks(),
 		copyright: `© ${brandName}`,
 	};
 

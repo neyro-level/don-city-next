@@ -103,6 +103,15 @@ not duplicated configuration tables.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
 - Один project-owned semantic token source; light-only, `.dark` не устанавливается.
 - Production публично индексируется; page-level registry/content gates, canonical policy и pagination `noindex,follow` остаются обязательными.
+- Consent fail-closed: server принимает только явное `consentAccepted=true` и
+  текущую project-owned версию; хранит неизменяемые
+  `consent.accepted/version/consentedAt`, где время назначает только сервер.
+- Legal publication fail-closed: privacy/consent активны, terms и optional
+  managed PDF имеют typed `ABSENT` state и не дают public links. Их публикация
+  требует owner-approved content/file и controlled internal/managed route.
+- NAP имеет один runtime DTO owner и отдельный evidence status; текущий статус
+  `PENDING_EXTERNAL_VERIFICATION` не позволяет выдавать значения за независимо
+  подтверждённые.
 
 ## 8. Delivery and Recovery
 

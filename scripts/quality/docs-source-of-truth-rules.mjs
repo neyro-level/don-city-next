@@ -10,7 +10,7 @@ const normalize = (name) => name.replaceAll(path.sep, "/");
 export function findDocsSourceOfTruthViolations(files) {
 	const normalized = files.map((file) => ({
 		name: normalize(file.name),
-		content: file.content,
+		content: file.content.replace(/\r\n?/g, "\n"),
 	}));
 	const violations = [];
 	const activeMasters = normalized.filter(
@@ -70,11 +70,13 @@ export function findDocsSourceOfTruthViolations(files) {
 		normalized.find((file) => file.name === name)?.content ?? "";
 	const requireCurrent = (name, fragment, message) => {
 		const content = contentOf(name);
-		if (content && !content.includes(fragment)) violations.push(`${message}: ${name}`);
+		if (content && !content.includes(fragment))
+			violations.push(`${message}: ${name}`);
 	};
 	const rejectCurrent = (name, pattern, message) => {
 		const content = contentOf(name);
-		if (content && pattern.test(content)) violations.push(`${message}: ${name}`);
+		if (content && pattern.test(content))
+			violations.push(`${message}: ${name}`);
 	};
 
 	requireCurrent(

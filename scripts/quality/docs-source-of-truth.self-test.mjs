@@ -20,6 +20,16 @@ const validFiles = [
 ];
 
 assert.deepEqual(findDocsSourceOfTruthViolations(validFiles), []);
+assert.deepEqual(
+	findDocsSourceOfTruthViolations(
+		validFiles.map((file) => ({
+			...file,
+			content: file.content.replaceAll("\n", "\r\n"),
+		})),
+	),
+	[],
+	"the documentation guard must be stable after a Windows CRLF checkout",
+);
 assert.ok(
 	findDocsSourceOfTruthViolations([
 		...validFiles,
@@ -29,7 +39,10 @@ assert.ok(
 assert.ok(
 	findDocsSourceOfTruthViolations([
 		...validFiles,
-		{ name: "docs/03_ARCHITECTURE.md", content: "the v8 program in the master plan" },
+		{
+			name: "docs/03_ARCHITECTURE.md",
+			content: "the v8 program in the master plan",
+		},
 	]).some((violation) => violation.startsWith("stale current plan pointer")),
 );
 assert.ok(
@@ -45,7 +58,8 @@ assert.ok(
 		...validFiles,
 		{
 			name: "docs/PROJECT.md",
-			content: "Production and isolated staging use separate database identities",
+			content:
+				"Production and isolated staging use separate database identities",
 		},
 	]).some((violation) =>
 		violation.startsWith(
@@ -58,10 +72,10 @@ assert.ok(
 		validFiles.map((file) =>
 			file.name === canonicalMasterPlan
 				? {
-					...file,
-					content:
-						"Plan ID: AMS-DON-CITY-LIVE-CONFORMANCE\nVersion: v13\nStatus: APPROVED",
-				}
+						...file,
+						content:
+							"Plan ID: AMS-DON-CITY-LIVE-CONFORMANCE\nVersion: v13\nStatus: APPROVED",
+					}
 				: file,
 		),
 	).some((violation) =>

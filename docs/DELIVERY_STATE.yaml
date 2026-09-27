@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-LIVE-CONFORMANCE
 plan_version: v13
 plan_status: APPROVED
-current_wave: LIVE_CONFORMANCE_W0
-current_epic: DC10-DOC-00
-current_task: dc11-task-100-verify
+current_wave: LIVE_CONFORMANCE_W2
+current_epic: DC10-R12-05
+current_task: dc11-task-112-verify
 next_action: continue-beads-ready-loop-without-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
-  active_branch: codex/dc11-100-doc-sot
+  base_sha: 7a0ad70254dc9da220915c02701ca917e8295491
+  active_branch: codex/dc11-112-legal-consent
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-100-verify
-  reason: DOC-00 implementation is pushed; exact-head verification and durable evidence are in progress before delivery
+  current_task: dc11-task-112-verify
+  reason: legal/consent implementation is pushed; exact-head verification and durable evidence are in progress before delivery
 historical_evidence:
   rp_00:
     status: delivered

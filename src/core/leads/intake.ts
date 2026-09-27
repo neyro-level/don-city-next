@@ -129,7 +129,7 @@ const leadIntakeSchema = z.object({
 			term: z.string().trim().max(160).optional().or(z.literal("")),
 		})
 		.optional(),
-	consentAccepted: z.literal(true),
+	consentAccepted: z.boolean().optional(),
 	consentVersion: z.string().trim().min(1).max(120),
 	honeypot: z.string().trim().max(200).optional().or(z.literal("")),
 	renderedAt: z.string().datetime(),
@@ -152,6 +152,13 @@ export function prepareLeadIntake(
 	}
 
 	const payload = parsed.data;
+	if (payload.consentAccepted !== true) {
+		return reject(
+			"lead.consent_required",
+			"Explicit personal data processing consent is required.",
+			payload,
+		);
+	}
 	const businessContext = payload.context;
 	const currentConsentVersion =
 		options?.currentConsentVersion ?? legalConsentConfig.currentConsentVersion;

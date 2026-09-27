@@ -52,6 +52,25 @@ assert.equal(
 );
 assertNoRawPii(accepted.safeDiagnostics);
 
+for (const consentAccepted of [undefined, false]) {
+	const payload = { ...validPayload, consentAccepted };
+	if (consentAccepted === undefined) delete payload.consentAccepted;
+	const rejected = prepareLeadIntake(payload);
+	assert.equal(rejected.accepted, false);
+	assert.equal(rejected.code, "lead.consent_required");
+	assertNoRawPii(rejected.safeDiagnostics);
+}
+
+const callerTimestampIgnored = prepareLeadIntake(
+	{ ...validPayload, consentedAt: "2000-01-01T00:00:00.000Z" },
+	{ nowIso: "2026-09-16T12:00:02.000Z" },
+);
+assert.equal(callerTimestampIgnored.accepted, true);
+assert.equal(
+	callerTimestampIgnored.lead.consent.consentedAt,
+	"2026-09-16T12:00:02.000Z",
+);
+
 const exactRetry = prepareLeadIntake({
 	...validPayload,
 	renderedAt: "2026-09-16T12:29:50.000Z",
@@ -240,13 +259,6 @@ const tooFast = prepareLeadIntake({
 });
 assert.equal(tooFast.accepted, false);
 assert.equal(tooFast.code, "lead.fill_time_invalid");
-
-const consentMissing = prepareLeadIntake({
-	...validPayload,
-	consentAccepted: false,
-});
-assert.equal(consentMissing.accepted, false);
-assert.equal(consentMissing.code, "lead.invalid_payload");
 
 const consentMismatch = prepareLeadIntake({
 	...validPayload,

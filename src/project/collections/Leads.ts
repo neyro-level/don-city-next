@@ -4,6 +4,7 @@ import {
 	ownersOnly,
 	systemGatewayOnly,
 } from "../../core/access/roles.ts";
+import { consentEvidenceFields } from "../legal.config.ts";
 
 const ownerPiiFieldAccess: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner"]);
@@ -149,7 +150,7 @@ export const Leads: CollectionConfig = {
 			],
 		},
 		{
-			name: "consent",
+			name: consentEvidenceFields.storage.group,
 			type: "group",
 			access: { update: immutableIntakeUpdateAccess },
 			admin: {
@@ -158,19 +159,19 @@ export const Leads: CollectionConfig = {
 			},
 			fields: [
 				{
-					name: "accepted",
+					name: consentEvidenceFields.storage.accepted,
 					type: "checkbox",
 					required: true,
 					defaultValue: false,
 				},
 				{
-					name: "version",
+					name: consentEvidenceFields.storage.version,
 					type: "text",
 					required: true,
 					index: true,
 				},
 				{
-					name: "consentedAt",
+					name: consentEvidenceFields.storage.consentedAt,
 					type: "date",
 					required: true,
 				},

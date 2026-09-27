@@ -5,6 +5,7 @@ import {
 	emitAnalyticsEvent,
 } from "../packages/ui/src/analytics-browser.ts";
 import { normalizeAnalyticsEvent } from "../packages/ui/src/analytics-contract.ts";
+import { buildPublicAnalyticsEvent } from "../src/platform/analytics/event.ts";
 
 const expectedEvents = [
 	"all_property_view",
@@ -67,6 +68,26 @@ assert.deepEqual(normalized, {
 });
 for (const forbidden of ["name", "phone", "message", "query"]) {
 	assert.equal(forbidden in normalized, false, `${forbidden} must be dropped`);
+}
+
+for (const forbidden of [
+	"name",
+	"phone",
+	"email",
+	"address",
+	"message",
+	"comment",
+	"contact",
+]) {
+	assert.throws(
+		() =>
+			buildPublicAnalyticsEvent({
+				event: "lead_submit",
+				identity: { geoSlug: "donetsk", pageKey: "contacts" },
+				dimensions: { [forbidden]: "synthetic-sensitive-value" },
+			}),
+		/Analytics PII key rejected/,
+	);
 }
 
 const dispatched: Array<{ type: string; detail: unknown }> = [];
