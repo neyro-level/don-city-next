@@ -4,6 +4,10 @@ import {
 	payloadAuthSecurityDownSql,
 	payloadAuthSecurityUpSql,
 } from "../../migrations/20260921_185354_add_reset_password_requested_at.ts";
+import {
+	geoRelationBackfillDownSql,
+	geoRelationBackfillUpSql,
+} from "../../migrations/20260928_003000_geo_relation_backfill.ts";
 import { propertyNumericInvariantsUpSql } from "../../src/core/data-access/system/sql/property-numeric-invariants.ts";
 import { assertLocalTestDatabaseUri } from "./env.mjs";
 
@@ -15,7 +19,11 @@ function psql(uri, sql) {
 			{
 				stdio: "pipe",
 				encoding: "utf8",
-				env: { ...process.env, PGPASSWORD: process.env.PGPASSWORD ?? "" },
+				env: {
+					...process.env,
+					PGPASSWORD: process.env.PGPASSWORD ?? "",
+					PGCLIENTENCODING: process.platform === "win32" ? "WIN1251" : "UTF8",
+				},
 			},
 		).trim();
 	} catch (error) {
@@ -200,6 +208,148 @@ export function proveLeadDeliveryRelationalMigration(testUri) {
 	if (psql(testUri, "SELECT count(*) FROM lead_deliveries") !== "0") {
 		throw new Error(
 			"Lead delete did not cascade on the previous non-empty fixture.",
+		);
+	}
+}
+
+export function proveGeoRelationBackfillMigration(testUri) {
+	psql(
+		testUri,
+		`
+		CREATE TABLE cities (
+			id serial PRIMARY KEY,
+			name varchar NOT NULL,
+			slug varchar NOT NULL UNIQUE
+		);
+		CREATE TABLE districts (
+			id serial PRIMARY KEY,
+			name varchar NOT NULL,
+			slug varchar NOT NULL,
+			city_id integer NOT NULL REFERENCES cities(id)
+		);
+		CREATE TABLE properties (
+			id serial PRIMARY KEY,
+			status varchar NOT NULL,
+			published_at timestamp(3) with time zone,
+			content_purged_at timestamp(3) with time zone,
+			city_raw varchar,
+			district_raw varchar,
+			city_id integer REFERENCES cities(id),
+			district_id integer REFERENCES districts(id),
+			needs_review boolean DEFAULT false,
+			updated_at timestamp(3) with time zone NOT NULL
+		);
+		INSERT INTO cities (id, name, slug) VALUES
+			(1, 'Донецк', 'donetsk'),
+			(2, 'Макеевка', 'makeyevka');
+		INSERT INTO districts (id, name, slug, city_id) VALUES
+			(10, 'Будённовский', 'budennovskiy', 1),
+			(11, 'Текстильщик', 'tekstilshchik', 1),
+			(12, 'Калининский', 'kalininskiy', 1),
+			(13, 'Ленинский', 'leninskiy', 1),
+			(14, 'Пролетарский', 'proletarskiy', 1),
+			(15, 'Ворошиловский', 'voroshilovskiy', 1),
+			(20, 'Будённовский', 'budennovskiy', 2);
+		INSERT INTO properties (
+			id, status, published_at, city_raw, district_raw,
+			city_id, district_id, needs_review, updated_at
+		) VALUES
+			(100, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(101, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'неизвестный район', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(102, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'мкр. Текстильщик, Донецк', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(103, 'active', '2026-09-01T00:00:00Z', 'Неизвестный город', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(104, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', 2, 20, false, '2026-09-01T00:00:00Z'),
+			(105, 'archived', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(106, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, NULL, '2026-09-01T00:00:00Z'),
+			(200, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, true, '2026-09-01T00:00:00Z'),
+			(201, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(202, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(203, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Будённовский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(204, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Калининский', NULL, NULL, true, '2026-09-01T00:00:00Z'),
+			(205, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Калининский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(206, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Калининский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(207, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Ленинский', NULL, NULL, true, '2026-09-01T00:00:00Z'),
+			(208, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Ленинский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(209, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Пролетарский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(210, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Пролетарский', NULL, NULL, false, '2026-09-01T00:00:00Z'),
+			(211, 'active', '2026-09-01T00:00:00Z', 'Донецк', 'Ворошиловский', NULL, NULL, true, '2026-09-01T00:00:00Z');
+	`,
+	);
+
+	const before = psql(
+		testUri,
+		"SELECT string_agg(id || ':' || coalesce(city_id::text, '-') || ':' || coalesce(district_id::text, '-') || ':' || needs_review::text || ':' || updated_at::text, ',' ORDER BY id) FROM properties",
+	);
+	psql(testUri, geoRelationBackfillUpSql);
+	const first = psql(
+		testUri,
+		"SELECT string_agg(id || ':' || coalesce(city_id::text, '-') || ':' || coalesce(district_id::text, '-') || ':' || needs_review::text, ',' ORDER BY id) FROM properties WHERE id < 200",
+	);
+	if (
+		first !==
+		"100:1:10:false,101:1:-:true,102:1:11:false,103:-:-:true,104:2:20:false,105:-:-:false,106:1:10:false"
+	) {
+		throw new Error(
+			`Geo relation backfill produced an unsafe mapping: ${first}`,
+		);
+	}
+	if (
+		psql(
+			testUri,
+			'SELECT count(*) FROM "_dc11_geo_relation_backfill_audit"',
+		) !== "17"
+	) {
+		throw new Error(
+			"Geo relation backfill did not capture the exact changed set.",
+		);
+	}
+	const productionShape = psql(
+		testUri,
+		`SELECT
+			count(*) || '|' ||
+			count(*) FILTER (WHERE city_id = 1) || '|' ||
+			count(*) FILTER (WHERE district_id IS NOT NULL) || '|' ||
+			count(*) FILTER (WHERE needs_review)
+		 FROM properties
+		 WHERE id BETWEEN 200 AND 211`,
+	);
+	if (productionShape !== "12|12|12|4") {
+		throw new Error(
+			`Production-shaped geo fixture did not reconcile: ${productionShape}`,
+		);
+	}
+
+	const firstUpdatedAt = psql(
+		testUri,
+		"SELECT string_agg(id || ':' || updated_at::text, ',' ORDER BY id) FROM properties",
+	);
+	psql(testUri, geoRelationBackfillUpSql);
+	const secondUpdatedAt = psql(
+		testUri,
+		"SELECT string_agg(id || ':' || updated_at::text, ',' ORDER BY id) FROM properties",
+	);
+	if (secondUpdatedAt !== firstUpdatedAt) {
+		throw new Error("Second geo relation backfill run was not idempotent.");
+	}
+
+	psql(testUri, geoRelationBackfillDownSql);
+	const afterRollback = psql(
+		testUri,
+		"SELECT string_agg(id || ':' || coalesce(city_id::text, '-') || ':' || coalesce(district_id::text, '-') || ':' || needs_review::text || ':' || updated_at::text, ',' ORDER BY id) FROM properties",
+	);
+	if (afterRollback !== before) {
+		throw new Error(
+			"Geo relation backfill rollback did not restore the fixture.",
+		);
+	}
+	if (
+		psql(
+			testUri,
+			"SELECT to_regclass('_dc11_geo_relation_backfill_audit') IS NULL",
+		) !== "t"
+	) {
+		throw new Error(
+			"Geo relation backfill rollback left its audit table behind.",
 		);
 	}
 }

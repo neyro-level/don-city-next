@@ -104,6 +104,7 @@
 		"verify:site-profile": "node --experimental-strip-types scripts/verify-site-profile.ts",
 		"verify:url-grammar": "node --experimental-strip-types scripts/verify-url-grammar.ts",
 		"verify:geo-model": "pnpm verify:route-resolver && node --experimental-strip-types scripts/verify-geo-model.ts && pnpm verify:nearby-geo && pnpm verify:public-geo-gateway",
+		"verify:geo-relation-backfill": "node --experimental-strip-types scripts/verify-geo-relation-backfill.mjs",
 		"verify:public-geo-gateway": "node scripts/verify-public-geo-gateway.mjs",
 		"verify:nearby-geo": "node --experimental-strip-types scripts/verify-nearby-geo.ts",
 		"verify:navigation": "node --experimental-strip-types scripts/verify-navigation.ts",
