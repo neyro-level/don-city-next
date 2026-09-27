@@ -1,4 +1,5 @@
 import type { MarketingPageDTO } from "@ams/realtbase-contracts";
+import { Button } from "../../components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -6,7 +7,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
 import { Container, Section } from "../../components/ui/layout";
 import { LeadFormView } from "../starter/LeadFormView";
 
@@ -57,7 +57,7 @@ export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
 					{page.sections.map((section) => (
 						<Card key={section.title} elevation="raised">
 							<CardHeader>
-								<CardTitle>{section.title}</CardTitle>
+								<CardTitle as="h2">{section.title}</CardTitle>
 								<CardDescription>{section.text}</CardDescription>
 							</CardHeader>
 							{section.items?.length ? (

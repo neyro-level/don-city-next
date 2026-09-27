@@ -1,5 +1,5 @@
-import type { HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import type { HTMLAttributes } from "react";
 import { cn } from "../../lib/utils";
 
 const cardVariants = cva(
@@ -43,11 +43,12 @@ export function CardHeader({
 }
 
 export function CardTitle({
+	as: Heading = "h3",
 	className,
 	...props
-}: HTMLAttributes<HTMLHeadingElement>) {
+}: HTMLAttributes<HTMLHeadingElement> & { as?: "h2" | "h3" }) {
 	return (
-		<h3
+		<Heading
 			data-slot="card-title"
 			className={cn("text-lead font-semibold leading-tight-copy", className)}
 			{...props}
