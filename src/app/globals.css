@@ -555,6 +555,7 @@
   --text-caption-tight: var(--site-type-caption-tight);
   --text-caption-dense: var(--site-type-caption-dense);
   --text-caption-relaxed: var(--site-type-caption-relaxed);
+  --text-label-relaxed: var(--site-type-label-relaxed);
   --text-support-dense: var(--site-type-support-dense);
   --text-body-fluid: var(--site-type-body-fluid);
   --text-card-compact: var(--site-type-card-compact);
@@ -573,6 +574,9 @@
   --text-card-heading-fluid: var(--site-type-card-heading-fluid);
   --text-calculator-result: var(--site-type-calculator-result);
   --text-property-title: var(--site-type-property-title);
+  --text-dialog-title: var(--site-type-dialog-title);
+  --text-dialog-subtitle: var(--site-type-dialog-subtitle);
+  --text-footer-title: var(--site-type-footer-title);
   --leading-page-title: var(--site-type-display-leading);
   --leading-section-title: var(--site-type-section-leading);
   --leading-editorial-title: var(--site-type-editorial-title-leading);

@@ -1,5 +1,5 @@
-import type { ComponentProps, ElementType, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import type { ComponentProps, ElementType, ReactNode } from "react";
 import { cn } from "../../lib/utils";
 
 type PolymorphicProps<T extends ElementType> = {
@@ -127,7 +127,7 @@ export function SectionHeader({
 				) : null}
 				<h2
 					id={titleId}
-					className="text-[length:var(--site-type-section)] font-semibold leading-[var(--site-type-section-leading)] text-content-strong"
+					className="text-section-title font-semibold leading-section-title text-content-strong"
 				>
 					{title}
 				</h2>

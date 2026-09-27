@@ -40,9 +40,9 @@
   padding: 0;
   color: var(--text-dark);
   font: inherit;
-  font-size: var(--site-type-body);
+  font-size: var(--text-body);
   font-weight: var(--site-font-weight-strong);
-  line-height: var(--site-leading-heading);
+  line-height: var(--leading-heading);
   text-decoration: none;
   transition: color var(--motion-duration-short) var(--motion-ease-standard);
   cursor: pointer;
@@ -57,7 +57,7 @@
 }
 
 .site-footer__phone--revealed {
-  font-size: var(--site-type-body);
+  font-size: var(--text-body);
   white-space: nowrap;
 }
 
@@ -116,10 +116,10 @@
 .site-footer__column-title {
   margin: 0 0 14px;
   color: var(--shell-effect-highlight);
-  font-size: var(--site-type-body);
+  font-size: var(--text-body);
   font-weight: var(--site-font-weight-bold);
-  letter-spacing: var(--site-tracking-normal);
-  line-height: var(--site-leading-tight-copy);
+  letter-spacing: var(--tracking-body);
+  line-height: var(--leading-tight-copy);
 }
 
 .site-footer__nav {
@@ -130,9 +130,9 @@
 .site-footer__link {
   display: block;
   color: var(--text-dark-secondary);
-  font-size: var(--site-type-label-relaxed);
-  letter-spacing: var(--site-tracking-copy);
-  line-height: var(--site-leading-content-compact);
+  font-size: var(--text-label-relaxed);
+  letter-spacing: var(--tracking-copy);
+  line-height: var(--leading-content-compact);
   text-decoration: none;
   transition: color var(--motion-duration-short) var(--motion-ease-standard);
 }
@@ -148,9 +148,9 @@
   border-top: 1px solid var(--dark-border);
   padding-top: 22px;
   color: var(--shell-effect-outline);
-  font-size: var(--site-type-label);
-  letter-spacing: var(--site-tracking-copy);
-  line-height: var(--site-leading-body-relaxed);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-copy);
+  line-height: var(--leading-body-relaxed);
 }
 
 .site-footer__bottom p {
@@ -249,12 +249,12 @@
 
   .request-modal__title {
     max-width: 320px;
-    font-size: var(--site-type-footer-title);
+    font-size: var(--text-footer-title);
   }
 
   .request-modal__title--compact {
     max-width: 290px;
-    font-size: var(--site-type-heading-compact);
+    font-size: var(--text-heading-compact);
   }
 
   .request-modal__form {

@@ -5,17 +5,17 @@ import {
 	HomeProcessSection,
 	HomeServicesSection,
 	HomeTrustSection,
-} from "@ams/realtbase-ui/starter/home-page";
+} from "@ams/realtbase-ui/public/home-page";
 import {
 	getCachedPublicHomePage,
 	getCachedPublicNap,
 } from "@/core/data-access/public/cached-provider";
-import { toMetadata } from "@/project/page-metadata";
 import {
 	buildOrganizationJsonLd,
 	buildWebsiteJsonLd,
 	JsonLdScript,
 } from "@/core/seo/structured-data";
+import { toMetadata } from "@/project/page-metadata";
 
 export const revalidate = 3600;
 

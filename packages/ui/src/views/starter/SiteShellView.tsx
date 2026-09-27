@@ -1,5 +1,7 @@
+"use client";
+
 import type { SiteFooterDTO, SiteHeaderDTO } from "@ams/realtbase-contracts";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Container } from "../../components/ui/layout";
 
@@ -18,13 +20,33 @@ function navLinkClass(active: boolean, mobile = false) {
 	} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary`;
 }
 
-export function StarterSiteHeader({
+export function PublicSiteHeaderView({
 	header,
 	activePath,
 }: {
 	header: SiteHeaderDTO;
 	activePath?: string;
 }) {
+	const [openHref, setOpenHref] = useState<string | null>(null);
+	const navigationRef = useRef<HTMLElement>(null);
+	const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
+
+	useEffect(() => {
+		function closeOutside(event: PointerEvent) {
+			if (!navigationRef.current?.contains(event.target as Node)) {
+				setOpenHref(null);
+			}
+		}
+
+		document.addEventListener("pointerdown", closeOutside);
+		return () => document.removeEventListener("pointerdown", closeOutside);
+	}, []);
+
+	function closeMenu(href: string, restoreFocus = false) {
+		setOpenHref(null);
+		if (restoreFocus) triggerRefs.current.get(href)?.focus();
+	}
+
 	return (
 		<header className="sticky top-0 z-40 border-b border-[var(--brand-copper-soft)] bg-[var(--surface-card)]/95 shadow-[var(--site-header-shadow-tertiary)] backdrop-blur-xl">
 			<Container className="flex min-h-17 items-center gap-5 py-3">
@@ -46,8 +68,15 @@ export function StarterSiteHeader({
 					</span>
 				</a>
 				<nav
+					ref={navigationRef}
 					className="ml-auto hidden items-center gap-1 lg:flex"
 					aria-label="Основная навигация"
+					onKeyDown={(event) => {
+						if (event.key === "Escape" && openHref) {
+							event.preventDefault();
+							closeMenu(openHref, true);
+						}
+					}}
 				>
 					{header.navigation.map((item) => {
 						const itemActive = isCurrentPath(item.href, activePath);
@@ -55,16 +84,37 @@ export function StarterSiteHeader({
 							isCurrentPath(child.href, activePath),
 						);
 						return item.children?.length ? (
-							<details className="group relative" key={item.href}>
-								<summary
-									className={`cursor-pointer list-none ${navLinkClass(
-										Boolean(itemActive || childActive),
-									)}`}
-									aria-label={`Раздел ${item.label}`}
+							<div className="relative" key={item.href}>
+								<button
+									ref={(node) => {
+										if (node) triggerRefs.current.set(item.href, node);
+										else triggerRefs.current.delete(item.href);
+									}}
+									type="button"
+									className={navLinkClass(Boolean(itemActive || childActive))}
+									aria-expanded={openHref === item.href}
+									aria-controls={`public-nav-${item.href.replaceAll("/", "-")}`}
+									onClick={() =>
+										setOpenHref((current) =>
+											current === item.href ? null : item.href,
+										)
+									}
 								>
 									{item.label} <span aria-hidden>▾</span>
-								</summary>
-								<div className="absolute left-0 top-full z-50 mt-2 grid min-w-64 gap-1 rounded-lg border border-border bg-surface-card p-2 shadow-lg">
+								</button>
+								<div
+									id={`public-nav-${item.href.replaceAll("/", "-")}`}
+									hidden={openHref !== item.href}
+									className="absolute left-0 top-full z-50 mt-2 grid min-w-64 gap-1 rounded-lg border border-border bg-surface-card p-2 shadow-lg"
+								>
+									<a
+										href={item.href}
+										className={navLinkClass(itemActive)}
+										aria-current={itemActive ? "page" : undefined}
+										onClick={() => closeMenu(item.href)}
+									>
+										Обзор раздела
+									</a>
 									{item.children.map((child) => {
 										const active = isCurrentPath(child.href, activePath);
 										return (
@@ -73,13 +123,14 @@ export function StarterSiteHeader({
 												href={child.href}
 												className={navLinkClass(active)}
 												aria-current={active ? "page" : undefined}
+												onClick={() => closeMenu(item.href)}
 											>
 												{child.label}
 											</a>
 										);
 									})}
 								</div>
-							</details>
+							</div>
 						) : (
 							<a
 								key={item.href}
@@ -106,13 +157,24 @@ export function StarterSiteHeader({
 					</Button>
 				) : null}
 			</Container>
-			<Container
-				className="flex gap-2 overflow-x-auto pb-3 lg:hidden"
-				aria-label="Мобильная навигация"
-			>
-				{header.navigation
-					.flatMap((item) => item.children ?? [item])
-					.map((item) => {
+			<nav aria-label="Мобильная навигация" className="lg:hidden">
+				<Container className="flex gap-2 overflow-x-auto pb-3">
+					{header.navigation
+						.flatMap((item) => item.children ?? [item])
+						.map((item) => {
+							const active = isCurrentPath(item.href, activePath);
+							return (
+								<a
+									key={item.href}
+									href={item.href}
+									className={navLinkClass(active, true)}
+									aria-current={active ? "page" : undefined}
+								>
+									{item.label}
+								</a>
+							);
+						})}
+					{header.geoSwitcher?.map((item) => {
 						const active = isCurrentPath(item.href, activePath);
 						return (
 							<a
@@ -125,25 +187,16 @@ export function StarterSiteHeader({
 							</a>
 						);
 					})}
-				{header.geoSwitcher?.map((item) => {
-					const active = isCurrentPath(item.href, activePath);
-					return (
-						<a
-							key={item.href}
-							href={item.href}
-							className={navLinkClass(active, true)}
-							aria-current={active ? "page" : undefined}
-						>
-							{item.label}
-						</a>
-					);
-				})}
-			</Container>
+				</Container>
+			</nav>
 		</header>
 	);
 }
 
-export function StarterSiteFooter({ footer }: { footer: SiteFooterDTO }) {
+/** @deprecated Use PublicSiteHeaderView. */
+export const StarterSiteHeader = PublicSiteHeaderView;
+
+export function PublicSiteFooterView({ footer }: { footer: SiteFooterDTO }) {
 	return (
 		<footer className="border-t border-[var(--brand-copper)] bg-surface-inverse py-12 text-content-inverse">
 			<Container>
@@ -219,6 +272,9 @@ export function StarterSiteFooter({ footer }: { footer: SiteFooterDTO }) {
 	);
 }
 
+/** @deprecated Use PublicSiteFooterView. */
+export const StarterSiteFooter = PublicSiteFooterView;
+
 export function SiteShellView({
 	header,
 	footer,
@@ -230,9 +286,9 @@ export function SiteShellView({
 }) {
 	return (
 		<div className="min-h-screen bg-surface-page text-content-strong">
-			<StarterSiteHeader header={header} />
+			<PublicSiteHeaderView header={header} />
 			<main>{children}</main>
-			<StarterSiteFooter footer={footer} />
+			<PublicSiteFooterView footer={footer} />
 		</div>
 	);
 }

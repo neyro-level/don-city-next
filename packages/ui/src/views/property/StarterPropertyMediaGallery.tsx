@@ -1,25 +1,25 @@
 "use client";
 
-import { StarterFeedImage } from "../../lib/starter-image";
+import { PublicFeedImage } from "../../lib/starter-image";
 import { MediaFallback } from "../starter/MediaFallback";
 import { MediaGallery } from "./MediaGallery";
 
-type StarterPropertyMediaGalleryProps = {
+type PublicPropertyMediaGalleryProps = {
 	images: ReadonlyArray<{ src: string; alt?: string | null }>;
 	title: string;
 };
 
-export function StarterPropertyMediaGallery({
+export function PublicPropertyMediaGallery({
 	images,
 	title,
-}: StarterPropertyMediaGalleryProps) {
+}: PublicPropertyMediaGalleryProps) {
 	return (
 		<MediaGallery
 			images={images.map((image) => ({
 				src: image.src,
 				alt: image.alt || title,
 			}))}
-			imageRenderer={StarterFeedImage}
+			imageRenderer={PublicFeedImage}
 			imageSizes="(min-width: 1024px) 62vw, 100vw"
 			priority
 			shouldOptimizeImage={(src) =>
@@ -29,3 +29,6 @@ export function StarterPropertyMediaGallery({
 		/>
 	);
 }
+
+/** @deprecated Use PublicPropertyMediaGallery. */
+export const StarterPropertyMediaGallery = PublicPropertyMediaGallery;
