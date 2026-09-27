@@ -396,6 +396,10 @@ export function toHomePageDTO(_page: PublicPageRecord | null): HomePageDTO {
 			sourcePage: projectUrls.home,
 			...leadConsentContext(),
 		},
+		primaryAction: {
+			label: "Смотреть объекты",
+			href: projectUrls.primaryCatalog,
+		},
 		featuredPropertyId: "",
 		serviceLinks: [
 			...buildHomeCatalogLinks().map((link) => ({

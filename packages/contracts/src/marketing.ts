@@ -25,6 +25,7 @@ export type MarketingPageDTO = {
 };
 
 export type HomePageDTO = MarketingPageDTO & {
+	primaryAction: MarketingPageActionDTO;
 	featuredPropertyId: string;
 	serviceLinks: readonly { label: string; href: string; description: string }[];
 };

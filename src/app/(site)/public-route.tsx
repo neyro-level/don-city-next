@@ -164,7 +164,12 @@ export async function ResolvedPublicRoutePage({
 	if (result.kind === "notFound") notFound();
 	if (result.kind === "redirect") permanentRedirect(result.destination);
 	if (result.kind === "gone") {
-		return <GonePropertyPageView slug={result.publicUrlId} />;
+		return (
+			<GonePropertyPageView
+				slug={result.publicUrlId}
+				catalogHref={projectUrls.primaryCatalog}
+			/>
+		);
 	}
 	if (result.property) {
 		const leadPage: MarketingPageDTO = {

@@ -1,7 +1,13 @@
 import { Button } from "../../components/ui/button";
 import { Container, Section } from "../../components/ui/layout";
 
-export function GonePropertyPageView({ slug }: { slug: string }) {
+export function GonePropertyPageView({
+	slug,
+	catalogHref,
+}: {
+	slug: string;
+	catalogHref: string;
+}) {
 	return (
 		<Section as="main" space="hero" className="flex min-h-[60vh] items-center">
 			<Container size="narrow" className="text-center">
@@ -17,7 +23,7 @@ export function GonePropertyPageView({ slug }: { slug: string }) {
 					выполняется.
 				</p>
 				<Button asChild className="mt-8 rounded-full">
-					<a href="/nedvizhimost">Смотреть актуальные объекты</a>
+					<a href={catalogHref}>Смотреть актуальные объекты</a>
 				</Button>
 			</Container>
 		</Section>
