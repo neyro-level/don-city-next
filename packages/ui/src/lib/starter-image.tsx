@@ -10,6 +10,7 @@ export function PublicFeedImage({
 	width,
 	height,
 	sizes,
+	srcSet,
 	priority,
 	fill,
 	loading,
@@ -34,6 +35,7 @@ export function PublicFeedImage({
 			width={fill ? undefined : (width ?? 1200)}
 			height={fill ? undefined : (height ?? 800)}
 			sizes={sizes}
+			srcSet={srcSet}
 			loading={priority ? "eager" : (loading ?? "lazy")}
 			fetchPriority={priority ? "high" : "auto"}
 			decoding="async"

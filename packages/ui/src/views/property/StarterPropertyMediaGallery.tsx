@@ -5,7 +5,11 @@ import { MediaFallback } from "../starter/MediaFallback";
 import { MediaGallery } from "./MediaGallery";
 
 type PublicPropertyMediaGalleryProps = {
-	images: ReadonlyArray<{ src: string; alt?: string | null }>;
+	images: ReadonlyArray<{
+		src: string;
+		alt?: string | null;
+		variants?: readonly { src: string; width: number }[];
+	}>;
 	title: string;
 };
 
@@ -18,6 +22,9 @@ export function PublicPropertyMediaGallery({
 			images={images.map((image) => ({
 				src: image.src,
 				alt: image.alt || title,
+				browserSrcSet: image.variants
+					?.map((variant) => `${variant.src} ${variant.width}w`)
+					.join(", "),
 			}))}
 			imageRenderer={PublicFeedImage}
 			imageSizes="(min-width: 1024px) 62vw, 100vw"

@@ -53,17 +53,17 @@ const homeSeo = {
 } as const;
 const logo = {
 	kind: "managed" as const,
-	src: "/brand/don-city-mark.png",
+	src: "/brand/don-city-mark-ui.webp",
 	alt: `Знак ${brandName}`,
-	width: 512,
-	height: 512,
+	width: 88,
+	height: 88,
 };
 const footerLogo = {
 	kind: "managed" as const,
-	src: "/brand/don-city-logo-approved.jpg",
+	src: "/brand/don-city-logo-footer.webp",
 	alt: `${brandName} — агентство недвижимости`,
-	width: 768,
-	height: 960,
+	width: 320,
+	height: 400,
 };
 
 function rub(priceMinor: number) {
@@ -119,14 +119,17 @@ export function toPropertyCardDTO(
 		city: property.locality || "Город не указан",
 		district: property.district ?? undefined,
 		geo: property.geo,
-		primaryMedia: property.images?.find((image) => image.url)?.url
-			? {
-					kind: "external",
-					src: property.images.find((image) => image.url)?.url ?? "",
-					alt:
-						property.images.find((image) => image.url)?.alt || property.title,
-				}
-			: null,
+		primaryMedia: (() => {
+			const image = property.images?.find((candidate) => candidate.url);
+			return image?.url
+				? {
+						kind: image.kind,
+						src: image.url,
+						alt: image.alt || property.title,
+						...(image.variants ? { variants: image.variants } : {}),
+					}
+				: null;
+		})(),
 		summary: compact([
 			property.rooms
 				? {
@@ -173,9 +176,10 @@ export function toPropertyDetailsDTO(
 			property.images
 				?.filter((image) => image.url)
 				.map((image) => ({
-					kind: "external" as const,
+					kind: image.kind,
 					src: image.url ?? "",
 					alt: image.alt || property.title,
+					...(image.variants ? { variants: image.variants } : {}),
 				})) ?? [],
 		characteristics: compact([
 			property.totalArea

@@ -1,12 +1,38 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getPublicPropertyByPublicUrlId } from "@/core/data-access/public/provider";
+import { getPublicPropertyEdgeState } from "@/core/data-access/public/provider";
 import { createPropertyGoneResponse } from "@/core/http/property-gone-response";
-import { resolveProjectPublicRoute } from "@/project/public-route-resolver";
+import { cacheControlForMediaPath } from "@/core/media/cache-policy";
 import { anonymousRawRestEdgeDecision } from "./core/security/anonymous-raw-rest.ts";
 
 const filePath = /\.[a-z0-9]+$/i;
 const propertyLeaf = /-[0-9]+$/;
+
+function publicUrlIdFromLeaf(leaf: string) {
+	return leaf.match(/-([0-9]+)$/)?.[1] ?? null;
+}
+
+async function resolvePropertyEdgeRequest(
+	request: NextRequest,
+	segments: readonly string[],
+) {
+	const publicUrlId = publicUrlIdFromLeaf(segments[1] ?? "");
+	if (!publicUrlId) return NextResponse.next();
+	const state = await getPublicPropertyEdgeState(publicUrlId);
+	if (state?.lifecycle.kind === "gone") {
+		return createPropertyGoneResponse(publicUrlId);
+	}
+	if (
+		state?.canonicalPath &&
+		state.canonicalPath !== request.nextUrl.pathname
+	) {
+		return NextResponse.redirect(
+			new URL(state.canonicalPath, request.url),
+			301,
+		);
+	}
+	return NextResponse.next();
+}
 
 async function resolvePublicRequest(request: NextRequest) {
 	if (request.method !== "GET" && request.method !== "HEAD") {
@@ -16,33 +42,15 @@ async function resolvePublicRequest(request: NextRequest) {
 	if (pathname === "/" || pathname.endsWith("/") || filePath.test(pathname)) {
 		const segments = pathname.split("/").filter(Boolean);
 		if (segments.length === 2 && propertyLeaf.test(segments[1] ?? "")) {
-			const result = await resolveProjectPublicRoute(segments, {
-				loadProperty: getPublicPropertyByPublicUrlId,
-			});
-			if (result.kind === "gone") {
-				return createPropertyGoneResponse(result.publicUrlId);
-			}
-			if (result.kind === "redirect" && result.statusCode === 301) {
-				return NextResponse.redirect(
-					new URL(result.destination, request.url),
-					301,
-				);
-			}
+			return resolvePropertyEdgeRequest(request, segments);
 		}
 		return NextResponse.next();
 	}
 
 	const segments = pathname.split("/").filter(Boolean);
 	if (segments.length === 2 && propertyLeaf.test(segments[1] ?? "")) {
-		const result = await resolveProjectPublicRoute(segments, {
-			loadProperty: getPublicPropertyByPublicUrlId,
-		});
-		if (result.kind === "redirect" && result.statusCode === 301) {
-			return NextResponse.redirect(
-				new URL(result.destination, request.url),
-				301,
-			);
-		}
+		const edgeResponse = await resolvePropertyEdgeRequest(request, segments);
+		if (edgeResponse.status !== 200) return edgeResponse;
 	}
 	const destination = new URL(request.url);
 	destination.pathname = `${pathname}/`;
@@ -58,7 +66,10 @@ export function proxy(request: NextRequest) {
 		return NextResponse.json({ error: "notFound" }, { status: denial.status });
 	}
 	if (request.nextUrl.pathname.startsWith("/api/")) {
-		return NextResponse.next();
+		const response = NextResponse.next();
+		const cacheControl = cacheControlForMediaPath(request.nextUrl.pathname);
+		if (cacheControl) response.headers.set("Cache-Control", cacheControl);
+		return response;
 	}
 	return resolvePublicRequest(request);
 }

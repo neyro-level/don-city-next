@@ -127,6 +127,8 @@ assert.match(goneHtml, /<main>/);
 assert.match(goneHtml, /<h1>Объект снят с публикации<\/h1>/);
 
 const proxySource = readFileSync("src/proxy.ts", "utf8");
-assert.match(proxySource, /createPropertyGoneResponse\(result\.publicUrlId\)/);
+assert.match(proxySource, /createPropertyGoneResponse\(publicUrlId\)/);
+assert.match(proxySource, /getPublicPropertyEdgeState/);
+assert.doesNotMatch(proxySource, /getPublicPropertyByPublicUrlId/);
 
 console.log("EPIC-29 property lifecycle route matrix: PASS");
