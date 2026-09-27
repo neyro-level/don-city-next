@@ -1,7 +1,7 @@
 # Product Structure
 
 Status: Active
-Version: 1.1
+Version: 1.2
 Updated: 2026-09-27
 
 ## 1. URL Model
@@ -56,11 +56,11 @@ Updated: 2026-09-27
 
 ## 6. SEO and Indexability
 
-Page-level contracts описывают будущую индексируемость. Текущий release-level override сильнее их: весь production остаётся `noindex`, а `robots.txt` запрещает обход. Снятие override — отдельное решение после NAP, monitoring, alert/delivery, backup и live-crawl evidence.
+Production публично индексируется. Page-level registry/content gates определяют, какие canonical URL доступны поиску; read-only HTTP evidence от 2026-09-27 подтверждает индексируемую homepage, crawl-allowed `robots.txt` и sitemap. Это наблюдение не подменяет exact deployed identity и release evidence.
 
 Первые четыре месяца после открытия индексации индексируются только вторичные квартиры, дома, земельные участки, коммерческая недвижимость и утверждённые страницы юридического отдела. `novostroyki`/ЖК остаются disabled/noindex, отсутствуют в sitemap и индексируемой навигации; `/novostroyki/*` и `/komplex/*` только резервируются до отдельного review.
 
-Pagination page 2+ использует self-canonical и `noindex,follow`. Search/query combinations вне approved registry не индексируются. Sitemap и IndexNow не должны обходить global release override.
+Pagination page 2+ использует self-canonical и `noindex,follow`. Search/query combinations вне approved registry не индексируются. Sitemap и IndexNow публикуют только разрешённые registry/content-gate URL.
 
 ## 7. Canonical NAP in Runtime
 
@@ -78,4 +78,4 @@ Pagination page 2+ использует self-canonical и `noindex,follow`. Sear
 - Payload: объекты, география, listing content, pages, media, redirects и site settings.
 - Project config/seeds: URL grammar, page registry, allowed facets и platform profile.
 - Public Gateway: publication/filter/select contract и DTO.
-- Операционные документы: фактический release/noindex/backup/monitoring state.
+- Операционные документы: фактические release identity, indexing, backup, jobs и availability state.

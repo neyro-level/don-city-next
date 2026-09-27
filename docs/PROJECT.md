@@ -1,6 +1,6 @@
 # DON CITY — Core 5.5 Project Contract
 
-Status: Active — production live, fail-closed global noindex
+Status: Active — production live and publicly crawlable
 
 Updated: 2026-09-27
 
@@ -28,12 +28,11 @@ separate architecture decision and runtime proof.
 
 ## 2. Runtime topology
 
-- Production and isolated staging use the same immutable image contract but
-  separate environment, database and S3 prefixes.
 - Production: one Timeweb VPS, managed PostgreSQL 18 over private VPC, private
   Timeweb S3, host Nginx/TLS, application loopback `3000`.
-- Staging: loopback `3100`, separate database/storage identity,
-  `JOBS_AUTORUN=false`, external noindex.
+- The project has exactly one persistent production database. Non-production
+  DB proof is disposable, isolated from production data/secrets/storage and
+  removed after the bounded check; no persistent staging/shadow/mirror DB exists.
 - Exactly one production runtime owns Payload job autorun. Handover is
   stop-old-before-enable-new.
 - Secret values and full connection URLs belong to Secret Master scope
@@ -140,8 +139,8 @@ lead operations are activated.
 
 - Exact URL grammar, canonical, metadata, pagination and launch indexability are
   owned by `02_PRODUCT_STRUCTURE.md` and the project registries.
-- Production is globally `noindex`; this release override is stronger than
-  page-level future policy.
+- Production is publicly indexed; page-level registry/content gates remain the
+  authority for canonical reachability and indexability.
 - Pagination page 2+ is self-canonical and `noindex,follow`.
 - Search/query combinations outside the approved registry are not indexable.
 - Page titles, descriptions and one logical `h1` follow page contracts; the
@@ -159,10 +158,9 @@ Configured facts are not the same as release readiness. Current blockers are:
 - non-empty verified destination/image/outbound allowlists for any activated
   integration;
 - durable DB/media backup freshness and sampled media restore;
-- external uptime monitoring;
 - owner-verified canonical NAP;
-- isolated CP-08 integrated-candidate evidence; CP-03 and CP-04 are delivered;
-- separate owner authorization to remove global noindex.
+- exact deployed SHA/image evidence for the observed public-indexing state.
 
-Until these are closed, real feeds and lead delivery stay disabled and public
-indexing stays off.
+Until their own gates are closed, real feeds and lead delivery stay disabled.
+The final production stage is last; no separate monitoring, observation,
+reconciliation or follow-up task is created after it.

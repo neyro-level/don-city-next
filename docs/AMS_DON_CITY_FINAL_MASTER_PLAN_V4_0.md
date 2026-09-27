@@ -1,16 +1,18 @@
 # AMS MASTER PLAN — DON CITY — CITY-FIRST REPLAN
 
-Plan ID: AMS-DON-CITY-CORE55-POSTPROD
-Version: v9
+Plan ID: AMS-DON-CITY-LIVE-CONFORMANCE
+Version: v13
 Status: APPROVED
 
 **Replaces:** `AMS-DON-CITY-FINAL-V3-GEO-DISTRICT-SEO v6` / product contract `3.0.1`
 **Superseded source SHA-256:** `091d0e2a8592bac4504b5b6f925487fc2bc8c192f288eab7243c00aecbc8a396`
-**Product contract version:** `5.0.1`
+**Product contract version:** `5.4.2-approved`
 **Date:** `2026-09-27`
 **Architect phase:** `APPROVAL_HANDOFF`
 **Approved by:** `owner`
-**Approved at:** `2026-09-27T01:23:46+03:00`
+**Approved at:** `2026-09-27T21:09:12+03:00`
+**Prior approved snapshot:** `v12`, approved by owner at `2026-09-27T18:48:27+03:00`
+**Current revision input:** `OWNER-2026-09-27-V13-APPROVAL`
 **Target repository path:** `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`
 **Project:** агентство недвижимости «ДОН СИТИ»
 **Production domain:** `https://doncity-home.ru`
@@ -23,18 +25,144 @@ Status: APPROVED
 **Target conformance:** `AMS Realty Platform Core Standard 5.5` + `AMS UI Core 5.0`; both canonical sources are present, current implementation remains `PARTIAL / REVIEW`
 **Project profile:** `catalog`, mode `BUILD`
 **Delivery profile:** `CRITICAL`
-**Implementation delivery mode:** one Epic = one PR; `MERGE_AFTER_GATE` for CP-01…CP-08; CP-09 production/public indexing remains explicit-release-command-only; historical v7 delivery is not replayed
-**Task Manager draft:** `dc55`, active EPIC-67…76, `10/10` coverage, `45` autonomous CP-01…08 task cards; CP-09 production-only
+**Implementation delivery mode:** `MERGE_AFTER_GATE` is authorized for v13 implementation epics; production remains excluded and requires a separate explicit release command
+**Task Manager state:** approved v12 remains imported as 106 managed nodes in the one existing store; approved v13 preserves the exact Plan ID, prefix and managed ID set and authorizes one non-destructive `Upgrade` acknowledging all 84 changed task contracts; no re-import or second store is allowed
 **UI:** starter-based public UI foundation; Manrope; фирменный red accent → dark green через EPIC-16 token intake
 **Secrets:** Secret Master / Infisical
 **Infrastructure:** один существующий сервер DON CITY в Timeweb; точное размещение БД/storage/services определяется read-only discovery
-**First four months after indexing:** вторичка, продажа, квартиры, дома, участки, коммерческая недвижимость, районы/микрорайоны, продавец, юридический отдел
-**Deferred:** новостройки/ЖК remain disabled and non-indexable until a separate post-four-month owner decision; ипотека and any new module require separate scope
-**Production:** только по отдельной явной owner-команде
+**Current public product:** secondary sale; apartments, houses, land and commercial; Sell, Lawyer, About and Contacts
+**Deferred:** новостройки/ЖК and mortgage remain `PREPARED_OFF` and non-indexable for 4–6 months until a separate owner-approved activation
+**Production state:** owner declares `LIVE_PUBLIC`; read-only HTTP evidence on 2026-09-27 confirms homepage `200`, `robots=index, follow`, crawl-allowed `robots.txt` and sitemap publication; exact deployed SHA/image remains an evidence requirement
 
 ---
 
 # ARCHITECT REVISION HISTORY
+
+## 5.4.2 / v13 APPROVED — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-V13-APPROVAL`
+
+- Owner decision: `План утверждён`.
+- Approved exact snapshot: Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE`, version `v13`, final-audit result `PASS`, blockers `0`.
+- Authorized graph transition: canonical non-destructive `Upgrade` from v12 to v13 in the one existing Beads store, with the exact explicit set of all 84 changed task IDs. Managed IDs, topology, ownership and prior ledgers remain intact; re-import and a second store are forbidden.
+- Authorized delivery policy: `MERGE_AFTER_GATE` for implementation epics after their required review and exact-head gate.
+- Production is not authorized by plan approval. `DC11-PROD-FINAL` remains mandatory and last, has no autonomous task, and may run only after a separate explicit owner release command. No post-production monitoring stage may be created.
+
+## 5.4.1 / v13 FINAL AUDIT — 2026-09-27
+
+Revision input ID: `ARCHITECT-2026-09-27-V13-FINAL-AUDIT`
+
+- Logic / completeness: `PASS`. The owner outcomes and 22 epics are unchanged; the repair changes execution semantics only. Production remains mandatory and last, has no autonomous task, and has no dependent work after it.
+- Architecture / data / security: `PASS`. Payload-only ownership, Public Gateway/select/DTO, one persistent production database, disposable isolated proof, PII/secret boundaries and pre-release safeguards are unchanged. PREFLIGHT/VERIFY artifacts explicitly prohibit secret/PII values and production mutation.
+- Dependencies / autonomy: `PASS`. Canonical draft validation reports coverage `22/22`, tasks `84`, cycles `0`; every non-production epic has exactly `PREFLIGHT → IMPLEMENT → VERIFY → DELIVERY`. Three W0 roots remain independent.
+- Executability / evidence: `PASS`. All 21 PREFLIGHT and 21 VERIFY cards now allow the edit/test/commit/push actions required by `EXECUTION_LEDGER_V1`; each requires a meaningful non-empty durable diff appropriate to its stage. PREFLIGHT no longer claims final epic completion.
+- Upgrade compatibility: `PASS`. v12 and v13 have identical 106 managed IDs; stable type, role, work kind, repository, parent, source anchor and planned dependencies show drift `0`. Exactly 84 task contracts change, so approval handoff must acknowledge all 84 task IDs in canonical `Upgrade`; no re-import or graph rebuild is allowed.
+- Helper proof: global Task Manager helper `ec1db7728cda8656c88af96ffea191bae162e3d5` passed isolated cross-prefix SelfTest, repository and quick validators, SourceCraft `skill-risky` run `164`, PR `!85`, merge and exact GitHub mirror.
+- Result: exact v13 is `READY_FOR_OWNER_APPROVAL`. Blockers `0`; unresolved major findings `0`; before-approval owner decisions `0`; Night Run Readiness `READY_WITH_LIMITS`. `Upgrade`, blocker closure and Developer resume remain forbidden until a new exact `План утверждён` / `План утвержден` for v13. Production remains separately forbidden.
+
+## 5.4.0 / v13 REVIEW — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-V13-HELPER-AND-STAGE-CONTRACT`
+
+- Owner instruction: `Исправляй helper и готовь v13`.
+- Runtime evidence: v12 imported cleanly, but `TASK-100-PREFLIGHT` could not be completed honestly because every stage inherited the final epic outcome while `PREFLIGHT` allowed only `read/plan`; `CompleteImplementation` simultaneously requires a non-empty pushed Git diff and PASS evidence for every acceptance row.
+- Helper evidence: the historical store prefix is `dcn`, while the approved collision-safe graph prefix is `dc11`. The original `BlockImplementation` could not create a child record across that boundary. The global helper was fixed, passed an isolated cross-prefix SelfTest and `SKILL RISKY` run `164`, merged through SourceCraft PR `!85`, and was mirrored exactly to GitHub at `ec1db7728cda8656c88af96ffea191bae162e3d5`.
+- v13 repair: preserve Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE`, prefix `dc11`, all 22 epic IDs and all 84 task IDs. Give `PREFLIGHT`, `IMPLEMENT`, `VERIFY` and `DELIVERY` distinct goals, acceptance and allowed actions that match their actual evidence/ledger requirements.
+- Upgrade policy: v13 must use canonical `Upgrade` from v12 with the explicit changed-task set; it must not create another store, re-import a second graph, delete v12/v9 history or rewrite prior ledgers.
+- Production remains mandatory and last, has no autonomous task, and is not authorized by this revision work.
+
+## 5.3.2 / v12 APPROVED — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-V12-APPROVAL`
+
+- Owner decision: `План утверждён`.
+- Approved exact snapshot: Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE`, version `v12`, final-audit result `PASS`, blockers `0`.
+- Authorized delivery policy: `MERGE_AFTER_GATE` for implementation epics after their required review and exact-head gate.
+- Handoff contract: generate the canonical schema-v2 inventory from this exact source, attach the one existing Task Manager store without copying it, then run `Validate → Init → Import → Reconcile` before Developer execution.
+- Production is not authorized by plan approval. `DC11-PROD-FINAL` remains the mandatory last stage, has no autonomous task and may run only after a separate explicit owner release command. No post-production monitoring stage may be created.
+
+## 5.3.1 / v12 FINAL AUDIT — 2026-09-27
+
+Revision input ID: `ARCHITECT-2026-09-27-V12-FINAL-AUDIT`
+
+- Trigger: owner approved the collision-safe v12 Plan ID, so the Architect regenerated the inventory and repeated all four final passes against the exact updated snapshot.
+- Logic / completeness: `PASS`. All owner outcomes map to active epics; production is mandatory and last; real feed, future modules and unapproved production actions remain non-goals.
+- Architecture / data / security: `PASS`. Payload-only ownership, Public Gateway/select/DTO, one persistent production DB, disposable isolated proof, PII/secret boundaries, migration recovery, one UI foundation and pre-release operational safeguards remain explicit.
+- Dependencies / autonomy: `PASS`. Coverage `22/22`, tasks `84`, missing dependencies `0`, cycles `0`; three independent W0 roots; later owner gates are bypassable; production has no autonomous task and no dependent work after it.
+- Executability / evidence: `PASS`. All implementation epics materialize preflight/implement/verify/delivery cards; delivery depends on sibling proof; repository identity, required checks, exact-head ledger, stop conditions and production isolation are present. Canonical `ValidateDraft` passed while the snapshot was `REVIEW`; the normative ready status remains intentionally non-importable until approval.
+- Task Manager identity proof: the existing store contains `0` managed nodes for `AMS-DON-CITY-LIVE-CONFORMANCE`, while the 55 closed v9 nodes remain under their historical identity. The new graph can be imported without overwrite after approval.
+- Accepted operational limit: the existing single stealth `.beads` store currently lives in another registered checkout. Before import, the handoff must attach that same store to the exact approved checkout or otherwise make the exact approved source and the existing single store co-resident; creating a second store is forbidden and any ambiguity stops the handoff.
+- Result: exact v12 is `READY_FOR_OWNER_APPROVAL`. Blockers `0`; unresolved major findings `0`; before-approval owner decisions `0`; Night Run Readiness `READY_WITH_LIMITS`. `Validate`, Task Manager mutation/import/reconcile, Developer goal, merge and production remain forbidden until the owner sends exactly `План утверждён` or `План утвержден` for this snapshot.
+
+## 5.3.0 / v12 REVIEW — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-V12-PLAN-ID`
+
+- Owner decision: `Утверждаю новый Plan ID AMS-DON-CITY-LIVE-CONFORMANCE`.
+- Accepted: v12 uses collision-safe Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` and retains Beads prefix `dc11`.
+- Preserved: the v9 graph, its 55 closed managed nodes and all historical ledgers remain unchanged in the one existing stealth Task Manager store. No second `.beads` store and no destructive graph replacement are allowed.
+- Resolved: `V11-B02` / `OD11-11`; canonical import can identify v12 independently from immutable v9 while Task Manager selection remains scoped by exact Plan ID.
+- Result: `v12 REVIEW`; inventory regeneration and the repeated four-pass final audit are required before `READY_FOR_OWNER_APPROVAL`.
+
+## 5.2.1 / v11 FINAL AUDIT — 2026-09-27
+
+Revision input ID: `ARCHITECT-2026-09-27-V11-FINAL-AUDIT`
+
+- Trigger: owner explicitly said `Переходим к финальной проверке`; the four-pass final gate was run against exact v11 after canonical Secret Master and SourceCraft access were restored.
+- Logic / completeness: `PASS`. Twenty-two active epics cover document convergence, operational readiness, production inventory, SEO/catalog/geo/legal/UI remediation, one exact-head documentation audit and one mandatory final production stage. Future modules, real feed and unapproved production actions remain outside scope.
+- Architecture / data / security: `PASS`. Payload-only ownership, Public Gateway/select/DTO, one persistent production database, disposable isolated proof, PII/secret boundaries, migration recovery, one UI foundation and pre-release backup/jobs/availability readiness are explicit. Existing active-document drift is owned by `DC10-DOC-00` and is not presented as completed implementation.
+- Dependencies / autonomy: the v11 draft graph itself `PASS`es with `22/22` epic coverage, `84` task cards, zero missing dependencies and zero cycles. Three independent W0 roots remain available; later locality/legal gates are bypassable; `DC11-PROD-FINAL` has no autonomous task and no dependent work after it.
+- Executability / evidence: task-card structure, repository ownership, required checks, delivery fan-in, exact-head ledger and production isolation pass. Canonical `ValidateDraft` passes with Beads `1.2.2`.
+- Blocking finding: the one existing stealth Task Manager contains `55` closed v9 managed nodes under the same Plan ID `AMS-DON-CITY-CORE55-POSTPROD`. The canonical helper intentionally rejects importing the changed v11 ID set over that graph. Creating a second `.beads` store would violate the single-store invariant, while destructive history replacement is not authorized.
+- Architect recommendation: preserve the v9 graph and its ledgers as immutable history, keep the existing single Task Manager store, and assign v11 a new collision-safe Plan ID (recommended: `AMS-DON-CITY-LIVE-CONFORMANCE`) while retaining prefix `dc11`. Then regenerate inventory and repeat the exact final audit.
+- Minor finding resolved during audit: §39 and header wording now identify the active snapshot as v11 rather than v10.
+- Result: `v11 REVIEW`, `Night Run Readiness: NOT_READY`. Blockers `1`; unresolved major findings `0`; before-approval owner decisions `1`. No approval, import, reconciliation mutation or Developer handoff is allowed until `OD11-11` is decided and the final audit is repeated.
+
+## 5.2.0 / v11 REVIEW — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-SIMPLE-FINAL-PRODUCTION-SECRET-MASTER`
+
+- Source: owner instruction to simplify the program, make production the mandatory final stage, remove separate post-production monitoring work, prohibit secondary persistent databases and require all SourceCraft/password access through Secret Master.
+- Accepted: implementation and documentation convergence complete first; one exact-head final documentation audit follows; one mandatory production release is the last plan stage. The release itself includes rollout, bounded live smoke/crawl, exact deployed identity, rollback proof and factual document reconciliation. These are release acceptance, not a later monitoring program.
+- Accepted with safety clarification: no new monitoring task or observation phase is created after production. Required backup/restore, jobs-owner, health and external availability readiness are established before release. Existing minimum production safeguards are not silently disabled during implementation; changing/removing an already required safeguard would require an explicit risk decision and cannot be hidden under simplification.
+- Accepted database contract: exactly one persistent production Timeweb Managed PostgreSQL is canonical. No second persistent cloud, staging, shadow, mirror or parallel application database may be created. Schema/data proof uses disposable local native PostgreSQL/fixture or a temporary isolated restore contour that is not production, is not shared with production and is removed before final release. Staging must never connect to the production database for risky rehearsal.
+- Accepted access contract: SourceCraft is the canonical Git service. Git HTTPS and SourceCraft REST credentials come only from Secret Master `git-services/prod/`, process-locally, without Git Credential Manager, local MCP token, another Secret Master project or manual chat copy as fallback. Server, database, registry and application credentials use their separately confirmed project-specific Secret Master scopes; Git credentials are never reused for them.
+- Secret Master preflight: the dedicated `codex-cursor-ai` Universal Auth credential is active, the identity is an `Admin` member of the canonical `Git Services Project`, and local aliases `git-services` / `sourcecraft` resolve to that project. Names-only `git-services/prod/` access passed without value output; SourceCraft REST returned `200` for `integrator-p/don-city-next`, and Git PAT transport returned `main` without Git Credential Manager or another credential fallback. `V11-B01` is resolved.
+- Superseded v10 structure: separate R1.1/R1.2 production releases and separate post-production reconciliation nodes are removed. R1.1 and R1.2 remain implementation groupings inside one program and converge into one final candidate.
+- Result: `v11 REVIEW`; simplified draft inventory validation and the canonical Secret Master / SourceCraft preflight pass. The assembly blocker is cleared; final audit, approval, Task Manager mutation and Developer handoff still require their explicit gates.
+
+## 5.1.1 / v10 FINAL AUDIT — 2026-09-27
+
+Revision input ID: `ARCHITECT-2026-09-27-V10-FINAL-AUDIT`
+
+- Trigger: owner instructed the Architect to continue, check the plan and prepare execution; this closes the v10 assembly round and starts the final gate, but is not the exact approval phrase.
+- Logic/completeness: `PASS`. The owner packet is represented by 22 implementation/research/documentation epics and four isolated production-only epics. R1.1 and R1.2 have separate exact-head documentation audits and separate post-production reconciliation, preventing evidence reuse across different SHAs.
+- Architecture/data/security: `PASS`. Payload-only ownership, Public Gateway/select/DTO, controlled migrations, actual-locality rules, persistent gate state, PII/secret boundaries, one UI foundation and production isolation remain explicit.
+- Dependencies/autonomy: `PASS`. Draft inventory validation found `26/26` epic coverage, `88` task cards, zero missing anchors and zero dependency cycles. Three independent W0 roots exist; shared schema/registry/shell owners are serialized; a blocked locality/production task does not stop independent work.
+- Executability/evidence/delivery: `PASS`. Every autonomous epic has preflight, implementation, verification and one delivery card; delivery depends on all sibling work. Task contracts include outcome, context, acceptance, checks, allowed actions, rollback/stop boundaries and exact-head ledger. `MERGE_AFTER_GATE` applies only after owner approval; production nodes remain `PR_ONLY`/owner-gated with no autonomous implementation cards.
+- Promise/evidence: `PASS`. Domain, wired and live claims have distinct proof; HTTP/runtime/crawl evidence is required for live claims. Requested guards that do not yet exist are implementation work and are not reported as already run.
+- Findings: blockers `0`; unresolved major `0`; before-approval owner decisions `0`; accepted limits `2` — later agglomeration/legal owner gates and historical v6 Beads records. Neither limit blocks W0 or other safe work.
+- Night Run Readiness: `READY_WITH_LIMITS`. Later owner/production gates are intentionally isolated and bypassable while independent work remains.
+- Draft graph proof: the final `REVIEW` snapshot passed canonical `ValidateDraft` with coverage `26/26`, epics `26`, tasks `88` and coverage mode `DETECTED`. After the status-only transition and this audit record, the generated inventory carries the exact `READY_FOR_OWNER_APPROVAL` source SHA-256; independent exact-source validation confirms hash match, 26 declared/detected anchors, 88 tasks, zero missing dependencies and zero cycles.
+- Tooling limit: canonical `ValidateDraft` currently accepts only `DRAFT | REVIEW | APPROVED` and rejects the normative intermediate status `READY_FOR_OWNER_APPROVAL`. This does not authorize a workaround import. After approval, the exact `APPROVED` snapshot must pass canonical `Validate` before any Task Manager write.
+- Result: exact v10 is `READY_FOR_OWNER_APPROVAL`. `Validate`, Task Manager writes, import/reconcile, Developer goal, merge and production remain forbidden until the owner sends exactly `План утверждён` or `План утвержден` for this snapshot.
+
+## 5.1.0 / v10 REVIEW — 2026-09-27
+
+Revision input ID: `OWNER-2026-09-27-FINAL-CONFORMANCE-DOCUMENTATION`
+
+- Source: owner-provided file `AMS_DON_CITY_FINAL_CONFORMANCE_DOCUMENTATION_MASTER_PLAN_V4_0_2026-09-27.md`, SHA-256 `AA127C8AEAD4AE2D2C8E0CDC900D2A53FA2154C8397CB166E518737C7EF1C213`.
+- Interpretation: the file is a revision packet and technical assignment for this canonical Master Plan, not a second project Source of Truth. Stable Plan ID remains `AMS-DON-CITY-CORE55-POSTPROD`.
+- Accepted owner decisions: production indexing is public; current product is secondary sale with apartment, house, land and commercial categories; Sell/Lawyer/About/Contacts stay active; newbuild/ЖК and mortgage remain `PREPARED_OFF` for 4–6 months; one inventory gate uses `minActive=3`; previously indexed pages may use a persistent 30-day anti-flicker state; Donetsk keeps nine administrative districts and the Textilshchik SEO candidate; nearby settlements must retain their actual locality and may only join a Donetsk agglomeration through verified coordinates, radius and an owner whitelist.
+- Accepted documentation contract: one fact has one owner document; active documents distinguish `CURRENT`, `TARGET`, `IMPLEMENTATION STATUS` and `PROOF`; historical evidence is not rewritten; documentation convergence starts before code remediation, travels with each implementation PR, is checked against the exact release candidate, and is reconciled again after live proof.
+- Accepted delivery decomposition for assembly: `DOC-EPIC-00…03`, parallel operational hardening, R1.1 SEO/catalog hotfix, R1.2 geo/legal/UI conformance, and a separate owner-approved SEO research gate before agglomeration routes become public.
+- Accepted UI/security direction: one canonical shell, no speculative public exports, project-local approved primitives, semantic heading hierarchy, page-specific compositions, one owner for each production security header, and no CSP downgrade merely to match an audit template.
+- Live evidence: `https://doncity-home.ru/` returned `200` with `robots=index, follow`; `/robots.txt` returned `200`, allows crawl and points to the sitemap; `/sitemap.xml` returned `200`. The observed robots contract still contains `Host` and its `Clean-param` does not include `fbclid`, so R1.1 remediation remains factual rather than speculative.
+- Current conflicts: v9 and active docs still contain `LIVE_NOINDEX`, indexing-pending, commercial-prepared and legacy Content Gate statements. Those claims are superseded by this owner packet for v10 assembly but must be rewritten with `CURRENT/TARGET` evidence before final audit; no unreleased code or unknown exact deploy identity may be presented as current fact.
+- Later owner gates, not silently decided here: approved agglomeration/locality whitelist and public slug after SEO evidence; owner-approved legal copy and managed contract file; exact production rollout identity; any future newbuild/ЖК or mortgage activation.
+- Task Manager: read-only check found Beads `1.2.2`; v9 reconciliation is `CLEAN` with `10/10` coverage and 55 managed nodes. This v10 source drift blocks further v9 claiming and does not authorize `Init`, `Import`, `Upgrade` or Developer handoff. Two legacy v6 tasks remain `in_progress` in the shared historical store and are preserved pending a dedicated reconciliation decision.
+- Sections changed in this checkpoint: document metadata, revision history and active precedence/status contract. Full semantic integration into product, geo, SEO, documentation, UI, delivery and acceptance sections remains the current assembly round.
+- Result: `v10 REVIEW`; final four-pass audit, `READY_FOR_OWNER_APPROVAL`, Task Manager mutation and implementation are not authorized.
 
 ## 5.0.1 / v9 FINAL AUDIT — 2026-09-27
 
@@ -210,12 +338,13 @@ Revision input ID: `ARCHITECT-2026-09-23-FINAL-AUDIT-V5-TASK-GRAPH`
 Этот Master Plan — canonical execution plan и детальный contract registry. Он содержит полный SEO/URL/data/delivery baseline и не дублируется вторым master plan.
 
 Current execution precedence: delivered v7 sections remain historical contract
-evidence. For post-production Core 5.5 work, §33D plus the active project Source
-of Truth supersede older R1/R2, indexing and execution-order statements wherever
-they conflict. In particular, commercial real estate at
-`/donetsk/kommercheskaya/` is part of the first-four-month launch scope,
-EPIC-52 is superseded by CP-02A, and newbuild/ЖК remains disabled until a
-separate post-four-month owner-approved plan.
+evidence. During v10 assembly, revision input
+`OWNER-2026-09-27-FINAL-CONFORMANCE-DOCUMENTATION` and the v10 decisions recorded
+above supersede older R1/R2, indexing and execution-order statements wherever
+they conflict. The former §33D program remains historical v9 execution evidence;
+it is not claimable after source drift. Commercial real estate is active now,
+production indexing is public, and newbuild/ЖК plus mortgage remain
+`PREPARED_OFF` for 4–6 months until a separate owner-approved activation.
 
 Области Source of Truth разделены по AMS Product Development Standard 2.0:
 
@@ -2139,7 +2268,7 @@ wiring, jobs/retention/recovery races and missing Core 5.5 project operations
 documentation. CP-00 evidence is complete for assembly; implementation remains
 blocked until exact v8 approval/import.
 
-## EPIC-67 / CP-01 — RELEASE-LEVEL INDEXING SAFETY
+## HISTORICAL EPIC-67 / CP-01 — RELEASE-LEVEL INDEXING SAFETY
 
 Outcome: `productionIndexing=noindex` deterministically forces meta robots and
 `X-Robots-Tag: noindex, nofollow` for every response class without weakening
@@ -2154,7 +2283,7 @@ headers and HTML agree. Verification: targeted SEO contracts plus isolated HTTP
 smoke. Rollback: restore previous metadata/header policy. Gate: RISKY because a
 mistake can expose the whole live site to indexing.
 
-## EPIC-68 / CP-02A — FIRST-FOUR-MONTH INDEXABLE PRODUCT SCOPE
+## HISTORICAL EPIC-68 / CP-02A — FIRST-FOUR-MONTH INDEXABLE PRODUCT SCOPE
 
 Outcome: the public launch exposes and indexes only the owner-approved initial
 business scope: secondary apartments, houses, land plots, commercial real
@@ -2182,7 +2311,7 @@ or redirect is retained.
 Gate: RISKY if Site Profile/schema/grammar changes; otherwise STANDARD for
 registry/content-only work.
 
-## EPIC-69 / CP-02 — SEO SURFACE, SITEMAP AND LIFECYCLE
+## HISTORICAL EPIC-69 / CP-02 — SEO SURFACE, SITEMAP AND LIFECYCLE
 
 Outcome: robots, sitemap index/shards, Open Graph/Twitter, factual JSON-LD,
 title/description, headings, pagination/filter normalization and archived→gone
@@ -2200,7 +2329,7 @@ SEO handlers/registry projection while retaining the global noindex override;
 never fall back to a false empty sitemap or homepage redirect. Gate: STANDARD unless schema,
 gateway or critical runtime behavior changes, then RISKY.
 
-## EPIC-70 / CP-03 — JOBS, IMPORT AND LEAD SAFETY
+## HISTORICAL EPIC-70 / CP-03 — JOBS, IMPORT AND LEAD SAFETY
 
 Outcome: import and lead recovery are atomic, race-safe and evidence-backed;
 retention removes/anonymizes linked PII; runtime secrets fail closed.
@@ -2215,7 +2344,7 @@ isolated staging; migration/transaction and PII evidence is redacted; no raw SQL
 rewrite occurs before the CP-00 decision record. Rollback: task-specific
 migration/data recovery plus previous immutable application image. Gate: RISKY.
 
-## EPIC-71 / CP-04 — MEDIA AND REQUEST-PATH PERFORMANCE
+## HISTORICAL EPIC-71 / CP-04 — MEDIA AND REQUEST-PATH PERFORMANCE
 
 Outcome: object media uses one approved responsive/format strategy with stable
 cacheable URLs, existing media has an idempotent dry-run-first backfill, and
@@ -2230,7 +2359,7 @@ headers are safe for versioned URLs; before/after p95 is recorded; Lighthouse
 mobile evidence covers home, catalog and property with LCP ≤2.5s and CLS ≤0.1.
 Gate: RISKY for schema/media backfill; otherwise STANDARD for asset-only slice.
 
-## EPIC-72 / CP-05 — UI ROLE AND ACCESSIBILITY CONVERGENCE
+## HISTORICAL EPIC-72 / CP-05 — UI ROLE AND ACCESSIBILITY CONVERGENCE
 
 Outcome: the existing DON CITY Design System has one semantic typography/token
 language, project-owned component names and accessible navigation/lead forms,
@@ -2247,7 +2376,7 @@ Rollback: revert the affected token/component contract as one scoped change;
 preserve the current Project Design System and existing accessible primitives.
 Gate: STANDARD unless package public API or shared boundary changes, then RISKY.
 
-## EPIC-73 / CP-06 — TRANSPORT SECURITY DECISIONS
+## HISTORICAL EPIC-73 / CP-06 — TRANSPORT SECURITY DECISIONS
 
 Outcome: CSP and HSTS have explicit evidence-backed policies for the current
 Next/runtime/Nginx topology.
@@ -2262,7 +2391,7 @@ decision. Rollback: restore the previous application/Nginx header pair and
 verify one authoritative value; a spike-only conclusion has no runtime rollback.
 Gate: RISKY for any runtime/header change.
 
-## EPIC-74 / CP-07 — CORE 5.5 PROJECT AND READINESS DOCUMENTATION
+## HISTORICAL EPIC-74 / CP-07 — CORE 5.5 PROJECT AND READINESS DOCUMENTATION
 
 Outcome: `docs/PROJECT.md`, `docs/DESIGN.md`, Architecture, Operations, Backlog
 and Release Checklist describe one non-duplicated Core 5.5 contract and the
@@ -2279,7 +2408,7 @@ or unrelated pages. Rollback: git-revert the documentation/config slice;
 fail-closed readiness values remain unchanged unless their evidence is part of
 the same verified change. Gate: STANDARD, or RISKY if env/runtime validation changes.
 
-## EPIC-75 / CP-08 — ISOLATED STAGING PROOF AND PROGRAM CLOSURE
+## HISTORICAL EPIC-75 / CP-08 — ISOLATED STAGING PROOF AND PROGRAM CLOSURE
 
 Outcome: the exact candidate proves all accepted Core 5.5 outcomes on isolated
 staging while public staging remains externally noindex, and produces a release
@@ -2298,7 +2427,7 @@ Rollback/recovery: restore the prior isolated staging image/config/database
 snapshot, remove temporary public-mode test exposure and confirm edge noindex;
 production remains untouched.
 
-## EPIC-76 / CP-09 — PRODUCTION LAUNCH AND PUBLIC INDEXING
+## HISTORICAL EPIC-76 / CP-09 — PRODUCTION LAUNCH AND PUBLIC INDEXING
 
 Outcome: the complete DON CITY site runs in production from one immutable
 exact-main artifact, global noindex is removed, public robots/sitemap/metadata/
@@ -2599,5 +2728,402 @@ DON CITY V4
 
 Восьмой: Platform не знает Донецк или ДОН СИТИ; Project Profile и данные
 инъецируют географию, бренд, статусы и SEO ownership.
+
+# 39. V12 ACTIVE CONFORMANCE PROGRAM
+
+Этот раздел является единственным активным execution contract версии v12.
+Разделы §33D и §35–38 сохраняются как historical v9 evidence и не определяют
+новые claims, thresholds, production status или порядок выполнения там, где
+они конфликтуют с §39.
+
+## 39.1 MASTER PLAN MAP
+
+```text
+Primary goal:
+  привести публичный DON CITY к непротиворечивому LIVE_PUBLIC состоянию,
+  синхронизировав продукт, runtime, SEO, geo, legal, UI и документацию.
+
+Non-goals:
+  production rollout без отдельной release-команды;
+  включение real feed;
+  публичная активация новостроек/ЖК, ипотеки, аренды, журнала и иных future modules;
+  второй ORM/backend/auth/CMS/UI foundation;
+  подмена фактической географии объектам рядом с Донецком;
+  переписывание historical evidence.
+
+Major outcomes:
+  active docs и runtime различают CURRENT/TARGET/PROOF;
+  public surface ограничен owner allowlist;
+  commercial является active secondary-sale category;
+  единый Content Gate использует minActive=3 и persistent grace state;
+  Donetsk и nearby locality не смешиваются;
+  legal/consent/NAP contract доказан;
+  один canonical shell и одна UI foundation;
+  exact candidate проверяется до release, exact live identity — после release.
+```
+
+Shared foundations:
+
+- Payload остаётся единственным владельцем schema/auth/migrations;
+- Public Gateway → explicit select → DTO остаётся единственным public data boundary;
+- URL строится только через typed `buildUrl`; literal catalog href запрещён;
+- один Site Profile владеет project module/indexing/gate configuration;
+- один SEO registry владеет materialized page contracts;
+- `src/app/globals.css` владеет числовыми design values;
+- `site-settings` владеет canonical NAP/legal identity;
+- active documents следуют `ONE FACT → ONE OWNER DOCUMENT`.
+
+Data/schema changes:
+
+- controlled idempotent repair существующих `city`/`district` relations;
+- persistent `lastGatePassedAt` / `belowThresholdSince` либо эквивалентный
+  project-owned SEO state без mutation из public GET;
+- расширение существующей geo entity полями locality kind, coordinates,
+  agglomeration membership/distance/verification; вторая geo collection запрещена;
+- consent evidence использует canonical names `consentAccepted`,
+  `consentVersion`, `consentedAt`, `formKind`, `sourcePage`.
+
+Security-sensitive areas:
+
+- schema/backfill, lead consent, PII analytics, outbound delivery, headers/CSP,
+  production backup/restore и jobs ownership классифицируются `RISKY`;
+- secrets и PII не входят в docs, task cards, logs и evidence;
+- production mutation, DNS, indexing rollback and deploy остаются
+  `PRODUCTION` dependencies.
+
+## 39.2 ACTIVE OWNER CONTRACT
+
+### Product and public surface
+
+```text
+ACTIVE NOW:
+  market=secondary
+  dealType=sale
+  category=apartment|house|land|commercial
+  /, /donetsk/, four Donetsk category routes,
+  /prodat-nedvizhimost/, /yurist/, /o-kompanii/, /kontakty/,
+  eligible property, district and approved facet pages,
+  privacy, consent, thank-you and platform error surfaces.
+
+PREPARED_OFF FOR 4–6 MONTHS:
+  newbuild/ЖК, mortgage, rent, journal, rooms, garages and other future modules.
+```
+
+Prepared modules have zero menu/footer links, CTAs, home blocks, sitemap rows,
+IndexNow submissions and indexable registry rows. Reserved namespaces may remain.
+
+### Indexing and gate
+
+- production is `LIVE_PUBLIC`; staging remains `noindex`;
+- `ALWAYS_INDEX`: home, `/donetsk/`, Sell, Lawyer, About and Contacts;
+- `GATED_INDEX`: category×geo, district, approved facet and later approved
+  agglomeration/locality pages;
+- all gated pages use `minActive=3`; P1/P2/TEST remain research/content priority only;
+- gated pages also require exact registry metadata, owner-approved unique SSR
+  introduction of at least 600 characters, SSR property links and clean canonical;
+- a page never passing Gate is `noindex,follow` below three objects;
+- a previously indexable page at zero objects becomes immediate `noindex` and
+  leaves sitemap; at one or two objects it may keep indexability for at most
+  30 calendar days using persistent state maintained outside public GET;
+- an active property has its own quality gate: status/publishedAt/publicUrlId,
+  category, price, applicable area, actual geo, factual description and at least
+  three project-owned photos.
+
+### Geo
+
+- primary mode remains `SINGLE_GEO`, primary geo `donetsk`;
+- exactly nine Donetsk administrative districts are seeded with stored inflections;
+- Textilshchik remains an approved microdistrict SEO candidate;
+- unknown district produces `district=null + needsReview=true`, never a default;
+- nearby property never contributes to Donetsk counts or Donetsk address metadata;
+- agglomeration membership requires owner whitelist, verified coordinates and
+  Haversine distance not exceeding 50 km from the approved primary point;
+- candidate localities are research inputs, not production whitelist;
+- agglomeration routes remain non-public until SEO evidence and later owner decision.
+
+### Legal, navigation and SEO transport
+
+- privacy and separate consent are `200 noindex,follow`; thank-you is
+  `200 noindex,nofollow`;
+- `/usloviya-raboty/` is `200 noindex,follow` with a footer link only when
+  approved legal content exists, otherwise it is `404` with zero links;
+- contract files are managed files with `X-Robots-Tag: noindex, nofollow` and
+  are excluded from sitemap;
+- navigation exposes only active product routes; NAP/legal requisites come
+  from one factual source;
+- robots removes project dependency on `Host`, includes `fbclid` in Clean-param,
+  retains media allowlist and canonical sitemap;
+- sitemap contains only `200`, canonical, published, eligible, gate-passed URLs;
+- mirror hosts redirect in one hop; pagination follows the v10 owner policy;
+- structured data uses factual property type and actual locality.
+
+### UI and headers
+
+- one Header, Footer, mobile navigation and Site Shell implementation;
+- shadcn/project-local primitives are the only UI foundation; speculative public
+  exports are removed or isolated from the active package surface;
+- the unapproved second lightbox library is replaced by an approved project-local
+  Dialog/gallery composition unless the owner later records an exception;
+- one H1 and logical heading hierarchy; Sell/Lawyer/About/Contacts receive
+  page-specific semantic composition through reuse/variants;
+- header ownership is one-per-header between Nginx and Next; enforced CSP is not
+  downgraded, wildcards are not broadened, and Yandex origins are allowlisted only
+  when required by actual analytics configuration.
+
+### Simple infrastructure, database and access
+
+- one persistent production database only: the canonical Timeweb Managed
+  PostgreSQL; no second persistent cloud/staging/shadow/mirror database;
+- production DB is never shared with a staging or test runtime;
+- migrations and backfills are rehearsed against disposable local native
+  PostgreSQL/fixtures or a temporary isolated restore contour removed before release;
+- no new production server, database, broker, cache, search engine or parallel
+  runtime is provisioned without a separate owner decision;
+- SourceCraft is the primary Git service; Git HTTPS and SourceCraft REST access
+  use only Secret Master `git-services/prod/` inside the current process;
+- project server/DB/registry/application secrets use an explicitly discovered
+  project-specific Secret Master scope; no credential is copied into docs, Git,
+  chat, command output or another scope;
+- missing/expired Secret Master access is a stop condition. Saved local Git
+  credentials, MCP tokens, interactive Git Credential Manager and another secret
+  project are not fallbacks.
+
+### Final production rule
+
+- all R1.1, R1.2, UI, legal, geo, SEO and documentation implementation merges
+  converge into one exact `main` candidate;
+- one exact-head final documentation audit and one `RISKY` SourceCraft gate run
+  immediately before the release;
+- production is the mandatory final plan stage after an explicit owner release command;
+- the release stage includes artifact build, rollout, bounded live smoke/crawl,
+  rollback proof and factual update of OPERATIONS/DELIVERY_STATE/checklist/backlog/
+  README/changelog;
+- after that release stage closes, this plan creates no additional monitoring,
+  observation, Day-N, post-production reconciliation or follow-up task;
+- backup/restore, one jobs owner, health and required availability readiness are
+  proved before release, not scheduled as new work after it.
+
+## 39.3 DOCUMENT OWNERSHIP
+
+| Fact | Owner document | Runtime/code owner |
+|---|---|---|
+| product scope and owner decisions | `docs/01_PRD.md` | Site Profile/module policy |
+| public pages, navigation and indexability | `docs/02_PRODUCT_STRUCTURE.md` | resolver/navigation/SEO projection |
+| data/security/topology boundaries | `docs/03_ARCHITECTURE.md` | Payload/core/project boundaries |
+| factual project configuration | `docs/PROJECT.md` | project config/Site Profile |
+| live/staging identity and operations | `docs/OPERATIONS.md` + `DELIVERY_STATE.yaml` | immutable artifact/runtime |
+| visual policy | `docs/DESIGN.md` | `globals.css` + canonical UI tree |
+| geo/URL/SEO gate/execution detail | this Master Plan | typed grammar/registry/gate |
+| current work only | `docs/04_BACKLOG.md` | Task Manager after approval |
+| current release gates | `docs/05_RELEASE_CHECKLIST.md` | release workflow/evidence |
+
+`docs/06_DESIGN_SYSTEM.md` remains a superseded pointer. Research, replan,
+archive and changelog preserve history but do not own current facts.
+
+## 39.4 COMMON EPIC CONTRACT
+
+Every implementation epic uses:
+
+```text
+Source of Truth: §39 plus named owner documents/code surfaces
+Scope out: production, DNS, secret mutation, destructive action and unrelated refactor
+Entry: dependencies satisfied; fresh origin/main worktree; no source drift
+Exit: deterministic acceptance + required verification + DOC IMPACT record
+Delivery: one epic/independent stream = one PR; MERGE_AFTER_GATE after approval
+Evidence: EXECUTION_LEDGER_V1, pushed exact head SHA, changed files and checks
+Rollback: epic-specific code/config/data recovery path
+Stop: unknown production identity, unsafe data mapping, missing approved copy,
+      external credential/owner gate, cycle, source drift or unplanned scope
+```
+
+Schema/data/access/PII/runtime/security epics use one exact-head `RISKY` gate.
+Presentation-only UI/docs epics default to `STANDARD`, unless their actual diff
+touches a risky boundary. A PR is not production authorization.
+
+## 39.5 EXECUTION EPICS
+
+### EPIC-100 — DC10-DOC-00
+### EPIC-101 — DC10-OPS-00
+### EPIC-102 — DC10-R11-00
+### EPIC-103 — DC10-R11-01
+### EPIC-104 — DC10-R11-02
+### EPIC-105 — DC10-R11-03
+### EPIC-106 — DC10-R11-04
+### EPIC-107 — DC10-R11-05
+### EPIC-108 — DC10-R12-01
+### EPIC-109 — DC10-R12-02
+### EPIC-110 — DC10-R12-03
+### EPIC-111 — DC10-R12-04
+### EPIC-112 — DC10-R12-05
+### EPIC-113 — DC10-R12-06
+### EPIC-114 — DC10-UI-01
+### EPIC-115 — DC10-UI-02
+### EPIC-116 — DC10-UI-03
+### EPIC-117 — DC10-UI-04
+### EPIC-118 — DC10-UI-05
+### EPIC-119 — DC10-UI-06
+### EPIC-120 — DC11-DOC-FINAL
+### EPIC-121 — DC11-PROD-FINAL
+
+| Epic | Observable outcome | Depends on | Acceptance / verification | Risk |
+|---|---|---|---|---|
+| `DC10-DOC-00` | active docs express owner target without presenting pending code as current | none | convergence matrix; active links; zero direct status contradictions in target contract; `quality:docs-sot` extended/self-tested | STANDARD |
+| `DC10-OPS-00` | required backup/restore, one jobs owner, health/availability and Secret Master access are ready before the final release | none | read-only preflight first; one persistent production DB; no secret values; no post-release monitoring task | RISKY |
+| `DC10-R11-00` | exact production inventory/geo/indexability matrix exists without mutation | none | redacted factual matrix covering every published record; counts reconcile | RISKY/read-only |
+| `DC10-R11-01` | published records have actual city relation and safe district mapping | R11-00 + DOC target contract | idempotent Payload migration/backfill; unknown district review path; non-empty fixture and rollback proof | RISKY |
+| `DC10-R11-02` | commercial resolver returns only commercial inventory | DOC target contract | both canonical/compat routes resolve category=commercial; targeted query/route tests | STANDARD unless data boundary changes |
+| `DC10-R11-03` | public HTML contains only allowlisted active product routes and DTO/buildUrl links | DOC target contract | no `/nedvizhimost`; no inactive CTA/link/sitemap/IndexNow; literal-href guard | STANDARD |
+| `DC10-R11-04` | all gated owners use minActive=3 and persistent 30-day state | DOC target + R11-00 contract | registry/Site Profile/runtime/seeds equal; public GET is read-only; zero-object and grace transitions tested | RISKY |
+| `DC10-R11-05` | robots/sitemap/mirrors/errors/pagination match v10 policy | R11-03 + R11-04 contracts | HTTP proof for robots, sitemap, 404/410, pagination, canonical and one-hop mirrors | STANDARD/RISKY by runtime diff |
+| `DC10-R12-01` | nine Donetsk districts and Textilshchik have canonical forms and gate behavior | R11-01 + R11-04 | seed uniqueness, stored inflections, mapping and landing tests | RISKY |
+| `DC10-R12-02` | existing geo model safely represents verified nearby localities without calling them Donetsk | R11-01 contract | Payload migration, Haversine/radius/whitelist/needsReview tests; no second collection | RISKY |
+| `DC10-R12-03` | agglomeration activation recommendation is backed by dated search/Wordstat/SERP evidence | R12-02 contract | sources/date per claim; no invented demand numbers; recommended slug/list/priorities | STANDARD research |
+| `DC10-R12-04` | only owner-approved agglomeration/locality routes can become reachable | R12-02 + R12-03 + later owner decision + R11-04 | typed URLs, separate counts, actual locality metadata, 404/no-link pre-gate behavior | RISKY |
+| `DC10-R12-05` | consent/terms/NAP contract is factual, conditional and privacy-safe | DOC target contract | server rejects missing consent; canonical evidence names; conditional terms/PDF behavior; no PII analytics | RISKY |
+| `DC10-R12-06` | JSON-LD uses factual property type/locality and visible service facts | R11-01 + R12-02 contracts | validator fixtures for apartment/house/land/commercial/lawyer; no invisible FAQ | STANDARD |
+| `DC10-UI-01` | speculative inactive public exports are removed or isolated | DOC target contract | export/import inventory; active route build unaffected; future modules unreachable | STANDARD |
+| `DC10-UI-02` | one canonical production shell owns header/footer/mobile navigation | UI-01 contract | one active implementation tree; compatibility aliases documented and non-duplicative | STANDARD |
+| `DC10-UI-03` | property gallery uses approved primitives with keyboard/focus/reduced-motion proof | UI-02 contract | second library removed or explicit exception recorded; dialog/gallery interaction tests | STANDARD |
+| `DC10-UI-04` | shared marketing composition has one H1 and no skipped primary levels | UI-02 contract | semantic/axe-oriented checks across representative pages | STANDARD |
+| `DC10-UI-05` | Sell/Lawyer/About/Contacts have distinct factual semantic compositions | UI-04 + page briefs | page-specific acceptance, mobile states, one primary conversion each | STANDARD |
+| `DC10-UI-06` | token/component drift is reduced only with mechanical evidence | UI-01…05 | tokens report, UI Core, drift and accessibility checks; no speculative token deletion | STANDARD/RISKY if primitive API changes |
+| `DC11-DOC-FINAL` | one exact final candidate SHA has zero P0/P1 active-document contradictions after all R1.1/R1.2/UI work | all implementation epics | docs/registry/runtime matrix; `quality:docs-sot`, docs links/release-state/SEO-doc guards; exact candidate identity | STANDARD |
+
+`DOC IMPACT` is mandatory inside every implementation PR and is not a separate
+parallel state machine. It records documents changed, documents reviewed with no
+change, owner document, CURRENT→TARGET transition and proof.
+
+## 39.6 PRODUCTION-ONLY EPICS
+
+These nodes have no autonomous implementation task before an explicit release command:
+
+| Epic | Outcome | Entry | Proof |
+|---|---|---|---|
+| `DC11-PROD-FINAL` | the fully approved exact-main candidate is released once as the mandatory final plan stage | all implementation epics + DC11-DOC-FINAL + exact-head RISKY SourceCraft gate + explicit owner release command | immutable identity, one rollout, bounded live smoke/crawl, rollback proof and factual live-document reconciliation inside this same stage |
+
+Public indexing remains on unless a separately authorized incident response says
+otherwise. This statement does not authorize deploy, DNS, secret or database writes.
+
+## 39.7 DEPENDENCY MATRIX AND WAVES
+
+| Wave | Ready work | Dependency class | Parallel safety / fallback |
+|---|---|---|---|
+| W0 | DOC-00, OPS-00 baseline preflight, R11-00 | independent roots | each preflight commits a durable baseline/contract artifact in its own worktree; no production mutation; an external ops blocker does not stop docs/inventory |
+| W1 | R11-02, R11-03, R11-04 contract/data work; R11-01 after inventory | `CONTRACT` except R11-01 `HARD` on diagnostic | resolver/surface/gate streams freeze shared URL/Site Profile owners before merge |
+| W2 | R11-05, R12-01, R12-02, R12-05, UI-01 | minimal task dependencies | schema owners serialize migrations; UI stays independent of data migrations |
+| W3 | R12-03 research, R12-06, UI-02…06 | contract-first | research failure does not stop legal/UI/structured-data work |
+| W4 | R12-04 | `OWNER` + `HARD` on approved research/model | if blocked, continue DOC-02 and other ready work; routes remain unreachable |
+| W5 | DC11-DOC-FINAL | `HARD` on all implementation delivery | returns an affected epic to implementation on contradiction |
+| W6 | DC11-PROD-FINAL | `PRODUCTION` | mandatory last stage; one release; no task follows it |
+
+Shared-file owners:
+
+- Site Profile/SEO registry/gate: R11-04 freezes contract before R11-05/R12-04;
+- Payload geo schema/migrations: R11-01 then R12-02/R12-01 in migration order;
+- navigation/route registry: R11-03 before R11-05 and later R12-04;
+- canonical shell/primitives: UI-01 then UI-02/03, UI-04/05, UI-06;
+- active docs: DOC-00 establishes ownership; every later epic updates its owner docs.
+
+There are no whole-epic dependencies where a contract freeze is sufficient.
+Production is not on the implementation critical path.
+
+## 39.8 OWNER DECISION REGISTER
+
+| ID | Decision | Deadline | Status |
+|---|---|---|---|
+| OD10-01 | stable Plan ID remains `AMS-DON-CITY-CORE55-POSTPROD`; v11 uses collision-safe prefix `dc11` and does not overwrite v9 | before approval | SUPERSEDED by OD11-11 after the v11 final audit proved canonical import collision |
+| OD10-02 | implementation epics use `MERGE_AFTER_GATE`; one mandatory final production epic requires a separate release command | before approval | DECIDED |
+| OD10-03 | production state is `LIVE_PUBLIC`; global noindex is not a remediation fallback | before approval | DECIDED + HTTP-observed |
+| OD10-04 | agglomeration public slug and locality whitelist | before R12-04 | OPEN LATER; recommendation after R12-03 |
+| OD10-05 | approved legal terms/contract content and optional managed file | before R12-05 publication step | OPEN LATER; absent content means 404/zero links |
+| OD10-06 | one final production rollout after the complete program | before DC11-PROD-FINAL | OPEN PRODUCTION GATE |
+| OD10-07 | future newbuild/ЖК or mortgage activation | after 4–6 month review | OPEN FUTURE; no current work blocked |
+| OD11-08 | exactly one persistent production database; no persistent staging/shadow/mirror DB | before approval | DECIDED |
+| OD11-09 | SourceCraft and all credentials are read only from canonical Secret Master scopes with no fallback | before approval | DECIDED + VERIFIED: `git-services/prod/` names-only, SourceCraft REST and Git PAT transport pass |
+| OD11-10 | no separate monitoring or follow-up stage after final production | before approval | DECIDED; bounded release smoke remains inside final stage |
+| OD11-11 | isolate the changed v12 graph from immutable v9 managed IDs in the one existing Task Manager store | before approval | DECIDED: Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE`, prefix `dc11`; preserve all v9 history |
+
+Before-approval owner decisions: `0`. Critical external prerequisites open: `0`.
+
+## 39.9 FINDING REGISTER
+
+| ID | Severity | Finding and evidence | Resolution |
+|---|---|---|---|
+| V10-F01 | BLOCKER | v9 `APPROVED` graph conflicts with new owner contract | RESOLVED: v10 REVIEW, new identity/prefix required, no v9 claim/upgrade |
+| V10-F02 | BLOCKER | multiple production/post-production nodes complicated the owner-required simple delivery path | RESOLVED in v11: one mandatory final production node; no node follows it |
+| V10-F03 | MAJOR | active docs report LIVE_NOINDEX while live homepage/robots are public | ACCEPTED: DOC-00 + exact post-release reconciliation |
+| V10-F04 | MAJOR | plan/runtime/seeds encode 5/10 inventory thresholds | ACCEPTED: R11-04 owns one gate and mechanical equality proof |
+| V10-F05 | MAJOR | nearby route/model can misstate locality or Donetsk counts | ACCEPTED: R12-02 foundation + owner-gated R12-04 |
+| V10-F06 | MAJOR | second lightbox dependency conflicts with one-foundation UI rule | ACCEPTED: UI-03; explicit exception remains possible only by owner decision |
+| V10-F07 | MAJOR | owner packet listed actions but not complete task dependencies/evidence | RESOLVED: §39.4–39.7 contracts, waves and proof |
+| V10-F08 | MINOR | requested docs guard script names are not all present today | ACCEPTED: DOC-00/DOC-02 must add or extend guards rather than claim they ran |
+| V10-F09 | LIMIT | two legacy v6 issues remain `in_progress` in shared historical Beads store | ACCEPTED LIMIT: exclude by new plan identity; reconcile separately without rewriting ledgers |
+| V11-B01 | BLOCKER | Secret Master names-only request returned `403 token expired`; SourceCraft fallback is forbidden | RESOLVED: dedicated Universal Auth credential restored; `codex-cursor-ai` joined the canonical Git Services project as Admin; local mapping corrected; names-only access, SourceCraft REST `200` and PAT-backed Git transport passed without fallback |
+| V11-F02 | MAJOR | prior v10 graph had two releases and post-production reconciliation/monitoring-shaped work | RESOLVED: all implementation converges into DC11-DOC-FINAL → DC11-PROD-FINAL, and nothing follows production |
+| V11-F03 | MAJOR | previous wording allowed a persistent isolated staging database | RESOLVED: one persistent production DB; disposable local/temporary isolated proof only, never shared with production |
+| V11-B02 | BLOCKER | the existing single Task Manager store has 55 closed v9 managed nodes under the same Plan ID, while v11 changes the managed ID set; canonical Import must reject that drift | NEEDS_OWNER: preserve v9 history and assign v11 a new collision-safe Plan ID; do not create a second store or rewrite old ledgers |
+| V11-F04 | MINOR | header and §39 still called the active v11 snapshot a v10 review/contract | RESOLVED during final audit |
+| V12-F01 | BLOCKER | v11 reused the immutable v9 Plan ID and could not be imported safely | RESOLVED by owner decision: v12 uses `AMS-DON-CITY-LIVE-CONFORMANCE` with prefix `dc11` in the existing single store; v9 history remains untouched |
+| V12-L01 | LIMIT | the existing single stealth Task Manager store is currently attached to another registered checkout, while the exact v12 source is in this plan worktree | ACCEPTED LIMIT: before import, attach the same store to the exact approved checkout or co-locate the exact approved source with the existing store; never initialize a second store; ambiguity is a stop condition |
+| V13-B01 | BLOCKER | v12 stage cards inherited final epic acceptance while PREFLIGHT prohibited the non-empty diff required by the ledger | RESOLVED IN REVIEW: stage-specific goals, acceptance, checks and actions preserve stable IDs and make each card independently completable |
+| V13-B02 | BLOCKER | plan-owned dynamic records failed when approved graph prefix differed from historical store prefix | RESOLVED EXTERNALLY: global helper `ec1db77`, SourceCraft `skill-risky` run `164`; v13 keeps the existing single store unchanged |
+
+Open blockers: `0`. Open major findings: `0`. Needs-owner before approval: `0`.
+
+## 39.10 V13 FINAL-AUDIT READINESS
+
+```text
+Logic / completeness:
+  PASS — all implementation converges into one final candidate and one
+  mandatory production stage; no stage follows production.
+
+Architecture / data / security:
+  PASS — one persistent production DB, disposable isolated proof only,
+  canonical Secret Master scopes and no credential fallback are explicit.
+
+Dependencies / autonomy:
+  PASS — draft inventory validation covers 22/22 epics and 84 task cards with
+  zero cycles; the single production node has no autonomous task.
+
+Executability / evidence:
+  PASS — stage-specific task contracts match exact ledger requirements; all
+  84 task IDs remain stable; the cross-prefix helper repair is merged and
+  independently gated. Canonical draft validation passes.
+
+Independent safe work after approval:
+  W0 docs and inventory diagnostic; delivery uses only Secret Master and stops
+  fail-closed if that canonical access later becomes unavailable.
+
+Critical path:
+  DOC-00 → R11/R12/UI implementation → DC11-DOC-FINAL → DC11-PROD-FINAL.
+
+Expected stops:
+  later agglomeration/legal decisions; final explicit production authorization.
+
+Night Run Readiness: READY_WITH_LIMITS
+Reason: product, dependency, access, stable-ID upgrade and dynamic blocker
+prerequisites pass. Later agglomeration/legal decisions and the final production
+command remain isolated owner gates. The v13 upgrade and Developer resume require
+new exact owner approval; a second store or graph re-import remains forbidden.
+```
+
+## 39.11 V13 DEFINITION OF DONE
+
+- active documents have one owner per fact and no current-status contradictions;
+- public runtime exposes only active product and factual geo;
+- commercial category isolation, gate=3, grace state, sitemap/robots/canonical,
+  404/410 and pagination are mechanically verified;
+- nine districts, Textilshchik and nearby locality rules are proven;
+- legal/consent/NAP and PII analytics boundaries are proven;
+- one shell/UI foundation, semantic page composition, responsive/accessibility
+  and token/drift evidence are recorded;
+- every merged epic includes DOC IMPACT and exact-head ledger;
+- exact candidate passes DC11-DOC-FINAL before the one release request;
+- exactly one persistent production database exists; no staging/shadow/mirror DB;
+- SourceCraft and other credentials are consumed only from canonical Secret Master scopes;
+- final production is mandatory and last; its bounded smoke, exact identity,
+  rollback and factual docs reconciliation close the plan;
+- no additional monitoring, observation, post-production reconciliation or
+  follow-up task is created after DC11-PROD-FINAL.
 
 # END

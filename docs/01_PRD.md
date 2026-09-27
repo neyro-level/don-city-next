@@ -1,7 +1,7 @@
 # Product Requirements Document
 
 Status: Active
-Version: 1.1
+Version: 1.2
 Updated: 2026-09-27
 
 ## 1. Product Summary
@@ -37,9 +37,9 @@ Updated: 2026-09-27
 
 ## 5. Current Production State
 
-- Production live, но глобально `noindex`.
-- 12 опубликованных объектов и 92 фотографии.
-- Состав: 9 квартир и 3 дома/объекта с земельными участками; чистых земельных участков в текущем источнике не найдено.
+- Production live и публично индексируется: read-only HTTP evidence от 2026-09-27 подтверждает индексируемую homepage, crawl-allowed `robots.txt` и sitemap.
+- Exact deployed SHA/image текущего публичного состояния требует release evidence; не выводить его из прежнего noindex release.
+- Последний документированный baseline — 12 опубликованных объектов и 92 фотографии: 9 квартир и 3 дома/объекта с земельными участками. `DC10-R11-00` устанавливает текущие counts без production mutation.
 - Источник первых объявлений — официальная группа DON CITY во VK; provenance хранится в импортированных данных.
 - Реальный feed отключён. Заявки не должны считаться операционно готовыми до подключения независимого delivery/alert channel.
 
@@ -49,8 +49,8 @@ Updated: 2026-09-27
 - Неопубликованный, архивный или удалённый объект возвращает установленный lifecycle-ответ.
 - Формы валидируются, rate-limit применён, PII не попадает в логи/аналитику.
 - Импорт идемпотентен, изолирован по source и не деактивирует объекты без threshold/approval.
-- Один runtime владеет jobs; staging и кандидаты не запускают параллельный polling.
-- SEO metadata, canonical и structured data соответствуют page contract; глобальный noindex имеет приоритет до разрешения индексации.
+- Один production runtime владеет jobs; disposable proof runtime не запускает параллельный polling.
+- SEO metadata, canonical и structured data соответствуют page contract; публичная индексация не отменяет registry/content gates и `noindex,follow` для pagination page 2+.
 
 ## 7. Non-Functional Requirements
 
@@ -63,7 +63,7 @@ Updated: 2026-09-27
 ## 8. Current Risks and Blockers
 
 - Первый production owner ещё не создан.
-- Независимый alert/delivery channel и внешний uptime monitoring не подключены.
+- Независимый alert/delivery channel не подтверждён.
 - Provider DB backup существует, но durable health evidence и media backup/restore ещё не закрыты.
 - Канонический NAP заполнен в runtime, но требует проверки владельцем по внешним источникам.
 - Реальный feed и allowlists намеренно отключены до предоставления проверенных endpoints.
@@ -71,7 +71,7 @@ Updated: 2026-09-27
 
 ## 9. Success Criteria
 
-До снятия noindex: закрыты blockers раздела 8, выполнен live smoke exact release, владелец отдельно разрешил индексацию. После запуска измеряются валидные обращения, актуальность каталога, успешность delivery и отсутствие утечек/дублей.
+Успех текущей программы: фактическая индексируемая поверхность соответствует registry/content gates, обращения и delivery не раскрывают PII, inventory остаётся актуальным, а exact release identity и rollback доказуемы. Никакой отдельный monitoring/follow-up этап после финального production не создаётся.
 
 ## 10. Open Owner Decisions
 
@@ -79,5 +79,4 @@ Updated: 2026-09-27
 - Канал уведомлений и получатель заявок.
 - Реальный feed и дата его включения.
 - Политика media backup/retention.
-- Отдельное решение о снятии глобального `noindex`.
 - Дочерний SEO/URL registry юридических услуг после подтверждения фактического service/content scope. Канонические launch-маршруты уже зафиксированы: коммерция `/donetsk/kommercheskaya/`, юридический отдел `/yurist/`.

@@ -4,7 +4,7 @@ import { findDocsSourceOfTruthViolations } from "./docs-source-of-truth-rules.mj
 import { filesUnder } from "./source-files.mjs";
 
 const root = process.cwd();
-const files = filesUnder(root, "docs", new Set([".md"])).map((file) => ({
+const files = filesUnder(root, "docs", new Set([".md", ".yaml"])).map((file) => ({
 	name: path.relative(root, file),
 	content: readFileSync(file, "utf8"),
 }));

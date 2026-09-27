@@ -1,15 +1,15 @@
 # DON CITY — Operations Contract
 
-Status: active production, global noindex
+Status: active production, publicly crawlable
 Updated: 2026-09-27
 
 ## Current Runtime
 
-- Production: `https://doncity-home.ru`, exact release SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d`, image `don-city-next:production-cd5c74391265`.
-- One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`, staging loopback `3100`.
-- Managed PostgreSQL 18 and private Timeweb S3. Production and staging have separate database/secrets/storage prefixes.
-- Production is globally noindex. Staging is always noindex.
-- Exactly one jobs owner: production `JOBS_AUTORUN=true`; staging is false.
+- Production: `https://doncity-home.ru`; read-only HTTP evidence from 2026-09-27 confirms an indexable homepage, crawl-allowed `robots.txt` and sitemap publication.
+- Exact deployed SHA/image for that observed public state is not yet bound to release evidence. SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d` and image `don-city-next:production-cd5c74391265` remain the prior recorded noindex rollback baseline.
+- One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`.
+- Exactly one persistent managed PostgreSQL 18 database and private Timeweb S3 production identity exist. Non-production DB proof is disposable, isolated and removed after use.
+- Exactly one jobs owner: production `JOBS_AUTORUN=true`; disposable proof runtime keeps jobs disabled.
 - One prior image and compose file are retained as the immediate rollback point.
 
 ## Deploy and Rollback
@@ -38,11 +38,11 @@ Updated: 2026-09-27
 - Logs, evidence and incident notes must not contain raw feed XML, PII, tokens, credentials or full database URLs.
 - Raw XML, PII, credentials и токены запрещено сохранять в логах, evidence и incident notes.
 
-## Health and Monitoring
+## Health and Availability
 
 - Independent alert channel использует `ALERT_WEBHOOK_URL` и не должен зависеть от этого VPS.
 - Detailed `/api/internal/healthz` is authenticated; external monitoring uses only the intended public availability signal.
-- External uptime monitoring must run outside this VPS.
+- Availability evidence required before release is bounded inside the release gate; the plan creates no separate post-production monitoring task.
 - Alerts cover site down, suspicious/overdue import, stalled jobs, dead lead delivery and backup failure.
 - Release evidence captures exact SHA/image, jobs owner, queue movement, DB/media backup freshness and redacted smoke results.
 
@@ -56,13 +56,13 @@ Updated: 2026-09-27
 ## Current Blockers Before Indexing
 
 - create the first production owner;
-- connect approved independent alert/delivery channel and external monitoring;
+- connect approved independent alert/delivery channel;
 - close durable DB/media backup freshness and sampled media restore;
 - verify canonical NAP externally with the owner;
 - run a production SEO/lifecycle crawl;
-- receive a separate owner command to remove global noindex.
+- bind the observed public state to exact deployed SHA/image evidence.
 
-Production may remain online in noindex mode while these blockers are open. Real feed stays off.
+Production remains online while these evidence gaps are open. Real feed stays off.
 
 ## Manual Import and Suspicious Approval
 
@@ -114,7 +114,7 @@ Production may remain online in noindex mode while these blockers are open. Real
 1. Preserve exact SHA/image, time window and affected surface; redact secrets
    and PII.
 2. Stop the unsafe integration or jobs owner when continued execution can cause
-   data loss; do not stop the public noindex site without evidence.
+   data loss; do not stop the public site without incident evidence.
 3. Check authenticated health, queue/import/delivery diagnostics and external
    availability separately.
 4. Roll back the immutable application image or follow the migration-specific

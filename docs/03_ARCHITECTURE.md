@@ -1,7 +1,7 @@
 # Technical Architecture
 
 Status: Active
-Version: 1.0
+Version: 1.1
 Updated: 2026-09-27
 
 ## Normative Baseline and Conformance
@@ -9,7 +9,7 @@ Updated: 2026-09-27
 - Platform baseline: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md`.
 - UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
-- Current conformance status: `REVIEW`, not certified. The exact delta is owned by `replan/CORE55_CP00_EVIDENCE.md` and the v8 program in `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
+- Current conformance status: `PARTIAL / REVIEW`, not certified. The exact delta is governed by APPROVED Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 in `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`; earlier CP evidence remains historical.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
@@ -68,7 +68,7 @@ not duplicated configuration tables.
 - Один существующий Timeweb VPS `doncity-server`.
 - Managed PostgreSQL 18 доступен приложению через private VPC; публичное раскрытие БД запрещено.
 - Production runtime secrets принадлежат scope `DonCity Server/prod`; значения не хранятся в Git или документации.
-- Host Nginx завершает TLS и проксирует production на loopback `3000`, staging — на `3100`.
+- Host Nginx завершает TLS и проксирует production на loopback `3000`.
 - HSTS имеет одного владельца — TLS-терминатор Nginx. Tracked TLS-hosts используют
   `max-age=31536000; includeSubDomains` без `preload`; application runtime HSTS не
   добавляет. `preload` запрещён до owner approval после полной DNS/TLS-инвентаризации.
@@ -77,13 +77,12 @@ not duplicated configuration tables.
   diagnostics получает `unsafe-eval`. Payload Admin остаётся noindex и хранит
   отдельное явно проверяемое compatibility-исключение. Nonce-CSP требует отдельного
   решения, потому что переводит страницы в dynamic rendering и отключает ISR.
-- Production и staging используют один immutable image exact SHA, но разные env/database/storage prefixes.
-- Production: managed PostgreSQL 18, private Timeweb S3 prefix, `JOBS_AUTORUN=true`.
-- Staging: отдельная изолированная database/schema contract, отдельный storage prefix, `JOBS_AUTORUN=false`, всегда noindex.
-- Production image: `don-city-next:production-cd5c74391265`; предыдущий `don-city-next:production-31367bfe4adf` и его compose сохранены как единственная непосредственная rollback point.
+- Exactly one persistent production database exists: managed PostgreSQL 18 over private VPC. Production also owns its private Timeweb S3 prefix and `JOBS_AUTORUN=true` runtime.
+- Non-production database proof создаётся только как disposable isolated local/temporary environment, никогда не разделяет production data/secrets/storage и удаляется после bounded проверки. Persistent staging/shadow/mirror database запрещена.
+- Last recorded noindex image `don-city-next:production-cd5c74391265` and prior image `don-city-next:production-31367bfe4adf` are historical rollback evidence. Exact deployed SHA/image for the observed public-indexing state remains pending release evidence.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 
-Текущий repository readiness config остаётся fail-closed для `nginx`, `automaticBackup` и `externalMonitoring`, пока эти возможности не представлены полным durable evidence. Это не отменяет факт работающего host Nginx и provider DB backup; расхождение закрывается после media backup, health freshness и независимого monitoring proof.
+Текущий repository readiness config остаётся fail-closed для `nginx`, `automaticBackup` и `externalMonitoring`, пока эти возможности не представлены полным durable evidence. Эти flags являются честным состоянием capability, но не создают отдельный monitoring или follow-up этап после production.
 
 ## 6. Jobs, Cache and Lifecycle
 
@@ -103,7 +102,7 @@ not duplicated configuration tables.
 - Server Components по умолчанию; client boundaries только для интерактивных leaves.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
 - Один project-owned semantic token source; light-only, `.dark` не устанавливается.
-- Global production noindex является release override над page-level SEO contracts.
+- Production публично индексируется; page-level registry/content gates, canonical policy и pagination `noindex,follow` остаются обязательными.
 
 ## 8. Delivery and Recovery
 
@@ -116,7 +115,7 @@ not duplicated configuration tables.
 ## 9. Current Operational Gaps
 
 - production owner user не создан;
-- независимый alert/delivery channel и внешний monitoring не подключены;
+- независимый alert/delivery channel не подтверждён;
 - media backup/restore evidence отсутствует;
 - NAP требует внешней проверки владельцем;
 - реальный feed отключён;
@@ -126,5 +125,6 @@ not duplicated configuration tables.
 
 - Один сервер и существующие managed services; второй сервер или перенос не подразумеваются.
 - Секреты — только dedicated Secret Master scope, без значений в git/docs/logs.
-- DNS, снятие noindex, destructive migrations и включение production integrations требуют отдельного owner decision.
+- DNS, destructive migrations, secret mutations и включение production integrations требуют отдельного owner decision.
+- Финальный production — последний stage; после него программа не создаёт monitoring, observation, reconciliation или follow-up task.
 - Подробная URL/SEO grammar — Product Structure, seeds, ADR и approved master plan; этот документ не дублирует реестр.

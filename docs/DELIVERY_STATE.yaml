@@ -1,23 +1,23 @@
 schema_version: 1
-program: AMS-DON-CITY-CORE55-POSTPROD
-plan_version: v9
+program: AMS-DON-CITY-LIVE-CONFORMANCE
+plan_version: v13
 plan_status: APPROVED
-current_wave: CORE_5_5_STAGING_DELIVERY
-current_epic: CP-08
-current_task: dc55-task-75-delivery
-next_action: review-gate-merge-cp08-then-close-production-prerequisites
+current_wave: LIVE_CONFORMANCE_W0
+current_epic: DC10-DOC-00
+current_task: dc11-task-100-verify
+next_action: continue-beads-ready-loop-without-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 01b3af8584bf79b2a3ab4efa507c42b40444a4ce
-  active_branch: codex/dc55-epic-75
+  base_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
+  active_branch: codex/dc11-100-doc-sot
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc55-task-75-delivery
-  reason: CP-01 through CP-07 delivered; CP-08 exact staging candidate passed and awaits RISKY delivery
-evidence:
+  current_task: dc11-task-100-verify
+  reason: DOC-00 implementation is pushed; exact-head verification and durable evidence are in progress before delivery
+historical_evidence:
   rp_00:
     status: delivered
     branch: codex/rp-00-current-state-inventory
@@ -184,7 +184,7 @@ evidence:
     reports:
       - docs/research/EPIC-47_RELEASE_REHEARSAL_PREFLIGHT.md
       - docs/research/EPIC-47_RELEASE_REHEARSAL.md
-task_contract:
+historical_v6_task_contract:
   goal: "Build one immutable exact-main artifact and prove staging deploy, rollback and redeploy without production action."
   non_goals: "Production, DNS, public indexing, secret mutation, provider resource lifecycle and production data."
   platform: "AMS Realty Platform Core 3.0; Payload is the sole schema/auth/migration owner."
@@ -198,7 +198,7 @@ task_contract:
   proof: "Exact SHA/revision/checksum, immutable image, full verification, deploy health, rollback health and final candidate identity."
   gate: RISKY
   done_state: "Exact-main immutable candidate survives deploy, rollback and redeploy on isolated staging, then EPIC-47 merges after one exact-head RISKY gate."
-core55:
+historical_core55:
   cp_01:
     status: delivered
   cp_02a:
@@ -249,27 +249,28 @@ core55:
     status: prerequisites-and-exact-main-gate
     authorized: true
 production:
-  authorized: true
-  authorization_scope: production resources and global-noindex rollout
-  status: LIVE_NOINDEX
-  exact_main_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
-  image_tag: don-city-next:production-cd5c74391265
+  authorized: false
+  authorization_scope: historical noindex release only; v13 final production requires a separate explicit owner command
+  status: LIVE_PUBLIC_OBSERVED
+  exact_deployed_sha: UNKNOWN_PENDING_RELEASE_EVIDENCE
+  historical_noindex_release_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
+  historical_noindex_image_tag: don-city-next:production-cd5c74391265
   server_image_id: sha256:db58836c84b3287c6a4c288dd81a2e7de6247c57a8240aa3483e8549e833d51c
   artifact_sha256: 4d90a04f3e557d30fe21a44e9f939316cc95d5a76cd4d649d8f13e934ff2bc9c
   merge_gate_run: 81
   release_attestation_run: 82
   url: https://doncity-home.ru
-  properties: 12
-  media: 92
+  last_documented_properties: 12
+  last_documented_media: 92
   jobs_owner: production
-  staging_jobs: false
+  disposable_proof_jobs: false
   real_feed: disabled
-  indexing: noindex
+  indexing: public_observed
   rollback_image: don-city-next:production-31367bfe4adf
   health: degraded
   blockers:
     - first-production-owner
     - independent-alert-and-lead-delivery-channel
-    - external-uptime-monitoring
     - durable-database-and-media-backup-freshness
     - owner-verified-canonical-nap
+    - exact-deployed-sha-and-image

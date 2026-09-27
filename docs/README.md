@@ -1,7 +1,7 @@
 # DON CITY
 
-Status: Active — production live, global noindex
-Version: 1.0
+Status: Active — production live and publicly crawlable
+Version: 1.1
 Updated: 2026-09-27
 
 ## Что создаём
@@ -10,25 +10,25 @@ Updated: 2026-09-27
 
 ## Бизнес-цель
 
-Публиковать проверяемые объекты и получать обращения, не раскрывая raw CMS data и персональные данные. Индексация пока глобально запрещена до закрытия операционных блокеров и отдельного решения владельца.
+Публиковать проверяемые объекты и получать обращения, не раскрывая raw CMS data и персональные данные. Публичная индексация включена; URL и контент по-прежнему проходят page-level registry/content gates.
 
 ## Текущий статус
 
-- Production работает на `https://doncity-home.ru` из exact release SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d` и immutable image `don-city-next:production-cd5c74391265`.
-- Глобальный `noindex` активен; `robots.txt` запрещает обход.
-- В каталоге 12 опубликованных объектов и 92 фотографии: 9 квартир и 3 дома/объекта с земельными участками. Отдельных объявлений категории «участки» пока нет.
-- Реальный feed отключён; production jobs включены только у одного runtime, staging jobs выключены.
-- До снятия `noindex`: создать первого owner-пользователя, подключить независимый канал уведомлений и мониторинг, подтвердить NAP, закрыть media-backup evidence и принять решение по реальному feed.
+- Production отвечает на `https://doncity-home.ru`; read-only evidence от 2026-09-27 подтверждает индексируемую homepage, разрешающий `robots.txt` и опубликованный sitemap.
+- Exact deployed SHA/image для текущего публично индексируемого состояния ещё должен быть привязан к release evidence; прежний noindex release `cd5c743912650525f84d2d110e6a43c4e6c6e35d` остаётся историческим rollback evidence, а не заявлением о текущей identity.
+- Последний документированный inventory baseline — 12 опубликованных объектов и 92 фотографии; `DC10-R11-00` обязан получить текущую redacted production-матрицу без mutation.
+- Реальный feed отключён; ровно один production runtime владеет jobs. Непроизводственные DB-проверки только disposable и удаляются после bounded proof.
+- NAP, backup freshness, owner account и delivery readiness остаются отдельными проверяемыми фактами; они не отменяют уже наблюдаемое публичное индексирование и не создают post-production monitoring stage.
 
 ## Platform contract
 
 Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload Platform. Profile: `REALTY_BASE`, `catalog`, mode: `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 
-The current implementation is partially converged, not fully certified. CP-01
-through CP-07 are delivered; CP-08 integrated staging proof passed on the exact
-candidate and awaits PR/RISKY delivery. Exact gaps and evidence are recorded
-in `replan/CORE55_CP00_EVIDENCE.md` and the APPROVED v9 program in
-`AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
+The current implementation is partially converged, not fully certified. Exact
+gaps, dependencies and evidence are governed by APPROVED Plan ID
+`AMS-DON-CITY-LIVE-CONFORMANCE` v13 in
+`AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`. Earlier CP evidence remains history,
+not current execution state.
 
 ## Source of Truth
 

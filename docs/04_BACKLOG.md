@@ -1,7 +1,7 @@
 # Backlog
 
 Status: Active
-Version: 1.1
+Version: 1.2
 Updated: 2026-09-27
 
 ## Delivered
@@ -12,58 +12,51 @@ Updated: 2026-09-27
 - [x] География, Public/System/Ingest gateways, каталог, карточки и lifecycle.
 - [x] Feed/import isolation, leads/outbox/delivery, SEO registry, sitemap и IndexNow contracts.
 - [x] Public UI, accessibility, responsive states, cache/invalidation и runtime health.
-- [x] Isolated staging: database, S3 prefix, Nginx/TLS и global noindex.
+- [x] Historical isolated candidate proof completed; its temporary database proof is not a second persistent environment.
 - [x] Production Compose/Nginx/TLS, managed PostgreSQL/S3 secrets и manual SourceCraft release workflow.
-- [x] Exact-main production rollout `cd5c743912650525f84d2d110e6a43c4e6c6e35d`, premium brand assets, global noindex и rollback point.
+- [x] Historical exact-main noindex rollout `cd5c743912650525f84d2d110e6a43c4e6c6e35d`, premium brand assets and rollback point.
 - [x] 12 VK-derived listings and 92 photos imported and verified: 9 apartments, 3 houses/land-attached.
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Core 5.5 v9 Implementation
+## NOW — Live Conformance v13
 
-- [x] Realty Core 5.5 and UI Core 5.0 normative sources are linked to project Source of Truth.
-- [x] CP-00 factual evidence and the four-pass Architect audit are complete.
-- [x] Task Manager graph has `10/10` active epic coverage, `45` autonomous tasks and zero dependency cycles.
-- [x] Owner approved exact master plan v9 at `2026-09-27T01:03:39+03:00`.
-- [x] Canonical `Validate → Init/Upgrade decision → Import → Reconcile` passed and Developer execution started.
-- [x] CP-01 through CP-06 delivered through reviewed SourceCraft PRs and exact-head gates.
-- [x] CP-03 jobs/import/lead safety: narrow OD-03 exception approved; atomic concurrency and heartbeat proofs passed; PR 79 merged after RISKY gate 91.
-- [x] CP-04 media/request-path performance: delivered through PR 78 and exact-head RISKY gate 90.
-- [x] CP-07 project/readiness documentation: delivered through PR 80 and STANDARD gate 92.
-- [x] CP-08 integrated isolated-staging proof: exact candidate passed; PR/RISKY delivery pending.
+- [x] Owner approved exact Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 at `2026-09-27T21:09:12+03:00`.
+- [x] Canonical v12→v13 non-destructive Upgrade passed in the one existing Beads store: 22/22 epics, 84 tasks, 106 managed nodes, zero drift/cycles.
+- [x] Production remains the mandatory final stage, has no autonomous task and requires a separate explicit release command.
+- [ ] Execute the Beads ready-loop. Beads is the only per-task execution state; this document does not duplicate a current task pointer.
+- [ ] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
 
-Production indexing remains outside the autonomous implementation graph. The
-owner release command is recorded; operational prerequisites and exact-main
-release evidence remain mandatory.
+Earlier CP-01…CP-08 evidence remains delivered history. It is not the current
+program and does not create a persistent staging database or a second task graph.
 
-## Core 5.5 Delivery Order
+## v13 Delivery Order
 
-1. CP-01 release-level indexing safety and CP-02A initial product/indexing scope.
-2. CP-03 jobs/import/lead safety, CP-04 media/performance and CP-06 security spike can progress in independent safe streams.
-3. CP-02 SEO surface follows the frozen CP-01/CP-02A contracts; CP-05 and CP-07 converge UI/docs afterward.
-4. CP-08 proves the exact integrated candidate on isolated staging.
-5. CP-09 remains production-only and requires a separate explicit release command.
+1. W0: DOC-00, OPS-00 and the read-only inventory diagnostic establish factual contracts.
+2. W1–W3: catalog/geo/SEO/legal/UI implementation follows the exact dependencies in the approved plan.
+3. W4: locality activation remains owner-gated while independent work continues.
+4. W5: `DC11-DOC-FINAL` proves the exact candidate and active-document convergence.
+5. W6: `DC11-PROD-FINAL` is mandatory and last; it requires a separate release command and no task follows it.
 
 ## Open Production Readiness
 
 1. Создать первого production owner через безопасную bootstrap-команду.
 2. Выбрать и подключить независимый alert/delivery channel; проверить redacted lead delivery.
-3. Подключить внешний uptime monitoring вне production server.
-4. Закрыть media backup/versioning и sampled restore evidence; вывести DB/media freshness в health.
-5. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
-6. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
-7. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
+3. Закрыть media backup/versioning и sampled restore evidence; вывести DB/media freshness в health.
+4. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
+5. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
+6. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
 
-## Production Indexing Gate
+## Final Production Gate
 
-1. Выполнить production crawl и проверить canonical/robots/sitemap/structured data.
-2. Подтвердить queue movement, alerts, backup freshness и rollback readiness.
-3. Получить отдельное разрешение владельца на снятие global noindex.
-4. Выпустить один exact-main indexing release и повторить live smoke.
+1. Завершить весь implementation graph и `DC11-DOC-FINAL` на exact candidate SHA.
+2. Подтвердить jobs ownership, backup/restore, health/availability, rollback и Secret Master access до release.
+3. Получить отдельную явную production-команду владельца.
+4. Выпустить один exact-main artifact, выполнить один rollout и bounded live smoke внутри final stage.
+5. После `DC11-PROD-FINAL` не создавать monitoring, observation, reconciliation или follow-up task.
 
 ## LATER
 
-- Post-launch Day-60 review и retention cleanup.
 - Через четыре календарных месяца после фактического включения публичной индексации: review первоначального scope. Дату вычислить и зафиксировать как `PUBLIC_INDEXING_ENABLED_AT + 4 months`; новостройки/ЖК не включать без нового owner-approved plan.
 - R2 research: `novostroyki`, `journal`, `agents`; включение только отдельным contract/epic.
 - Масштабирование географии — только после business/evidence решения и MULTI_GEO proof.

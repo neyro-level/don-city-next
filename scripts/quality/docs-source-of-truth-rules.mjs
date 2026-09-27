@@ -66,5 +66,80 @@ export function findDocsSourceOfTruthViolations(files) {
 		violations.push("docs/README.md must map the detailed contract to V4");
 	}
 
+	const contentOf = (name) =>
+		normalized.find((file) => file.name === name)?.content ?? "";
+	const requireCurrent = (name, fragment, message) => {
+		const content = contentOf(name);
+		if (content && !content.includes(fragment)) violations.push(`${message}: ${name}`);
+	};
+	const rejectCurrent = (name, pattern, message) => {
+		const content = contentOf(name);
+		if (content && pattern.test(content)) violations.push(`${message}: ${name}`);
+	};
+
+	requireCurrent(
+		canonicalMasterPlan,
+		"Plan ID: AMS-DON-CITY-LIVE-CONFORMANCE\nVersion: v13\nStatus: APPROVED",
+		"canonical plan must be exact approved live-conformance v13",
+	);
+	requireCurrent(
+		canonicalMasterPlan,
+		"no additional monitoring, observation, post-production reconciliation",
+		"canonical plan must keep production terminal with no follow-up stage",
+	);
+	requireCurrent(
+		"docs/README.md",
+		"`AMS-DON-CITY-LIVE-CONFORMANCE` v13",
+		"docs map must identify the current approved plan",
+	);
+	requireCurrent(
+		"docs/03_ARCHITECTURE.md",
+		"Exactly one persistent",
+		"architecture must state the one-persistent-database boundary",
+	);
+	requireCurrent(
+		"docs/04_BACKLOG.md",
+		"## NOW — Live Conformance v13",
+		"backlog must identify the current v13 program",
+	);
+	requireCurrent(
+		"docs/DELIVERY_STATE.yaml",
+		"program: AMS-DON-CITY-LIVE-CONFORMANCE\nplan_version: v13\nplan_status: APPROVED",
+		"delivery state must identify the current approved graph",
+	);
+
+	for (const name of [
+		"docs/README.md",
+		"docs/01_PRD.md",
+		"docs/02_PRODUCT_STRUCTURE.md",
+		"docs/03_ARCHITECTURE.md",
+		"docs/PROJECT.md",
+		"docs/OPERATIONS.md",
+	]) {
+		rejectCurrent(
+			name,
+			/(?:Status:.*global noindex|Status:.*production noindex|Production is globally `?noindex`?|весь production остаётся `noindex`)/i,
+			"obsolete global production noindex claim",
+		);
+		rejectCurrent(
+			name,
+			/(?:Production and isolated staging use|Staging: loopback|Production и staging используют|Staging: отдельная изолированная database|Production and staging have separate database)/i,
+			"persistent staging/shadow database contradicts the one-database contract",
+		);
+	}
+
+	for (const name of [
+		"docs/README.md",
+		"docs/03_ARCHITECTURE.md",
+		"docs/04_BACKLOG.md",
+		"docs/DELIVERY_STATE.yaml",
+	]) {
+		rejectCurrent(
+			name,
+			/(?:APPROVED v9 program|v8 program in|## NOW — Core 5\.5 v9|program: AMS-DON-CITY-CORE55-POSTPROD)/i,
+			"stale current plan pointer",
+		);
+	}
+
 	return violations;
 }

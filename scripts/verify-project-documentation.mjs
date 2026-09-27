@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 function read(path) {
 	return readFileSync(path, "utf8");
@@ -13,8 +13,29 @@ function requireAll(path, fragments) {
 	return content;
 }
 
+for (const path of [
+	"AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+	"AMS_UI_CORE_v5.0_FINAL.md",
+	"docs/01_PRD.md",
+	"docs/02_PRODUCT_STRUCTURE.md",
+	"docs/03_ARCHITECTURE.md",
+	"docs/04_BACKLOG.md",
+	"docs/05_RELEASE_CHECKLIST.md",
+	"docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md",
+	"docs/DELIVERY_STATE.yaml",
+	"docs/DESIGN.md",
+	"docs/OPERATIONS.md",
+	"docs/PROJECT.md",
+	"docs/adr/README.md",
+	"docs/CHANGELOG.md",
+]) {
+	assert.ok(existsSync(path), `active documentation target missing: ${path}`);
+}
+
 const project = requireAll("docs/PROJECT.md", [
 	"Status: Active",
+	"production live and publicly crawlable",
+	"exactly one persistent production database",
 	"AMS_PROFILE=REALTY_BASE",
 	"PROJECT_CLASS=COMMERCIAL",
 	"DELIVERY_PROFILE=CRITICAL",
@@ -50,32 +71,49 @@ requireAll("docs/06_DESIGN_SYSTEM.md", [
 requireAll("docs/README.md", [
 	"| project profile, runtime choices and fail-closed readiness | `PROJECT.md` |",
 	"| active project design policy | `DESIGN.md` |",
-	"APPROVED v9 program",
+	"`AMS-DON-CITY-LIVE-CONFORMANCE` v13",
 ]);
 requireAll("docs/03_ARCHITECTURE.md", [
+	"`AMS-DON-CITY-LIVE-CONFORMANCE` v13",
+	"Exactly one persistent production database exists",
+	"Production публично индексируется",
 	"`PROJECT_CLASS=COMMERCIAL`",
 	"`DELIVERY_PROFILE=CRITICAL`",
 	"`PROJECT.md`",
 	"`DESIGN.md`",
 ]);
 requireAll("docs/OPERATIONS.md", [
+	"Status: active production, publicly crawlable",
+	"Exactly one persistent managed PostgreSQL 18 database",
+	"no separate post-production monitoring task",
 	"## Manual Import and Suspicious Approval",
 	"## Interrupted Jobs and Orphan Recovery",
 	"## Lead Delivery Recovery and Channel Outage",
 	"## Incident Procedure",
 ]);
 requireAll("docs/04_BACKLOG.md", [
-	"CP-03 jobs/import/lead safety",
-	"CP-04 media/request-path performance",
-	"CP-08 integrated isolated-staging proof",
+	"## NOW — Live Conformance v13",
+	"106 managed nodes",
+	"DC11-PROD-FINAL",
+]);
+requireAll("docs/01_PRD.md", [
+	"Production live и публично индексируется",
+	"Никакой отдельный monitoring/follow-up этап после финального production не создаётся",
+]);
+requireAll("docs/02_PRODUCT_STRUCTURE.md", [
+	"Production публично индексируется",
+	"registry/content gates",
 ]);
 requireAll("docs/05_RELEASE_CHECKLIST.md", [
-	"Deliver CP-04 with its required DB/media/performance evidence.",
-	"Deliver CP-03 after the approved narrow OD-03 exception",
-	"Pass CP-08",
+	"Status: Active — public production; next release not authorized",
+	"exact deployed SHA/image",
+	"DC11-PROD-FINAL",
 	"must not promote a fail-closed",
 ]);
 requireAll("docs/DELIVERY_STATE.yaml", [
+	"program: AMS-DON-CITY-LIVE-CONFORMANCE",
+	"plan_version: v13",
+	"status: LIVE_PUBLIC_OBSERVED",
 	"cp_03:",
 	"pull_request: 79",
 	"gate_run: 91",

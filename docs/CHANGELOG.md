@@ -1,5 +1,18 @@
 # Contract changelog
 
+## 2026-09-27 — Live Conformance v13 approved
+
+- Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 became the current approved
+  execution contract; the existing single Beads graph upgraded in place with
+  stable IDs and preserved history.
+- Active documents now distinguish observed public indexing from the historical
+  noindex release identity. Exact deployed SHA/image remains explicit pending
+  release evidence rather than an inferred fact.
+- The architecture has exactly one persistent production database. Any
+  non-production DB proof is disposable, isolated and removed after use.
+- `DC11-PROD-FINAL` remains mandatory and last; it requires a separate owner
+  release command and creates no monitoring or follow-up stage afterward.
+
 ## 2026-09-26 — Premium brand system release
 
 - Owner-approved DON CITY logo was integrated as the compact header mark,
