@@ -89,6 +89,9 @@ Payload Admin остаётся CMS-native и не получает публич�
 - Публичная marketing page содержит один `h1`; заголовки её повторяемых секций
   используют `CardTitle as="h2"`. Default `CardTitle` остаётся `h3` для карточек,
   уже вложенных под заголовок секции.
+- Sell использует упорядоченные шаги, Lawyer — service articles, About —
+  trust/fact narrative, Contacts — contact/access facts. Все четыре паттерна
+  получают только DTO-контент и завершаются одной page-specific lead form.
 - Не использовать один цвет как единственный носитель статуса.
 - Loading, empty, error, success, disabled и hover состояния используют существующие semantic tokens.
 - Light-only режим сохраняется; Tailwind dark variant class-based, класс `.dark` не устанавливается.

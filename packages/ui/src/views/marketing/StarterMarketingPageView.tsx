@@ -9,6 +9,11 @@ import {
 } from "../../components/ui/card";
 import { Container, Section } from "../../components/ui/layout";
 import { LeadFormView } from "../starter/LeadFormView";
+import {
+	getMarketingCompositionKind,
+	getMarketingConversionCopy,
+	type MarketingCompositionKind,
+} from "./marketing-page-contract";
 
 function Breadcrumbs({ items }: MarketingPageDTO["breadcrumbs"]) {
 	return (
@@ -32,7 +37,133 @@ function Breadcrumbs({ items }: MarketingPageDTO["breadcrumbs"]) {
 	);
 }
 
+type MarketingSection = MarketingPageDTO["sections"][number];
+
+function SectionCard({
+	section,
+	className,
+}: {
+	section: MarketingSection;
+	className?: string;
+}) {
+	return (
+		<Card elevation="raised" className={className}>
+			<CardHeader>
+				<CardTitle as="h2">{section.title}</CardTitle>
+				<CardDescription>{section.text}</CardDescription>
+			</CardHeader>
+			{section.items?.length ? (
+				<CardContent>
+					<ul className="grid gap-2 text-body text-content-default">
+						{section.items.map((item) => (
+							<li key={item}>— {item}</li>
+						))}
+					</ul>
+				</CardContent>
+			) : null}
+		</Card>
+	);
+}
+
+function MarketingSections({
+	sections,
+	kind,
+}: {
+	sections: MarketingPageDTO["sections"];
+	kind: MarketingCompositionKind;
+}) {
+	if (kind === "sell-process") {
+		return (
+			<ol
+				data-marketing-composition={kind}
+				className="grid gap-5 lg:grid-cols-3"
+			>
+				{sections.map((section, index) => (
+					<li key={section.title} className="grid gap-3">
+						<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
+							Шаг {index + 1}
+						</p>
+						<SectionCard section={section} className="h-full" />
+					</li>
+				))}
+			</ol>
+		);
+	}
+
+	if (kind === "legal-services") {
+		return (
+			<div
+				data-marketing-composition={kind}
+				className="grid gap-6 md:grid-cols-2"
+			>
+				{sections.map((section) => (
+					<article key={section.title} className="md:last:col-span-2">
+						<SectionCard section={section} className="h-full" />
+					</article>
+				))}
+			</div>
+		);
+	}
+
+	if (kind === "about-trust") {
+		return (
+			<div
+				data-marketing-composition={kind}
+				className="grid gap-6 md:grid-cols-2"
+			>
+				{sections.map((section, index) => (
+					<article
+						key={section.title}
+						className={index === 0 ? "md:col-span-2" : undefined}
+					>
+						<SectionCard section={section} className="h-full" />
+					</article>
+				))}
+			</div>
+		);
+	}
+
+	if (kind === "contacts-access") {
+		return (
+			<div
+				data-marketing-composition={kind}
+				className="grid gap-6 sm:grid-cols-2"
+			>
+				{sections.map((section, index) => (
+					<article key={section.title}>
+						<Card elevation="raised" className="h-full">
+							<CardHeader>
+								<CardTitle as="h2">{section.title}</CardTitle>
+								{index === 0 ? (
+									<address className="text-body leading-step-copy text-content-default not-italic">
+										{section.text}
+									</address>
+								) : (
+									<CardDescription>{section.text}</CardDescription>
+								)}
+							</CardHeader>
+						</Card>
+					</article>
+				))}
+			</div>
+		);
+	}
+
+	return (
+		<div
+			data-marketing-composition={kind}
+			className="grid gap-6 md:grid-cols-2"
+		>
+			{sections.map((section) => (
+				<SectionCard key={section.title} section={section} />
+			))}
+		</div>
+	);
+}
+
 export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
+	const compositionKind = getMarketingCompositionKind(page.slug);
+	const conversionCopy = getMarketingConversionCopy(compositionKind);
 	return (
 		<>
 			<Section
@@ -53,31 +184,20 @@ export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
 				</Container>
 			</Section>
 			<Section>
-				<Container size="narrow" className="grid gap-6 md:grid-cols-2">
-					{page.sections.map((section) => (
-						<Card key={section.title} elevation="raised">
-							<CardHeader>
-								<CardTitle as="h2">{section.title}</CardTitle>
-								<CardDescription>{section.text}</CardDescription>
-							</CardHeader>
-							{section.items?.length ? (
-								<CardContent>
-									<ul className="grid gap-2 text-body text-content-default">
-										{section.items.map((item) => (
-											<li key={item}>— {item}</li>
-										))}
-									</ul>
-								</CardContent>
-							) : null}
-						</Card>
-					))}
+				<Container size="narrow">
+					<MarketingSections sections={page.sections} kind={compositionKind} />
 					{page.leadContext ? (
-						<div className="md:col-span-2">
-							<LeadFormView context={page.leadContext} />
+						<div className="mt-8">
+							<LeadFormView
+								context={page.leadContext}
+								title={conversionCopy.title}
+								description={conversionCopy.description}
+								submitLabel={conversionCopy.submitLabel}
+							/>
 						</div>
 					) : null}
 					{page.primaryAction ? (
-						<div className="md:col-span-2">
+						<div className="mt-8">
 							<Button asChild>
 								<a href={page.primaryAction.href}>{page.primaryAction.label}</a>
 							</Button>
