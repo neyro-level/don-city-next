@@ -135,6 +135,7 @@ const domainCategory = {
 	kvartiry: "apartment",
 	doma: "house",
 	uchastki: "land",
+	kommercheskaya: "commercial",
 } as const;
 
 const nearbyCategoryCopy = {

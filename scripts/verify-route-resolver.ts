@@ -97,6 +97,14 @@ for (const [path, statusCode, indexing, canonicalPath] of cases) {
 	}
 }
 
+for (const path of ["/kommercheskaya/", "/donetsk/kommercheskaya/"]) {
+	const result = await resolve(path);
+	assert.equal(result.kind, "page", path);
+	if (result.kind === "page") {
+		assert.equal(result.catalogQuery?.category, "commercial", path);
+	}
+}
+
 for (const path of [
 	"/kvartiry/donetsk/",
 	"/donetsk/novostroyki/",
