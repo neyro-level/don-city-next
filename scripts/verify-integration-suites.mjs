@@ -30,6 +30,7 @@ import { startFixtureHttpServer } from "./integration/fixture-http-server.mjs";
 import { createMemoryFeedRepository } from "./integration/memory-feed-repository.mjs";
 import {
 	prepareIntegrationDatabase,
+	proveAgglomerationModelMigration,
 	proveGeoRelationBackfillMigration,
 	proveLeadDeliveryRelationalMigration,
 	provePayloadAuthSecurityMigration,
@@ -269,6 +270,8 @@ await prepareIntegrationDatabase(preferredUri);
 proveLeadDeliveryRelationalMigration(preferredUri);
 await prepareIntegrationDatabase(preferredUri);
 proveGeoRelationBackfillMigration(preferredUri);
+await prepareIntegrationDatabase(preferredUri);
+proveAgglomerationModelMigration(preferredUri);
 const prepared = await prepareIntegrationDatabase(preferredUri);
 const testUri = prepared.uri;
 if (!process.env.PAYLOAD_SECRET && !prepared.fromZero) {

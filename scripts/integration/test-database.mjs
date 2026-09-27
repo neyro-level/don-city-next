@@ -8,6 +8,10 @@ import {
 	geoRelationBackfillDownSql,
 	geoRelationBackfillUpSql,
 } from "../../migrations/20260928_003000_geo_relation_backfill.ts";
+import {
+	agglomerationModelDownSql,
+	agglomerationModelUpSql,
+} from "../../migrations/20260928_130000_agglomeration_model.ts";
 import { propertyNumericInvariantsUpSql } from "../../src/core/data-access/system/sql/property-numeric-invariants.ts";
 import { assertLocalTestDatabaseUri } from "./env.mjs";
 
@@ -350,6 +354,88 @@ export function proveGeoRelationBackfillMigration(testUri) {
 	) {
 		throw new Error(
 			"Geo relation backfill rollback left its audit table behind.",
+		);
+	}
+}
+
+export function proveAgglomerationModelMigration(testUri) {
+	psql(
+		testUri,
+		`
+		CREATE TABLE cities (
+			id serial PRIMARY KEY,
+			name varchar NOT NULL,
+			slug varchar NOT NULL UNIQUE,
+			agglomeration_of_id integer REFERENCES cities(id)
+		);
+		INSERT INTO cities (id, name, slug, agglomeration_of_id) VALUES
+			(1, 'Донецк', 'donetsk', NULL),
+			(2, 'Макеевка', 'makeevka', 1);
+	`,
+	);
+	psql(testUri, agglomerationModelUpSql);
+	const migrated = psql(
+		testUri,
+		`SELECT string_agg(
+			id || ':' || locality_kind::text || ':' || agglomeration_approved::text,
+			',' ORDER BY id
+		) FROM cities`,
+	);
+	if (migrated !== "1:primary_city:false,2:nearby_locality:false") {
+		throw new Error(
+			`Agglomeration migration produced unsafe defaults: ${migrated}`,
+		);
+	}
+	expectPsqlFailure(
+		testUri,
+		`UPDATE cities SET
+			agglomeration_approved = true,
+			latitude = 48,
+			longitude = 37,
+			coordinates_verified_at = now(),
+			agglomeration_distance_km = 50.001,
+			agglomeration_approved_at = now()
+		WHERE id = 2`,
+		/cities_approved_nearby_complete/i,
+	);
+	psql(
+		testUri,
+		`UPDATE cities SET
+			agglomeration_approved = true,
+			latitude = 48,
+			longitude = 37,
+			coordinates_verified_at = now(),
+			agglomeration_distance_km = 25,
+			agglomeration_approved_at = now()
+		WHERE id = 2`,
+	);
+	if (
+		psql(
+			testUri,
+			"SELECT count(*) FROM cities WHERE id = 2 AND agglomeration_approved",
+		) !== "1"
+	) {
+		throw new Error("Eligible nearby locality was not preserved as approved.");
+	}
+	psql(testUri, agglomerationModelDownSql);
+	const remainingColumns = psql(
+		testUri,
+		`SELECT count(*) FROM information_schema.columns
+		 WHERE table_schema = 'public' AND table_name = 'cities'
+		 AND column_name IN (
+			'locality_kind', 'latitude', 'longitude', 'coordinates_verified_at',
+			'agglomeration_distance_km', 'agglomeration_approved',
+			'agglomeration_approved_at'
+		)`,
+	);
+	if (remainingColumns !== "0") {
+		throw new Error(
+			"Agglomeration migration rollback left added columns behind.",
+		);
+	}
+	if (psql(testUri, "SELECT count(*) FROM cities") !== "2") {
+		throw new Error(
+			"Agglomeration migration rollback changed existing city rows.",
 		);
 	}
 }

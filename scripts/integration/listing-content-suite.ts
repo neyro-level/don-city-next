@@ -49,6 +49,8 @@ try {
 	const city = await payload.create({
 		collection: "cities",
 		data: {
+			localityKind: "primary_city",
+			agglomerationApproved: false,
 			name: "Донецк",
 			slug: "donetsk",
 			region: region.id,

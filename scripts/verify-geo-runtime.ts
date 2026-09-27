@@ -24,6 +24,8 @@ try {
 		payload.create({
 			collection: "cities",
 			data: {
+				localityKind: "nearby_locality",
+				agglomerationApproved: false,
 				name: "Collision fixture",
 				slug: "kvartiry",
 				region: typeof city.region === "number" ? city.region : city.region.id,

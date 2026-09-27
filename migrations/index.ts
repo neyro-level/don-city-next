@@ -19,6 +19,7 @@ import * as migration_20260926_132000_s3_media_fields from './20260926_132000_s3
 import * as migration_20260927_000349_core55_responsive_media_sizes from './20260927_000349_core55_responsive_media_sizes';
 import * as migration_20260927_103500_core55_listing_content_registry_ids from './20260927_103500_core55_listing_content_registry_ids';
 import * as migration_20260928_003000_geo_relation_backfill from './20260928_003000_geo_relation_backfill';
+import * as migration_20260928_130000_agglomeration_model from './20260928_130000_agglomeration_model';
 
 export const migrations = [
   {
@@ -125,5 +126,10 @@ export const migrations = [
     up: migration_20260928_003000_geo_relation_backfill.up,
     down: migration_20260928_003000_geo_relation_backfill.down,
     name: '20260928_003000_geo_relation_backfill',
+  },
+  {
+    up: migration_20260928_130000_agglomeration_model.up,
+    down: migration_20260928_130000_agglomeration_model.down,
+    name: '20260928_130000_agglomeration_model',
   },
 ];
