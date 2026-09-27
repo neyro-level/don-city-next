@@ -64,6 +64,14 @@ DON CITY — отдельный client instance на Next.js App Router, React, 
 - Managed PostgreSQL 18 доступен приложению через private VPC; публичное раскрытие БД запрещено.
 - Production runtime secrets принадлежат scope `DonCity Server/prod`; значения не хранятся в Git или документации.
 - Host Nginx завершает TLS и проксирует production на loopback `3000`, staging — на `3100`.
+- HSTS имеет одного владельца — TLS-терминатор Nginx. Tracked TLS-hosts используют
+  `max-age=31536000; includeSubDomains` без `preload`; application runtime HSTS не
+  добавляет. `preload` запрещён до owner approval после полной DNS/TLS-инвентаризации.
+- CSP принадлежит Next.js и разделён по поверхностям. Публичный статически
+  оптимизируемый сайт временно сохраняет `unsafe-inline`; development-only React
+  diagnostics получает `unsafe-eval`. Payload Admin остаётся noindex и хранит
+  отдельное явно проверяемое compatibility-исключение. Nonce-CSP требует отдельного
+  решения, потому что переводит страницы в dynamic rendering и отключает ISR.
 - Production и staging используют один immutable image exact SHA, но разные env/database/storage prefixes.
 - Production: managed PostgreSQL 18, private Timeweb S3 prefix, `JOBS_AUTORUN=true`.
 - Staging: отдельная изолированная database/schema contract, отдельный storage prefix, `JOBS_AUTORUN=false`, всегда noindex.
