@@ -1,7 +1,7 @@
 # Technical Architecture
 
 Status: Active
-Version: 1.1
+Version: 1.2
 Updated: 2026-09-28
 
 ## Normative Baseline and Conformance
@@ -9,7 +9,11 @@ Updated: 2026-09-28
 - Platform baseline: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md`.
 - UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
-- Current conformance status: `PARTIAL / REVIEW`, not certified. The exact delta is governed by APPROVED Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 in `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`; earlier CP evidence remains historical.
+- Current conformance plan: `AMS-DON-CITY-LIVE-CONFORMANCE` v13.
+- Current conformance status: `PRE-RELEASE CANDIDATE`. All v13 implementation
+  epics are delivered; `DC11-DOC-FINAL` owns exact-head convergence before the
+  separately authorized mandatory production stage. Earlier CP evidence remains
+  historical.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary

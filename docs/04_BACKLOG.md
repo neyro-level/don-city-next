@@ -1,8 +1,8 @@
 # Backlog
 
 Status: Active
-Version: 1.2
-Updated: 2026-09-27
+Version: 1.3
+Updated: 2026-09-28
 
 ## Delivered
 
@@ -24,8 +24,8 @@ Updated: 2026-09-27
 - [x] Owner approved exact Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 at `2026-09-27T21:09:12+03:00`.
 - [x] Canonical v12→v13 non-destructive Upgrade passed in the one existing Beads store: 22/22 epics, 84 tasks, 106 managed nodes, zero drift/cycles.
 - [x] Production remains the mandatory final stage, has no autonomous task and requires a separate explicit release command.
-- [ ] Execute the Beads ready-loop. Beads is the only per-task execution state; this document does not duplicate a current task pointer.
-- [ ] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
+- [x] Execute the implementation Beads ready-loop through all R11/R12/UI/OPS delivery epics. Beads remains the only per-task execution state.
+- [x] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
 
 Earlier CP-01…CP-08 evidence remains delivered history. It is not the current
 program and does not create a persistent staging database or a second task graph.
@@ -34,7 +34,7 @@ program and does not create a persistent staging database or a second task graph
 
 1. W0: DOC-00, OPS-00 and the read-only inventory diagnostic establish factual contracts.
 2. W1–W3: catalog/geo/SEO/legal/UI implementation follows the exact dependencies in the approved plan.
-3. W4: locality activation remains owner-gated while independent work continues.
+3. W4: locality activation was owner-approved for Макеевка and delivered with only hub, apartments, houses and land routes.
 4. W5: `DC11-DOC-FINAL` proves the exact candidate and active-document convergence.
 5. W6: `DC11-PROD-FINAL` is mandatory and last; it requires a separate release command and no task follows it.
 
@@ -42,10 +42,9 @@ program and does not create a persistent staging database or a second task graph
 
 1. Создать первого production owner через безопасную bootstrap-команду.
 2. Выбрать и подключить независимый alert/delivery channel; проверить redacted lead delivery.
-3. Закрыть media backup/versioning и sampled restore evidence; вывести DB/media freshness в health.
-4. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
-5. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
-6. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
+3. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
+4. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
+5. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
 
 ## Final Production Gate
 
@@ -63,6 +62,8 @@ program and does not create a persistent staging database or a second task graph
 
 ## Technical Debt / Known Drift
 
-- `clientReadinessConfig` намеренно остаётся fail-closed по Nginx/backup/monitoring до полного operational evidence.
-- Health имеет статус `degraded`, пока отсутствуют durable `backup_db` и `backup_media` freshness signals.
+- `clientReadinessConfig` подтверждает Nginx, один jobs runtime и automatic backup;
+  `externalMonitoring` остаётся fail-closed до отдельного доказанного решения.
+- Authenticated health имеет статус `ok`; durable DB/media backup freshness и
+  sampled restore подтверждены DC10-OPS-00.
 - Старые локальные ветки/worktrees могут содержать уникальные или dirty изменения; их нельзя удалять силой без отдельной сверки/решения.

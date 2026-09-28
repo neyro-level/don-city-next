@@ -80,7 +80,6 @@ assert.deepEqual(buildRobots("public", fixtureOrigin), {
 		},
 	],
 	sitemap: `${fixtureOrigin}/sitemap.xml`,
-	host: fixtureOrigin,
 });
 assert.deepEqual(
 	buildRobots(

@@ -16,7 +16,8 @@ Updated: 2026-09-28
 
 - Production отвечает на `https://doncity-home.ru`; read-only evidence от 2026-09-27 подтверждает индексируемую homepage, разрешающий `robots.txt` и опубликованный sitemap.
 - Exact deployed SHA/image для текущего публично индексируемого состояния ещё должен быть привязан к release evidence; прежний noindex release `cd5c743912650525f84d2d110e6a43c4e6c6e35d` остаётся историческим rollback evidence, а не заявлением о текущей identity.
-- Последний документированный inventory baseline — 12 опубликованных объектов и 92 фотографии; `DC10-R11-00` обязан получить текущую redacted production-матрицу без mutation.
+- `DC10-R11-00` доставил воспроизводимую read-only redacted production-матрицу:
+  12 опубликованных объектов и 92 фотографии на зафиксированном baseline.
 - Реальный feed отключён; после owner-authorized удаления persistent staging
   остались ровно один production runtime, одна logical DB и один S3 bucket.
   Непроизводственные DB-проверки только disposable и удаляются после bounded proof.

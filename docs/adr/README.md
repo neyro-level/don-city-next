@@ -16,3 +16,4 @@ Master plan остаётся источником полного contract; ADR �
 | [ADR-0009](ADR-0009-commercial-public-contract.md) | Accepted | Activate commercial in the secondary-sale public contract as 1.4.0 |
 | [ADR-0010](ADR-0010-responsive-media-contract.md) | Accepted | Add optional responsive variants to managed media contract 1.5.0 |
 | [ADR-0011](ADR-0011-narrow-atomic-sql-recovery.md) | Accepted | Permit exactly two parameterized atomic recovery operations under OD-03 |
+| [ADR-0012](ADR-0012-home-primary-action-contract.md) | Accepted | Require the homepage primary action in base contract 2.0.0 |

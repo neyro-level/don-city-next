@@ -134,4 +134,4 @@ globals.css → Button/Input/Dialog → Container/Section → Header/Footer
 
 ## Проверка изменений
 
-При изменении темы проверяются: контраст ключевых пар, header/footer на mobile и desktop, клавиатурный focus, favicon, отсутствие horizontal overflow, один `h1`, metadata/robots и отсутствие donor identity. Production остаётся `noindex` до отдельного решения владельца.
+При изменении темы проверяются: контраст ключевых пар, header/footer на mobile и desktop, клавиатурный focus, favicon, отсутствие horizontal overflow, один `h1`, metadata/robots и отсутствие donor identity. Production публично индексируется; page-level registry/content gates продолжают управлять доступностью и индексируемостью отдельных URL.
