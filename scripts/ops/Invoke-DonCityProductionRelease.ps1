@@ -34,11 +34,18 @@ function Invoke-Ssh {
 
 function Assert-HttpStatus {
   param([string]$Url, [int[]]$Allowed)
-  $response = Invoke-WebRequest -Uri $Url -MaximumRedirection 0 -TimeoutSec 20 -SkipHttpErrorCheck
-  if ($Allowed -notcontains [int]$response.StatusCode) {
-    throw "Unexpected HTTP $($response.StatusCode) for $Url"
+  $response = $null
+  for ($attempt = 1; $attempt -le 10; $attempt += 1) {
+    $response = Invoke-WebRequest -Uri $Url -MaximumRedirection 0 -TimeoutSec 20 -SkipHttpErrorCheck
+    if ($Allowed -contains [int]$response.StatusCode) {
+      return $response
+    }
+    if ([int]$response.StatusCode -notin @(502, 503, 504) -or $attempt -eq 10) {
+      break
+    }
+    Start-Sleep -Seconds 3
   }
-  $response
+  throw "Unexpected HTTP $($response.StatusCode) for $Url after bounded release retries"
 }
 
 $branch = (& git branch --show-current).Trim()
