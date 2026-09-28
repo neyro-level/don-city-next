@@ -166,6 +166,13 @@ globals.css → Button/Input/Dialog → Container/Section → Header/Footer
 - Approved exceptions are limited to the original textured logo inside its own
   image asset and CMS-native Payload Admin styling. Neither exception may leak
   numeric tokens or public brand overrides into reusable components.
+- Four internal page-composition filenames retain the historical `Starter*`
+  prefix. Their package exports and React component names are already
+  client-neutral (`HomePageView`, `CatalogPageView`, `PropertyPageView`,
+  `MarketingPageView`), so renaming the files would only churn verification
+  paths without improving runtime ownership. New public compositions must use
+  client-neutral filenames; this exception does not permit new `Starter*`
+  owners.
 
 ## Disposition register
 
