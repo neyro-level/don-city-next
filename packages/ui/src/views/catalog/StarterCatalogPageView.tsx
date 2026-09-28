@@ -5,11 +5,6 @@ import type {
 	PropertyListDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
-import {
-	type AnalyticsFilterKey,
-	AnalyticsViewEvent,
-	type CatalogViewAnalyticsEvent,
-} from "../../analytics";
 import { Badge } from "../../components/ui/badge";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
 import { PublicPropertyCard } from "../property/StarterPropertyCardView";
@@ -32,6 +27,12 @@ export type CatalogPaginationItem = {
 	href?: string;
 	current?: boolean;
 };
+export type CatalogViewAnalyticsEvent =
+	| "all_property_view"
+	| "category_catalog_view"
+	| "district_view"
+	| "facet_view";
+export type AnalyticsFilterKey = "rooms" | "houseType";
 
 const defaultCopy: CatalogPageCopy = {
 	eyebrow: "Каталог",
@@ -68,32 +69,24 @@ export function CatalogPageView({
 }) {
 	return (
 		<>
-			<AnalyticsViewEvent
-				event={{
-					event: analyticsEvent,
-					pageKey: pageIdentity?.pageKey,
-					geoSlug: pageIdentity?.geoSlug,
-					category: pageIdentity?.category,
-				}}
-			/>
-			{analyticsFilterKeys.length ? (
-				<AnalyticsViewEvent
-					event={{
-						event: "filter_apply",
-						pageKey: pageIdentity?.pageKey,
-						geoSlug: pageIdentity?.geoSlug,
-						category: pageIdentity?.category,
-						filterKeys: analyticsFilterKeys,
-					}}
-				/>
-			) : null}
 			<section
 				id="section-catalog-hero"
 				className="border-b border-border bg-surface-raised py-[var(--section-space-md)]"
-				data-analytics-event={analyticsEvent}
+				data-analytics-view={analyticsEvent}
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
+				data-analytics-category={pageIdentity?.category}
 			>
+				{analyticsFilterKeys.length ? (
+					<span
+						hidden
+						data-analytics-view="filter_apply"
+						data-analytics-geo-slug={pageIdentity?.geoSlug}
+						data-analytics-page-key={pageIdentity?.pageKey}
+						data-analytics-category={pageIdentity?.category}
+						data-analytics-filter-keys={analyticsFilterKeys.join(",")}
+					/>
+				) : null}
 				<Container>
 					{breadcrumbs.length ? (
 						<nav

@@ -2,7 +2,7 @@
 
 import type { LeadFormContext, LeadFormKind } from "@ams/realtbase-contracts";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
-import { AnalyticsViewEvent, emitAnalyticsEvent } from "../../analytics";
+import { emitUiIntent } from "../../ui-intent";
 import { Button } from "../../components/ui/button";
 import {
 	Card,
@@ -108,8 +108,9 @@ export function LeadFormView({
 
 		setStatus("submitting");
 		setFormError(undefined);
-		emitAnalyticsEvent({
-			event: "lead_submit",
+		emitUiIntent({
+			kind: "lead-form",
+			phase: "submit",
 			pageKey: context.sourcePage,
 			formKind: context.formKind,
 		});
@@ -146,11 +147,12 @@ export function LeadFormView({
 				code?: string;
 			};
 			if (!response.ok || payload.accepted !== true) {
-				emitAnalyticsEvent({
-					event: "lead_error",
+				emitUiIntent({
+					kind: "lead-form",
+					phase: "error",
 					pageKey: context.sourcePage,
 					formKind: context.formKind,
-					outcomeCode: "rejected",
+					outcome: "rejected",
 				});
 				setStatus("server_error");
 				setFormError(
@@ -162,18 +164,20 @@ export function LeadFormView({
 			setRequestAttemptId(crypto.randomUUID());
 			setConsentAccepted(false);
 			setStatus("success");
-			emitAnalyticsEvent({
-				event: "lead_success",
+			emitUiIntent({
+				kind: "lead-form",
+				phase: "success",
 				pageKey: context.sourcePage,
 				formKind: context.formKind,
-				outcomeCode: "accepted",
+				outcome: "accepted",
 			});
 		} catch {
-			emitAnalyticsEvent({
-				event: "lead_error",
+			emitUiIntent({
+				kind: "lead-form",
+				phase: "error",
 				pageKey: context.sourcePage,
 				formKind: context.formKind,
-				outcomeCode: "network_error",
+				outcome: "network_error",
 			});
 			setStatus("server_error");
 			setFormError(
@@ -183,19 +187,14 @@ export function LeadFormView({
 	}
 
 	return (
-		<>
-			<AnalyticsViewEvent
-				event={{
-					event: "lead_form_view",
-					pageKey: context.sourcePage,
-					formKind: context.formKind,
-				}}
-			/>
-			<form
+		<form
 				id="lead-form"
 				aria-label="Форма заявки"
 				aria-describedby={formError ? ids.formError : undefined}
 				noValidate
+				data-analytics-view="lead_form_view"
+				data-analytics-page-key={context.sourcePage}
+				data-analytics-form-kind={context.formKind}
 				onSubmit={onSubmit}
 			>
 				<Card elevation="raised">
@@ -315,7 +314,6 @@ export function LeadFormView({
 						</Button>
 					</CardFooter>
 				</Card>
-			</form>
-		</>
+		</form>
 	);
 }

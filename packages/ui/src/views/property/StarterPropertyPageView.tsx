@@ -4,7 +4,6 @@ import type {
 	PropertyDetailsDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
-import { AnalyticsViewEvent } from "../../analytics";
 import { Button } from "../../components/ui/button";
 import {
 	Card,
@@ -34,19 +33,12 @@ export function PropertyPageView({
 }) {
 	return (
 		<>
-			<AnalyticsViewEvent
-				event={{
-					event: "property_open",
-					pageKey: pageIdentity?.pageKey,
-					geoSlug: pageIdentity?.geoSlug,
-					category: pageIdentity?.category,
-				}}
-			/>
 			<section
 				id="section-property-gallery"
-				data-analytics-event="property_open"
+				data-analytics-view="property_open"
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
+				data-analytics-category={pageIdentity?.category}
 			>
 				<Section as="div" space="hero">
 					<Container>

@@ -4,7 +4,6 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		"./analytics": "./src/analytics.tsx",
 		"./primitives": "./src/primitives.ts",
 		"./public/catalog-page": "./src/views/catalog/StarterCatalogPageView.tsx",
 		"./public/gone-property-page": "./src/views/property/GonePropertyPageView.tsx",

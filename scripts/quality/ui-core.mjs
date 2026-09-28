@@ -87,7 +87,6 @@ const uiPackage = readJson(join(root, "packages", "ui", "package.json"));
 assert.deepEqual(
 	Object.keys(uiPackage.exports).sort(),
 	[
-		"./analytics",
 		"./primitives",
 		"./public/catalog-page",
 		"./public/gone-property-page",
@@ -100,6 +99,15 @@ assert.deepEqual(
 	].sort(),
 	"UI package exports must stay intentional and closed",
 );
+for (const path of walk(join(root, "packages", "ui", "src"))) {
+	if (!/\.[cm]?[jt]sx?$/.test(path)) continue;
+	const source = readFileSync(path, "utf8");
+	if (/amsAnalyticsQueue|ams:analytics|emitAnalyticsEvent/.test(source)) {
+		failures.push(
+			`business analytics dispatch must stay project-owned: ${relative(root, path).replaceAll("\\", "/")}`,
+		);
+	}
+}
 
 for (const path of walk(join(root, "src", "app"))) {
 	if (!/\.[cm]?[jt]sx?$/.test(path)) continue;

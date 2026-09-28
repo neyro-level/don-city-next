@@ -116,7 +116,7 @@ monitoring or follow-up stage after production.
 - Site Profile: `SINGLE_GEO` Donetsk; активны secondary market и категории `kvartiry`, `doma`, `uchastki`, `kommercheskaya`.
 - Server Components по умолчанию; client boundaries только для интерактивных leaves.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
-- Public API `@ams/realtbase-ui` закрыт десятью canonical entrypoints: analytics,
+- Public API `@ams/realtbase-ui` закрыт девятью canonical entrypoints:
   primitives, семь активных public page/shell entrypoints и styles. Root barrel,
   `./views` и compatibility aliases `./starter/*` запрещены; будущие view modules
   остаются internal до отдельного activation contract.
@@ -139,7 +139,10 @@ monitoring or follow-up stage after production.
 - Form/lead transport and validation belong to the project application layer;
   reusable UI receives DTO/ViewModel data and typed intents only. Analytics is
   PII-safe, consent-aware and dispatched by the project layer, not by the UI
-  package.
+  package. UI emits only stable `data-analytics-*` markers and the generic
+  `ams:ui-intent`; `src/project/analytics-boundary.tsx` maps them to typed
+  events, while normalization, allowlisting, queue ownership and browser
+  dispatch live in `src/platform/analytics/`.
 - Metadata, canonical, Open Graph, robots, sitemap and structured data are
   route/project SEO owners. Public commercial pages keep one logical H1; 404 and
   the platform error boundary are mandatory.

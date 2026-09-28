@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import {
 	analyticsBrowserEventName,
 	emitAnalyticsEvent,
-} from "../packages/ui/src/analytics-browser.ts";
-import { normalizeAnalyticsEvent } from "../packages/ui/src/analytics-contract.ts";
+} from "../src/platform/analytics/browser.ts";
+import { normalizeAnalyticsEvent } from "../src/platform/analytics/contract.ts";
 import { buildPublicAnalyticsEvent } from "../src/platform/analytics/event.ts";
 
 const expectedEvents = [
@@ -41,10 +41,14 @@ for (const event of expectedEvents.slice(0, 4)) {
 		`${event} route wiring`,
 	);
 }
-assert.match(catalogSource, /event: "filter_apply"/);
-assert.match(propertySource, /event: "property_open"/);
-for (const event of expectedEvents.slice(6)) {
-	assert.match(leadSource, new RegExp(`event: ["]${event}["]`));
+assert.match(catalogSource, /data-analytics-view="filter_apply"/);
+assert.match(propertySource, /data-analytics-view="property_open"/);
+assert.match(leadSource, /data-analytics-view="lead_form_view"/);
+for (const phase of ["submit", "success", "error"]) {
+	assert.match(leadSource, new RegExp(`phase: ["]${phase}["]`));
+}
+for (const source of [catalogSource, propertySource, leadSource]) {
+	assert.doesNotMatch(source, /emitAnalyticsEvent|AnalyticsViewEvent/);
 }
 
 const hostileInput = {

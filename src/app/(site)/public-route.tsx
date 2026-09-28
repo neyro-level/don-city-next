@@ -1,8 +1,8 @@
 import type { MarketingPageDTO } from "@ams/realtbase-contracts";
-import type { CatalogViewAnalyticsEvent } from "@ams/realtbase-ui/analytics";
 import {
 	CatalogPageView,
 	type CatalogPaginationItem,
+	type CatalogViewAnalyticsEvent,
 } from "@ams/realtbase-ui/public/catalog-page";
 import { GonePropertyPageView } from "@ams/realtbase-ui/public/gone-property-page";
 import {
