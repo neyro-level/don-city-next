@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
 	assertNoPiiInDiagnostics,
 	evaluateProductionRetentionReadiness,
@@ -33,6 +34,83 @@ const alerts = buildOperationalAlerts({
 assert.ok(alerts.some((alert) => alert.code === "feeds_suspicious_runs"));
 assert.ok(alerts.some((alert) => alert.code === "delivery_stale_sending"));
 assert.ok(alerts.some((alert) => alert.code === "storage_media_unavailable"));
+
+const unconfiguredLeadDeliveryAlerts = buildOperationalAlerts({
+	feeds: {
+		overdueEnabled: 0,
+		suspiciousRuns: 0,
+		failedRuns: 0,
+		staleRunningRuns: 0,
+	},
+	jobs: {
+		autorunEnabled: true,
+		staticTaskCount: 4,
+		programmaticTaskCount: 2,
+	},
+	delivery: {
+		duePending: 0,
+		staleSending: 0,
+		abandoned: 0,
+		publicLeadIntakeEnabled: true,
+		enabledChannelCount: 0,
+	},
+	storage: {
+		mediaReady: true,
+		provider: "local",
+	},
+});
+assert.deepEqual(unconfiguredLeadDeliveryAlerts, [
+	{
+		code: "lead_delivery_channel_unconfigured",
+		severity: "warning",
+		component: "delivery",
+		message:
+			"Public lead intake is enabled without an approved outbound delivery channel.",
+	},
+]);
+assert.equal(
+	buildOperationalAlerts({
+		feeds: {
+			overdueEnabled: 0,
+			suspiciousRuns: 0,
+			failedRuns: 0,
+			staleRunningRuns: 0,
+		},
+		jobs: {
+			autorunEnabled: true,
+			staticTaskCount: 4,
+			programmaticTaskCount: 2,
+		},
+		delivery: {
+			duePending: 0,
+			staleSending: 0,
+			abandoned: 0,
+			publicLeadIntakeEnabled: true,
+			enabledChannelCount: 1,
+		},
+		storage: {
+			mediaReady: true,
+			provider: "local",
+		},
+	}).some((alert) => alert.code === "lead_delivery_channel_unconfigured"),
+	false,
+	"one approved channel must clear the unconfigured delivery warning",
+);
+
+const healthRouteSource = readFileSync(
+	"src/app/api/internal/healthz/route.ts",
+	"utf8",
+);
+for (const signal of [
+	"leadDelivery",
+	"operationallyReady",
+	"enabledLeadChannelCount",
+]) {
+	assert.ok(
+		healthRouteSource.includes(signal),
+		`authenticated health must expose ${signal}`,
+	);
+}
 
 const cacheAlerts = buildOperationalAlerts({
 	feeds: {

@@ -79,6 +79,8 @@ export async function GET(request: Request) {
 		autorunEnabled: runtimeEnv.JOBS_AUTORUN,
 		exactlyOne: projectConfig.jobsAutorunExactlyOne,
 	};
+	const publicLeadIntakeEnabled = true;
+	const enabledLeadChannelCount = resolveEnabledLeadChannels(runtimeEnv).length;
 	const components = {
 		app: { status: "ok" as const },
 		database: { status: "unknown" as "ok" | "down" | "unknown" },
@@ -96,6 +98,15 @@ export async function GET(request: Request) {
 			exactlyOne: jobsOwner.exactlyOne,
 			staticTaskCount: staticPayloadJobTasks.length,
 			programmaticTaskCount: programmaticPayloadJobTasks.length,
+		},
+		leadDelivery: {
+			status:
+				enabledLeadChannelCount > 0
+					? ("ok" as const)
+					: ("unconfigured" as const),
+			publicLeadIntakeEnabled,
+			enabledChannelCount: enabledLeadChannelCount,
+			operationallyReady: enabledLeadChannelCount > 0,
 		},
 	};
 
@@ -204,6 +215,8 @@ export async function GET(request: Request) {
 				duePending: duePendingDeliveries.totalDocs,
 				staleSending: staleSendingDeliveries.totalDocs,
 				abandoned: abandonedDeliveries.totalDocs,
+				publicLeadIntakeEnabled,
+				enabledChannelCount: enabledLeadChannelCount,
 			},
 			storage: {
 				mediaReady,
@@ -221,9 +234,8 @@ export async function GET(request: Request) {
 					isConfiguredRetentionDays(projectConfig.archiveRetentionDays),
 				productionReadinessFailed: !evaluateProductionRetentionReadiness({
 					runtimeMode: detectRuntimeEnvMode(),
-					publicLeadIntakeEnabled: true,
-					enabledLeadChannelCount:
-						resolveEnabledLeadChannels(runtimeEnv).length,
+					publicLeadIntakeEnabled,
+					enabledLeadChannelCount,
 					leadRetentionDays: projectConfig.leadRetentionDays,
 					archiveRetentionDays: projectConfig.archiveRetentionDays,
 				}).ok,

@@ -32,6 +32,23 @@ const channels = [
 	{ id: "disabled-channel", kind: "crm", enabled: false },
 ];
 
+const zeroChannelRepository = createRepository();
+const zeroChannelCommitted = await commitLeadOutbox({
+	intake,
+	channels: [],
+	repository: zeroChannelRepository,
+	nowIso: "2026-09-16T12:00:00.000Z",
+});
+assert.equal(zeroChannelCommitted.reusedExistingLead, false);
+assert.equal(zeroChannelCommitted.lead.id, "lead-1");
+assert.deepEqual(zeroChannelCommitted.deliveries, []);
+assert.equal(zeroChannelRepository.leads.length, 1);
+assert.equal(
+	zeroChannelRepository.transactions,
+	1,
+	"zero outbound channels must not reject a safely persisted local lead",
+);
+
 const missingRetentionRepository = createRepository();
 await assert.rejects(
 	() =>
