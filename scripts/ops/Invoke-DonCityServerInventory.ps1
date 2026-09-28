@@ -1,6 +1,8 @@
 param(
-  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof')]
+  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof', 'CleanupFailedTransport')]
   [string]$Action = 'Inventory',
+  [ValidatePattern('^[0-9a-f]{12}$')]
+  [string]$ReleaseShortSha,
   [string]$CodexHome = $(if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' })
 )
 
@@ -202,6 +204,22 @@ printf 'backup_timer_active=%s\n' "$timer_active"
 printf 'backup_service_result=%s\n' "$service_result"
 printf 'backup_service_status=%s\n' "$service_status"
 '@
+  Invoke-SshCommand `
+    -HostName $secrets.DONCITY_SERVER_SSH_HOST `
+    -UserName $secrets.DONCITY_DEPLOY_USER `
+    -PrivateKey $secrets.DONCITY_DEPLOY_SSH_KEY `
+    -RemoteCommand $remoteCommand
+}
+
+if ($Action -eq 'CleanupFailedTransport') {
+  if (-not $ReleaseShortSha) {
+    throw 'CleanupFailedTransport requires ReleaseShortSha.'
+  }
+  $remoteCommand = @'
+set -eu
+rm -f '/tmp/doncity-release-__SHORT__.tar' '/tmp/doncity-release-__SHORT__.tar.gz'
+printf 'failed_transport=absent\n'
+'@.Replace('__SHORT__', $ReleaseShortSha)
   Invoke-SshCommand `
     -HostName $secrets.DONCITY_SERVER_SSH_HOST `
     -UserName $secrets.DONCITY_DEPLOY_USER `
