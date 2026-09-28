@@ -146,13 +146,18 @@ for (const namespace of ["novostroyki", "komplex", "journal"]) {
 }
 
 const readiness = read("src/project/client-readiness.config.ts");
-for (const flag of ["nginx", "automaticBackup", "externalMonitoring"]) {
+for (const flag of ["nginx", "automaticBackup"]) {
 	assert.match(
 		readiness,
-		new RegExp(`${flag}: false`),
-		`${flag} must remain fail-closed without durable evidence`,
+		new RegExp(`${flag}: true`),
+		`${flag} must reflect the durable DC10-OPS-00 evidence`,
 	);
 }
+assert.match(
+	readiness,
+	/externalMonitoring: false/,
+	"externalMonitoring must remain fail-closed without durable evidence",
+);
 assert.match(readiness, /requiredHostAllowlists:\s*{[\s\S]*?outbound:\s*\[\][\s\S]*?externalImages:\s*\[\][\s\S]*?leadOutbound:\s*\[\]/);
 
 const pages = read("src/project/collections/Pages.ts");

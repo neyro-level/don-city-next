@@ -1,5 +1,18 @@
 # Contract changelog
 
+## 2026-09-28 — Persistent staging retired
+
+- Under explicit owner authorization, the persistent staging container,
+  Compose/runtime directory, staging-only image, separate logical database,
+  empty S3 bucket and Secret Master `/staging` folder were removed.
+- The shared S3 access identity and every production resource were preserved;
+  provider inventory now contains one managed cluster, one logical database and
+  one bucket for DON CITY.
+- Production remains healthy with one jobs owner. Daily backup execution,
+  DB/media freshness, sampled restore and public availability passed bounded
+  verification. No production release or post-production monitoring task was
+  created.
+
 ## 2026-09-27 — Live Conformance v13 approved
 
 - Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 became the current approved

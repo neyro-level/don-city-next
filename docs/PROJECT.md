@@ -2,7 +2,7 @@
 
 Status: Active — production live and publicly crawlable
 
-Updated: 2026-09-27
+Updated: 2026-09-28
 
 ## 1. Identity and profile
 
@@ -33,6 +33,9 @@ separate architecture decision and runtime proof.
 - The project has exactly one persistent production database. Non-production
   DB proof is disposable, isolated from production data/secrets/storage and
   removed after the bounded check; no persistent staging/shadow/mirror DB exists.
+- The former persistent staging runtime, logical database, S3 bucket and
+  Secret Master folder were owner-authorized for retirement and removed on
+  2026-09-28; the shared production storage credential was preserved.
 - Exactly one production runtime owns Payload job autorun. Handover is
   stop-old-before-enable-new.
 - Secret values and full connection URLs belong to Secret Master scope
@@ -119,11 +122,12 @@ lead operations are activated.
 - Media: Timeweb S3-compatible storage, region `ru-1`; bucket, credentials and
   production prefix are secret/deployment values.
 - Provider DB backup and one isolated restore/migration rehearsal are proven.
-- Durable offsite DB backup freshness, media versioning/backup, sampled media
-  restore and external uptime monitoring are not proven.
-- Therefore `nginx`, `automaticBackup` and `externalMonitoring` remain
-  fail-closed `false` in client readiness. Observed infrastructure alone does
-  not authorize changing those flags.
+- Daily offsite DB backup, integrity validation, DB restore rehearsal, media
+  copy and sampled checksum restore are proven; authenticated health reports
+  current DB/media backup freshness without alerts.
+- `nginx=true` and `automaticBackup=true` now reflect durable operational
+  evidence. `externalMonitoring` remains fail-closed `false`; bounded availability
+  proof stays inside release gates and does not create a post-production task.
 
 ## 9. Admin access
 
@@ -157,7 +161,6 @@ Configured facts are not the same as release readiness. Current blockers are:
 - approved independent alert/lead-delivery channel;
 - non-empty verified destination/image/outbound allowlists for any activated
   integration;
-- durable DB/media backup freshness and sampled media restore;
 - owner-verified canonical NAP;
 - exact deployed SHA/image evidence for the observed public-indexing state.
 

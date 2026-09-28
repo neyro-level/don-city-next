@@ -2,7 +2,7 @@
 
 Status: Active
 Version: 1.1
-Updated: 2026-09-27
+Updated: 2026-09-28
 
 ## Normative Baseline and Conformance
 
@@ -78,11 +78,18 @@ not duplicated configuration tables.
   отдельное явно проверяемое compatibility-исключение. Nonce-CSP требует отдельного
   решения, потому что переводит страницы в dynamic rendering и отключает ISR.
 - Exactly one persistent production database exists: managed PostgreSQL 18 over private VPC. Production also owns its private Timeweb S3 prefix and `JOBS_AUTORUN=true` runtime.
+- Owner-authorized retirement on 2026-09-28 removed the former persistent
+  staging runtime, its separate logical database, its empty S3 bucket and its
+  Secret Master `/staging` folder. The shared S3 access identity and all
+  production resources were preserved.
 - Non-production database proof создаётся только как disposable isolated local/temporary environment, никогда не разделяет production data/secrets/storage и удаляется после bounded проверки. Persistent staging/shadow/mirror database запрещена.
 - Last recorded noindex image `don-city-next:production-cd5c74391265` and prior image `don-city-next:production-31367bfe4adf` are historical rollback evidence. Exact deployed SHA/image for the observed public-indexing state remains pending release evidence.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 
-Текущий repository readiness config остаётся fail-closed для `nginx`, `automaticBackup` и `externalMonitoring`, пока эти возможности не представлены полным durable evidence. Эти flags являются честным состоянием capability, но не создают отдельный monitoring или follow-up этап после production.
+Repository readiness records the proved host Nginx and automatic backup
+capabilities as enabled. `externalMonitoring` remains fail-closed; required
+availability proof is bounded inside the release gate and does not create a
+monitoring or follow-up stage after production.
 
 ## 6. Jobs, Cache and Lifecycle
 
@@ -127,16 +134,17 @@ not duplicated configuration tables.
 - Перед merge: review и один manual exact-head SourceCraft `STANDARD` либо risk-specific `RISKY` gate.
 - Release: один manual exact-main workflow, один immutable artifact, один rollout и live smoke.
 - Database rollback связан с конкретной migration/backup evidence; application rollback использует предыдущий immutable image.
-- Provider DB backup и изолированный restore/migration proof подтверждены. Media backup/restore и durable health freshness остаются открытыми.
+- Provider DB backup, daily validated offsite copy, isolated restore/migration
+  rehearsal, sampled media restore and authenticated freshness are confirmed.
 
 ## 9. Current Operational Gaps
 
 - production owner user не создан;
 - независимый alert/delivery channel не подтверждён;
-- media backup/restore evidence отсутствует;
 - NAP требует внешней проверки владельцем;
 - реальный feed отключён;
-- internal health остаётся degraded из-за отсутствия durable DB/media backup freshness signals.
+- independent alert/delivery channel остаётся неподтверждённым; authenticated
+  health на проверке 2026-09-28 имеет статус `ok` без operational alerts.
 
 ## 10. Constraints
 

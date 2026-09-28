@@ -31,7 +31,7 @@ export const clientReadinessConfig = {
 	database: "timeweb-managed-postgresql",
 	mediaStorage: "timeweb-s3",
 	feedImageSource: null,
-	jobsActiveRuntimeCount: null,
+	jobsActiveRuntimeCount: 1,
 	leadRetentionDays: 100,
 	archiveRetentionDays: 100,
 	employeeArchiveRetention: "indefinite",
@@ -42,7 +42,7 @@ export const clientReadinessConfig = {
 		externalImages: [],
 		leadOutbound: [],
 	},
-	nginx: false,
-	automaticBackup: false,
+	nginx: true,
+	automaticBackup: true,
 	externalMonitoring: false,
 } as const satisfies ClientReadinessConfig;
