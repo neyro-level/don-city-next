@@ -33,6 +33,9 @@ Updated: 2026-09-28
 - [x] Implement and sample-restore media backup/versioning.
 - [x] Expose trustworthy DB/media backup freshness in authenticated health;
       bounded 2026-09-28 proof returned `ok` with zero alerts.
+- [x] The exact live-to-main delta contains four versioned migrations; release
+      order is fresh backup → ephemeral jobs-off migration → single-runtime
+      switch → bounded smoke, with no second database or persistent candidate.
 - [ ] Run one bounded production crawl for canonical, robots, sitemap, JSON-LD,
       Makeevka allowlisted routes and representative lifecycle responses inside
       `DC11-PROD-FINAL`; do not create a follow-up monitor.
