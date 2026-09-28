@@ -19,6 +19,7 @@ for (const expected of [
 ]) {
 	assert.ok(dockerfile.includes(expected), `Dockerfile must include ${expected}.`);
 }
+assert.ok(!productionRelease.includes("$home ="), "Release helper must not overwrite PowerShell's HOME variable.");
 assert.ok(
 	dockerfile.includes("id=don-city-pnpm-store"),
 	"Dockerfile must preserve the retry-safe pnpm BuildKit cache.",

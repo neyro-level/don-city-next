@@ -172,8 +172,8 @@ printf 'rollback_compose=%s\n' "$backup"
   $deployed = $true
   $deployOutput.Trim()
 
-  $home = Assert-HttpStatus -Url 'https://doncity-home.ru/' -Allowed @(200)
-  if ($home.Headers['X-Robots-Tag']) { throw 'Canonical homepage unexpectedly has a global X-Robots-Tag header.' }
+  $homeResponse = Assert-HttpStatus -Url 'https://doncity-home.ru/' -Allowed @(200)
+  if ($homeResponse.Headers['X-Robots-Tag']) { throw 'Canonical homepage unexpectedly has a global X-Robots-Tag header.' }
   $robots = Assert-HttpStatus -Url 'https://doncity-home.ru/robots.txt' -Allowed @(200)
   if ($robots.Content -match '(?im)^Disallow:\s*/\s*$') { throw 'Production robots.txt still denies the entire site.' }
   $sitemap = Assert-HttpStatus -Url 'https://doncity-home.ru/sitemap.xml' -Allowed @(200)
