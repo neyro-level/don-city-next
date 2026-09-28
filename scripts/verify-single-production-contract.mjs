@@ -61,6 +61,8 @@ const serverOperator = requireFragments("scripts/ops/Invoke-DonCityServerInvento
 	"-replace \"\`r\`n\", \"\`n\"",
 	"CleanupFailedTransport",
 	"failed_transport=absent",
+	"CleanupFailedRelease",
+	"cleanup_refused=release-is-running",
 ]);
 assert.doesNotMatch(serverOperator, /RetireRuntime/);
 assert.doesNotMatch(serverOperator, /rm\s+-rf/);
