@@ -27,6 +27,13 @@ const tokenSource = readFileSync(
 for (const prefix of forbiddenTokenPrefixes) {
 	assert.doesNotMatch(tokenSource, new RegExp(prefix));
 }
+assert.doesNotMatch(tokenSource, /--home-articles-/);
+for (const path of [
+	join(root, "packages", "ui", "src", "views", "home", "HomeArticlesPreviewView.tsx"),
+	join(root, "packages", "ui", "src", "styles", "home-articles.css"),
+]) {
+	assert.equal(existsSync(path), false, `Disabled journal presentation must stay absent: ${path}`);
+}
 
 const contentModels = readFileSync(
 	join(root, "packages", "ui", "src", "view-models", "content.ts"),
@@ -63,5 +70,5 @@ for (const path of sourceFiles(root)) {
 }
 
 console.log(
-	"verify:dead-ui-cleanup: ok (14 files, 24 tokens, 2 DTO aliases removed)",
+	"verify:dead-ui-cleanup: ok (disabled journal presentation and historical corporate UI absent)",
 );

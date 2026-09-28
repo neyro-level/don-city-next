@@ -254,8 +254,6 @@ const required = [
 	"--site-radius-sm",
 	"--site-radius-lg",
 	"--site-radius-full",
-	"--site-font-weight-medium",
-	"--site-font-weight-bold",
 	"--site-frame-max",
 	"--site-frame-floating-max",
 	"--container-copy-measure",

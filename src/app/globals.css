@@ -54,9 +54,6 @@
   --text-primary: #14231f;
   --text-secondary: #40504a;
   --text-muted: #6b746f;
-  --home-articles-chip: #f3ede2;
-  --home-articles-chip-hover: #e9dfcf;
-  --home-articles-media: #eee6da;
   --text-dark: var(--brand-ivory);
   --border: #dcd2c2;
   --dark-border: rgba(244, 232, 193, 0.18);
@@ -84,10 +81,6 @@
   --site-radius-xl: 12px;
   --site-radius-full: 999px;
   --radius: 8px;
-  --site-font-weight-medium: 500;
-  --site-font-weight-semibold: 600;
-  --site-font-weight-bold: 700;
-  --site-font-weight-extrabold: 800;
   --site-frame-max: 1380px;
   --site-frame-floating-max: calc(var(--site-frame-max) + 40px);
   --site-section-space-desktop: 88px;
@@ -121,7 +114,6 @@
   --media-control-content: var(--text-dark);
   --motion-duration-fast: 180ms;
   --motion-duration-standard: 250ms;
-  --motion-duration-extended: 350ms;
   --motion-ease-standard: ease;
   --motion-ease-balanced: ease-in-out;
   --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
