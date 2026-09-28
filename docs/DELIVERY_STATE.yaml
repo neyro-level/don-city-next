@@ -2,24 +2,24 @@ schema_version: 1
 program: AMS-DON-CITY-LIVE-CONFORMANCE
 plan_version: v13
 plan_status: APPROVED
-current_wave: LIVE_CONFORMANCE_W0
-current_epic: DC10-OPS-00
-current_task: dc11-task-101-implement
-next_action: continue-beads-ready-loop-without-production
+current_wave: LIVE_CONFORMANCE_W5
+current_epic: DC11-DOC-FINAL
+current_task: dc11-task-120-implement
+next_action: complete-final-documentation-audit-then-stop-before-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 125483309c622fd751bae6c19cf643ca698213d1
-  active_branch: codex/dc11-101-operational-readiness
+  base_sha: 9e166460de1939191671787074209fe9f6a504d3
+  active_branch: codex/dc11-120-final-doc-audit
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-101-implement
-  reason: owner-authorized persistent staging retirement completed; exact-head verification and delivery remain
+  current_task: dc11-task-120-implement
+  reason: all implementation delivery epics are closed; final active-document and exact-candidate convergence is in progress
 live_conformance:
   dc10_ops_00:
-    status: staging-retired-operational-proof-pass
+    status: delivered
     observed_at: 2026-09-28
     persistent_runtime_count: 1
     persistent_database_cluster_count: 1
@@ -35,7 +35,17 @@ live_conformance:
     staging_bucket: absent
     staging_secret_folder: absent
     production_release_authorized: false
+    pull_request: 102
+    gate_run: 114
+    exact_head: 4d9b02e4232fab8207a1405160401fe936ce8bfc
+    merge_commit: 9e166460de1939191671787074209fe9f6a504d3
     evidence: docs/research/DC11_OPS00_STAGING_RETIREMENT_VERIFICATION.md
+  dc11_doc_final:
+    status: implementation-in-progress
+    baseline_main: 9e166460de1939191671787074209fe9f6a504d3
+    open_p0_p1_contradictions: 0
+    production_release_authorized: false
+    preflight: docs/replan/DC11_DOC_FINAL_PREFLIGHT.md
 historical_evidence:
   rp_00:
     status: delivered

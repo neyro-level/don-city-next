@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 2,
-	"contractVersion": "1.5.0",
+	"contractVersion": "2.0.0",
 	"state": "frozen",
 	"algorithm": "sha256-normalized-lf",
 	"files": [
@@ -22,7 +22,7 @@
 		},
 		{
 			"path": "packages/contracts/src/index.ts",
-			"sha256": "7d5f6d74e81803f071c29330af6477109e495e0c9014c30779822a6454858b85"
+			"sha256": "16fd296739aef3d93540ae9c9a508acf5c52a4eea5394f428c3964c008a011b0"
 		},
 		{
 			"path": "packages/contracts/src/lead.ts",
@@ -30,7 +30,7 @@
 		},
 		{
 			"path": "packages/contracts/src/marketing.ts",
-			"sha256": "efc79e8e8f1ecaf677a2033755aec311de8bb4a8da2716cf44655672e0ea7a66"
+			"sha256": "d7023f1bc0fb5d88bc6cc375bf5c863e7fef70d40f759cb26984039d2f80ca31"
 		},
 		{
 			"path": "packages/contracts/src/media.ts",
@@ -57,5 +57,5 @@
 			"sha256": "1242b3933c68ba857603cb5f8bb7dbc38f55678b9582d27474ee76e1d9e32250"
 		}
 	],
-	"aggregateSha256": "db6374a99ab378850cbc9018b58da5efbbf2653cae44a7862392893c81e8a722"
+	"aggregateSha256": "95fff98ac0f6430b7c88d1c49644b91ef7dd50132b9b58f2a3e40f0d2220e79b"
 }

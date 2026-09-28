@@ -1,5 +1,16 @@
 # Contract changelog
 
+## 2026-09-28 — Final pre-release documentation convergence
+
+- Active backlog, design and delivery state were reconciled with public
+  indexing, delivered backup health, completed staging retirement and the
+  `DC11-DOC-FINAL` execution stage.
+- The stale robots `Host` assertion was removed while sitemap, Clean-param and
+  allow/disallow policy remain protected.
+- The already delivered required `HomePageDTO.primaryAction` is formalized as
+  base contract `2.0.0` through ADR-0012 and a regenerated frozen lock.
+- Production remains unauthorized, mandatory and last; no task follows it.
+
 ## 2026-09-28 — Persistent staging retired
 
 - Under explicit owner authorization, the persistent staging container,
