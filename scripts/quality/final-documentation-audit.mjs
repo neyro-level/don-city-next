@@ -34,18 +34,24 @@ assert.doesNotMatch(backlog, /Health имеет статус `degraded`/);
 assert.doesNotMatch(backlog, /Закрыть media backup\/versioning/);
 
 const delivery = requireFragments("docs/DELIVERY_STATE.yaml", [
-	"current_epic: DC11-DOC-FINAL",
-	"current_task: dc11-task-120-",
+	"current_epic: DC11-PROD-FINAL",
+	"current_task: owner-release-command-required",
+	"next_action: await-explicit-owner-production-release-command",
 	"status: delivered",
 	"pull_request: 102",
 	"gate_run: 114",
+	"pull_request: 103",
+	"gate_run: 116",
+	"status: awaiting-explicit-owner-command",
+	"autonomous_task: absent",
+	"post_production_monitoring_task: forbidden",
 	"open_p0_p1_contradictions: 0",
 	"production_release_authorized: false",
 	"authorized: false",
 ]);
 assert.doesNotMatch(
 	delivery.slice(0, delivery.indexOf("historical_evidence:")),
-	/current_task: dc11-task-101-implement/,
+	/current_task: dc11-task-(?:101-implement|120-delivery)/,
 );
 
 requireFragments("docs/02_PRODUCT_STRUCTURE.md", [
