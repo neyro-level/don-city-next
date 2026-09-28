@@ -1,5 +1,5 @@
 param(
-  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof', 'CleanupFailedTransport')]
+  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof', 'CleanupFailedTransport', 'CleanupFailedRelease')]
   [string]$Action = 'Inventory',
   [ValidatePattern('^[0-9a-f]{12}$')]
   [string]$ReleaseShortSha,
@@ -219,6 +219,35 @@ if ($Action -eq 'CleanupFailedTransport') {
 set -eu
 rm -f '/tmp/doncity-release-__SHORT__.tar' '/tmp/doncity-release-__SHORT__.tar.gz'
 printf 'failed_transport=absent\n'
+'@.Replace('__SHORT__', $ReleaseShortSha)
+  Invoke-SshCommand `
+    -HostName $secrets.DONCITY_SERVER_SSH_HOST `
+    -UserName $secrets.DONCITY_DEPLOY_USER `
+    -PrivateKey $secrets.DONCITY_DEPLOY_SSH_KEY `
+    -RemoteCommand $remoteCommand
+}
+
+if ($Action -eq 'CleanupFailedRelease') {
+  if (-not $ReleaseShortSha) {
+    throw 'CleanupFailedRelease requires ReleaseShortSha.'
+  }
+  $remoteCommand = @'
+set -eu
+docker_cmd='sudo -n docker'
+target_image='don-city-next:production-__SHORT__'
+backup='/srv/doncity/production/compose.before-__SHORT__.yml'
+running_id=$($docker_cmd ps -q --filter 'name=^/doncity-production-app$')
+[ -n "$running_id" ] || { echo 'production_runtime=missing'; exit 61; }
+running_image=$($docker_cmd inspect --format '{{.Config.Image}}' "$running_id")
+[ "$running_image" != "$target_image" ] || { echo 'cleanup_refused=release-is-running'; exit 62; }
+rm -f '/tmp/doncity-release-__SHORT__.tar' '/tmp/doncity-release-__SHORT__.tar.gz'
+sudo -n rm -f "$backup"
+if $docker_cmd image inspect "$target_image" >/dev/null 2>&1; then
+  [ "$($docker_cmd ps -aq --filter "ancestor=${target_image}" | wc -l)" -eq 0 ] || { echo 'cleanup_refused=image-in-use'; exit 63; }
+  $docker_cmd image rm "$target_image" >/dev/null
+fi
+printf 'failed_release_artifacts=absent\n'
+printf 'production_image=%s\n' "$running_image"
 '@.Replace('__SHORT__', $ReleaseShortSha)
   Invoke-SshCommand `
     -HostName $secrets.DONCITY_SERVER_SSH_HOST `

@@ -130,7 +130,8 @@ gzip -dc "$artifact" | $docker_cmd load >/dev/null
 loaded_revision=$($docker_cmd image inspect "$new_image" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')
 [ "$loaded_revision" = "$expected_revision" ] || { echo 'loaded_revision=mismatch'; exit 29; }
 sudo -n cp "$compose_file" "$backup"
-sudo -n sed -E -i "s#^([[:space:]]*image:[[:space:]]*).*$#\1${new_image}#" "$compose_file"
+sudo -n sed -i "s|${previous_image}|${new_image}|" "$compose_file"
+sudo -n grep -Fq "$new_image" "$compose_file" || { echo 'compose_image_update=failed'; exit 30; }
 sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" up -d --no-deps app-production >/dev/null
 
 healthy='false'
@@ -144,21 +145,21 @@ if [ "$healthy" != 'true' ]; then
   sudo -n cp "$backup" "$compose_file"
   sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" up -d --no-deps app-production >/dev/null
   echo 'rollback=executed'
-  exit 30
+  exit 31
 fi
 
 current_id=$($docker_cmd ps -q --filter 'name=^/doncity-production-app$')
 current_image=$($docker_cmd inspect --format '{{.Config.Image}}' "$current_id")
 current_revision=$($docker_cmd inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$current_id")
-[ "$current_image" = "$new_image" ] || { echo 'running_image=mismatch'; exit 31; }
-[ "$current_revision" = "$expected_revision" ] || { echo 'running_revision=mismatch'; exit 32; }
+[ "$current_image" = "$new_image" ] || { echo 'running_image=mismatch'; exit 32; }
+[ "$current_revision" = "$expected_revision" ] || { echo 'running_revision=mismatch'; exit 33; }
 jobs_owner_count=0
 for container_id in $($docker_cmd ps -q); do
   if $docker_cmd inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$container_id" | grep -qx 'JOBS_AUTORUN=true'; then
     jobs_owner_count=$((jobs_owner_count + 1))
   fi
 done
-[ "$jobs_owner_count" -eq 1 ] || { echo "jobs_owner_count=$jobs_owner_count"; exit 33; }
+[ "$jobs_owner_count" -eq 1 ] || { echo "jobs_owner_count=$jobs_owner_count"; exit 34; }
 rm -f "$artifact"
 printf 'previous_image=%s\n' "$previous_image"
 printf 'running_image=%s\n' "$current_image"
