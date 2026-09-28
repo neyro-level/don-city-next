@@ -669,9 +669,9 @@ export interface Lead {
   idempotencyKey: string;
   retentionMode: 'delete' | 'anonymize';
   /**
-   * Optional per-row retention boundary. Project default leadRetentionDays remains canonical unless set.
+   * Mandatory per-row PII retention boundary derived from the canonical project policy.
    */
-  retentionUntil?: string | null;
+  retentionUntil: string;
   /**
    * Set when leadRetentionCleanup deleted/anonymized PII for this lead.
    */

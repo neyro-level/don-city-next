@@ -34,6 +34,7 @@ import {
 	proveDistrictCanonicalFormsMigration,
 	proveGeoRelationBackfillMigration,
 	proveLeadDeliveryRelationalMigration,
+	proveLeadRetentionBoundaryMigration,
 	provePayloadAuthSecurityMigration,
 	provePropertyNumericMigration,
 	psqlOnTest,
@@ -277,6 +278,8 @@ await prepareIntegrationDatabase(preferredUri);
 provePropertyNumericMigration(preferredUri);
 await prepareIntegrationDatabase(preferredUri);
 proveLeadDeliveryRelationalMigration(preferredUri);
+await prepareIntegrationDatabase(preferredUri);
+proveLeadRetentionBoundaryMigration(preferredUri);
 await prepareIntegrationDatabase(preferredUri);
 proveGeoRelationBackfillMigration(preferredUri);
 await prepareIntegrationDatabase(preferredUri);

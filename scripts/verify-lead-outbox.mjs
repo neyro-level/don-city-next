@@ -21,7 +21,7 @@ const intake = prepareLeadIntake(
 		submittedAt: "2026-09-16T12:00:00.000Z",
 		requestAttemptId: "11111111-1111-4111-8111-111111111111",
 	},
-	{ nowIso: "2026-09-16T12:00:00.000Z" },
+	{ nowIso: "2026-09-16T12:00:00.000Z", leadRetentionDays: 100 },
 );
 assert.equal(intake.accepted, true);
 
@@ -31,6 +31,24 @@ const channels = [
 	{ id: "crm-main", kind: "crm", enabled: true },
 	{ id: "disabled-channel", kind: "crm", enabled: false },
 ];
+
+const missingRetentionRepository = createRepository();
+await assert.rejects(
+	() =>
+		commitLeadOutbox({
+			intake: {
+				...intake,
+				lead: { ...intake.lead, retentionUntil: undefined },
+			},
+			channels,
+			repository: missingRetentionRepository,
+			nowIso: "2026-09-16T12:00:00.000Z",
+		}),
+	/Lead retention boundary is required/,
+);
+assert.equal(missingRetentionRepository.transactions, 0);
+assert.equal(missingRetentionRepository.leads.length, 0);
+assert.equal(missingRetentionRepository.deliveries.length, 0);
 
 const committed = await commitLeadOutbox({
 	intake,
@@ -136,7 +154,7 @@ const secondAttempt = prepareLeadIntake(
 		submittedAt: "2026-09-16T12:10:00.000Z",
 		requestAttemptId: "22222222-2222-4222-8222-222222222222",
 	},
-	{ nowIso: "2026-09-16T12:10:00.000Z" },
+	{ nowIso: "2026-09-16T12:10:00.000Z", leadRetentionDays: 100 },
 );
 assert.equal(secondAttempt.accepted, true);
 const secondCommitted = await commitLeadOutbox({

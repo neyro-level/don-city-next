@@ -827,6 +827,7 @@ const directDeleteLead = await payload.create({
 			consentedAt: clock.nowIso(),
 		},
 		idempotencyKey: `itest-direct-delete-${suffix}`,
+		retentionUntil: "2099-01-01T00:00:00.000Z",
 		retentionMode: "delete",
 	},
 	...access,

@@ -16,6 +16,10 @@ import {
 	districtCanonicalFormsDownSql,
 	districtCanonicalFormsUpSql,
 } from "../../migrations/20260928_233000_district_canonical_forms.ts";
+import {
+	leadRetentionBoundaryDownSql,
+	leadRetentionBoundaryUpSql,
+} from "../../migrations/20260928_235500_lead_retention_boundary.ts";
 import { propertyNumericInvariantsUpSql } from "../../src/core/data-access/system/sql/property-numeric-invariants.ts";
 import { assertLocalTestDatabaseUri } from "./env.mjs";
 
@@ -218,6 +222,43 @@ export function proveLeadDeliveryRelationalMigration(testUri) {
 			"Lead delete did not cascade on the previous non-empty fixture.",
 		);
 	}
+}
+
+export function proveLeadRetentionBoundaryMigration(testUri) {
+	psql(
+		testUri,
+		`
+		CREATE TABLE leads (
+			id serial PRIMARY KEY,
+			created_at timestamptz NOT NULL,
+			retention_until timestamptz
+		);
+		INSERT INTO leads (created_at, retention_until) VALUES
+			('2020-01-01T00:00:00Z', NULL),
+			('2026-09-01T00:00:00Z', NULL),
+			('2026-09-02T00:00:00Z', '2030-01-01T00:00:00Z');
+	`,
+	);
+	psql(testUri, leadRetentionBoundaryUpSql);
+	const boundaries = psql(
+		testUri,
+		`SELECT string_agg(to_char(retention_until AT TIME ZONE 'UTC', 'YYYY-MM-DD'), '|' ORDER BY id) FROM leads`,
+	);
+	if (boundaries !== "2020-04-10|2026-12-10|2030-01-01") {
+		throw new Error(
+			`Lead retention backfill changed its contract: ${boundaries}`,
+		);
+	}
+	expectPsqlFailure(
+		testUri,
+		"INSERT INTO leads (created_at, retention_until) VALUES (NOW(), NULL)",
+		/./s,
+	);
+	psql(testUri, leadRetentionBoundaryDownSql);
+	psql(
+		testUri,
+		"INSERT INTO leads (created_at, retention_until) VALUES (NOW(), NULL)",
+	);
 }
 
 export function proveGeoRelationBackfillMigration(testUri) {

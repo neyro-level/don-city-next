@@ -39,7 +39,10 @@ export type LeadOutboxRepository = {
 
 export type LeadOutboxTransaction = {
 	createLead(
-		input: LeadIntakeAccepted["lead"] & { status: "new" },
+		input: LeadIntakeAccepted["lead"] & {
+			status: "new";
+			retentionUntil: string;
+		},
 	): Promise<LeadRecord>;
 	createLeadDelivery(
 		input: Omit<LeadDeliveryRecord, "id">,
@@ -72,6 +75,10 @@ export async function commitLeadOutbox({
 	repository,
 	nowIso,
 }: CommitLeadOutboxInput): Promise<CommitLeadOutboxResult> {
+	const retentionUntil = intake.lead.retentionUntil;
+	if (!retentionUntil) {
+		throw new Error("Lead retention boundary is required before persistence.");
+	}
 	const existingLead = await repository.findLeadByIdempotencyKey(
 		intake.lead.idempotencyKey,
 	);
@@ -87,6 +94,7 @@ export async function commitLeadOutbox({
 		return await repository.transaction(async (tx) => {
 			const lead = await tx.createLead({
 				...intake.lead,
+				retentionUntil,
 				status: "new",
 			});
 			const deliveries: LeadDeliveryRecord[] = [];
