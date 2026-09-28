@@ -30,11 +30,12 @@ for (const rule of rules.rules) {
 }
 
 const fixture = [
-	'<div className="rounded-[18px] text-[13px] font-[550] duration-[175ms]" />',
+	'<div className="gap-[18px] rounded-[18px] text-[13px] font-[550] duration-[175ms]" />',
 	'<div className="rounded-[15px] bg-[#fff]" />',
 ].join("\n");
 const fixtureFindings = scanDesignLiterals(fixture);
 for (const value of [
+	"gap-[18px]",
 	"rounded-[18px]",
 	"rounded-[15px]",
 	"text-[13px]",
@@ -49,10 +50,25 @@ for (const value of [
 }
 assert.deepEqual(
 	scanDesignLiterals(
-		'<div className="w-[42px] grid-cols-[1fr_auto] aspect-[4/3] rounded-[var(--radius)] text-[var(--text)]" />',
+		'<div className="w-[42px] grid-cols-[1fr_auto] aspect-[4/3] gap-[var(--space)] rounded-[var(--radius)] text-[var(--text)]" />',
 	),
 	[],
 	"structural geometry and CSS variables must not be design-literal violations",
+);
+const cssFixture = scanDesignLiterals(
+	".card { padding-block: 34px; margin-bottom: 18px; gap: 20px; font-size: 13px; font-weight: 550; border-radius: 18px; color: #fff; transition-duration: 175ms; }",
+	"fixture.css",
+);
+for (const kind of ["spacing", "type-size", "type-weight", "radius", "color", "motion-duration"]) {
+	assert.ok(cssFixture.some((finding) => finding.kind === kind), `CSS fixture not detected: ${kind}`);
+}
+assert.deepEqual(
+	scanDesignLiterals(
+		".layout { width: 100%; grid-template-columns: 1fr auto; aspect-ratio: 4 / 3; inline-size: calc(100% - var(--gutter)); gap: var(--space); }",
+		"fixture.css",
+	),
+	[],
+	"structural CSS geometry and token-backed rhythm must stay allowed",
 );
 
 const designFindings = collectDesignFindings(root);

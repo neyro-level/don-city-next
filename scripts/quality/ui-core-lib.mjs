@@ -16,6 +16,7 @@ export function walk(directory) {
 export function scanDesignLiterals(source, file = "fixture.tsx") {
 	const findings = [];
 	const patterns = [
+		["spacing", /\b(?:py|pt|pb|mt|mb|gap)-\[(?!var\(--)([0-9.]+(?:px|rem))\]/g],
 		["radius", /\brounded-\[(?!var\(--|inherit\])([^\]]+)\]/g],
 		[
 			"color",
@@ -25,6 +26,16 @@ export function scanDesignLiterals(source, file = "fixture.tsx") {
 		["type-weight", /\bfont-\[(?!var\(--)([1-9][0-9]{2})\]/g],
 		["motion-duration", /\bduration-\[(?!var\(--)([0-9.]+(?:ms|s))\]/g],
 	];
+	if (file.endsWith(".css") && !file.endsWith("src/app/globals.css")) {
+		patterns.push(
+			["spacing", /(?:padding-block|margin(?:-block|-top|-bottom)?|gap)\s*:\s*[^;]*\b([0-9.]+px)\b/g],
+			["type-size", /font-size\s*:\s*([0-9.]+(?:px|rem))\b/g],
+			["type-weight", /font-weight\s*:\s*([1-9][0-9]{2})\b/g],
+			["radius", /border-radius\s*:\s*([0-9.]+(?:px|rem))\b/g],
+			["color", /(?:color|background(?:-color)?|border-color)\s*:\s*(#[0-9a-f]{3,8}|rgba?\([^;]+\))/gi],
+			["motion-duration", /(?:transition|animation)-duration\s*:\s*([0-9.]+(?:ms|s))\b/g],
+		);
+	}
 
 	for (const [kind, pattern] of patterns) {
 		for (const match of source.matchAll(pattern)) {
