@@ -28,8 +28,9 @@ workflows:
           - name: verify-sourcecraft-commit
             script:
               - sh scripts/verify-sourcecraft-gate.sh
-              - corepack pnpm install --frozen-lockfile
-              - corepack pnpm verify:final-release-contract
+              - corepack enable
+              - pnpm install --frozen-lockfile
+              - pnpm verify:final-release-contract
 
   release-main:
     inputs:

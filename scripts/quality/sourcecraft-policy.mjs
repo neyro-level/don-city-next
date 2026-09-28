@@ -10,7 +10,8 @@ const required = [
 	"EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}",
 	"sh scripts/verify-sourcecraft-gate.sh",
 	"sh scripts/verify-sourcecraft-release.sh",
-	"corepack pnpm verify:final-release-contract",
+	"corepack enable",
+	"pnpm verify:final-release-contract",
 ];
 const forbidden = [
 	/^\s*on\s*:/m,
