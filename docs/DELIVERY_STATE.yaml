@@ -4,7 +4,7 @@ plan_version: v13
 plan_status: APPROVED
 current_wave: LIVE_CONFORMANCE_W5
 current_epic: DC11-DOC-FINAL
-current_task: dc11-task-120-implement
+current_task: dc11-task-120-verify
 next_action: complete-final-documentation-audit-then-stop-before-production
 repository:
   key: don-city-next
@@ -15,8 +15,8 @@ repository:
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-120-implement
-  reason: all implementation delivery epics are closed; final active-document and exact-candidate convergence is in progress
+  current_task: dc11-task-120-verify
+  reason: final active-document convergence is implemented; exact pushed-head verification is in progress
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -41,7 +41,7 @@ live_conformance:
     merge_commit: 9e166460de1939191671787074209fe9f6a504d3
     evidence: docs/research/DC11_OPS00_STAGING_RETIREMENT_VERIFICATION.md
   dc11_doc_final:
-    status: implementation-in-progress
+    status: verification-in-progress
     baseline_main: 9e166460de1939191671787074209fe9f6a504d3
     open_p0_p1_contradictions: 0
     production_release_authorized: false
