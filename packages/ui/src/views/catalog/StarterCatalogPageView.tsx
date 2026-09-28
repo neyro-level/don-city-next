@@ -125,7 +125,7 @@ export function CatalogPageView({
 			</section>
 			{copy.introduction ? (
 				<section id="section-catalog-introduction">
-					<Section>
+					<Section as="div">
 						<Container size="narrow">
 							<p className="whitespace-pre-line text-body-lg text-content-default">
 								{copy.introduction}
@@ -135,7 +135,7 @@ export function CatalogPageView({
 				</section>
 			) : null}
 			<section id="section-catalog-filters" aria-label="Фильтры">
-				<Section>
+				<Section as="div">
 					<Container>
 						<fieldset className="mb-8 flex flex-wrap gap-2">
 							<legend className="sr-only">Доступные фильтры</legend>
@@ -164,16 +164,20 @@ export function CatalogPageView({
 					</Container>
 				</nav>
 			) : null}
-			<section id="section-catalog-toolbar" aria-label="Результаты">
+			<section
+				id="section-catalog-toolbar"
+				aria-labelledby="catalog-toolbar-title"
+			>
 				<Container>
 					<SectionHeader
+						titleId="catalog-toolbar-title"
 						title={`Найдено: ${filters.resultLabel}`}
 						description="Показываем только подтверждённые характеристики объекта."
 					/>
 				</Container>
 			</section>
 			<section id="section-catalog-grid">
-				<Section>
+				<Section as="div">
 					<Container>
 						{list.items.length ? (
 							<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -220,7 +224,7 @@ export function CatalogPageView({
 				</Section>
 			</section>
 			<section id="section-catalog-cta">
-				<Section className="bg-surface-subtle">
+				<Section as="div" className="bg-surface-subtle">
 					<Container size="narrow">
 						<LeadFormView
 							context={leadContext}

@@ -48,7 +48,7 @@ export function PropertyPageView({
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
 			>
-				<Section space="hero">
+				<Section as="div" space="hero">
 					<Container>
 						<nav
 							aria-label="Хлебные крошки"
@@ -150,7 +150,7 @@ export function PropertyPageView({
 					id="section-property-legal-check"
 					className="bg-surface-raised"
 				>
-					<Section>
+					<Section as="div">
 						<Container size="narrow">
 							<Card>
 								<CardHeader>
@@ -177,10 +177,17 @@ export function PropertyPageView({
 					</Section>
 				</section>
 			) : null}
-			<section id="section-property-related" className="bg-surface-subtle">
-				<Section>
+			<section
+				id="section-property-related"
+				aria-labelledby="property-related-title"
+				className="bg-surface-subtle"
+			>
+				<Section as="div">
 					<Container>
-						<SectionHeader title="Похожие объекты" />
+						<SectionHeader
+							titleId="property-related-title"
+							title="Похожие объекты"
+						/>
 						{property.related.length ? (
 							<div className="mt-8 grid gap-6 md:grid-cols-2">
 								{property.related.map((item) => (
@@ -197,7 +204,7 @@ export function PropertyPageView({
 				</Section>
 			</section>
 			<section id="section-property-lead">
-				<Section>
+				<Section as="div">
 					<Container size="narrow">
 						{leadContext ? (
 							<LeadFormView

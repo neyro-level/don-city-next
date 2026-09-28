@@ -111,6 +111,20 @@ for (const path of walk(join(root, "src", "app"))) {
 	}
 }
 
+for (const relativePath of [
+	"packages/ui/src/views/home/StarterHomePageView.tsx",
+	"packages/ui/src/views/catalog/StarterCatalogPageView.tsx",
+	"packages/ui/src/views/property/StarterPropertyPageView.tsx",
+]) {
+	const source = readFileSync(join(root, relativePath), "utf8");
+	if (/<section[^>]*>[\s\S]{0,240}<Section(?:\s|>)(?![^>]*as=["']div["'])/.test(source)) {
+		failures.push(`semantic section nesting: ${relativePath}`);
+	}
+	if (/<SectionHeader[\s\S]{0,300}<h2[^>]*sr-only/.test(source)) {
+		failures.push(`duplicate visible and sr-only section heading: ${relativePath}`);
+	}
+}
+
 const shellSource = readFileSync(
 	join(
 		root,
