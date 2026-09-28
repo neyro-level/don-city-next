@@ -17,10 +17,37 @@ type TransactionalDb = {
 	rollbackTransaction?: (id: string | number) => Promise<void>;
 };
 
-function asRequest(
-	transactionID?: string | number,
-): PayloadRequest | undefined {
-	return internalAccessMode("lead-intake", transactionID).req;
+type RequiredTransactionalDb = {
+	beginTransaction: NonNullable<TransactionalDb["beginTransaction"]>;
+	commitTransaction: NonNullable<TransactionalDb["commitTransaction"]>;
+	rollbackTransaction: NonNullable<TransactionalDb["rollbackTransaction"]>;
+};
+
+function requireTransactionalDb(payload: Payload): RequiredTransactionalDb {
+	const db = payload.db as TransactionalDb;
+	if (
+		typeof db.beginTransaction !== "function" ||
+		typeof db.commitTransaction !== "function" ||
+		typeof db.rollbackTransaction !== "function"
+	) {
+		throw new Error("Lead intake transaction capability is unavailable.");
+	}
+	return {
+		beginTransaction: db.beginTransaction.bind(payload.db),
+		commitTransaction: db.commitTransaction.bind(payload.db),
+		rollbackTransaction: db.rollbackTransaction.bind(payload.db),
+	};
+}
+
+function isValidTransactionId(value: unknown): value is string | number {
+	return (
+		(typeof value === "string" && value.trim().length > 0) ||
+		(typeof value === "number" && Number.isFinite(value))
+	);
+}
+
+function asRequest(transactionID: string | number): PayloadRequest {
+	return internalAccessMode("lead-intake", transactionID).req as PayloadRequest;
 }
 
 function relationId(value: unknown): string {
@@ -104,7 +131,7 @@ function mapDelivery(doc: Record<string, unknown>): LeadDeliveryRecord {
 export function createPayloadLeadOutboxRepository(
 	payload: Payload,
 ): LeadOutboxRepository {
-	const createTx = (transactionID?: string | number): LeadOutboxTransaction => {
+	const createTx = (transactionID: string | number): LeadOutboxTransaction => {
 		const req = asRequest(transactionID);
 		return {
 			async createLead(input) {
@@ -133,7 +160,7 @@ export function createPayloadLeadOutboxRepository(
 						fraudFingerprint: input.fraudFingerprint,
 					},
 					depth: 0,
-					...(req ? { req } : {}),
+					req,
 					overrideAccess: intakeAccess.overrideAccess,
 					context: intakeAccess.context,
 				});
@@ -152,7 +179,7 @@ export function createPayloadLeadOutboxRepository(
 						idempotencyKey: input.idempotencyKey,
 					},
 					depth: 0,
-					...(req ? { req } : {}),
+					req,
 					overrideAccess: intakeAccess.overrideAccess,
 					context: intakeAccess.context,
 				});
@@ -163,22 +190,17 @@ export function createPayloadLeadOutboxRepository(
 
 	return {
 		async transaction(operation) {
-			const db = payload.db as TransactionalDb;
-			const transactionID = await db.beginTransaction?.();
-			const activeId =
-				typeof transactionID === "string" || typeof transactionID === "number"
-					? transactionID
-					: undefined;
+			const db = requireTransactionalDb(payload);
+			const transactionID = await db.beginTransaction();
+			if (!isValidTransactionId(transactionID)) {
+				throw new Error("Lead intake transaction could not be started.");
+			}
 			try {
-				const result = await operation(createTx(activeId));
-				if (activeId !== undefined) {
-					await db.commitTransaction?.(activeId);
-				}
+				const result = await operation(createTx(transactionID));
+				await db.commitTransaction(transactionID);
 				return result;
 			} catch (error) {
-				if (activeId !== undefined) {
-					await db.rollbackTransaction?.(activeId);
-				}
+				await db.rollbackTransaction(transactionID).catch(() => undefined);
 				throw error;
 			}
 		},

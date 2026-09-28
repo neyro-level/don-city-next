@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createPayloadLeadOutboxRepository } from "../src/core/data-access/leads/payload-outbox-repository.ts";
 import {
 	accelerateLeadDeliveryJobs,
 	commitLeadOutbox,
@@ -123,7 +124,159 @@ assert.equal(secondCommitted.reusedExistingLead, false);
 assert.equal(repository.leads.length, 2);
 assert.equal(repository.deliveries.length, 4);
 
+for (const fixture of [
+	{ name: "missing begin", db: transactionDb({ begin: undefined }) },
+	{ name: "missing commit", db: transactionDb({ commit: undefined }) },
+	{ name: "missing rollback", db: transactionDb({ rollback: undefined }) },
+	{ name: "false transaction", db: transactionDb({ transactionId: false }) },
+	{ name: "null transaction", db: transactionDb({ transactionId: null }) },
+	{ name: "empty transaction", db: transactionDb({ transactionId: "" }) },
+	{
+		name: "invalid numeric transaction",
+		db: transactionDb({ transactionId: Number.NaN }),
+	},
+]) {
+	const payload = createPayloadFixture(fixture.db);
+	await assert.rejects(
+		() =>
+			createPayloadLeadOutboxRepository(payload).transaction(async (tx) => {
+				await tx.createLead({ ...intake.lead, status: "new" });
+			}),
+		/Lead intake transaction/,
+		fixture.name,
+	);
+	assert.equal(
+		payload.writes.length,
+		0,
+		`${fixture.name}: writes must stay zero`,
+	);
+}
+
+const commitDb = transactionDb({});
+const commitPayload = createPayloadFixture(commitDb);
+await createPayloadLeadOutboxRepository(commitPayload).transaction(
+	async (tx) => {
+		const lead = await tx.createLead({ ...intake.lead, status: "new" });
+		await tx.createLeadDelivery({
+			lead: lead.id,
+			channelId: "max",
+			channelKind: "messenger",
+			status: "pending",
+			attempts: 0,
+			nextAttemptAt: "2026-09-16T12:00:00.000Z",
+			idempotencyKey: "lead:1:channel:max",
+		});
+	},
+);
+assert.equal(commitDb.commits, 1);
+assert.equal(commitDb.rollbacks, 0);
+assert.equal(commitPayload.writes.length, 2);
+
+const rollbackDb = transactionDb({});
+const rollbackPayload = createPayloadFixture(rollbackDb, {
+	failDelivery: true,
+});
+await assert.rejects(
+	() =>
+		createPayloadLeadOutboxRepository(rollbackPayload).transaction(
+			async (tx) => {
+				const lead = await tx.createLead({ ...intake.lead, status: "new" });
+				await tx.createLeadDelivery({
+					lead: lead.id,
+					channelId: "max",
+					channelKind: "messenger",
+					status: "pending",
+					attempts: 0,
+					nextAttemptAt: "2026-09-16T12:00:00.000Z",
+					idempotencyKey: "lead:1:channel:max",
+				});
+			},
+		),
+	/delivery write failed/,
+);
+assert.equal(rollbackDb.commits, 0);
+assert.equal(rollbackDb.rollbacks, 1);
+assert.equal(rollbackPayload.writes.length, 0);
+
+const failedCommitDb = transactionDb({
+	commit: async () => {
+		throw new Error("commit failed");
+	},
+});
+const failedCommitPayload = createPayloadFixture(failedCommitDb);
+await assert.rejects(
+	() =>
+		createPayloadLeadOutboxRepository(failedCommitPayload).transaction(
+			async (tx) => {
+				await tx.createLead({ ...intake.lead, status: "new" });
+			},
+		),
+	/commit failed/,
+);
+assert.equal(failedCommitDb.commits, 1);
+assert.equal(failedCommitDb.rollbacks, 1);
+assert.equal(failedCommitPayload.writes.length, 0);
+
 console.log("verify-lead-outbox: ok");
+
+function transactionDb(options) {
+	let begin = Object.hasOwn(options, "begin")
+		? options.begin
+		: async () => "lead-tx-1";
+	const commit = Object.hasOwn(options, "commit")
+		? options.commit
+		: async () => undefined;
+	const rollback = Object.hasOwn(options, "rollback")
+		? options.rollback
+		: async () => undefined;
+	const state = { commits: 0, rollbacks: 0 };
+	if (Object.hasOwn(options, "transactionId")) {
+		begin = async () => options.transactionId;
+	}
+	if (begin !== undefined) state.beginTransaction = begin;
+	if (commit !== undefined) {
+		state.commitTransaction = async (id) => {
+			state.commits += 1;
+			return commit(id);
+		};
+	}
+	if (rollback !== undefined) {
+		state.rollbackTransaction = async (id) => {
+			state.rollbacks += 1;
+			return rollback(id);
+		};
+	}
+	return state;
+}
+
+function createPayloadFixture(db, { failDelivery = false } = {}) {
+	const writes = [];
+	const payload = {
+		db,
+		writes,
+		async create({ collection, data, req }) {
+			assert.equal(req?.transactionID, "lead-tx-1");
+			if (collection === "lead-deliveries" && failDelivery) {
+				writes.length = 0;
+				throw new Error("delivery write failed");
+			}
+			const record = {
+				...data,
+				id: collection === "leads" ? 1 : 2,
+			};
+			writes.push(record);
+			return record;
+		},
+	};
+	const originalRollback = db.rollbackTransaction;
+	if (originalRollback) {
+		db.rollbackTransaction = async (id) => {
+			writes.length = 0;
+			return originalRollback(id);
+		};
+	}
+	return payload;
+}
 
 function createRepository() {
 	const state = {
