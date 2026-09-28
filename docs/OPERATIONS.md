@@ -19,6 +19,16 @@ Updated: 2026-09-28
 
 - Deploy only from clean canonical SourceCraft `main`, exact approved SHA and immutable image.
 - Build/install/`git pull` on the host are forbidden.
+- The compact runtime image and the ephemeral migration image are built from
+  the same exact SHA. The migration image is never a persistent application
+  runtime and is removed after its one bounded migration process.
+- SourceCraft can publish both images to the connected organization registry
+  through its short-lived built-in `SOURCECRAFT_TOKEN`; no long-lived registry
+  secret or external service connection is required. Publication is manual,
+  verifies the exact canonical `main` SHA and remains separate from rollout.
+  The production runbook then pulls those exact-SHA tags, resolves the runtime
+  digest, pins Compose to that digest and removes the temporary registry login.
+  Neither the workstation nor the Timeweb host rebuilds the application.
 - Before migrations, trigger a fresh validated offsite backup and bind its
   successful service result, the candidate image and rollback point to the
   release evidence.

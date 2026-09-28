@@ -19,6 +19,30 @@ RUN --mount=type=cache,id=don-city-pnpm-store,target=/pnpm/store \
 COPY . .
 RUN ./node_modules/.bin/next build --webpack
 
+FROM build AS migration-package
+
+RUN pnpm --filter don-city-next deploy --prod --legacy /migration \
+	&& rm -rf /migration/.next /migration/public /migration/docs /migration/deploy
+
+FROM node:24.20.0-bookworm-slim AS migration
+
+ENV NODE_ENV=production \
+	COREPACK_HOME=/tmp/corepack \
+	HOME=/tmp \
+	NEXT_TELEMETRY_DISABLED=1 \
+	JOBS_AUTORUN=false
+
+WORKDIR /app
+
+RUN groupadd --system --gid 1001 nodejs \
+	&& useradd --system --uid 1001 --gid nodejs nextjs
+
+COPY --from=migration-package --chown=nextjs:nodejs /migration ./
+
+USER nextjs
+
+CMD ["node", "--conditions=react-server", "./node_modules/payload/bin.js", "migrate"]
+
 FROM node:24.20.0-bookworm-slim AS runtime
 
 ENV NODE_ENV=production \
@@ -30,13 +54,14 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.5.1 --activate \
-	&& groupadd --system --gid 1001 nodejs \
+RUN groupadd --system --gid 1001 nodejs \
 	&& useradd --system --uid 1001 --gid nodejs nextjs
 
-COPY --from=build --chown=nextjs:nodejs /app ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["./node_modules/.bin/next", "start"]
+CMD ["node", "server.js"]

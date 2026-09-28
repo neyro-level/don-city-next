@@ -62,6 +62,7 @@ const adminCsp = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+	output: "standalone",
 	trailingSlash: true,
 	skipTrailingSlashRedirect: true,
 	transpilePackages: ["@ams/realtbase-ui", "@ams/realtbase-contracts"],

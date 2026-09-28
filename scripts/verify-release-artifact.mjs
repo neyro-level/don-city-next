@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(path, "utf8");
 
 const dockerfile = read("Dockerfile");
+const dockerignore = read(".dockerignore");
 const compose = read("deploy/clients/timeweb/production/compose.production.yml.example");
 const nginx = read("deploy/clients/timeweb/production/nginx.production-public.conf.example");
 const operations = read("docs/OPERATIONS.md");
@@ -15,9 +16,21 @@ for (const expected of [
 	"node:24.20.0-bookworm-slim",
 	"pnpm install --frozen-lockfile",
 	"./node_modules/.bin/next build --webpack",
-	'"./node_modules/.bin/next", "start"',
+	"/app/.next/standalone",
+	'CMD ["node", "server.js"]',
+	'CMD ["node", "--conditions=react-server", "./node_modules/payload/bin.js", "migrate"]',
 ]) {
 	assert.ok(dockerfile.includes(expected), `Dockerfile must include ${expected}.`);
+}
+assert.ok(
+	!dockerfile.includes("COPY --from=build --chown=nextjs:nodejs /app ./"),
+	"Runtime image must not copy the complete build workspace.",
+);
+for (const excluded of ["docs", "scripts", ".sourcecraft", ".devcontainer"]) {
+	assert.ok(
+		dockerignore.split(/\r?\n/).includes(excluded),
+		`.dockerignore must exclude ${excluded} from the application build context.`,
+	);
 }
 assert.ok(!productionRelease.includes("$home ="), "Release helper must not overwrite PowerShell's HOME variable.");
 assert.ok(
@@ -25,22 +38,25 @@ assert.ok(
 	"Dockerfile must preserve the retry-safe pnpm BuildKit cache.",
 );
 for (const expected of [
-	"7-Zip\\7z.exe",
-	"-tgzip",
-	"Get-FileHash",
-	'gzip -dc "$artifact"',
-	"artifact_checksum=mismatch",
 	"rollback=executed-after-smoke-failure",
 	"$attempt -le 10",
 	"@(502, 503, 504)",
 	"bounded release retries",
 	"systemctl start doncity-backup.service",
-	"--env JOBS_AUTORUN=false",
-	"./node_modules/payload/bin.js migrate",
+	"JOBS_AUTORUN=false",
+	"pkg.sourcecraft.tech/cr/integrator-p/cn1h8kfcah4l5sn4enbm/don-city-next",
+	"--password-stdin",
+	'registry_docker pull "$new_image"',
+	'new_digest=$($docker_cmd image inspect "$new_image"',
+	"cleanup_registry_auth",
 	"migrations=success",
 ]) {
 	assert.ok(productionRelease.includes(expected), `Production release helper must include ${expected}.`);
 }
+assert.ok(
+	!productionRelease.includes("docker build"),
+	"Production host release must pull the SourceCraft-built image, not build it.",
+);
 assert.ok(!dockerfile.includes("DATABASE_URI="), "Dockerfile must not embed database credentials.");
 assert.ok(!compose.includes("DATABASE_URI="), "Compose template must not embed database credentials.");
 assert.ok(compose.includes('${IMAGE:?'), "Compose must require an immutable image tag.");

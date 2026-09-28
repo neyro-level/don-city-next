@@ -88,6 +88,10 @@ not duplicated configuration tables.
 - Non-production database proof создаётся только как disposable isolated local/temporary environment, никогда не разделяет production data/secrets/storage и удаляется после bounded проверки. Persistent staging/shadow/mirror database запрещена.
 - Last recorded noindex image `don-city-next:production-cd5c74391265` and prior image `don-city-next:production-31367bfe4adf` are historical rollback evidence. Exact deployed SHA/image for the observed public-indexing state remains pending release evidence.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
+- Runtime artifact uses Next.js standalone output. The application image contains
+  only traced runtime files, static assets and the minimum Payload source needed
+  by the server; Payload migrations use a separate ephemeral image built from
+  the same exact SHA. Both artifacts carry the same revision label.
 
 Repository readiness records the proved host Nginx and automatic backup
 capabilities as enabled. `externalMonitoring` remains fail-closed; required
@@ -136,6 +140,14 @@ monitoring or follow-up stage after production.
 - Branch/PR не запускают платный CI автоматически.
 - Перед merge: review и один manual exact-head SourceCraft `STANDARD` либо risk-specific `RISKY` gate.
 - Release: один manual exact-main workflow, один immutable artifact, один rollout и live smoke.
+- SourceCraft `release-main` is the only manual image publication workflow. It
+  publishes immutable runtime and migration tags for the exact full SHA to the
+  connected organization registry using SourceCraft's short-lived built-in CI
+  token; it does not deploy production.
+- The production runbook uses a repository-scoped runtime pull credential from
+  `DonCity Server/prod`, resolves the published runtime tag to a registry digest
+  and pins Compose to that digest. The credential is passed through stdin and
+  the temporary Docker auth directory is removed after the pull.
 - Database rollback связан с конкретной migration/backup evidence; application rollback использует предыдущий immutable image.
 - Provider DB backup, daily validated offsite copy, isolated restore/migration
   rehearsal, sampled media restore and authenticated freshness are confirmed.

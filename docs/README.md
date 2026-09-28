@@ -49,6 +49,8 @@ not current execution state.
 | release | `05_RELEASE_CHECKLIST.md` |
 | active project design policy | `DESIGN.md` |
 | operations / runtime | `OPERATIONS.md` |
+| SourceCraft Spaces pilot | `SOURCECRAFT_SPACES.md` |
+| SourceCraft organization/platform audit | `SOURCECRAFT_PLATFORM_AUDIT.md` |
 | детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
 | долговечные архитектурные решения | `adr/README.md` |
 | история contract | `CHANGELOG.md` |

@@ -1,0 +1,27 @@
+{
+	"name": "Don City SourceCraft Space",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/node:2": {
+			"version": "24.20.0",
+			"nodeGypDependencies": true,
+			"pnpmVersion": "11.5.1"
+		}
+	},
+	"remoteEnv": {
+		"NEXT_TELEMETRY_DISABLED": "1"
+	},
+	"forwardPorts": [8000],
+	"portsAttributes": {
+		"8000": {
+			"label": "Don City development",
+			"onAutoForward": "notify"
+		}
+	},
+	"postCreateCommand": "pnpm install --frozen-lockfile",
+	"customizations": {
+		"vscode": {
+			"extensions": ["biomejs.biome"]
+		}
+	}
+}

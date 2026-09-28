@@ -11,3 +11,9 @@ dist
 *.tsbuildinfo
 graphify-out
 .release
+.devcontainer
+.sourcecraft
+deploy
+docs
+scripts
+*.md

@@ -1,4 +1,20 @@
 workflows:
+  registry-auth-probe:
+    inputs:
+      expected_commit_sha:
+        type: string
+        required: true
+        description: Full lowercase SHA to verify against the connected SourceCraft registry.
+    tasks:
+      - name: verify-native-registry-access
+        env:
+          EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}
+          IMAGE_REPOSITORY: pkg.sourcecraft.tech/cr/integrator-p/cn1h8kfcah4l5sn4enbm/don-city-next
+        cubes:
+          - name: sourcecraft-registry-auth-probe
+            script:
+              - sh scripts/ci/sourcecraft-registry-auth-probe.sh
+
   merge-standard:
     inputs:
       expected_commit_sha:
@@ -42,7 +58,11 @@ workflows:
       - name: attest-exact-public-main
         env:
           EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}
+          IMAGE_REPOSITORY: pkg.sourcecraft.tech/cr/integrator-p/cn1h8kfcah4l5sn4enbm/don-city-next
         cubes:
           - name: verify-release-main
             script:
               - sh scripts/verify-sourcecraft-release.sh
+          - name: build-and-publish-sourcecraft-images
+            script:
+              - sh scripts/ci/sourcecraft-image-publish.sh
