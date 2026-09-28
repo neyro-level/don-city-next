@@ -110,6 +110,32 @@ try {
 
 	const introduction =
 		"Уникальный проверенный текст Калининской страницы. ".repeat(14);
+	for (const contextFacts of [
+		undefined,
+		[],
+		[{ source: " ", checkedAt: now }],
+		[{ source: "owner fixture", checkedAt: "not-a-date" }],
+		[
+			{ source: "owner fixture", checkedAt: now },
+			{ source: "", checkedAt: now },
+		],
+	]) {
+		await assert.rejects(
+			() =>
+				payload.create({
+					collection: "listing-contents",
+					data: {
+						registryId: "APT_DIST_KALIN",
+						status: "approved",
+						introduction,
+						...(contextFacts === undefined ? {} : { contextFacts }),
+					},
+					overrideAccess: false,
+					user: owner,
+				}),
+			/District approval requires at least one verified context fact\./,
+		);
+	}
 	await assert.rejects(
 		() =>
 			payload.create({

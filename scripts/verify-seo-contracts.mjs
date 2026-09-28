@@ -20,12 +20,14 @@ import {
 	xRobotsTagForPolicy,
 } from "../src/project/indexing-policy.ts";
 import {
+	projectDefaultSocialImage,
 	toMetadata as toProjectMetadata,
 	withProjectIndexingPolicy,
 } from "../src/project/page-metadata.ts";
 import { projectUrls } from "../src/project/url-grammar.ts";
 
 const fixtureOrigin = "https://realty-client.example";
+const projectOrigin = "https://doncity-home.ru";
 assert.equal(getProjectIndexingPolicy(), "public");
 assert.equal(
 	resolveIndexingPolicy({
@@ -68,6 +70,44 @@ assert.deepEqual(
 	).robots,
 	{ index: false, follow: false },
 );
+const defaultSocialMetadata = toProjectMetadata({
+	title: "Page",
+	description: "Description",
+	canonicalPath: "/page/",
+	indexing: "index",
+	following: "follow",
+});
+assert.equal(
+	defaultSocialMetadata.openGraph?.images?.[0]?.url,
+	new URL(projectDefaultSocialImage.src, projectOrigin).toString(),
+);
+assert.equal(defaultSocialMetadata.openGraph?.images?.[0]?.width, 1200);
+assert.equal(defaultSocialMetadata.openGraph?.images?.[0]?.height, 630);
+assert.equal(defaultSocialMetadata.twitter?.card, "summary_large_image");
+const propertySocialMetadata = toProjectMetadata({
+	title: "Property",
+	description: "Property description",
+	canonicalPath: "/obekty/123/",
+	indexing: "index",
+	following: "follow",
+	openGraph: {
+		image: {
+			kind: "managed",
+			src: "/api/media/file/property.jpg",
+			alt: "Property",
+			width: 1600,
+			height: 900,
+		},
+	},
+});
+assert.equal(
+	propertySocialMetadata.openGraph?.images?.[0]?.url,
+	`${projectOrigin}/api/media/file/property.jpg`,
+);
+const socialPng = readFileSync("public/brand/don-city-social-default.png");
+assert.equal(socialPng.toString("ascii", 1, 4), "PNG");
+assert.equal(socialPng.readUInt32BE(16), 1200);
+assert.equal(socialPng.readUInt32BE(20), 630);
 assert.deepEqual(buildRobots("noindex", fixtureOrigin), {
 	rules: [{ userAgent: "*", disallow: "/" }],
 });
@@ -94,10 +134,10 @@ assert.deepEqual(
 const robotsSource = readFileSync("src/app/robots.txt/route.ts", "utf8");
 assert.ok(robotsSource.includes("buildRobotsText("));
 assert.ok(robotsSource.includes("getProjectIndexingPolicy()"));
-assert.ok(
-	readFileSync("src/app/layout.tsx", "utf8").includes(
-		"metadataRobotsForPolicy(getProjectIndexingPolicy())",
-	),
+assert.doesNotMatch(
+	readFileSync("src/app/layout.tsx", "utf8"),
+	/robots\s*:/,
+	"Root metadata must not conflict with Next.js automatic 404 noindex metadata.",
 );
 
 const adversarialJsonLd = {

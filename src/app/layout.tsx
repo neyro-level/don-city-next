@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { getSiteUrl } from "@/core/seo/site";
-import {
-	getProjectIndexingPolicy,
-	metadataRobotsForPolicy,
-} from "@/project/indexing-policy";
 import { siteConfig } from "@/project/site.config";
 
 import "./globals.css";
@@ -19,7 +15,8 @@ export const metadata: Metadata = {
 	metadataBase: new URL(getSiteUrl()),
 	title: siteConfig.defaultTitle,
 	description: siteConfig.defaultDescription,
-	robots: metadataRobotsForPolicy(getProjectIndexingPolicy()),
+	// Robots are route-owned. A root robots value survives Next.js notFound()
+	// merging and would conflict with the framework's automatic noindex tag.
 	icons: { icon: "/icon.png", apple: "/apple-icon.png" },
 };
 

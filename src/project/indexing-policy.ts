@@ -4,6 +4,17 @@ import { type ProjectKind, siteConfig } from "./site.config.ts";
 
 export type IndexingPolicy = "public" | "noindex";
 
+export const robotsCleanQueryParameters = [
+	"utm_source",
+	"utm_medium",
+	"utm_campaign",
+	"utm_term",
+	"utm_content",
+	"yclid",
+	"gclid",
+	"fbclid",
+] as const;
+
 export function resolveIndexingPolicy(input: {
 	projectKind: ProjectKind;
 	productionIndexing: IndexingPolicy | null;
@@ -70,7 +81,7 @@ export function buildRobotsText(policy: IndexingPolicy, host: string): string {
 		"Allow: /api/media/file/",
 		"Disallow: /admin/",
 		"Disallow: /api/",
-		"Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&fbclid /",
+		`Clean-param: ${robotsCleanQueryParameters.join("&")} /`,
 		`Sitemap: ${new URL("/sitemap.xml", origin).toString()}`,
 		"",
 	].join("\n");

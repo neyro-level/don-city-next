@@ -2,6 +2,22 @@ import assert from "node:assert/strict";
 
 const baseUrl = process.env.ROUTE_BASE_URL ?? "http://127.0.0.1:4316";
 const canonicalOrigin = "https://doncity-home.ru";
+const allowEmptyCatalog = process.env.ROUTE_ALLOW_EMPTY_CATALOG === "true";
+
+const catalogPaths = new Set([
+	"/donetsk/",
+	"/donetsk/kvartiry/",
+	"/donetsk/doma/",
+	"/donetsk/uchastki/",
+	"/donetsk/kommercheskaya/",
+	"/kvartiry/",
+	"/doma/",
+	"/uchastki/",
+	"/kommercheskaya/",
+	"/donetsk/kvartiry/tekstilshchik/",
+	"/donetsk/kvartiry/kalininskiy/",
+	"/donetsk/kvartiry/odnokomnatnye/",
+]);
 
 async function request(path) {
 	const response = await fetch(new URL(path, baseUrl), { redirect: "manual" });
@@ -37,6 +53,12 @@ for (const [path, robots] of [
 	["/spasibo/", "noindex, nofollow"],
 ]) {
 	const { response, body } = await request(path);
+	if (allowEmptyCatalog && catalogPaths.has(path) && response.status === 404) {
+		const actual = metadata(body);
+		assert.equal(actual.robots, "noindex", path);
+		assert.equal(actual.canonical, null, path);
+		continue;
+	}
 	assert.equal(response.status, 200, path);
 	const actual = metadata(body);
 	assert.equal(actual.robots, robots, path);

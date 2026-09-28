@@ -1,6 +1,4 @@
 import assert from "node:assert/strict";
-import { seoRegistryById } from "../src/project/seo-registry.generated.ts";
-import { siteProfile } from "../src/project/site.profile.ts";
 import {
 	effectiveListingRobots,
 	evaluateListingContentGate,
@@ -8,6 +6,9 @@ import {
 	resolveListingQueryCanonical,
 } from "../src/platform/seo/content-gate.ts";
 import { nextListingInventoryGateState } from "../src/platform/seo/content-gate-state.ts";
+import { buildCatalogLinks } from "../src/project/navigation.ts";
+import { seoRegistryById } from "../src/project/seo-registry.generated.ts";
+import { siteProfile } from "../src/project/site.profile.ts";
 
 const candidate = seoRegistryById.get("APT_DIST_KALIN");
 assert.ok(candidate, "fixture candidate must exist");
@@ -22,7 +23,9 @@ assert.deepEqual(incomplete, {
 const evidence = {
 	activeObjects: 3,
 	introduction: "а".repeat(600),
-	contextFacts: [{ source: "official district register", checkedAt: "2026-09-24" }],
+	contextFacts: [
+		{ source: "official district register", checkedAt: "2026-09-24" },
+	],
 	serverRendered: true,
 	propertyLinksInHtml: true,
 };
@@ -45,6 +48,65 @@ assert.equal(
 	}),
 	"/donetsk/kvartiry/kalininskiy/",
 );
+
+const invalidDistrictFactCases = [
+	{ label: "undefined", contextFacts: undefined },
+	{ label: "empty", contextFacts: [] },
+	{
+		label: "blank source",
+		contextFacts: [{ source: " ", checkedAt: "2026-09-24" }],
+	},
+	{
+		label: "invalid date",
+		contextFacts: [{ source: "official register", checkedAt: "not-a-date" }],
+	},
+	{
+		label: "mixed valid and invalid",
+		contextFacts: [
+			{ source: "official register", checkedAt: "2026-09-24" },
+			{ source: "", checkedAt: "2026-09-24" },
+		],
+	},
+] as const;
+
+for (const fixture of invalidDistrictFactCases) {
+	const failingEvidence = { ...evidence, contextFacts: fixture.contextFacts };
+	const decision = evaluateListingContentGate(
+		candidate,
+		siteProfile,
+		failingEvidence,
+	);
+	assert.equal(decision.passed, false, fixture.label);
+	assert.ok(decision.reasons.includes("district_context_unverified"));
+	assert.equal(
+		effectiveListingRobots(candidate, siteProfile, failingEvidence),
+		"noindex,follow",
+		fixture.label,
+	);
+	assert.equal(
+		isListingSitemapEligible(candidate, siteProfile, failingEvidence),
+		false,
+		fixture.label,
+	);
+	assert.equal(
+		resolveListingQueryCanonical({
+			entry: candidate,
+			categoryGeoPath: "/donetsk/kvartiry/",
+			profile: siteProfile,
+			evidence: failingEvidence,
+		}),
+		"/donetsk/kvartiry/",
+		fixture.label,
+	);
+	assert.equal(
+		buildCatalogLinks(
+			{ kind: "categoryGeo", geo: "donetsk", category: "kvartiry" },
+			{ [candidate.registryId]: failingEvidence },
+		).some((link) => link.href === candidate.url),
+		false,
+		fixture.label,
+	);
+}
 
 const tooFewObjects = evaluateListingContentGate(candidate, siteProfile, {
 	...evidence,
@@ -98,14 +160,20 @@ const graceState = nextListingInventoryGateState({
 	now: new Date("2026-09-29T12:00:00.000Z"),
 	lastThresholdPassedAt: passingState.lastThresholdPassedAt,
 });
-assert.equal(graceState.lastThresholdPassedAt, passingState.lastThresholdPassedAt);
+assert.equal(
+	graceState.lastThresholdPassedAt,
+	passingState.lastThresholdPassedAt,
+);
 const zeroState = nextListingInventoryGateState({
 	activeObjects: 0,
 	threshold: 3,
 	now: new Date("2026-09-30T12:00:00.000Z"),
 	lastThresholdPassedAt: passingState.lastThresholdPassedAt,
 });
-assert.equal(zeroState.lastThresholdPassedAt, passingState.lastThresholdPassedAt);
+assert.equal(
+	zeroState.lastThresholdPassedAt,
+	passingState.lastThresholdPassedAt,
+);
 
 const testCandidate = seoRegistryById.get("LAND_FACET_SNT");
 assert.ok(testCandidate, "TEST fixture candidate must exist");

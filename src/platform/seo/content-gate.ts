@@ -30,10 +30,22 @@ function isMaterialized(value: string): boolean {
 	return value.trim().length > 0 && !/[{}]/u.test(value);
 }
 
-function isVerifiedContextFact(fact: ListingContextFact): boolean {
+export function isVerifiedListingContextFact(
+	fact: ListingContextFact,
+): boolean {
 	return (
 		fact.source.trim().length > 0 &&
 		Number.isFinite(new Date(fact.checkedAt).valueOf())
+	);
+}
+
+export function hasVerifiedDistrictContextFacts(
+	facts?: readonly ListingContextFact[] | null,
+): boolean {
+	return (
+		Array.isArray(facts) &&
+		facts.length >= 1 &&
+		facts.every(isVerifiedListingContextFact)
 	);
 }
 
@@ -94,12 +106,13 @@ export function evaluateListingContentGate(
 	}
 	if (
 		entry.pageType === "district" &&
-		!(evidence.contextFacts ?? []).every(isVerifiedContextFact)
+		!hasVerifiedDistrictContextFacts(evidence.contextFacts)
 	) {
 		reasons.push("district_context_unverified");
 	}
 	if (!evidence.serverRendered) reasons.push("not_server_rendered");
-	if (!evidence.propertyLinksInHtml) reasons.push("property_links_missing_in_html");
+	if (!evidence.propertyLinksInHtml)
+		reasons.push("property_links_missing_in_html");
 
 	return { passed: reasons.length === 0, threshold, reasons };
 }

@@ -10,6 +10,7 @@ const canonicalOrigin = "https://doncity-home.ru";
 const requestDelayMs = Number(process.env.SEO_CRAWL_DELAY_MS ?? "500");
 const expectedStagingNoindex =
 	process.env.SEO_CRAWL_EXPECT_STAGING_NOINDEX !== "false";
+const allowEmptyCatalog = process.env.SEO_CRAWL_ALLOW_EMPTY_CATALOG === "true";
 
 assert.ok(
 	baseUrl.protocol === "https:" ||
@@ -95,6 +96,12 @@ function attribute(html: string, pattern: RegExp) {
 
 function metadata(html: string) {
 	const h1Matches = [...html.matchAll(/<h1(?:\s[^>]*)?>([\s\S]*?)<\/h1>/gi)];
+	const headings = [
+		...html.matchAll(/<h([1-6])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/gi),
+	].map((match) => ({
+		level: Number(match[1]),
+		text: textContent(match[2] ?? ""),
+	}));
 	return {
 		title: textContent(/<title>([\s\S]*?)<\/title>/i.exec(html)?.[1] ?? ""),
 		description: attribute(
@@ -104,6 +111,37 @@ function metadata(html: string) {
 		robots: attribute(html, /<meta\s+name="robots"\s+content="([^"]*)"/i),
 		canonical: attribute(html, /<link\s+rel="canonical"\s+href="([^"]*)"/i),
 		h1: h1Matches.map((match) => textContent(match[1] ?? "")),
+		headings,
+		openGraph: {
+			title: attribute(
+				html,
+				/<meta\s+property="og:title"\s+content="([^"]*)"/i,
+			),
+			description: attribute(
+				html,
+				/<meta\s+property="og:description"\s+content="([^"]*)"/i,
+			),
+			url: attribute(html, /<meta\s+property="og:url"\s+content="([^"]*)"/i),
+			image: attribute(
+				html,
+				/<meta\s+property="og:image"\s+content="([^"]*)"/i,
+			),
+		},
+		twitter: {
+			card: attribute(html, /<meta\s+name="twitter:card"\s+content="([^"]*)"/i),
+			title: attribute(
+				html,
+				/<meta\s+name="twitter:title"\s+content="([^"]*)"/i,
+			),
+			description: attribute(
+				html,
+				/<meta\s+name="twitter:description"\s+content="([^"]*)"/i,
+			),
+			image: attribute(
+				html,
+				/<meta\s+name="twitter:image"\s+content="([^"]*)"/i,
+			),
+		},
 	};
 }
 
@@ -125,7 +163,7 @@ function check(
 	if (!condition) findings.push({ rule, path, message });
 }
 
-function jsonLd(html: string) {
+function jsonLd(html: string, path: string) {
 	const blocks = [
 		...html.matchAll(
 			/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi,
@@ -137,7 +175,7 @@ function jsonLd(html: string) {
 		} catch (error) {
 			findings.push({
 				rule: "json-ld-parse",
-				path: "/",
+				path,
 				message: `JSON-LD block ${index + 1} is invalid: ${String(error)}`,
 			});
 			return null;
@@ -148,6 +186,25 @@ function jsonLd(html: string) {
 for (const entry of seoRegistry) {
 	const snapshot = await request(entry.url);
 	const actual = metadata(snapshot.body);
+	if (
+		allowEmptyCatalog &&
+		entry.pageType !== "static" &&
+		snapshot.status === 404
+	) {
+		check(
+			normalizeRobots(actual.robots) === "noindex",
+			"empty-catalog-robots",
+			entry.url,
+			`fail-closed route must be noindex, received ${actual.robots}`,
+		);
+		check(
+			actual.canonical === "",
+			"empty-catalog-canonical",
+			entry.url,
+			`fail-closed route must not publish canonical ${actual.canonical}`,
+		);
+		continue;
+	}
 	check(
 		snapshot.status === 200,
 		"registry-status",
@@ -178,6 +235,17 @@ for (const entry of seoRegistry) {
 		entry.url,
 		`expected ${JSON.stringify(entry.h1)}, received ${JSON.stringify(actual.h1[0] ?? "")}`,
 	);
+	for (let index = 1; index < actual.headings.length; index += 1) {
+		const previousHeading = actual.headings[index - 1];
+		const currentHeading = actual.headings[index];
+		if (!previousHeading || !currentHeading) continue;
+		check(
+			currentHeading.level <= previousHeading.level + 1,
+			"heading-hierarchy",
+			entry.url,
+			`heading level skips from H${previousHeading.level} to H${currentHeading.level}`,
+		);
+	}
 	check(
 		actual.canonical === `${canonicalOrigin}${entry.url}`,
 		"registry-canonical",
@@ -190,6 +258,29 @@ for (const entry of seoRegistry) {
 		entry.url,
 		`expected ${entry.robots}, received ${actual.robots}`,
 	);
+	for (const [name, value] of Object.entries({
+		"og:title": actual.openGraph.title,
+		"og:description": actual.openGraph.description,
+		"og:image": actual.openGraph.image,
+		"twitter:title": actual.twitter.title,
+		"twitter:description": actual.twitter.description,
+		"twitter:image": actual.twitter.image,
+	})) {
+		check(Boolean(value), "social-metadata", entry.url, `${name} is missing`);
+	}
+	check(
+		actual.openGraph.url === `${canonicalOrigin}${entry.url}`,
+		"open-graph-url",
+		entry.url,
+		`unexpected og:url ${JSON.stringify(actual.openGraph.url)}`,
+	);
+	check(
+		actual.twitter.card === "summary_large_image",
+		"twitter-card",
+		entry.url,
+		`unexpected twitter:card ${JSON.stringify(actual.twitter.card)}`,
+	);
+	jsonLd(snapshot.body, entry.url);
 	if (expectedStagingNoindex) {
 		check(
 			normalizeRobots(snapshot.xRobotsTag) === "noindex,nofollow",
@@ -210,9 +301,29 @@ for (const entry of seoRegistry) {
 
 for (const queryCase of [
 	{ path: "/donetsk/kvartiry/?rooms=1", canonical: "/donetsk/kvartiry/" },
+	{ path: "/donetsk/kvartiry/?debug=1", canonical: "/donetsk/kvartiry/" },
+	{
+		path: "/donetsk/kvartiry/?rooms=1&houseType=brick&sort=priceAsc",
+		canonical: "/donetsk/kvartiry/",
+	},
 ]) {
 	const snapshot = await request(queryCase.path);
 	const actual = metadata(snapshot.body);
+	if (allowEmptyCatalog && snapshot.status === 404) {
+		check(
+			normalizeRobots(actual.robots) === "noindex",
+			"empty-catalog-query-robots",
+			queryCase.path,
+			`fail-closed query must be noindex, received ${actual.robots}`,
+		);
+		check(
+			actual.canonical === "",
+			"empty-catalog-query-canonical",
+			queryCase.path,
+			`fail-closed query must not publish canonical ${actual.canonical}`,
+		);
+		continue;
+	}
 	check(
 		snapshot.status === 200,
 		"query-status",
@@ -329,7 +440,9 @@ check(
 	`unexpected content type ${sitemapIndex.contentType}`,
 );
 const advertisedSitemapPaths = [
-	...sitemapIndex.body.matchAll(/<sitemap>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/sitemap>/gi),
+	...sitemapIndex.body.matchAll(
+		/<sitemap>[\s\S]*?<loc>(.*?)<\/loc>[\s\S]*?<\/sitemap>/gi,
+	),
 ].map((match) => new URL(decodeHtml(match[1] ?? "")).pathname);
 check(
 	advertisedSitemapPaths.length > 0,
@@ -389,6 +502,7 @@ const expectedRegistrySitemapUrls = new Set(
 		.filter(
 			(entry) => entry.status === "active" && entry.robots === "index,follow",
 		)
+		.filter((entry) => !allowEmptyCatalog || entry.pageType === "static")
 		.map((entry) => `${canonicalOrigin}${entry.url}`),
 );
 for (const expected of expectedRegistrySitemapUrls) {
@@ -418,7 +532,7 @@ for (const location of sitemapUrls) {
 
 const home = snapshots.get("/");
 assert.ok(home, "Home snapshot is required.");
-const structuredData = jsonLd(home.body).filter(Boolean) as Record<
+const structuredData = jsonLd(home.body, "/").filter(Boolean) as Record<
 	string,
 	unknown
 >[];
@@ -485,6 +599,11 @@ const summary = {
 	sitemapLastmodCount,
 	jsonLdTypes: structuredData.map((row) => row["@type"]),
 	limitations: [
+		...(allowEmptyCatalog
+			? [
+					"Catalog routes were exercised in their fail-closed 404 state because the isolated database intentionally has no threshold-passing inventory; positive catalog/page metadata is covered by the focused route and SEO contract suites.",
+				]
+			: []),
 		"No public property fixture is retained on staging; property lifecycle status evidence was captured separately with an approved temporary synthetic non-PII fixture and cleanup.",
 		"Rendered-browser and field performance evidence are recorded separately from this structural crawl.",
 		"Yandex Webmaster is intentionally excluded for noindex staging.",

@@ -16,6 +16,18 @@ export const approvedSiteSettings = {
 		addressCountry: "RU" as const,
 	},
 	openingHours: "Пн–Пт: 09:00–18:00; Сб–Вс: 09:00–18:00",
+	openingHoursSpecification: [
+		{
+			dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+			opens: "09:00",
+			closes: "18:00",
+		},
+		{
+			dayOfWeek: ["Saturday", "Sunday"],
+			opens: "09:00",
+			closes: "18:00",
+		},
+	],
 	url: "https://doncity-home.ru",
 } as const;
 
@@ -44,13 +56,18 @@ function nonEmpty(value: string | null | undefined, fallback: string) {
  * initialize the Global and keep local build-only rendering free of donor data
  * until the Global record exists in a configured Payload environment.
  */
-export function toPublicNapDTO(source?: SiteSettingsSource | null): PublicNapDTO {
+export function toPublicNapDTO(
+	source?: SiteSettingsSource | null,
+): PublicNapDTO {
 	const address = source?.address;
 	return {
 		brandName: nonEmpty(source?.brandName, approvedSiteSettings.brandName),
 		legalName: nonEmpty(source?.legalName, approvedSiteSettings.legalName),
 		phone: {
-			display: nonEmpty(source?.phoneDisplay, approvedSiteSettings.phoneDisplay),
+			display: nonEmpty(
+				source?.phoneDisplay,
+				approvedSiteSettings.phoneDisplay,
+			),
 			e164: nonEmpty(source?.phoneE164, approvedSiteSettings.phoneE164),
 		},
 		email: nonEmpty(source?.email, approvedSiteSettings.email),
@@ -74,6 +91,7 @@ export function toPublicNapDTO(source?: SiteSettingsSource | null): PublicNapDTO
 			source?.openingHours,
 			approvedSiteSettings.openingHours,
 		),
+		openingHoursSpecification: approvedSiteSettings.openingHoursSpecification,
 		url: approvedSiteSettings.url,
 	};
 }

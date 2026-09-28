@@ -104,13 +104,60 @@ assert.ok(
 		(entry) => entry.lastModified === registryContentUpdatedAt,
 	),
 );
+const repeatedRegistryEntries = projectSitemapEntriesForEvidence();
+assert.deepEqual(
+	repeatedRegistryEntries,
+	projectSitemapEntries,
+	"Unchanged registry content must keep the same lastmod across requests.",
+);
+const registryUpdate = "2026-09-26T12:00:00.000Z";
+const updatedRegistryEntries = buildRegistrySitemapEntries(seoRegistry, {
+	contentUpdatedAt: registryUpdate,
+	profile: siteProfile,
+	isCanonicalPath(path) {
+		const key = parseProjectUrl(path);
+		return key !== null && buildProjectUrl(key) === path;
+	},
+});
+assert.ok(updatedRegistryEntries.length > 0);
+assert.ok(
+	updatedRegistryEntries.every(
+		(entry) => entry.lastModified === registryUpdate,
+	),
+	"A registry/content revision must advance the corresponding logical page lastmod.",
+);
+const initialPropertyUpdate = "2026-09-25T10:00:00.000Z";
+const advancedPropertyUpdate = "2026-09-27T10:00:00.000Z";
 assert.equal(
 	maxMeaningfulLastModified(
 		registryContentUpdatedAt,
-		"2026-09-25T10:00:00.000Z",
+		initialPropertyUpdate,
 		"2026-09-23T10:00:00.000Z",
 	),
-	"2026-09-25T10:00:00.000Z",
+	initialPropertyUpdate,
+);
+assert.equal(
+	maxMeaningfulLastModified(registryContentUpdatedAt, advancedPropertyUpdate),
+	advancedPropertyUpdate,
+	"A meaningful property update must advance its owning catalog lastmod.",
+);
+
+const sitemapRuntimeSources = [
+	"src/project/sitemap.ts",
+	"src/platform/sitemap/registry.ts",
+	"src/core/data-access/public/provider.ts",
+].map((path) => readFileSync(path, "utf8"));
+for (const source of sitemapRuntimeSources) {
+	assert.doesNotMatch(
+		source,
+		/new Date\(\)/,
+		"Sitemap lastmod must not be generated from request time.",
+	);
+}
+assert.match(
+	sitemapRuntimeSources[2],
+	/lastModified: property\.updatedAt/g,
+	"Property sitemap entries must retain persisted property updatedAt.",
 );
 
 for (const forbidden of [

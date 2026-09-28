@@ -14,6 +14,7 @@ import { toMetadata } from "../src/platform/seo/page-metadata.ts";
 import {
 	buildRobotsText,
 	metadataRobotsForPolicy,
+	robotsCleanQueryParameters,
 } from "../src/project/indexing-policy.ts";
 import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.ts";
 import { seoRegistry } from "../src/project/seo-registry.generated.ts";
@@ -25,15 +26,22 @@ assert.equal(
 );
 const publicRobots = buildRobotsText("public", origin);
 for (const directive of [
+	"Allow: /",
 	"Allow: /api/media/file/",
+	"Disallow: /admin/",
 	"Disallow: /api/",
 	"Sitemap: https://doncity-home.ru/sitemap.xml",
-	"Clean-param:",
-	"fbclid",
+	`Clean-param: ${robotsCleanQueryParameters.join("&")} /`,
 ]) {
 	assert.ok(publicRobots.includes(directive), directive);
 }
 assert.doesNotMatch(publicRobots, /^Host:/m);
+assert.equal(
+	(publicRobots.match(/^Clean-param:/gm) ?? []).length,
+	1,
+	"robots.txt must own one explicit query-cleaning directive",
+);
+assert.ok(robotsCleanQueryParameters.includes("fbclid"));
 assert.deepEqual(metadataRobotsForPolicy("noindex"), {
 	index: false,
 	follow: false,
@@ -252,7 +260,21 @@ for (const builder of [
 }
 assert.match(
 	publicRouteSource,
-	/catalog\.list\.page > catalog\.list\.totalPages/,
+	/const resolvePublicRouteRequestCached = cache/,
+);
+assert.equal(
+	(publicRouteSource.match(/resolvePublicRouteRequest\(/g) ?? []).length,
+	3,
+	"Metadata and page rendering must share one request-scoped resolver.",
+);
+assert.match(publicRouteSource, /result\.kind === "notFound" \|\| outOfRange/);
+assert.match(publicRouteSource, /if \(outOfRange\) notFound\(\)/);
+assert.match(publicRouteSource, /robots: \{ index: false, follow: false \}/);
+assert.doesNotMatch(
+	publicRouteSource.match(
+		/if \(result\.kind === "notFound" \|\| outOfRange\)[\s\S]*?\n\t\}/,
+	)?.[0] ?? "",
+	/canonical|alternates/,
 );
 const propertyViewSource = readFileSync(
 	"packages/ui/src/views/property/StarterPropertyPageView.tsx",
