@@ -133,12 +133,29 @@ sudo -n test -f "$compose_file" || { echo 'production_compose=missing'; exit 26;
 sudo -n test -f "${production_dir}/.env" || { echo 'production_env=missing'; exit 27; }
 sudo -n test ! -e "$backup" || { echo 'rollback_point=already-exists'; exit 28; }
 
+sudo -n systemctl start doncity-backup.service
+backup_result=$(sudo -n systemctl show doncity-backup.service --property=Result --value)
+backup_status=$(sudo -n systemctl show doncity-backup.service --property=ExecMainStatus --value)
+[ "$backup_result" = 'success' ] || { echo "backup_service_result=$backup_result"; exit 29; }
+[ "$backup_status" = '0' ] || { echo "backup_service_status=$backup_status"; exit 30; }
+
 gzip -dc "$artifact" | $docker_cmd load >/dev/null
 loaded_revision=$($docker_cmd image inspect "$new_image" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')
-[ "$loaded_revision" = "$expected_revision" ] || { echo 'loaded_revision=mismatch'; exit 29; }
+[ "$loaded_revision" = "$expected_revision" ] || { echo 'loaded_revision=mismatch'; exit 31; }
+migration_log="/tmp/doncity-migrate-$(printf '%s' "$expected_revision" | cut -c1-12).log"
+if ! $docker_cmd run --rm --network host --read-only \
+  --tmpfs '/tmp:rw,nosuid,size=128m,uid=1001,gid=1001,mode=1777' \
+  --env-file "${production_dir}/.env" --env JOBS_AUTORUN=false \
+  "$new_image" node --conditions=react-server ./node_modules/payload/bin.js migrate \
+  >"$migration_log" 2>&1; then
+  rm -f "$migration_log"
+  echo 'migrations=failed'
+  exit 32
+fi
+rm -f "$migration_log"
 sudo -n cp "$compose_file" "$backup"
 sudo -n sed -i "s|${previous_image}|${new_image}|" "$compose_file"
-sudo -n grep -Fq "$new_image" "$compose_file" || { echo 'compose_image_update=failed'; exit 30; }
+sudo -n grep -Fq "$new_image" "$compose_file" || { echo 'compose_image_update=failed'; exit 33; }
 sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" up -d --no-deps app-production >/dev/null
 
 healthy='false'
@@ -152,22 +169,24 @@ if [ "$healthy" != 'true' ]; then
   sudo -n cp "$backup" "$compose_file"
   sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" up -d --no-deps app-production >/dev/null
   echo 'rollback=executed'
-  exit 31
+  exit 34
 fi
 
 current_id=$($docker_cmd ps -q --filter 'name=^/doncity-production-app$')
 current_image=$($docker_cmd inspect --format '{{.Config.Image}}' "$current_id")
 current_revision=$($docker_cmd inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$current_id")
-[ "$current_image" = "$new_image" ] || { echo 'running_image=mismatch'; exit 32; }
-[ "$current_revision" = "$expected_revision" ] || { echo 'running_revision=mismatch'; exit 33; }
+[ "$current_image" = "$new_image" ] || { echo 'running_image=mismatch'; exit 35; }
+[ "$current_revision" = "$expected_revision" ] || { echo 'running_revision=mismatch'; exit 36; }
 jobs_owner_count=0
 for container_id in $($docker_cmd ps -q); do
   if $docker_cmd inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$container_id" | grep -qx 'JOBS_AUTORUN=true'; then
     jobs_owner_count=$((jobs_owner_count + 1))
   fi
 done
-[ "$jobs_owner_count" -eq 1 ] || { echo "jobs_owner_count=$jobs_owner_count"; exit 34; }
+[ "$jobs_owner_count" -eq 1 ] || { echo "jobs_owner_count=$jobs_owner_count"; exit 37; }
 rm -f "$artifact"
+printf 'backup_service_result=%s\n' "$backup_result"
+printf 'migrations=success\n'
 printf 'previous_image=%s\n' "$previous_image"
 printf 'running_image=%s\n' "$current_image"
 printf 'running_revision=%s\n' "$current_revision"

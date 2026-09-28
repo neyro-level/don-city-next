@@ -34,6 +34,10 @@ for (const expected of [
 	"$attempt -le 10",
 	"@(502, 503, 504)",
 	"bounded release retries",
+	"systemctl start doncity-backup.service",
+	"--env JOBS_AUTORUN=false",
+	"./node_modules/payload/bin.js migrate",
+	"migrations=success",
 ]) {
 	assert.ok(productionRelease.includes(expected), `Production release helper must include ${expected}.`);
 }

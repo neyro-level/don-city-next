@@ -19,8 +19,12 @@ Updated: 2026-09-28
 
 - Deploy only from clean canonical SourceCraft `main`, exact approved SHA and immutable image.
 - Build/install/`git pull` on the host are forbidden.
-- Before migrations bind the exact DB backup/restore proof, candidate image and rollback point to the release record.
-- Start a candidate with jobs disabled; prove readiness; stop the old owner; enable jobs on exactly one runtime; prove queue movement.
+- Before migrations, trigger a fresh validated offsite backup and bind its
+  successful service result, the candidate image and rollback point to the
+  release evidence.
+- Run the candidate image's versioned Payload migrations in one ephemeral
+  `JOBS_AUTORUN=false` process. Then replace the single production Compose
+  service in place; never run a second persistent application/jobs runtime.
 - Application rollback restores the previous immutable image. Schema/data rollback follows the migration-specific plan; never test restore against production.
 
 ## Backup Truth
