@@ -53,9 +53,11 @@ export {
 export {
 	buildFraudFingerprint,
 	buildLeadIdempotencyKey,
+	deriveLeadFraudHmacKey,
 	evaluateLeadRateLimit,
 	type LeadIntakeRejected,
 	type LeadIntakeResult,
+	leadFraudHmacKeyContext,
 	normalizePhoneToE164,
 	prepareLeadIntake,
 } from "./intake.ts";

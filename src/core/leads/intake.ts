@@ -91,6 +91,7 @@ export type LeadRateLimitInput = {
 
 const minimumFillTimeMs = 2500;
 const maximumFillTimeMs = 24 * 60 * 60 * 1000;
+export const leadFraudHmacKeyContext = "don-city:lead-fraud:v1";
 
 const leadIntakeSchema = z.object({
 	name: z.string().trim().min(2).max(120),
@@ -299,6 +300,21 @@ export function normalizePhoneToE164(value: string): string | undefined {
 
 export function buildLeadIdempotencyKey(requestAttemptId: string): string {
 	return `lead:${requestAttemptId.toLowerCase()}`;
+}
+
+/**
+ * Derive a dedicated fraud-fingerprint key without adding another operational
+ * secret. The fixed versioned context prevents PAYLOAD_SECRET reuse across
+ * unrelated cryptographic purposes.
+ */
+export function deriveLeadFraudHmacKey(payloadSecret: string): string {
+	if (!payloadSecret.trim()) {
+		throw new Error("PAYLOAD_SECRET is required for fraud key derivation.");
+	}
+
+	return createHmac("sha256", payloadSecret)
+		.update(leadFraudHmacKeyContext, "utf8")
+		.digest("base64url");
 }
 
 function retentionUntil(
