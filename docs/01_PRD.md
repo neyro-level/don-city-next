@@ -1,8 +1,8 @@
 # Product Requirements Document
 
 Status: Active
-Version: 1.2
-Updated: 2026-09-27
+Version: 1.3
+Updated: 2026-09-28
 
 ## 1. Product Summary
 
@@ -64,7 +64,7 @@ Updated: 2026-09-27
 
 - Первый production owner ещё не создан.
 - Независимый alert/delivery channel не подтверждён.
-- Provider DB backup существует, но durable health evidence и media backup/restore ещё не закрыты.
+- DB и media backup freshness, isolated restore и sampled media restore подтверждены; новый release обязан привязать их к exact-main evidence.
 - Канонический NAP заполнен в runtime, но требует проверки владельцем по внешним источникам.
 - Реальный feed и allowlists намеренно отключены до предоставления проверенных endpoints.
 - Для полноценной категории участков нужен отдельный подтверждённый inventory.
@@ -78,5 +78,4 @@ Updated: 2026-09-27
 - Канонический NAP после внешней проверки.
 - Канал уведомлений и получатель заявок.
 - Реальный feed и дата его включения.
-- Политика media backup/retention.
 - Дочерний SEO/URL registry юридических услуг после подтверждения фактического service/content scope. Канонические launch-маршруты уже зафиксированы: коммерция `/donetsk/kommercheskaya/`, юридический отдел `/yurist/`.

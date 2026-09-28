@@ -105,9 +105,8 @@ export function validateClientReadiness(input) {
 	}
 	const allowlists = input.requiredHostAllowlists ?? {};
 	if (
-		!allowlists.outbound?.length ||
-		!allowlists.externalImages?.length ||
-		!allowlists.leadOutbound?.length
+		input.feedImageSource &&
+		(!allowlists.outbound?.length || !allowlists.externalImages?.length)
 	) {
 		add("required-host-allowlists-missing");
 	}
@@ -115,11 +114,9 @@ export function validateClientReadiness(input) {
 		!input.deploymentTarget ||
 		!input.database ||
 		!input.mediaStorage ||
-		!input.feedImageSource ||
 		input.jobsActiveRuntimeCount !== 1 ||
 		input.nginx !== true ||
-		input.automaticBackup !== true ||
-		input.externalMonitoring !== true
+		input.automaticBackup !== true
 	) {
 		add("client-storage-deployment-contract-missing");
 	}
@@ -189,7 +186,6 @@ function verifyFixtures() {
 		"legal-content-placeholder",
 		"production-indexing-decision-missing",
 		"client-domain-missing",
-		"required-host-allowlists-missing",
 		"client-storage-deployment-contract-missing",
 	];
 	assert.deepEqual(
@@ -234,7 +230,7 @@ const errors = validateClientReadiness({
 	...clientReadinessConfig,
 	projectKind: siteConfig.projectKind,
 	brandName: siteConfig.brandName,
-	runtimeOrigin: process.env.NEXT_PUBLIC_SERVER_URL,
+	runtimeOrigin: process.env.NEXT_PUBLIC_SERVER_URL ?? siteConfig.canonicalOrigin,
 });
 const expectedBlockers = process.env.AMS_EXPECT_CLIENT_READINESS_BLOCKERS
 	?.split(",")

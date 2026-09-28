@@ -15,7 +15,7 @@ Production release: not authorized and not executed
 | Contract | Evidence | Verdict |
 |---|---|---|
 | Zero active P0/P1 document contradictions | `quality:docs-sot`, `verify:project-documentation`, and `verify:final-documentation` | PASS |
-| One persistent production topology; staging absent | `verify:production-topology` and `verify:staging-retirement` | PASS |
+| One persistent production topology; staging absent | `verify:production-topology` and `verify:single-production` | PASS |
 | Exact Макеевка surface | Product Structure + Site Profile + navigation guard: only hub, apartments, houses and land | PASS |
 | Frozen DTO contract is internally consistent | ADR-0012, base lock `2.0.0`, `contracts:check`; journal remains `0.1.0` | PASS |
 | Robots/SEO contract matches delivered behavior | `verify:seo-contracts`; no retired metadata host expectation | PASS |
@@ -28,7 +28,7 @@ Production release: not authorized and not executed
 - `verify:final-documentation` — PASS.
 - `quality:docs-sot` — PASS.
 - `verify:seo-contracts` — PASS.
-- `verify:staging-retirement` — PASS.
+- `verify:single-production` — PASS.
 - `verify:site-profile` — PASS.
 - `verify:navigation` — PASS.
 - `verify:production-topology` — PASS.

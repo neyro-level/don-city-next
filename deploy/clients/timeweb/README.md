@@ -1,66 +1,39 @@
-# Timeweb client activation blueprint
+# Timeweb production blueprint
 
-This directory is a static reference for a future client clone. It does not
-alter the starter demo, provision infrastructure, deploy an application or
-prove a live Timeweb connection.
+This directory is the checked-in production contract for DON CITY. It never
+provisions a second server, persistent staging runtime, database, bucket or
+Secret Master scope.
 
 ## Frozen boundary
 
-- Starter demo: local PostgreSQL and persistent `MEDIA_DIR`.
-- Client default: Timeweb Managed PostgreSQL and Timeweb S3-compatible Object
-  Storage.
-- Client artifacts are built outside the server and deployed by immutable image
-  digest or immutable tag. `git pull` and server-side builds are forbidden.
-- Exactly one runtime owns Payload jobs. Follow the handover in
-  `compose/client.compose.yml.example`; never run old and new owners together.
-- Secrets are materialized from the client Secret Master project into an
-  approved env file. No value belongs in Git.
+- One existing Timeweb VPS runs one production application runtime.
+- One Timeweb Managed PostgreSQL database and one private S3 bucket are the
+  only persistent data owners.
+- Artifacts are built once outside the server and deployed by immutable tag.
+  `git pull`, package installation and builds on the production host are
+  forbidden.
+- Exactly one runtime owns Payload jobs.
+- Runtime values come only from Secret Master `DonCity Server/prod/production`;
+  values never enter Git, release logs or documentation.
+- Non-production database proof is disposable, isolated and removed inside the
+  bounded check. A persistent staging/shadow/mirror database is forbidden.
 
-## Activation order
+## Release order
 
-1. Create separate staging Managed PostgreSQL and S3 resources. Do not reuse
-   production data, credentials or media.
-2. Copy `env.client.example` outside Git and fill it from Secret Master.
-3. Commit the client identity change so the checkout is clean, then run
-   `pnpm clone:activate-timeweb-storage`. It installs the exact compatible
-   `@payloadcms/storage-s3@3.90.1` peer for Payload `3.90.1`, applies the
-   versioned config and validates types. The starter dependency set stays clean.
-4. Fill `S3_ENDPOINT=https://s3.twcstorage.ru`, `S3_REGION=ru-1`, bucket,
-   credentials and the client-safe `S3_PREFIX` from the Timeweb dashboard and
-   Secret Master. Do not commit credentials.
-5. Decide public/private URL, ACL and signed-download policy explicitly from
-   the client requirement and provider evidence.
-6. Run clean migrations against staging with `PAYLOAD_DB_PUSH=false`.
-7. Validate Nginx placeholders, backup, monitoring and one jobs owner.
-8. Complete every item in `proofs/CLIENT_TIMEWEB_PROOF.md` before any client
-   production decision.
+1. Start from clean canonical SourceCraft `main` and attest its exact SHA with
+   the manual `release-main` workflow.
+2. Bind the release to current backup/restore evidence and the previous
+   immutable production image.
+3. Build one immutable Docker image locally and record its SHA and checksum.
+4. Transfer that artifact directly to the production host; do not use the
+   production media bucket as transport.
+5. Replace the single production service in place, preserving its approved env
+   file and jobs ownership.
+6. Run one bounded health and public-route smoke. Roll back immediately to the
+   recorded previous image on failure.
+7. Remove the transport artifact. Production is the final stage; no monitoring,
+   observation or follow-up task is created afterward.
 
-## Isolated staging
-
-`staging/` is the fail-closed rehearsal contract for DON CITY. It requires an
-immutable image, a separate env file and database, keeps Payload jobs disabled,
-binds the application to loopback on a distinct port and emits an unconditional
-`X-Robots-Tag: noindex, nofollow` header at Nginx. Its placeholders must be
-materialized outside Git only after the owner authorizes Timeweb writes.
-
-Static proof: `pnpm verify:client-readiness`. Live staging, migrations, DNS/TLS,
-S3, monitoring and smoke evidence remain external gates and are recorded in
-`proofs/STAGING_PROOF.md`.
-
-## Official contract checked 2026-09-21
-
-- Payload storage adapters: https://payloadcms.com/docs/upload/storage-adapters
-  confirms `@payloadcms/storage-s3`, `collections`, `bucket`, AWS
-  `S3ClientConfig`, conditional `enabled` and automatic local-storage disable.
-- Timeweb S3: https://timeweb.cloud/docs/s3-storage/manage-storage/s3-guide
-  confirms path-style endpoint `https://s3.twcstorage.ru`, region `ru-1`,
-  S3-compatible credentials and provider connection data from the dashboard.
-- Timeweb PostgreSQL: https://timeweb.cloud/docs/dbaas/postgresql/ confirms
-  managed PostgreSQL availability, including PostgreSQL 18.
-- Physical and logical backups:
-  https://timeweb.cloud/docs/dbaas/dbaas-manage/backup and
-  https://timeweb.cloud/docs/dbaas/dbaas-manage/logical-backups.
-
-Static compatibility, managed PostgreSQL migration and the first isolated live
-staging rollout: `PROVEN`. Payload Admin media CRUD, backup restore and
-independent monitoring remain explicitly unproven.
+Static proof: `pnpm verify:client-readiness` and
+`pnpm verify:release-artifact`. Live evidence is the exact SourceCraft release
+run, immutable image metadata and bounded production smoke.

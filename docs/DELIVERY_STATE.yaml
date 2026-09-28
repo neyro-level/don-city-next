@@ -4,19 +4,19 @@ plan_version: v13
 plan_status: APPROVED
 current_wave: LIVE_CONFORMANCE_W6
 current_epic: DC11-PROD-FINAL
-current_task: owner-release-command-required
-next_action: await-explicit-owner-production-release-command
+current_task: authorized-final-production-release
+next_action: execute-one-exact-main-release-then-close-without-follow-up
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 22468c0db317842e0df6edd60ed6f07cb1f1bb16
-  active_branch: none
+  documentation_baseline_sha: 22468c0db317842e0df6edd60ed6f07cb1f1bb16
+  active_branch: codex/dc11-final-release-contract
 task_manager:
   initialized: true
   reconciliation: CLEAN
   current_task: none
-  reason: all non-production v13 work is delivered; final production awaits a separate explicit owner command
+  reason: all non-production v13 work is delivered; owner authorized the mandatory final release on 2026-09-28
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -53,8 +53,9 @@ live_conformance:
     implementation: docs/replan/DC11_DOC_FINAL_IMPLEMENTATION.md
     verification: docs/replan/DC11_DOC_FINAL_VERIFICATION.md
   dc11_prod_final:
-    status: awaiting-explicit-owner-command
-    authorized: false
+    status: authorized-final-stage
+    authorized: true
+    authorized_at: 2026-09-28
     autonomous_task: absent
     post_production_monitoring_task: forbidden
 historical_evidence:
@@ -190,7 +191,7 @@ historical_evidence:
       - docs/research/EPIC-45_TIMEWEB_STAGING_PREFLIGHT.md
       - docs/research/EPIC-45_STAGING_IMPLEMENTATION.md
       - docs/research/EPIC-45_LIVE_STAGING_VERIFICATION.md
-      - deploy/clients/timeweb/proofs/STAGING_PROOF.md
+      - docs/research/EPIC-45_LIVE_STAGING_VERIFICATION.md
   epic_46:
     status: delivered
     pull_request: 60
@@ -204,7 +205,7 @@ historical_evidence:
     reports:
       - docs/research/EPIC-46_FULL_SEO_CRAWL_PREFLIGHT.md
       - docs/research/EPIC-46_FULL_SEO_CRAWL_VERIFICATION.md
-      - deploy/clients/timeweb/proofs/STAGING_PROOF.md
+      - docs/research/EPIC-46_FULL_SEO_CRAWL_VERIFICATION.md
   epic_47:
     status: application-rehearsal-pass
     branch: codex/epic-47-release-rehearsal
@@ -289,10 +290,12 @@ historical_core55:
     status: prerequisites-and-exact-main-gate
     authorized: true
 production:
-  authorized: false
-  authorization_scope: historical noindex release only; v13 final production requires a separate explicit owner command
+  authorized: true
+  authorization_scope: one v13 DC11-PROD-FINAL release only; authorization is consumed by this release
   status: LIVE_PUBLIC_OBSERVED
-  exact_deployed_sha: UNKNOWN_PENDING_RELEASE_EVIDENCE
+  exact_deployed_sha_source: running container OCI org.opencontainers.image.revision label
+  observed_pre_release_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
+  release_target: exact SourceCraft origin/main attested by the manual release-main workflow
   historical_noindex_release_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
   historical_noindex_image_tag: don-city-next:production-cd5c74391265
   server_image_id: sha256:db58836c84b3287c6a4c288dd81a2e7de6247c57a8240aa3483e8549e833d51c
@@ -308,7 +311,7 @@ production:
   indexing: public_observed
   rollback_image: don-city-next:production-31367bfe4adf
   health: ok
-  blockers:
+  unresolved_product_operations:
     - first-production-owner
     - independent-alert-and-lead-delivery-channel
     - owner-verified-canonical-nap

@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs";
 const read = (path) => readFileSync(path, "utf8");
 
 const dockerfile = read("Dockerfile");
-const compose = read("deploy/clients/timeweb/staging/compose.staging.yml.example");
-const nginx = read("deploy/clients/timeweb/staging/nginx.staging.conf.example");
+const compose = read("deploy/clients/timeweb/production/compose.production.yml.example");
+const nginx = read("deploy/clients/timeweb/production/nginx.production-public.conf.example");
 const operations = read("docs/OPERATIONS.md");
 const releaseManifest = read("scripts/release-manifest.mjs");
 const pnpmWorkspace = read("pnpm-workspace.yaml");
@@ -22,43 +22,23 @@ assert.ok(
 	dockerfile.includes("id=don-city-pnpm-store"),
 	"Dockerfile must preserve the retry-safe pnpm BuildKit cache.",
 );
-
 assert.ok(!dockerfile.includes("DATABASE_URI="), "Dockerfile must not embed database credentials.");
 assert.ok(!compose.includes("DATABASE_URI="), "Compose template must not embed database credentials.");
-assert.ok(compose.includes('${IMAGE:?'), "Compose template must require an immutable image tag.");
-assert.ok(
-	compose.includes("STAGING_ENV_FILE"),
-	"Compose template must load a separate staging env file.",
-);
-assert.ok(compose.includes('JOBS_AUTORUN: "false"'), "Staging must not own Payload jobs.");
-assert.ok(!/^\s*build\s*:/m.test(compose), "Staging must consume an image built outside the server.");
-assert.ok(nginx.includes("__STAGING_DOMAIN__"), "Nginx template must require an explicit staging domain.");
-assert.ok(nginx.includes("noindex, nofollow"), "Nginx template must preserve staging noindex policy.");
-for (const expected of [
-	"__ADMIN_OR_RUNTIME_CIDR__",
-	"__ADMIN_ACCESS_POLICY__",
-	"location = /api/public/leads",
-	"location = /api/internal/revalidate",
-	"staging_login",
-	"staging_leads",
-	"staging_internal",
-]) {
-	assert.ok(nginx.includes(expected), `Staging Nginx must include ${expected}.`);
-}
+assert.ok(compose.includes('${IMAGE:?'), "Compose must require an immutable image tag.");
+assert.ok(compose.includes("PRODUCTION_ENV_FILE"), "Compose must use the approved production env file.");
+assert.ok(compose.includes('JOBS_AUTORUN: "true"'), "Production must remain the only jobs owner.");
+assert.ok(!/^\s*build\s*:/m.test(compose), "Production must consume an image built outside the server.");
+assert.ok(!nginx.includes("X-Robots-Tag"), "Public production Nginx must not add a global noindex header.");
+assert.ok(!nginx.includes("Disallow: /"), "Public production Nginx must not deny all crawlers.");
+assert.ok(nginx.includes("doncity-home.ru"), "Production Nginx must own the canonical public host.");
 assert.ok(operations.includes("immutable image"), "Operations must preserve immutable image rule.");
 assert.ok(releaseManifest.includes(".release"), "Release manifest must write local uncommitted evidence.");
 assert.ok(pnpmWorkspace.includes("confirmModulesPurge: false"), "Workspace must support non-interactive Docker builds.");
-assert.ok(
-	releaseManifest.includes("next-start-full-image"),
-	"Release manifest must record the full-image Next.js runtime shape.",
-);
 for (const expected of [
 	'profile: "REALTY_CATALOG"',
 	'deliveryProfile: "CRITICAL"',
 	'imageName: "don-city-next"',
-	'process.env.RELEASE_MODE ?? "REHEARSAL"',
-	'process.env.RELEASE_INDEXING ?? "noindex"',
-	'mode === "RELEASE"',
+	'indexing: "public"',
 	'"RELEASE manifest requires the canonical main branch"',
 	'"RELEASE manifest requires exact origin/main"',
 ]) {

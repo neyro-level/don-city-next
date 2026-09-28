@@ -2729,9 +2729,9 @@ DON CITY V4
 Восьмой: Platform не знает Донецк или ДОН СИТИ; Project Profile и данные
 инъецируют географию, бренд, статусы и SEO ownership.
 
-# 39. V12 ACTIVE CONFORMANCE PROGRAM
+# 39. V13 ACTIVE CONFORMANCE PROGRAM
 
-Этот раздел является единственным активным execution contract версии v12.
+Этот раздел является единственным активным execution contract версии v13.
 Разделы §33D и §35–38 сохраняются как historical v9 evidence и не определяют
 новые claims, thresholds, production status или порядок выполнения там, где
 они конфликтуют с §39.
@@ -2814,7 +2814,7 @@ IndexNow submissions and indexable registry rows. Reserved namespaces may remain
 
 ### Indexing and gate
 
-- production is `LIVE_PUBLIC`; staging remains `noindex`;
+- production is `LIVE_PUBLIC`; persistent staging runtime is absent and forbidden;
 - `ALWAYS_INDEX`: home, `/donetsk/`, Sell, Lawyer, About and Contacts;
 - `GATED_INDEX`: category×geo, district, approved facet and later approved
   agglomeration/locality pages;
@@ -2838,8 +2838,10 @@ IndexNow submissions and indexable registry rows. Reserved namespaces may remain
 - nearby property never contributes to Donetsk counts or Donetsk address metadata;
 - agglomeration membership requires owner whitelist, verified coordinates and
   Haversine distance not exceeding 50 km from the approved primary point;
-- candidate localities are research inputs, not production whitelist;
-- agglomeration routes remain non-public until SEO evidence and later owner decision.
+- owner-approved agglomeration locality is Макеевка with slug `makeevka`;
+- only its hub, `kvartiry`, `doma` and `uchastki` routes are public-contract
+  candidates; commercial, district and facet routes remain forbidden;
+- every other nearby locality remains research-only and non-public.
 
 ### Legal, navigation and SEO transport
 
@@ -2911,7 +2913,7 @@ IndexNow submissions and indexable registry rows. Reserved namespaces may remain
 | public pages, navigation and indexability | `docs/02_PRODUCT_STRUCTURE.md` | resolver/navigation/SEO projection |
 | data/security/topology boundaries | `docs/03_ARCHITECTURE.md` | Payload/core/project boundaries |
 | factual project configuration | `docs/PROJECT.md` | project config/Site Profile |
-| live/staging identity and operations | `docs/OPERATIONS.md` + `DELIVERY_STATE.yaml` | immutable artifact/runtime |
+| live production identity and operations | `docs/OPERATIONS.md` + `DELIVERY_STATE.yaml` | immutable artifact/runtime |
 | visual policy | `docs/DESIGN.md` | `globals.css` + canonical UI tree |
 | geo/URL/SEO gate/execution detail | this Master Plan | typed grammar/registry/gate |
 | current work only | `docs/04_BACKLOG.md` | Task Manager after approval |
@@ -3034,9 +3036,9 @@ Production is not on the implementation critical path.
 | OD10-01 | stable Plan ID remains `AMS-DON-CITY-CORE55-POSTPROD`; v11 uses collision-safe prefix `dc11` and does not overwrite v9 | before approval | SUPERSEDED by OD11-11 after the v11 final audit proved canonical import collision |
 | OD10-02 | implementation epics use `MERGE_AFTER_GATE`; one mandatory final production epic requires a separate release command | before approval | DECIDED |
 | OD10-03 | production state is `LIVE_PUBLIC`; global noindex is not a remediation fallback | before approval | DECIDED + HTTP-observed |
-| OD10-04 | agglomeration public slug and locality whitelist | before R12-04 | OPEN LATER; recommendation after R12-03 |
+| OD10-04 | agglomeration public slug and locality whitelist | before R12-04 | DECIDED: Макеевка, `makeevka`; hub + `kvartiry` + `doma` + `uchastki` only |
 | OD10-05 | approved legal terms/contract content and optional managed file | before R12-05 publication step | OPEN LATER; absent content means 404/zero links |
-| OD10-06 | one final production rollout after the complete program | before DC11-PROD-FINAL | OPEN PRODUCTION GATE |
+| OD10-06 | one final production rollout after the complete program | before DC11-PROD-FINAL | DECIDED: owner authorized on 2026-09-28 |
 | OD10-07 | future newbuild/ЖК or mortgage activation | after 4–6 month review | OPEN FUTURE; no current work blocked |
 | OD11-08 | exactly one persistent production database; no persistent staging/shadow/mirror DB | before approval | DECIDED |
 | OD11-09 | SourceCraft and all credentials are read only from canonical Secret Master scopes with no fallback | before approval | DECIDED + VERIFIED: `git-services/prod/` names-only, SourceCraft REST and Git PAT transport pass |

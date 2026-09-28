@@ -7,17 +7,6 @@ import assert from "node:assert/strict";
 const root = process.cwd();
 const outputDir = join(root, ".release");
 const outputFile = join(outputDir, "release-manifest.json");
-const mode = process.env.RELEASE_MODE ?? "REHEARSAL";
-const indexing = process.env.RELEASE_INDEXING ?? "noindex";
-
-assert.ok(
-	mode === "REHEARSAL" || mode === "RELEASE",
-	"RELEASE_MODE must be REHEARSAL or RELEASE",
-);
-assert.ok(
-	indexing === "noindex" || indexing === "public",
-	"RELEASE_INDEXING must be noindex or public",
-);
 
 function git(args) {
 	return execFileSync("git", args, {
@@ -26,17 +15,13 @@ function git(args) {
 		stdio: ["ignore", "pipe", "pipe"],
 	}).trim();
 }
-
 async function sha256(path) {
 	const content = await readFile(join(root, path));
 	return createHash("sha256").update(content).digest("hex");
 }
 
-const packageJson = JSON.parse(
-	await readFile(join(root, "package.json"), "utf8"),
-);
-const migrationDir = join(root, "migrations");
-const migrations = (await readdir(migrationDir))
+const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+const migrations = (await readdir(join(root, "migrations")))
 	.filter((file) => file.endsWith(".ts") || file.endsWith(".json"))
 	.sort();
 const status = git(["status", "--short"]);
@@ -44,41 +29,23 @@ const branch = git(["branch", "--show-current"]);
 const commit = git(["rev-parse", "HEAD"]);
 const originMain = git(["rev-parse", "origin/main"]);
 
-if (mode === "RELEASE") {
-	assert.equal(
-		branch,
-		"main",
-		"RELEASE manifest requires the canonical main branch",
-	);
-	assert.equal(
-		commit,
-		originMain,
-		"RELEASE manifest requires exact origin/main",
-	);
-	assert.equal(status, "", "RELEASE manifest requires a clean worktree");
-}
+assert.equal(branch, "main", "RELEASE manifest requires the canonical main branch");
+assert.equal(commit, originMain, "RELEASE manifest requires exact origin/main");
+assert.equal(status, "", "RELEASE manifest requires a clean worktree");
 
 const manifest = {
 	project: packageJson.name,
 	version: packageJson.version,
 	profile: "REALTY_CATALOG",
 	deliveryProfile: "CRITICAL",
-	mode,
-	source: {
-		branch,
-		commit,
-		originMain,
-		clean: status.length === 0,
-	},
+	mode: "RELEASE",
+	source: { branch, commit, originMain, clean: true },
 	runtime: {
 		node: packageJson.engines?.node,
 		packageManager: packageJson.packageManager,
 		nextRuntime: "next-start-full-image",
-		jobsAutorunOwner:
-			mode === "REHEARSAL"
-				? "disabled for isolated staging"
-				: "single production runtime only",
-		indexing,
+		jobsAutorunOwner: "single production runtime only",
+		indexing: "public",
 	},
 	artifact: {
 		format: "docker-image",
@@ -93,8 +60,7 @@ const manifest = {
 		"next.config.ts": await sha256("next.config.ts"),
 	},
 	rollback: {
-		strategy:
-			"keep previous image tag and previous runtime env; rollback by switching container image back and restarting one jobs owner",
+		strategy: "switch the single production Compose service to the recorded previous immutable image",
 	},
 	generatedAt: new Date().toISOString(),
 };

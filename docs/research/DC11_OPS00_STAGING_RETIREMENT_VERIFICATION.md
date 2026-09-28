@@ -19,7 +19,7 @@ access identity were outside the deletion boundary.
 No secret value, infrastructure address, database name, access key, PII or full
 connection URL is recorded in this evidence.
 
-The repository guard `pnpm verify:staging-retirement` mechanically protects the
+The repository guard `pnpm verify:single-production` mechanically protects the
 one-runtime/one-database/one-bucket contract, current Source of Truth statements
 and the production-preservation checks in the operator scripts.
 

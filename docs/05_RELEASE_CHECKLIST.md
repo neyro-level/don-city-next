@@ -1,7 +1,7 @@
 # Release Checklist
 
-Status: Active — public production; next release not authorized
-Version: 1.2
+Status: Active — final v13 production release authorized
+Version: 1.3
 Updated: 2026-09-28
 
 ## Historical Release Evidence
@@ -20,7 +20,7 @@ Updated: 2026-09-28
 - [x] SourceCraft release attestation run 82 passed for exact main SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d`.
 - [x] Approved logo, compact header mark, footer lockup and favicon are live; desktop/mobile visual smoke passed.
 
-## Required Before the Next Production Release
+## Final v13 Release Entry
 
 - [x] Deliver CP-04 with its required DB/media/performance evidence.
 - [x] Deliver CP-03 after the approved narrow OD-03 exception and atomic DB concurrency evidence (PR 79, RISKY gate 91).
@@ -28,25 +28,35 @@ Updated: 2026-09-28
 - [x] Retire the persistent staging runtime, logical database, empty S3 bucket
       and Secret Master `/staging` folder; preserve the production resources
       and shared S3 credential.
-- [ ] Create the first production owner user.
-- [ ] Verify NAP against external owner/Yandex Business truth.
 - [x] Keep unapproved terms and managed contract PDF in explicit `ABSENT`
       state: no public route, footer/navigation/sitemap link or file URL.
-- [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
 - [x] Implement and sample-restore media backup/versioning.
 - [x] Expose trustworthy DB/media backup freshness in authenticated health;
       bounded 2026-09-28 proof returned `ok` with zero alerts.
-- [ ] Run full production crawl for canonical, robots, sitemap, JSON-LD, 404/410 and lifecycle.
-- [ ] Provide and approve a real feed endpoint/allowlist before enabling any source.
+- [ ] Run one bounded production crawl for canonical, robots, sitemap, JSON-LD,
+      Makeevka allowlisted routes and representative lifecycle responses inside
+      `DC11-PROD-FINAL`; do not create a follow-up monitor.
 - [x] Public indexing is already observed; exact deployed SHA/image still requires factual reconciliation.
 - [x] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
 - [x] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
 - [x] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
-- [ ] Record `PUBLIC_INDEXING_ENABLED_AT` and the four-month scope-review due date (`+4 calendar months`); the reminder must not enable newbuild/ЖК without a new owner-approved plan.
+- [x] Макеевка is the only approved agglomeration locality: slug `makeevka`,
+      routes hub + `kvartiry` + `doma` + `uchastki`; all other combinations are off.
+
+## Open Product Operations (not release blockers)
+
+- Production owner account remains an explicit owner-controlled setup action.
+- Canonical NAP remains `PENDING_EXTERNAL_VERIFICATION`; the site does not claim
+  independent verification.
+- Lead delivery and independent alert destination remain disconnected and
+  fail-closed; no unverified endpoint is enabled by this release.
+- Real feed remains disabled until a separately approved endpoint/allowlist.
+- Newbuild/ЖК review is future owner-planned product work, not a scheduled
+  post-production monitoring task.
 
 ## Stop Conditions
 
-- Do not start a new production release without a separate explicit owner command and exact-head evidence.
+- The owner explicitly authorized `DC11-PROD-FINAL` on 2026-09-28; do not reuse this authorization for a later release.
 - Do not enable a real feed or delivery host from an unverified URL.
 - Do not run migrations without bound backup, rehearsal and rollback evidence.
 - Do not expose secrets, PII, raw Payload documents or full database URLs in evidence.

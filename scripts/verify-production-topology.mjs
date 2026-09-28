@@ -104,7 +104,14 @@ assert.ok(
 		operations.includes("archive MEDIA_DIR"),
 	"Operations must define the conditional local-media snapshot",
 );
-assert.ok(architecture.includes("staging") && architecture.includes("noindex"));
+assert.ok(
+	architecture.includes("Persistent staging/shadow/mirror database запрещена"),
+	"Architecture must forbid a persistent second database contour",
+);
+assert.ok(
+	architecture.includes("Production публично индексируется"),
+	"Architecture must preserve public production indexing",
+);
 assert.ok(releaseChecklist.includes("backup") || releaseChecklist.includes("Backup"));
 assert.ok(releaseChecklist.includes("rollback") || releaseChecklist.includes("Rollback"));
 assert.ok(

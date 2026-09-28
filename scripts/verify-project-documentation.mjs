@@ -105,7 +105,7 @@ requireAll("docs/02_PRODUCT_STRUCTURE.md", [
 	"registry/content gates",
 ]);
 requireAll("docs/05_RELEASE_CHECKLIST.md", [
-	"Status: Active — public production; next release not authorized",
+	"Status: Active — final v13 production release authorized",
 	"exact deployed SHA/image",
 	"DC11-PROD-FINAL",
 	"must not promote a fail-closed",
@@ -114,6 +114,8 @@ requireAll("docs/DELIVERY_STATE.yaml", [
 	"program: AMS-DON-CITY-LIVE-CONFORMANCE",
 	"plan_version: v13",
 	"status: LIVE_PUBLIC_OBSERVED",
+	"authorized: true",
+	"release_target: exact SourceCraft origin/main attested by the manual release-main workflow",
 	"cp_03:",
 	"pull_request: 79",
 	"gate_run: 91",

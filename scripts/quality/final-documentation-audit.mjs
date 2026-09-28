@@ -35,19 +35,18 @@ assert.doesNotMatch(backlog, /Закрыть media backup\/versioning/);
 
 const delivery = requireFragments("docs/DELIVERY_STATE.yaml", [
 	"current_epic: DC11-PROD-FINAL",
-	"current_task: owner-release-command-required",
-	"next_action: await-explicit-owner-production-release-command",
+	"current_task: authorized-final-production-release",
+	"next_action: execute-one-exact-main-release-then-close-without-follow-up",
 	"status: delivered",
 	"pull_request: 102",
 	"gate_run: 114",
 	"pull_request: 103",
 	"gate_run: 116",
-	"status: awaiting-explicit-owner-command",
+	"status: authorized-final-stage",
 	"autonomous_task: absent",
 	"post_production_monitoring_task: forbidden",
 	"open_p0_p1_contradictions: 0",
-	"production_release_authorized: false",
-	"authorized: false",
+	"authorized: true",
 ]);
 assert.doesNotMatch(
 	delivery.slice(0, delivery.indexOf("historical_evidence:")),
@@ -70,7 +69,7 @@ requireFragments("docs/PROJECT.md", [
 	"`externalMonitoring` remains fail-closed `false`",
 ]);
 requireFragments("docs/03_ARCHITECTURE.md", [
-	"`PRE-RELEASE CANDIDATE`",
+	"`FINAL RELEASE AUTHORIZED`",
 	"Exactly one persistent production database exists",
 	"Owner-authorized retirement on 2026-09-28",
 ]);
