@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-LIVE-CONFORMANCE
 plan_version: v13
 plan_status: APPROVED
-current_wave: LIVE_CONFORMANCE_W5
-current_epic: DC11-DOC-FINAL
-current_task: dc11-task-120-delivery
-next_action: complete-final-documentation-audit-then-stop-before-production
+current_wave: LIVE_CONFORMANCE_W6
+current_epic: DC11-PROD-FINAL
+current_task: owner-release-command-required
+next_action: await-explicit-owner-production-release-command
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  base_sha: 9e166460de1939191671787074209fe9f6a504d3
-  active_branch: codex/dc11-120-final-doc-audit
+  base_sha: 22468c0db317842e0df6edd60ed6f07cb1f1bb16
+  active_branch: none
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dc11-task-120-delivery
-  reason: final active-document convergence and exact-head verification passed; SourceCraft delivery is in progress
+  current_task: none
+  reason: all non-production v13 work is delivered; final production awaits a separate explicit owner command
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -41,11 +41,22 @@ live_conformance:
     merge_commit: 9e166460de1939191671787074209fe9f6a504d3
     evidence: docs/research/DC11_OPS00_STAGING_RETIREMENT_VERIFICATION.md
   dc11_doc_final:
-    status: delivery-in-progress
+    status: delivered
     baseline_main: 9e166460de1939191671787074209fe9f6a504d3
+    pull_request: 103
+    gate_run: 116
+    exact_head: 3b497b5844ab50c9625786fce523ecc2b2112f40
+    merge_commit: 22468c0db317842e0df6edd60ed6f07cb1f1bb16
     open_p0_p1_contradictions: 0
     production_release_authorized: false
     preflight: docs/replan/DC11_DOC_FINAL_PREFLIGHT.md
+    implementation: docs/replan/DC11_DOC_FINAL_IMPLEMENTATION.md
+    verification: docs/replan/DC11_DOC_FINAL_VERIFICATION.md
+  dc11_prod_final:
+    status: awaiting-explicit-owner-command
+    authorized: false
+    autonomous_task: absent
+    post_production_monitoring_task: forbidden
 historical_evidence:
   rp_00:
     status: delivered
