@@ -8,6 +8,7 @@ const compose = read("deploy/clients/timeweb/production/compose.production.yml.e
 const nginx = read("deploy/clients/timeweb/production/nginx.production-public.conf.example");
 const operations = read("docs/OPERATIONS.md");
 const releaseManifest = read("scripts/release-manifest.mjs");
+const productionRelease = read("scripts/ops/Invoke-DonCityProductionRelease.ps1");
 const pnpmWorkspace = read("pnpm-workspace.yaml");
 
 for (const expected of [
@@ -22,6 +23,16 @@ assert.ok(
 	dockerfile.includes("id=don-city-pnpm-store"),
 	"Dockerfile must preserve the retry-safe pnpm BuildKit cache.",
 );
+for (const expected of [
+	"7-Zip\\7z.exe",
+	"-tgzip",
+	"Get-FileHash",
+	'gzip -dc "$artifact"',
+	"artifact_checksum=mismatch",
+	"rollback=executed-after-smoke-failure",
+]) {
+	assert.ok(productionRelease.includes(expected), `Production release helper must include ${expected}.`);
+}
 assert.ok(!dockerfile.includes("DATABASE_URI="), "Dockerfile must not embed database credentials.");
 assert.ok(!compose.includes("DATABASE_URI="), "Compose template must not embed database credentials.");
 assert.ok(compose.includes('${IMAGE:?'), "Compose must require an immutable image tag.");

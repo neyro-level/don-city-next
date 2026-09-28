@@ -54,8 +54,10 @@ $short = $head.Substring(0, 12)
 $image = "don-city-next:production-$short"
 $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
 $keyPath = Join-Path $tempRoot ("doncity-release-{0}.key" -f [guid]::NewGuid().ToString('N'))
-$artifactPath = Join-Path $tempRoot ("doncity-release-{0}.tar" -f $short)
+$artifactTarPath = Join-Path $tempRoot ("doncity-release-{0}.tar" -f $short)
+$artifactPath = "$artifactTarPath.gz"
 if (-not $keyPath.StartsWith($tempRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
+    -not $artifactTarPath.StartsWith($tempRoot, [System.StringComparison]::OrdinalIgnoreCase) -or
     -not $artifactPath.StartsWith($tempRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
   throw 'Refusing to place release files outside the system temporary directory.'
 }
@@ -70,7 +72,7 @@ foreach ($name in @('DONCITY_SERVER_SSH_HOST', 'DONCITY_DEPLOY_USER', 'DONCITY_D
   if ([string]::IsNullOrWhiteSpace($secrets[$name])) { throw "Required Secret Master key is missing: $name" }
 }
 
-$remoteArtifact = "/tmp/doncity-release-$short.tar"
+$remoteArtifact = "/tmp/doncity-release-$short.tar.gz"
 $remoteBackup = "/srv/doncity/production/compose.before-$short.yml"
 $deployed = $false
 try {
@@ -86,9 +88,14 @@ try {
   $builtRevision = (& docker image inspect $image --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}').Trim()
   if ($builtRevision -ne $head) { throw 'Built image revision label does not match exact main.' }
 
-  & docker save --output $artifactPath $image
+  & docker save --output $artifactTarPath $image
   if ($LASTEXITCODE -ne 0) { throw 'Docker image export failed.' }
+  & 'C:\Program Files\7-Zip\7z.exe' a -tgzip -mx=3 $artifactPath $artifactTarPath | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'Docker image compression failed.' }
+  Remove-Item -LiteralPath $artifactTarPath -Force
   $artifactSha = (Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256).Hash.ToLowerInvariant()
+
+  Invoke-Ssh -HostName $secrets.DONCITY_SERVER_SSH_HOST -UserName $secrets.DONCITY_DEPLOY_USER -KeyPath $keyPath -Command "rm -f '$remoteArtifact'" | Out-Null
 
   Invoke-NativeProcess -FileName 'scp.exe' -Arguments @(
     '-i', $keyPath, '-o', 'BatchMode=yes', '-o', 'IdentitiesOnly=yes',
@@ -119,7 +126,7 @@ sudo -n test -f "$compose_file" || { echo 'production_compose=missing'; exit 26;
 sudo -n test -f "${production_dir}/.env" || { echo 'production_env=missing'; exit 27; }
 sudo -n test ! -e "$backup" || { echo 'rollback_point=already-exists'; exit 28; }
 
-$docker_cmd load --input "$artifact" >/dev/null
+gzip -dc "$artifact" | $docker_cmd load >/dev/null
 loaded_revision=$($docker_cmd image inspect "$new_image" --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')
 [ "$loaded_revision" = "$expected_revision" ] || { echo 'loaded_revision=mismatch'; exit 29; }
 sudo -n cp "$compose_file" "$backup"
@@ -198,7 +205,7 @@ printf 'rollback=executed-after-smoke-failure\n'
   throw
 } finally {
   if (Test-Path -LiteralPath $artifactPath) { Remove-Item -LiteralPath $artifactPath -Force }
+  if (Test-Path -LiteralPath $artifactTarPath) { Remove-Item -LiteralPath $artifactTarPath -Force }
   if (Test-Path -LiteralPath $keyPath) { Remove-Item -LiteralPath $keyPath -Force }
   $secrets.Clear()
 }
-

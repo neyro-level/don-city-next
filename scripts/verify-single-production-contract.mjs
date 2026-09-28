@@ -59,9 +59,10 @@ const serverOperator = requireFragments("scripts/ops/Invoke-DonCityServerInvento
 	"staging_runtime_directory=absent",
 	"production_health=%s",
 	"-replace \"\`r\`n\", \"\`n\"",
+	"CleanupFailedTransport",
+	"failed_transport=absent",
 ]);
 assert.doesNotMatch(serverOperator, /RetireRuntime/);
 assert.doesNotMatch(serverOperator, /rm\s+-rf/);
 
 console.log("verify-single-production-contract: ok");
-
