@@ -25,7 +25,7 @@ Updated: 2026-09-28
 - [x] Canonical v12→v13 non-destructive Upgrade passed in the one existing Beads store: 22/22 epics, 84 tasks, 106 managed nodes, zero drift/cycles.
 - [x] Production remains the mandatory final stage, has no autonomous task and requires a separate explicit release command.
 - [x] Execute the implementation Beads ready-loop through all R11/R12/UI/OPS delivery epics. Beads remains the only per-task execution state.
-- [ ] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
+- [x] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
 
 Earlier CP-01…CP-08 evidence remains delivered history. It is not the current
 program and does not create a persistent staging database or a second task graph.

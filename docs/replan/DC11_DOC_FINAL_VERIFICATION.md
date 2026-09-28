@@ -1,9 +1,13 @@
 # DC11-DOC-FINAL — exact-head verification
 
-Date: 2026-09-28  
-Implementation head: `7f0cb0cf9813162f94c25e59f87e7c9a3057b6c0`  
-Branch: `codex/dc11-120-final-doc-audit`  
-Task: `dc11-task-120-verify`  
+Date: 2026-09-28
+
+Implementation head: `7f0cb0cf9813162f94c25e59f87e7c9a3057b6c0`
+
+Branch: `codex/dc11-120-final-doc-audit`
+
+Task: `dc11-task-120-verify`
+
 Production release: not authorized and not executed
 
 ## Acceptance matrix

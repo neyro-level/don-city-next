@@ -1,8 +1,11 @@
 # DC11-DOC-FINAL — implementation evidence
 
-Date: 2026-09-28  
-Baseline `main`: `9e166460de1939191671787074209fe9f6a504d3`  
-Task: `dc11-task-120-implement`  
+Date: 2026-09-28
+
+Baseline `main`: `9e166460de1939191671787074209fe9f6a504d3`
+
+Task: `dc11-task-120-implement`
+
 Production release: not authorized and not executed
 
 ## Result
