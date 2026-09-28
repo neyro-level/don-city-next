@@ -50,10 +50,10 @@ export function LegalDocumentView({
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb>
-					<h1 className="mt-5 max-w-225 text-heading-large font-extrabold leading-heading-tight text-[var(--text-primary)] md:text-display-medium">
+					<h1 className="mt-5 max-w-225 text-h2 font-extrabold leading-heading-tight text-[var(--text-primary)] md:text-h1">
 						{document.title}
 					</h1>
-					<p className="mt-4 max-w-190 text-body-compact leading-step-copy text-[var(--legal-document-content-tertiary)] md:text-body-large md:leading-step-relaxed">
+					<p className="mt-4 max-w-190 text-body-lg leading-step-copy text-[var(--legal-document-content-tertiary)] md:text-body-lg md:leading-step-relaxed">
 						{document.description}
 					</p>
 					<div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-label font-semibold text-[var(--legal-document-content-subtle)]">
@@ -88,7 +88,7 @@ export function LegalDocumentView({
 				</Card>
 
 				<Card className="overflow-hidden rounded-lg border-[var(--legal-document-border-primary)] bg-[var(--surface-card)] px-5 md:px-8">
-					<div className="grid gap-3 py-7 text-body-compact leading-body-relaxed text-[var(--legal-document-content-strong)] md:py-9 md:text-body-large">
+					<div className="grid gap-3 py-7 text-body-lg leading-body-relaxed text-[var(--legal-document-content-strong)] md:py-9 md:text-body-lg">
 						{document.intro.map((paragraph) => (
 							<p key={paragraph}>{paragraph}</p>
 						))}
@@ -100,18 +100,18 @@ export function LegalDocumentView({
 							key={section.title}
 							className="scroll-mt-32 pt-7 last:pb-7 md:pt-9 md:last:pb-9"
 						>
-							<h2 className="text-heading-small font-extrabold leading-tight-copy text-[var(--legal-document-content-inverse)] md:text-section-small">
+							<h2 className="text-h4 font-extrabold leading-tight-copy text-[var(--legal-document-content-inverse)] md:text-h2">
 								{section.title}
 							</h2>
 							{section.paragraphs?.length ? (
-								<div className="mt-4 grid gap-3 text-body-compact leading-body-relaxed text-[var(--legal-document-content-strong)] md:text-body-large">
+								<div className="mt-4 grid gap-3 text-body-lg leading-body-relaxed text-[var(--legal-document-content-strong)] md:text-body-lg">
 									{section.paragraphs.map((paragraph) => (
 										<p key={paragraph}>{paragraph}</p>
 									))}
 								</div>
 							) : null}
 							{section.items?.length ? (
-								<ul className="mt-4 grid gap-2.5 text-body-compact leading-content text-[var(--legal-document-content-strong)] md:text-body-large">
+								<ul className="mt-4 grid gap-2.5 text-body-lg leading-content text-[var(--legal-document-content-strong)] md:text-body-lg">
 									{section.items.map((item) => (
 										<li
 											key={item}

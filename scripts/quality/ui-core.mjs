@@ -191,7 +191,7 @@ for (const [name, expectedOwner] of canonicalPrimitiveOwners) {
 
 const layout = readFileSync(join(root, "src", "app", "layout.tsx"), "utf8");
 const globals = readFileSync(join(root, "src", "app", "globals.css"), "utf8");
-const themeBoundary = globals.indexOf("@theme inline");
+const themeBoundary = globals.indexOf("\n@theme inline");
 const privateTypographyReference = /var\(--site-(?:type|leading|tracking)-/;
 if (themeBoundary < 0)
 	failures.push("semantic typography: @theme inline is missing");
@@ -200,11 +200,40 @@ if (privateTypographyReference.test(globals.slice(0, themeBoundary))) {
 		"semantic typography: private numeric source may only feed @theme roles",
 	);
 }
+const themeEnd = globals.indexOf("\n}", themeBoundary);
+const themeBlock = globals.slice(themeBoundary, themeEnd);
+const typographyRoles = [...themeBlock.matchAll(/^\s*(--text-[a-z0-9-]+):/gm)]
+	.map((match) => match[1])
+	.sort();
+assert.deepEqual(
+	typographyRoles,
+	[
+		"--text-body",
+		"--text-body-lg",
+		"--text-body-sm",
+		"--text-caption",
+		"--text-h1",
+		"--text-h2",
+		"--text-h3",
+		"--text-h4",
+		"--text-label",
+		"--text-process-step",
+	].sort(),
+	"typography must expose only the canonical roles and the approved decorative step exception",
+);
+const legacyTypographyRole =
+	/\btext-(?:display(?:-[a-z-]+)?|section(?:-[a-z-]+)?|heading(?:-[a-z-]+)?|editorial-[a-z-]+|micro(?:-tight)?|overline|support(?:-dense)?|lead(?:-compact)?|body-(?:large|compact|dense|emphasis|highlight|fluid)|caption-(?:tight|dense|relaxed)|label-relaxed|card-(?:large|fluid|compact(?:-(?:medium|large))?|title(?:-large)?|section|heading-fluid)|price(?:-(?:large|medium|mobile))?|selection-title|profile-title|calculator-result|property-title|dialog-(?:title|subtitle)|footer-title|route-status|thank-you)\b/;
 for (const path of walk(join(root, "packages", "ui", "src"))) {
 	if (!/\.(?:css|tsx?)$/.test(path)) continue;
-	if (privateTypographyReference.test(readFileSync(path, "utf8"))) {
+	const source = readFileSync(path, "utf8");
+	if (privateTypographyReference.test(source)) {
 		failures.push(
 			`semantic typography: UI consumer bypasses public role in ${relative(root, path).replaceAll("\\", "/")}`,
+		);
+	}
+	if (legacyTypographyRole.test(source)) {
+		failures.push(
+			`semantic typography: legacy role in ${relative(root, path).replaceAll("\\", "/")}`,
 		);
 	}
 }

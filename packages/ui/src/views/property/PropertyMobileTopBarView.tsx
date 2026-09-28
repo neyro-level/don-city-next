@@ -34,10 +34,10 @@ export function PropertyMobileTopBarView({
 					<ArrowLeft className="size-5" aria-hidden />
 				</LinkRenderer>
 				<div className="min-w-0">
-					<p className="truncate text-support font-bold leading-support-pixel tabular-nums text-[var(--text-primary)] sm:text-body-fluid sm:leading-body-fluid-pixel">
+					<p className="truncate text-body-sm font-bold leading-support-pixel tabular-nums text-[var(--text-primary)] sm:text-body sm:leading-body-fluid-pixel">
 						{price}
 					</p>
-					<p className="truncate text-label font-medium leading-label text-[var(--text-muted)] sm:text-support-dense sm:leading-support-pixel">
+					<p className="truncate text-label font-medium leading-label text-[var(--text-muted)] sm:text-body-sm sm:leading-support-pixel">
 						{title}
 					</p>
 				</div>

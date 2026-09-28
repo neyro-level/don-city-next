@@ -60,7 +60,7 @@ export function PublicPropertyCard({
 					))}
 				</div>
 				{headingLevel === "h2" ? (
-					<h2 className="text-lead font-semibold leading-tight-copy">
+					<h2 className="text-body-lg font-semibold leading-tight-copy">
 						{heading}
 					</h2>
 				) : (
@@ -69,7 +69,7 @@ export function PublicPropertyCard({
 				<CardDescription>{property.address}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<p className="text-lead font-extrabold">
+				<p className="text-body-lg font-extrabold">
 					{property.price?.label ?? "Цена по запросу"}
 				</p>
 				<dl className="mt-4 grid grid-cols-2 gap-3 text-label">

@@ -103,7 +103,7 @@ export function SheetTitle({
 		<DialogPrimitive.Title
 			data-slot="sheet-title"
 			className={cn(
-				"text-heading-small font-semibold text-[var(--text-primary)]",
+				"text-h4 font-semibold text-[var(--text-primary)]",
 				className,
 			)}
 			{...props}

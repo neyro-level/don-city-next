@@ -267,7 +267,7 @@ export function PropertySidebarView({
 			) : null}
 
 			<div className="grid gap-1">
-				<p className="text-card-fluid font-extrabold leading-tight-copy tabular-nums text-[var(--text-primary)]">
+				<p className="text-h3 font-extrabold leading-tight-copy tabular-nums text-[var(--text-primary)]">
 					{price}
 				</p>
 				{meterPrice ? (

@@ -122,7 +122,7 @@ export function PropertyCardListLayout({
 								/>
 							))}
 						</div>
-						<span className="absolute bottom-3 right-3 z-20 inline-flex min-h-7 items-center gap-1 rounded-full bg-[var(--surface-dark)]/72 px-2.5 text-overline font-bold tabular-nums text-white shadow-[var(--property-card-shadow-counter)] backdrop-blur-sm">
+						<span className="absolute bottom-3 right-3 z-20 inline-flex min-h-7 items-center gap-1 rounded-full bg-[var(--surface-dark)]/72 px-2.5 text-caption font-bold tabular-nums text-white shadow-[var(--property-card-shadow-counter)] backdrop-blur-sm">
 							<ImageIcon className="size-3.5" aria-hidden />
 							{activeImage + 1}/{images.length}
 						</span>
@@ -132,7 +132,7 @@ export function PropertyCardListLayout({
 
 			<div className="flex min-h-59.5 flex-col md:min-h-72">
 				<div className="min-w-0">
-					<h2 className="text-card-title font-extrabold leading-step-copy tracking-compact text-[var(--text-primary)]">
+					<h2 className="text-h4 font-extrabold leading-step-copy tracking-compact text-[var(--text-primary)]">
 						{listTitle}
 					</h2>
 					<div className="mt-2 grid gap-1.5 text-body leading-step-body tracking-copy text-[var(--text-muted)]">
@@ -141,7 +141,7 @@ export function PropertyCardListLayout({
 								{listing.district}
 							</p>
 						) : null}
-						<p className="flex min-w-0 items-center gap-1.5 text-body-dense leading-heading-pixel text-[var(--text-secondary)] lg:text-body lg:leading-step-body">
+						<p className="flex min-w-0 items-center gap-1.5 text-body-lg leading-heading-pixel text-[var(--text-secondary)] lg:text-body lg:leading-step-body">
 							<MapPin
 								className="size-3.5 shrink-0 text-[var(--accent)]"
 								aria-hidden
@@ -167,7 +167,7 @@ export function PropertyCardListLayout({
 							onClick={stop}
 							data-analytics-context="catalog_property_card"
 							data-analytics-item={listing.slug}
-							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-dense font-semibold tabular-nums text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
+							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold tabular-nums text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
 						>
 							<Phone className="size-[17.6px] lg:size-4" aria-hidden />
 							{phone}
@@ -183,7 +183,7 @@ export function PropertyCardListLayout({
 								stop(event);
 								setPhoneVisible(true);
 							}}
-							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-dense font-semibold text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
+							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
 						>
 							<Phone className="" aria-hidden />
 							Показать телефон
@@ -193,7 +193,7 @@ export function PropertyCardListLayout({
 						variant="plain"
 						type="button"
 						onClick={openPropertyChat}
-						className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-card-soft)] px-5 text-center text-body-dense font-semibold text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] lg:text-body sm:min-w-32.5"
+						className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-card-soft)] px-5 text-center text-body-lg font-semibold text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] lg:text-body sm:min-w-32.5"
 					>
 						<MessageCircle className="" aria-hidden />
 						Написать
@@ -215,7 +215,7 @@ export function PropertyCardListLayout({
 						data-catalog-price-row
 						className="flex min-w-0 items-center gap-2 md:justify-end"
 					>
-						<p className="text-price-large font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
+						<p className="text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
 							{priceLabel}
 						</p>
 						{showExclusiveBadge ? <ExclusiveBadge /> : null}

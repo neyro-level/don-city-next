@@ -93,7 +93,7 @@ export function CatalogShowcaseView({
 			<div className="mx-auto max-w-site-frame px-5">
 				{headline ? (
 					<div className="mb-7 rounded-lg border border-[var(--catalog-controls-border-headline)] bg-[var(--surface-card-soft)] px-5 py-5 md:px-6 md:py-6">
-						<h1 className="max-w-230 text-heading-small font-extrabold leading-card-title-relaxed text-[var(--text-primary)] md:text-section-small lg:text-section-large">
+						<h1 className="max-w-230 text-h4 font-extrabold leading-card-title-relaxed text-[var(--text-primary)] md:text-h2 lg:text-h2">
 							{headline}
 						</h1>
 					</div>
@@ -101,7 +101,7 @@ export function CatalogShowcaseView({
 				{beforeControls}
 				<div className="rounded-lg bg-[var(--surface-card)] p-4 shadow-[var(--catalog-controls-shadow-panel)] lg:p-5">
 					<div className="flex flex-wrap items-end justify-between gap-3">
-						<p className="text-heading-small font-extrabold leading-tight-copy text-[var(--text-primary)] md:text-section-small">
+						<p className="text-h4 font-extrabold leading-tight-copy text-[var(--text-primary)] md:text-h2">
 							Найдено: <span className="tabular-nums">{resultLabel}</span>
 						</p>
 					</div>

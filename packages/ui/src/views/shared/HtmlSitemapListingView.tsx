@@ -29,7 +29,7 @@ export function HtmlSitemapListingView({
 					>
 						<ArrowLeft className="size-4" aria-hidden /> Карта сайта
 					</LinkRenderer>
-					<h1 className="mt-4 text-heading-large font-extrabold leading-tight-copy md:text-display-medium">
+					<h1 className="mt-4 text-h2 font-extrabold leading-tight-copy md:text-h1">
 						{title}
 					</h1>
 					<p className="mt-3 text-body text-[var(--html-sitemap-listing-content-tertiary)]">

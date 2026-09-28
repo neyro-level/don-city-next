@@ -99,7 +99,7 @@ export function DialogTitle({
 		<DialogPrimitive.Title
 			data-slot="dialog-title"
 			className={cn(
-				"text-section-small font-semibold text-[var(--text-primary)]",
+				"text-h2 font-semibold text-[var(--text-primary)]",
 				className,
 			)}
 			{...props}

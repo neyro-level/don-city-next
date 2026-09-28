@@ -22,7 +22,7 @@ export const Input = React.forwardRef<
 					: variant === "catalogRange"
 						? cn(semanticClassName, className)
 					: cn(
-							"h-[var(--control-height-md)] w-full min-w-0 rounded-[var(--control-radius)] border border-[var(--input)] bg-transparent px-[var(--control-padding-sm)] text-body-large text-[var(--foreground)] outline-none transition-colors duration-[var(--motion-duration-fast)] ease-site placeholder:text-[var(--muted-foreground)] focus-visible:border-[var(--ring)] focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)] disabled:cursor-not-allowed disabled:opacity-50 md:text-body",
+							"h-[var(--control-height-md)] w-full min-w-0 rounded-[var(--control-radius)] border border-[var(--input)] bg-transparent px-[var(--control-padding-sm)] text-body-lg text-[var(--foreground)] outline-none transition-colors duration-[var(--motion-duration-fast)] ease-site placeholder:text-[var(--muted-foreground)] focus-visible:border-[var(--ring)] focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)] disabled:cursor-not-allowed disabled:opacity-50 md:text-body",
 							className,
 						)
 			}

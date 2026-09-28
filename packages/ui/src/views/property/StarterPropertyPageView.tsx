@@ -80,10 +80,10 @@ export function PropertyPageView({
 									/>
 								</div>
 								<section id="section-property-summary">
-									<h1 className="mt-8 text-display-small font-extrabold leading-heading">
+									<h1 className="mt-8 text-h1 font-extrabold leading-heading">
 										{property.title}
 									</h1>
-									<p className="mt-2 text-body-large text-content-default">
+									<p className="mt-2 text-body-lg text-content-default">
 										{property.address}
 									</p>
 								</section>
@@ -103,7 +103,7 @@ export function PropertyPageView({
 									</dl>
 								</section>
 								<section id="section-property-description">
-									<p className="mt-8 text-body-large text-content-default">
+									<p className="mt-8 text-body-lg text-content-default">
 										{property.description}
 									</p>
 								</section>
@@ -111,7 +111,7 @@ export function PropertyPageView({
 							<aside id="section-property-actions">
 								<Card elevation="raised" className="sticky top-32">
 									<CardHeader>
-										<p className="text-display-small font-semibold leading-tight-copy">
+										<p className="text-h1 font-semibold leading-tight-copy">
 											{property.price?.label ?? "Цена по запросу"}
 										</p>
 										<CardDescription>{property.address}</CardDescription>
@@ -154,7 +154,7 @@ export function PropertyPageView({
 						<Container size="narrow">
 							<Card>
 								<CardHeader>
-									<h2 className="text-display-small font-semibold leading-tight-copy">
+									<h2 className="text-h1 font-semibold leading-tight-copy">
 										Юридическая проверка объекта
 									</h2>
 									<CardDescription>
@@ -188,7 +188,7 @@ export function PropertyPageView({
 								))}
 							</div>
 						) : (
-							<p className="mt-8 text-body-large text-content-default">
+							<p className="mt-8 text-body-lg text-content-default">
 								Похожие объекты появятся, когда в каталоге будет достаточно
 								опубликованных предложений.
 							</p>

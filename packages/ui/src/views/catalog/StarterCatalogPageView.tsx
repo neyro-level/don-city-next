@@ -115,10 +115,10 @@ export function CatalogPageView({
 					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
 						{copy.eyebrow}
 					</p>
-					<h1 className="mt-4 text-display font-extrabold tracking-display">
+					<h1 className="mt-4 text-h1 font-extrabold tracking-display">
 						{copy.title}
 					</h1>
-					<p className="mt-4 max-w-2xl text-body-large text-content-default">
+					<p className="mt-4 max-w-2xl text-body-lg text-content-default">
 						{copy.description}
 					</p>
 				</Container>
@@ -127,7 +127,7 @@ export function CatalogPageView({
 				<section id="section-catalog-introduction">
 					<Section>
 						<Container size="narrow">
-							<p className="whitespace-pre-line text-body-large text-content-default">
+							<p className="whitespace-pre-line text-body-lg text-content-default">
 								{copy.introduction}
 							</p>
 						</Container>
@@ -184,7 +184,7 @@ export function CatalogPageView({
 						) : (
 							<p
 								id="section-catalog-empty"
-								className="text-body-large text-content-default"
+								className="text-body-lg text-content-default"
 							>
 								{copy.emptyMessage}
 							</p>

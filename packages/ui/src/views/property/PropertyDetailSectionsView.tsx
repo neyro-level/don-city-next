@@ -50,12 +50,12 @@ export function PropertyDetailSummaryView({
 				) : null}
 				<h1
 					id="object-page-title"
-					className="text-property-title font-semibold leading-card-title text-[var(--text-primary)]"
+					className="text-h2 font-semibold leading-card-title text-[var(--text-primary)]"
 				>
 					{title}
 				</h1>
 				{address ? (
-					<p className="inline-flex min-w-0 items-center gap-1.5 text-support font-normal leading-step-body text-[var(--text-secondary)]">
+					<p className="inline-flex min-w-0 items-center gap-1.5 text-body-sm font-normal leading-step-body text-[var(--text-secondary)]">
 						<MapPin
 							className="size-3.5 shrink-0 text-[var(--accent)]"
 							aria-hidden
@@ -75,7 +75,7 @@ export function PropertyDetailSummaryView({
 					</p>
 				) : null}
 				<div className="mt-1 lg:hidden" data-property-mobile-price>
-					<p className="text-price-large font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
+					<p className="text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
 						{price}
 					</p>
 					{meterPrice ? (
@@ -138,11 +138,11 @@ export function PropertyDescriptionView({
 		>
 			<h2
 				id="object-description-title"
-				className="scroll-mt-32.5 text-heading-compact font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
 			>
 				Описание
 			</h2>
-			<div className="grid w-full gap-2 text-support font-normal leading-support text-[var(--text-secondary)] md:text-body md:leading-support">
+			<div className="grid w-full gap-2 text-body-sm font-normal leading-support text-[var(--text-secondary)] md:text-body md:leading-support">
 				{visibleParagraphs.map((paragraph, index) => (
 					<p key={paragraph}>
 						{paragraph}
@@ -183,7 +183,7 @@ export function PropertyDetailsView({
 		>
 			<h2
 				id="object-details-title"
-				className="scroll-mt-32.5 text-heading-compact font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
 			>
 				{title}
 			</h2>
@@ -216,11 +216,11 @@ export function PropertyBuildingView({ description }: { description: string }) {
 		>
 			<h2
 				id="object-building-title"
-				className="scroll-mt-32.5 text-heading-compact font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
 			>
 				Дом и район
 			</h2>
-			<p className="text-support font-normal leading-step-copy text-[var(--text-secondary)] md:text-body">
+			<p className="text-body-sm font-normal leading-step-copy text-[var(--text-secondary)] md:text-body">
 				{description}
 			</p>
 		</Card>

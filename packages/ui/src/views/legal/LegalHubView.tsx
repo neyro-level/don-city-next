@@ -47,7 +47,7 @@ export function LegalHubView({
 						</BreadcrumbItem>
 					</BreadcrumbList>
 				</Breadcrumb>
-				<h1 className="text-section-prominent font-semibold leading-tight-copy text-[var(--legal-hub-content-tertiary)] md:text-display-base">
+				<h1 className="text-h2 font-semibold leading-tight-copy text-[var(--legal-hub-content-tertiary)] md:text-h1">
 					Правовая информация
 				</h1>
 
@@ -62,7 +62,7 @@ export function LegalHubView({
 							className="group border-[var(--legal-hub-border-secondary)]"
 						>
 							<AccordionTrigger
-								className="min-h-18 py-5 text-body-compact font-medium leading-step-copy text-[var(--legal-hub-content-subtle)] hover:text-[var(--legal-hub-content-subtle)] md:min-h-20.5 md:py-6 md:text-body-large"
+								className="min-h-18 py-5 text-body-lg font-medium leading-step-copy text-[var(--legal-hub-content-subtle)] hover:text-[var(--legal-hub-content-subtle)] md:min-h-20.5 md:py-6 md:text-body-lg"
 								trailing={
 									<span className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[var(--legal-hub-content-muted)] transition group-hover:bg-[var(--legal-hub-surface-secondary)] group-hover:text-[var(--accent)]">
 										<ChevronDown
@@ -78,7 +78,7 @@ export function LegalHubView({
 								forceMount
 								className="pb-7 pr-0 md:pb-8 md:pr-16"
 							>
-								<p className="max-w-190 text-body font-normal leading-step-copy text-[var(--legal-hub-content-strong)] md:text-body-compact">
+								<p className="max-w-190 text-body font-normal leading-step-copy text-[var(--legal-hub-content-strong)] md:text-body-lg">
 									{document.description}
 								</p>
 								<div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">

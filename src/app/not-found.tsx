@@ -9,10 +9,10 @@ export default function NotFound() {
 				<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
 					Ошибка 404
 				</p>
-				<h1 className="mt-4 text-display font-extrabold tracking-display">
+				<h1 className="mt-4 text-h1 font-extrabold tracking-display">
 					Страница не найдена
 				</h1>
-				<p className="mx-auto mt-4 max-w-xl text-body-large text-content-default">
+				<p className="mx-auto mt-4 max-w-xl text-body-lg text-content-default">
 					Адрес мог измениться. Вернитесь на главную или откройте каталог
 					недвижимости.
 				</p>

@@ -249,7 +249,7 @@ const required = [
 	"--text-primary",
 	"--border",
 	"--accent",
-	"--site-type-display",
+	"--site-type-h1",
 	"--site-type-body",
 	"--site-radius-sm",
 	"--site-radius-lg",

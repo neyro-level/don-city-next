@@ -50,7 +50,7 @@ export function CardTitle({
 	return (
 		<Heading
 			data-slot="card-title"
-			className={cn("text-lead font-semibold leading-tight-copy", className)}
+			className={cn("text-body-lg font-semibold leading-tight-copy", className)}
 			{...props}
 		/>
 	);

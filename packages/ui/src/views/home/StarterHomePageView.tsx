@@ -30,11 +30,11 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 					</p>
 					<h1
 						id="home-hero-title"
-						className="mt-4 max-w-4xl text-display font-extrabold leading-display-tight tracking-display"
+						className="mt-4 max-w-4xl text-h1 font-extrabold leading-display-tight tracking-display"
 					>
 						{page.title}
 					</h1>
-					<p className="mt-5 max-w-2xl text-body-large leading-step-relaxed text-content-default">
+					<p className="mt-5 max-w-2xl text-body-lg leading-step-relaxed text-content-default">
 						{page.lead}
 					</p>
 					<div className="mt-7 flex flex-wrap gap-3">
@@ -125,7 +125,7 @@ export function HomeFeaturedSection({
 							<PublicPropertyCard property={featured} />
 						</div>
 					) : (
-						<p className="mt-8 text-body-large text-content-default">
+						<p className="mt-8 text-body-lg text-content-default">
 							Как только объекты появятся в каталоге, они отобразятся здесь.
 						</p>
 					)}
@@ -153,7 +153,7 @@ export function HomeProcessSection({ page }: Pick<HomeSectionProps, "page">) {
 							<li key={item}>
 								<Card>
 									<CardHeader>
-										<p className="text-display-small font-extrabold text-action-primary">
+										<p className="text-h1 font-extrabold text-action-primary">
 											0{index + 1}
 										</p>
 										<CardTitle>{item}</CardTitle>

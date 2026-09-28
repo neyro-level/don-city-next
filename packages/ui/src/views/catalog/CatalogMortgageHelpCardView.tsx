@@ -106,10 +106,10 @@ function CatalogMortgageInlineGridCard({
 						<p className="text-caption font-bold uppercase tracking-caps text-[var(--accent)]">
 							{content.eyebrow}
 						</p>
-						<h3 className="mt-4 text-heading-medium font-extrabold leading-card-title tracking-compact text-[var(--text-primary)] md:text-section-prominent">
+						<h3 className="mt-4 text-h3 font-extrabold leading-card-title tracking-compact text-[var(--text-primary)] md:text-h2">
 							{content.title}
 						</h3>
-						<p className="mt-3 max-w-140 text-body leading-step-copy tracking-copy text-[var(--text-secondary)] md:text-body-compact">
+						<p className="mt-3 max-w-140 text-body leading-step-copy tracking-copy text-[var(--text-secondary)] md:text-body-lg">
 							{content.subtitle}
 						</p>
 					</div>
@@ -152,7 +152,7 @@ function CatalogMortgageGridCard({
 				<p className="text-caption font-bold uppercase tracking-caps text-[var(--accent)]">
 					{content.eyebrow}
 				</p>
-				<h3 className="mt-3 text-card-large font-extrabold leading-card-title tracking-body text-[var(--text-primary)]">
+				<h3 className="mt-3 text-h4 font-extrabold leading-card-title tracking-body text-[var(--text-primary)]">
 					{content.title}
 				</h3>
 				<p className="mx-auto mt-4 max-w-80 text-body leading-step-copy text-[var(--text-secondary)]">
@@ -201,10 +201,10 @@ function CatalogMortgageEditorialListCard({
 									{content.eyebrow}
 								</p>
 							</div>
-							<h3 className="mt-4 max-w-172.5 text-heading-medium font-extrabold leading-card-title tracking-compact text-[var(--text-primary)] md:text-card-section">
+							<h3 className="mt-4 max-w-172.5 text-h3 font-extrabold leading-card-title tracking-compact text-[var(--text-primary)] md:text-h2">
 								{content.title}
 							</h3>
-							<p className="mt-3 max-w-147.5 text-body leading-step-copy tracking-copy text-[var(--text-secondary)] md:text-body-compact">
+							<p className="mt-3 max-w-147.5 text-body leading-step-copy tracking-copy text-[var(--text-secondary)] md:text-body-lg">
 								{content.subtitle}
 							</p>
 						</div>

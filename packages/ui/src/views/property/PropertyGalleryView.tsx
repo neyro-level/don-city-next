@@ -263,7 +263,7 @@ function MediaPlaceholder({ title }: { title: string }) {
 				</g>
 			</svg>
 			<div className="relative self-end pb-8 max-md:pb-5">
-				<p className="rounded-lg border border-white/70 bg-[var(--surface-card)]/88 px-5 py-3 text-body-large font-semibold leading-tight-copy text-[var(--text-primary)] shadow-[var(--property-gallery-shadow-caption)] backdrop-blur-sm max-md:px-4 max-md:py-2.5 max-md:text-body">
+				<p className="rounded-lg border border-white/70 bg-[var(--surface-card)]/88 px-5 py-3 text-body-lg font-semibold leading-tight-copy text-[var(--text-primary)] shadow-[var(--property-gallery-shadow-caption)] backdrop-blur-sm max-md:px-4 max-md:py-2.5 max-md:text-body">
 					{title}
 				</p>
 			</div>

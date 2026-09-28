@@ -66,12 +66,12 @@ export function PropertyChatView({
 			>
 				<div className="flex items-start justify-between gap-4">
 					<div>
-						<p className="text-overline font-semibold uppercase tracking-spaced text-[var(--accent)]">
+						<p className="text-caption font-semibold uppercase tracking-spaced text-[var(--accent)]">
 							Сообщение по объекту
 						</p>
 						<h2
 							id="property-chat-title"
-							className="mt-3 max-w-100 text-heading-small font-semibold leading-card-compact text-[var(--text-primary)] sm:text-heading-compact"
+							className="mt-3 max-w-100 text-h4 font-semibold leading-card-compact text-[var(--text-primary)] sm:text-h3"
 						>
 							Напишите сообщение ответственному специалисту
 						</h2>
@@ -111,9 +111,9 @@ export function PropertyChatView({
 					/>
 
 					{lockMessage ? (
-						<div className="grid gap-2.5 text-support font-semibold text-[var(--text-primary)]">
+						<div className="grid gap-2.5 text-body-sm font-semibold text-[var(--text-primary)]">
 							<span>Сообщение</span>
-							<div className="rounded-md border border-[var(--border)] bg-[var(--surface-card-soft)] px-3 py-3 text-support font-normal leading-step-copy whitespace-pre-wrap text-[var(--text-primary)]">
+							<div className="rounded-md border border-[var(--border)] bg-[var(--surface-card-soft)] px-3 py-3 text-body-sm font-normal leading-step-copy whitespace-pre-wrap text-[var(--text-primary)]">
 								{message}
 							</div>
 							<p className="text-caption font-medium leading-step-body text-[var(--text-muted)]">
@@ -122,7 +122,7 @@ export function PropertyChatView({
 							</p>
 						</div>
 					) : (
-						<label className="grid gap-2.5 text-support font-semibold text-[var(--text-primary)]">
+						<label className="grid gap-2.5 text-body-sm font-semibold text-[var(--text-primary)]">
 							Сообщение
 							<div className="relative">
 								<Textarea
@@ -132,7 +132,7 @@ export function PropertyChatView({
 									value={message}
 									onChange={(event) => onMessageChange(event.target.value)}
 									rows={4}
-									className="min-h-32 w-full rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 py-3 text-support font-normal leading-step-copy outline-none transition focus:border-[var(--accent)]"
+									className="min-h-32 w-full rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 py-3 text-body-sm font-normal leading-step-copy outline-none transition focus:border-[var(--accent)]"
 									placeholder="Здравствуйте, есть вопросы по этому объекту."
 								/>
 							</div>
@@ -149,13 +149,13 @@ export function PropertyChatView({
 						</label>
 					)}
 
-					<label className="grid gap-2.5 text-support font-semibold text-[var(--text-primary)]">
+					<label className="grid gap-2.5 text-body-sm font-semibold text-[var(--text-primary)]">
 						Телефон для связи
 						<Input
 							variant="plain"
 							value={phone}
 							onChange={(event) => onPhoneChange(event.target.value)}
-							className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 text-support outline-none transition focus:border-[var(--accent)]"
+							className="min-h-11 rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 text-body-sm outline-none transition focus:border-[var(--accent)]"
 							type="tel"
 							autoComplete="tel"
 							inputMode="tel"

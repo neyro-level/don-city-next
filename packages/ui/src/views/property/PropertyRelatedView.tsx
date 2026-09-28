@@ -20,7 +20,7 @@ export function PropertyRelatedView({
 		>
 			<h2
 				id="object-similar-title"
-				className="scroll-mt-32.5 text-heading-compact font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
 			>
 				Похожие объекты рядом
 			</h2>
@@ -50,10 +50,10 @@ export function PropertyRelatedView({
 							)}
 						</div>
 						<div className="grid gap-2 p-3">
-							<p className="text-body-emphasis font-semibold leading-flat tabular-nums text-[var(--text-primary)]">
+							<p className="text-body-lg font-semibold leading-flat tabular-nums text-[var(--text-primary)]">
 								{item.priceLabel}
 							</p>
-							<h3 className="line-clamp-2 text-support font-semibold leading-step-body text-[var(--text-primary)]">
+							<h3 className="line-clamp-2 text-body-sm font-semibold leading-step-body text-[var(--text-primary)]">
 								{item.title}
 							</h3>
 							<p className="flex min-w-0 items-center gap-1.5 text-caption leading-step-small text-[var(--text-muted)]">
@@ -64,7 +64,7 @@ export function PropertyRelatedView({
 								<span className="truncate">{item.address}</span>
 							</p>
 							{item.facts.length ? (
-								<div className="flex flex-wrap gap-1.5 text-overline font-semibold leading-step-small text-[var(--text-secondary)]">
+								<div className="flex flex-wrap gap-1.5 text-caption font-semibold leading-step-small text-[var(--text-secondary)]">
 									{item.facts.map((fact) => (
 										<span
 											key={fact}

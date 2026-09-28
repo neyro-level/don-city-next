@@ -152,7 +152,7 @@ export function PropertyCardGridLayout({
 								))}
 							</div>
 
-							<span className="absolute bottom-2.5 right-2.5 z-20 inline-flex min-h-6 items-center gap-1 rounded-md bg-[var(--surface-dark)]/66 px-2 text-overline font-bold tabular-nums text-white shadow-[var(--property-card-shadow-badge)] backdrop-blur-sm">
+							<span className="absolute bottom-2.5 right-2.5 z-20 inline-flex min-h-6 items-center gap-1 rounded-md bg-[var(--surface-dark)]/66 px-2 text-caption font-bold tabular-nums text-white shadow-[var(--property-card-shadow-badge)] backdrop-blur-sm">
 								<ImageIcon className="size-3" aria-hidden />
 								{activeImage + 1}/{images.length}
 							</span>
@@ -167,7 +167,7 @@ export function PropertyCardGridLayout({
 						data-catalog-price-row
 						className="flex min-w-0 items-center justify-between gap-2 pr-1 lg:pr-0"
 					>
-						<p className="min-w-0 text-price font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)] md:text-price-medium lg:text-price-large">
+						<p className="min-w-0 text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)] md:text-h4 lg:text-h4">
 							{priceLabel}
 						</p>
 						{showExclusiveBadge ? <ExclusiveBadge /> : null}
@@ -201,10 +201,10 @@ export function PropertyCardGridLayout({
 							})}
 						</div>
 					) : null}
-					<h2 className="col-start-1 row-start-2 line-clamp-2 rounded-md text-card-compact font-extrabold leading-heading tracking-compact text-[var(--text-primary)] underline decoration-[var(--accent-border)] decoration-1 underline-offset-3 transition-colors group-active:text-[var(--accent)] md:text-card-compact-medium md:leading-card-compact-rem lg:mt-2 lg:text-card-compact-large lg:leading-step-body lg:no-underline lg:group-hover:text-[var(--accent)]">
+					<h2 className="col-start-1 row-start-2 line-clamp-2 rounded-md text-h4 font-extrabold leading-heading tracking-compact text-[var(--text-primary)] underline decoration-[var(--accent-border)] decoration-1 underline-offset-3 transition-colors group-active:text-[var(--accent)] md:text-h4 md:leading-card-compact-rem lg:mt-2 lg:text-h4 lg:leading-step-body lg:no-underline lg:group-hover:text-[var(--accent)]">
 						{title}
 					</h2>
-					<div className="col-start-1 row-start-3 text-caption-dense leading-card-dense-rem tracking-copy text-[var(--text-muted)] md:text-caption md:leading-card-relaxed-rem lg:mt-2 lg:text-label lg:leading-step-body">
+					<div className="col-start-1 row-start-3 text-caption leading-card-dense-rem tracking-copy text-[var(--text-muted)] md:text-caption md:leading-card-relaxed-rem lg:mt-2 lg:text-label lg:leading-step-body">
 						<p className="flex min-w-0 items-center gap-1 font-semibold text-[var(--text-secondary)] md:gap-1.5">
 							<MapPin
 								className="size-3 shrink-0 text-[var(--accent)] md:size-3.5"
