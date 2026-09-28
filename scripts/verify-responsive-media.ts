@@ -44,6 +44,50 @@ const imageRenderer = readFileSync(
 	"utf8",
 );
 assert.match(imageRenderer, /srcSet=\{srcSet\}/);
+assert.match(
+	imageRenderer,
+	/loading=\{priority \? "eager" : \(loading \?\? "lazy"\)\}/,
+);
+assert.match(imageRenderer, /fetchPriority=\{priority \? "high" : "auto"\}/);
+assert.match(
+	imageRenderer,
+	/width=\{fill \? undefined : \(width \?\? 1200\)\}/,
+);
+assert.match(
+	imageRenderer,
+	/height=\{fill \? undefined : \(height \?\? 800\)\}/,
+);
+
+const homePage = readFileSync(
+	"packages/ui/src/views/home/StarterHomePageView.tsx",
+	"utf8",
+);
+assert.match(
+	homePage,
+	/PublicPropertyCard property=\{featured\} headingLevel="h2" priority/,
+);
+const propertyGallery = readFileSync(
+	"packages/ui/src/views/property/StarterPropertyMediaGallery.tsx",
+	"utf8",
+);
+assert.match(propertyGallery, /browserSrcSet:/);
+assert.match(propertyGallery, /imageSizes="\(min-width: 1024px\) 62vw, 100vw"/);
+assert.match(propertyGallery, /\r?\n\s*priority\r?\n/);
+assert.match(propertyGallery, /emptyContent=\{<MediaFallback/);
+const propertyCard = readFileSync(
+	"packages/ui/src/views/property/StarterPropertyCardView.tsx",
+	"utf8",
+);
+assert.match(
+	propertyCard,
+	/\.map\(\(variant\) => `\$\{variant\.src\} \$\{variant\.width\}w`\)/,
+);
+assert.match(
+	propertyCard,
+	/sizes="\(min-width: 1024px\) 33vw, \(min-width: 768px\) 50vw, 100vw"/,
+);
+assert.match(propertyCard, /loading|priority=\{priority\}/);
+assert.match(propertyCard, /<MediaFallback/);
 
 const proxy = readFileSync("src/proxy.ts", "utf8");
 assert.match(proxy, /getPublicPropertyEdgeState/);
