@@ -13,6 +13,52 @@ navigation, error-boundary, accessibility and scanner scope. This is not a claim
 that every future page or optional module is certified; new UI still follows the
 same gates and `REUSE → VARIANT → CREATE` rule.
 
+## UI Core 5.0 targeted normalization baseline
+
+The owner-approved constitution remediation plan starts one targeted Design
+Intake pass from the actual public UI. It reuses this Design Policy and
+`src/app/globals.css`; no second visual source or redesign is introduced.
+
+Audited baseline before value changes on 2026-09-29:
+
+- 563 unique CSS variable definitions: 30 core, 185 shadcn/Tailwind bridge and
+  348 active project roles; reserved and dead roles were both zero;
+- the diagnostic inventory found 271 typography-related names, 182
+  color/surface-related names, 67 radius/shadow names, 38 spacing/layout names
+  and 9 motion names;
+- material duplication is concentrated in the `site`, `text`, `leading`,
+  `color`, `property`, `legal`, `catalog`, `html`, `tracking` and `radius`
+  families;
+- project-owned component families currently encode many private surface,
+  border and shadow names; typography includes sub-11px roles and several
+  near-duplicate body/card/heading ladders;
+- canonical primitives remain project-owned shadcn `new-york` components with
+  Lucide icons, RSC enabled and Tailwind CSS variables sourced only from
+  `src/app/globals.css`;
+- the UI clone audit passed its existing baseline, but its 36 plain primitive
+  uses and component-private token families are inventory evidence, not an
+  exemption from normalization.
+
+Normalization map for EPIC-04:
+
+| Area | Canonical target | Disposition |
+|---|---|---|
+| typography | `h1/h2/h3/h4/body-lg/body/body-sm/label/caption` | collapse near-duplicates; retain an extra role only with a documented visual or accessibility reason |
+| surfaces/content | page, raised, subtle, inverse; strong, default, subtle, inverse | reuse semantic roles before component-private aliases |
+| actions/status | primary action plus success, warning, danger and info | preserve brand and state meaning; never encode status by color alone |
+| layout | `narrow/site/wide` containers and `sm/md/lg/hero` section rhythm | one numeric source; no page-local rhythm scale |
+| radius/shadow | installed shadcn scale plus proved card/large and card/raised/dialog shadows | remove value aliases that do not express a distinct role |
+| motion/media | fast/standard/extended with reduced motion; owned media aspects and fallbacks | preserve calm interaction and layout stability |
+| repeated patterns | shell, catalog controls/cards, property cards/gallery/forms, legal views | `REUSE → VARIANT → CREATE`; shared semantics replace private value families |
+
+The representative system-fit surface is the property detail page because it
+combines hierarchy, responsive media, cards, forms/actions, overlays and DTO
+data. Home, catalog, marketing and legal routes remain required cross-checks for
+section ownership and heading semantics. No owner decision is required for this
+normalization pass: brand identity, light-only mode and the no-redesign boundary
+are already approved. Exact deletions and exceptions must be proved by the
+following EPIC-04 tasks before this baseline can be called normalized.
+
 This file is the only active project design policy. Numeric values remain in
 `src/app/globals.css`; the superseded `06_DESIGN_SYSTEM.md` path is only a
 history pointer.

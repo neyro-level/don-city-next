@@ -125,6 +125,27 @@ monitoring or follow-up stage after production.
   entrypoint `./public/site-shell` указывает только на него; legacy component
   names допускаются исключительно как documented direct aliases в этом файле.
 - Один project-owned semantic token source; light-only, `.dark` не устанавливается.
+- Exact UI runtime: Next.js 16.3.5, React 19.2.8, TypeScript strict, Tailwind CSS
+  4 and project-owned shadcn `new-york` primitives configured in
+  `packages/ui/components.json`; Lucide is the only icon ecosystem.
+- Numeric token ownership: `src/app/globals.css`. `docs/DESIGN.md` owns visual
+  policy and the EPIC-04 normalization baseline; component CSS cannot become a
+  parallel token source.
+- Font contract: Manrope from `next/font/google`, Cyrillic and Latin, exposed
+  through the project font CSS variable; no secondary display font.
+- Media contract: managed responsive media preserves aspect, meaningful alt or
+  explicit decoration, stable sizing and project-owned fallbacks. Property
+  media never derives evidence from brand decoration.
+- Form/lead transport and validation belong to the project application layer;
+  reusable UI receives DTO/ViewModel data and typed intents only. Analytics is
+  PII-safe, consent-aware and dispatched by the project layer, not by the UI
+  package.
+- Metadata, canonical, Open Graph, robots, sitemap and structured data are
+  route/project SEO owners. Public commercial pages keep one logical H1; 404 and
+  the platform error boundary are mandatory.
+- UI proof targets mobile/tablet/desktop, keyboard/focus/reduced-motion and the
+  baseline mobile budgets LCP <= 2.5 s and CLS <= 0.1. Privacy and consent pages
+  are required; thank-you uses its dedicated noindex route.
 - Production публично индексируется; page-level registry/content gates, canonical policy и pagination `noindex,follow` остаются обязательными.
 - Consent fail-closed: server принимает только явное `consentAccepted=true` и
   текущую project-owned версию; хранит неизменяемые
