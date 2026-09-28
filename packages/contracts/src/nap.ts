@@ -14,5 +14,10 @@ export type PublicNapDTO = {
 		addressCountry: "RU";
 	};
 	openingHours: string;
+	openingHoursSpecification: readonly {
+		dayOfWeek: readonly string[];
+		opens: string;
+		closes: string;
+	}[];
 	url: string;
 };

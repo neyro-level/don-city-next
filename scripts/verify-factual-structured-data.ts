@@ -6,6 +6,7 @@ import type {
 } from "@ams/realtbase-contracts";
 import {
 	buildLawyerServiceJsonLd,
+	buildOrganizationJsonLd,
 	buildPropertyJsonLd,
 } from "../src/core/seo/structured-data-builders.ts";
 import { toPublicNapDTO } from "../src/project/site-settings.ts";
@@ -84,6 +85,40 @@ for (const [category, expectedType, expectedLabel, city] of categoryCases) {
 }
 
 const nap = toPublicNapDTO();
+const organization = buildOrganizationJsonLd(nap);
+assert.equal(organization["@type"], "RealEstateAgent");
+assert.equal(organization.openingHours, undefined);
+assert.deepEqual(organization.openingHoursSpecification, [
+	{
+		"@type": "OpeningHoursSpecification",
+		dayOfWeek: [
+			"https://schema.org/Monday",
+			"https://schema.org/Tuesday",
+			"https://schema.org/Wednesday",
+			"https://schema.org/Thursday",
+			"https://schema.org/Friday",
+		],
+		opens: "09:00",
+		closes: "18:00",
+	},
+	{
+		"@type": "OpeningHoursSpecification",
+		dayOfWeek: ["https://schema.org/Saturday", "https://schema.org/Sunday"],
+		opens: "09:00",
+		closes: "18:00",
+	},
+]);
+assert.equal(
+	organization.logo,
+	"https://doncity-home.ru/brand/don-city-logo-approved.jpg",
+);
+assert.equal(
+	organization.image,
+	"https://doncity-home.ru/brand/don-city-social-default.png",
+);
+assert.equal(organization.geo, undefined);
+assert.equal(organization.sameAs, undefined);
+assert.equal(nap.openingHours, "Пн–Пт: 09:00–18:00; Сб–Вс: 09:00–18:00");
 const lawyerPage = buildStaticMarketingPage({
 	slug: "yurist",
 	title: "Юрист по недвижимости",
