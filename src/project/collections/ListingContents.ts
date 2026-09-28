@@ -1,15 +1,19 @@
-import type { CollectionConfig } from "payload";
 import { isDeepStrictEqual } from "node:util";
+import type { CollectionConfig } from "payload";
 import {
 	adminsAndOwners,
 	hasRole,
 	ownersOnly,
 } from "../../core/access/roles.ts";
 import { publicListingContentReadAccess } from "../../core/data-access/public/access-mode.ts";
+import {
+	hasVerifiedDistrictContextFacts,
+	isVerifiedListingContextFact,
+} from "../../platform/seo/content-gate.ts";
 import { invalidateProjectPublicCache } from "../cache-invalidation.ts";
 import { publicCacheTags } from "../cache-tags.ts";
 import { buildListingContentQueue } from "../listing-content-queue.ts";
-import { seoRegistry } from "../seo-registry.generated.ts";
+import { seoRegistry, seoRegistryById } from "../seo-registry.generated.ts";
 
 const listingRegistryOptions = buildListingContentQueue(seoRegistry).map(
 	(entry) => ({
@@ -17,12 +21,6 @@ const listingRegistryOptions = buildListingContentQueue(seoRegistry).map(
 		value: entry.registryId,
 	}),
 );
-
-function validCheckedAt(value: unknown): boolean {
-	return (
-		typeof value === "string" && Number.isFinite(new Date(value).valueOf())
-	);
-}
 
 export const ListingContents: CollectionConfig = {
 	slug: "listing-contents",
@@ -99,17 +97,21 @@ export const ListingContents: CollectionConfig = {
 				const facts = (data.contextFacts ??
 					originalDoc?.contextFacts ??
 					[]) as {
-					source?: unknown;
-					checkedAt?: unknown;
+					source: string;
+					checkedAt: string;
 				}[];
+				const registryId = String(
+					data.registryId ?? originalDoc?.registryId ?? "",
+				);
 				if (
-					facts.some(
-						(fact) =>
-							typeof fact.source !== "string" ||
-							!fact.source.trim() ||
-							!validCheckedAt(fact.checkedAt),
-					)
+					seoRegistryById.get(registryId)?.pageType === "district" &&
+					!hasVerifiedDistrictContextFacts(facts)
 				) {
+					throw new Error(
+						"District approval requires at least one verified context fact.",
+					);
+				}
+				if (facts.some((fact) => !isVerifiedListingContextFact(fact))) {
 					throw new Error(
 						"Every listing context fact requires source and checkedAt.",
 					);
