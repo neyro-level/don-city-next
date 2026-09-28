@@ -21,7 +21,8 @@ assert.match(lightbox, /from "\.\.\/\.\.\/components\/ui\/button"/);
 assert.match(lightbox, /onCloseAutoFocus/);
 assert.match(lightbox, /document\.fullscreenEnabled/);
 assert.match(lightbox, /requestFullscreen/);
-assert.match(lightbox, /duration-\[var\(--motion-duration-fast\)\]/);
+assert.match(lightbox, /duration-200/);
+assert.doesNotMatch(lightbox, /--motion-duration-/);
 assert.match(globals, /prefers-reduced-motion:\s*reduce/);
 assert.match(gallery, /onExited=\{\(\) => openerRef\.current\?\.focus\(\)\}/);
 

@@ -229,6 +229,8 @@ for (const [name, expectedOwner] of canonicalPrimitiveOwners) {
 
 const layout = readFileSync(join(root, "src", "app", "layout.tsx"), "utf8");
 const globals = readFileSync(join(root, "src", "app", "globals.css"), "utf8");
+assert.doesNotMatch(globals, /--motion-duration-/);
+assert.match(globals, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 const themeBoundary = globals.indexOf("\n@theme inline");
 const privateTypographyReference = /var\(--site-(?:type|leading|tracking)-/;
 if (themeBoundary < 0)

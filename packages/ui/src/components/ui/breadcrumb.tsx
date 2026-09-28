@@ -47,7 +47,7 @@ export function BreadcrumbLink({
 		<Comp
 			data-slot="breadcrumb-link"
 			className={cn(
-				"transition duration-[var(--motion-duration-fast)] ease-site hover:text-[var(--text-primary)]",
+				"transition duration-200 ease-in-out hover:text-[var(--text-primary)]",
 				className,
 			)}
 			{...props}

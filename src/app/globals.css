@@ -112,11 +112,6 @@
   --media-control-surface: rgba(24, 24, 26, 0.76);
   --media-counter-surface: rgba(24, 24, 26, 0.82);
   --media-control-content: var(--text-dark);
-  --motion-duration-fast: 180ms;
-  --motion-duration-standard: 250ms;
-  --motion-ease-standard: ease;
-  --motion-ease-balanced: ease-in-out;
-  --motion-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
   --site-type-h1: clamp(30px, 3.75vw, 52px);
   --site-type-h2: clamp(24px, 1.8vw, 30px);
   --site-type-h3: 22px;
@@ -256,9 +251,6 @@
 }
 
 @theme inline {
-  --ease-site: var(--motion-ease-standard);
-  --ease-site-balanced: var(--motion-ease-balanced);
-  --ease-site-emphasized: var(--motion-ease-emphasized);
   --text-h1: var(--site-type-h1);
   --text-h2: var(--site-type-h2);
   --text-h3: var(--site-type-h3);

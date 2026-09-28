@@ -28,7 +28,7 @@ export function SheetOverlay({
 }
 
 const sheetVariants = cva(
-	"fixed z-50 grid gap-4 bg-[var(--surface-card)] p-6 shadow-[var(--shadow-dialog)] transition duration-[var(--motion-duration-standard)] ease-site-balanced sm:p-8",
+	"fixed z-50 grid gap-4 bg-[var(--surface-card)] p-6 shadow-[var(--shadow-dialog)] transition duration-300 ease-in-out sm:p-8",
 	{
 		variants: {
 			side: {
@@ -64,7 +64,7 @@ export function SheetContent({
 				{children}
 				{showClose ? (
 					<DialogPrimitive.Close
-						className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--text-secondary)] transition duration-[var(--motion-duration-fast)] ease-site hover:bg-[var(--surface-subtle)] focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+						className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--text-secondary)] transition duration-200 ease-in-out hover:bg-[var(--surface-subtle)] focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
 						aria-label="Закрыть"
 					>
 						<X className="size-5" aria-hidden />
