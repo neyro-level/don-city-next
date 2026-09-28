@@ -31,6 +31,9 @@ for (const expected of [
 	'gzip -dc "$artifact"',
 	"artifact_checksum=mismatch",
 	"rollback=executed-after-smoke-failure",
+	"$attempt -le 10",
+	"@(502, 503, 504)",
+	"bounded release retries",
 ]) {
 	assert.ok(productionRelease.includes(expected), `Production release helper must include ${expected}.`);
 }
