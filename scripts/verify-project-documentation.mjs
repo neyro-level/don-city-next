@@ -58,12 +58,33 @@ const design = requireAll("docs/DESIGN.md", [
 	"Status: Active",
 	"REUSE → VARIANT → CREATE",
 	"src/app/globals.css",
-	"## Характер системы",
+	"## 4. UI Core 5.0 project policy",
 	"Container",
 	"prefers-reduced-motion",
-	"## Page-level CSS, media, motion and approved exceptions",
+	"Journal",
 ]);
 assert.ok(!/^Status:\s*SUPERSEDED\s*$/im.test(design));
+for (const section of [
+	"4.1 Visual Character",
+	"4.2 Status",
+	"4.3 Typography",
+	"4.4 Containers",
+	"4.5 Section Rhythm",
+	"4.6 Surfaces/Shadows",
+	"4.7 Radii",
+	"4.8 Buttons",
+	"4.9 Forms",
+	"4.10 Media",
+	"4.11 Icons",
+	"4.12 Motion",
+	"4.13 Dark Mode",
+	"4.14 Journal",
+	"4.15 Shared Patterns",
+	"4.16 Approved Exceptions",
+]) {
+	assert.ok(design.includes(`### ${section}`), `docs/DESIGN.md missing ${section}`);
+}
+assert.ok(design.includes("This section is policy only."));
 
 requireAll("docs/06_DESIGN_SYSTEM.md", [
 	"Status: SUPERSEDED",
