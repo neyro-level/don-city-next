@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { sql } from "@payloadcms/db-postgres/drizzle";
 import type { Payload } from "payload";
 
@@ -38,6 +39,25 @@ export const approvedSystemSqlOperations = {
 			"Only one recovery worker can lease a sufficiently old pending delivery before enqueueing a replacement job.",
 		reason:
 			"The pending/age predicate, short lease, dead job reference clear, and affected result must be one conditional statement.",
+	},
+	recoverStaleSendingDeliveryIfStillStale: {
+		file: "src/core/data-access/system/sql/index.ts",
+		purpose:
+			"Recover one sending delivery only while its persisted heartbeat is still stale.",
+		trigger:
+			"Atomic worker/janitor arbitration with affected-row result and bounded recovery audit entry.",
+		inputType: "Internal delivery ID, threshold, clock, and bounded log size.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No; Payload 3.90.1 bulk update reads matching IDs before updating them, so a live worker can win between those steps.",
+		decisionSource: "TASK-02.4 and ADR-0015.",
+		integrationProof:
+			"verify:integration stale-sending two-worker one-winner proof.",
+		invariant:
+			"A live heartbeat or terminal transition cannot be overwritten by stale recovery.",
+		reason:
+			"The ID/status/heartbeat predicate, recovery mutation, bounded audit entry, and affected result must commit atomically.",
 	},
 } as const;
 
@@ -169,5 +189,92 @@ export async function claimPendingDeliveryRecoveryLease(
 	`,
 	);
 	const id = rowsFrom(result)[0]?.id;
+	return id == null ? undefined : String(id);
+}
+
+export async function recoverStaleSendingDeliveryIfStillStale(
+	payload: Payload,
+	input: {
+		deliveryId: string;
+		staleBeforeIso: string;
+		nowIso: string;
+		maxAttemptLogEntries: number;
+	},
+): Promise<string | undefined> {
+	const deliveryId = Number(input.deliveryId);
+	if (
+		!Number.isInteger(deliveryId) ||
+		deliveryId < 1 ||
+		!Number.isInteger(input.maxAttemptLogEntries) ||
+		input.maxAttemptLogEntries < 1
+	) {
+		return undefined;
+	}
+
+	const attemptLogId = randomUUID();
+	const result = await executeApprovedSystemSql(
+		payload,
+		"recoverStaleSendingDeliveryIfStillStale",
+		sql`
+		WITH recovered AS (
+			UPDATE lead_deliveries AS delivery
+			SET
+				status = 'pending',
+				next_attempt_at = ${input.nowIso}::timestamptz,
+				job_id = NULL,
+				claimed_at = NULL,
+				heartbeat_at = NULL,
+				last_error_kind = 'retryable',
+				last_error_redacted = 'Recovered stale sending delivery.',
+				updated_at = ${input.nowIso}::timestamptz
+			WHERE delivery.id = ${deliveryId}
+				AND delivery.status = 'sending'
+				AND delivery.heartbeat_at IS NOT NULL
+				AND delivery.heartbeat_at < ${input.staleBeforeIso}::timestamptz
+			RETURNING delivery.id
+		), ranked_attempts AS (
+			SELECT
+				attempt.id,
+				row_number() OVER (
+					PARTITION BY attempt._parent_id
+					ORDER BY attempt._order DESC, attempt.id DESC
+				) AS newest_rank
+			FROM lead_deliveries_attempt_log AS attempt
+			WHERE attempt._parent_id IN (SELECT recovered.id FROM recovered)
+		), pruned_attempts AS (
+			DELETE FROM lead_deliveries_attempt_log AS attempt
+			WHERE attempt.id IN (
+				SELECT ranked.id
+				FROM ranked_attempts AS ranked
+				WHERE ranked.newest_rank >= ${input.maxAttemptLogEntries}
+			)
+			RETURNING attempt.id
+		)
+		INSERT INTO lead_deliveries_attempt_log (
+			_order,
+			_parent_id,
+			id,
+			attempted_at,
+			safe_code,
+			outcome,
+			redacted_note
+		)
+		SELECT
+			COALESCE((
+				SELECT MAX(existing._order) + 1
+				FROM lead_deliveries_attempt_log AS existing
+				WHERE existing._parent_id = recovered.id
+			), 0),
+			recovered.id,
+			${attemptLogId},
+			${input.nowIso}::timestamptz,
+			'stale_sending_recovered',
+			'retryable',
+			'Recovered stale sending delivery.'
+		FROM recovered
+		RETURNING _parent_id
+	`,
+	);
+	const id = rowsFrom(result)[0]?._parent_id;
 	return id == null ? undefined : String(id);
 }

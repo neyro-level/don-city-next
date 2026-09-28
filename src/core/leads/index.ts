@@ -53,15 +53,17 @@ export {
 export {
 	buildFraudFingerprint,
 	buildLeadIdempotencyKey,
+	deriveLeadFraudHmacKey,
 	evaluateLeadRateLimit,
 	type LeadIntakeRejected,
 	type LeadIntakeResult,
+	leadFraudHmacKeyContext,
 	normalizePhoneToE164,
 	prepareLeadIntake,
 } from "./intake.ts";
 export { isLiveFuturePayloadJob } from "./job-liveness.ts";
 export {
-	accelerateLeadDeliveryJobs,
+	accelerateCommittedLeadDeliveryJobs,
 	buildLeadDeliveryIdempotencyKey,
 	commitLeadOutbox,
 	type LeadChannelConfig,

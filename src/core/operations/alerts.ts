@@ -35,6 +35,8 @@ export type OperationalHealthSnapshot = {
 		duePending: number;
 		staleSending: number;
 		abandoned: number;
+		publicLeadIntakeEnabled?: boolean;
+		enabledChannelCount?: number;
 	};
 	storage: {
 		mediaReady: boolean;
@@ -135,6 +137,19 @@ export function buildOperationalAlerts(
 			component: "delivery",
 			message: "Lead deliveries have been abandoned and need operator review.",
 			count: snapshot.delivery.abandoned,
+		});
+	}
+
+	if (
+		snapshot.delivery.publicLeadIntakeEnabled === true &&
+		snapshot.delivery.enabledChannelCount === 0
+	) {
+		alerts.push({
+			code: "lead_delivery_channel_unconfigured",
+			severity: "warning",
+			component: "delivery",
+			message:
+				"Public lead intake is enabled without an approved outbound delivery channel.",
 		});
 	}
 

@@ -10,8 +10,9 @@ import { buildPropertyUrl } from "../../../project/url-grammar.ts";
 import { resolveEnabledLeadChannels } from "../../leads/channels.ts";
 import { hitInProcessLeadRateLimit } from "../../leads/in-process-rate-limit.ts";
 import {
-	accelerateLeadDeliveryJobs,
+	accelerateCommittedLeadDeliveryJobs,
 	commitLeadOutbox,
+	deriveLeadFraudHmacKey,
 	type LeadIntakeRejected,
 	prepareLeadIntake,
 } from "../../leads/index.ts";
@@ -85,7 +86,9 @@ export async function submitPublicLead({
 
 	const nowIso = new Date().toISOString();
 	const intake = prepareLeadIntake(body, {
-		fraudHmacKey: runtimeEnv.PAYLOAD_SECRET,
+		fraudHmacKey: runtimeEnv.PAYLOAD_SECRET
+			? deriveLeadFraudHmacKey(runtimeEnv.PAYLOAD_SECRET)
+			: undefined,
 		nowIso,
 		currentConsentVersion: legalConsentConfig.currentConsentVersion,
 		leadRetentionDays: projectConfig.leadRetentionDays,
@@ -142,9 +145,9 @@ export async function submitPublicLead({
 	});
 
 	if (!committed.reusedExistingLead) {
-		await accelerateLeadDeliveryJobs({
+		await accelerateCommittedLeadDeliveryJobs({
+			deliveries: committed.deliveries,
 			repository,
-			nowIso,
 			enqueue: (leadDeliveryId) => enqueueLeadDelivery(payload, leadDeliveryId),
 		});
 	}

@@ -39,7 +39,10 @@ export type LeadOutboxRepository = {
 
 export type LeadOutboxTransaction = {
 	createLead(
-		input: LeadIntakeAccepted["lead"] & { status: "new" },
+		input: LeadIntakeAccepted["lead"] & {
+			status: "new";
+			retentionUntil: string;
+		},
 	): Promise<LeadRecord>;
 	createLeadDelivery(
 		input: Omit<LeadDeliveryRecord, "id">,
@@ -72,6 +75,10 @@ export async function commitLeadOutbox({
 	repository,
 	nowIso,
 }: CommitLeadOutboxInput): Promise<CommitLeadOutboxResult> {
+	const retentionUntil = intake.lead.retentionUntil;
+	if (!retentionUntil) {
+		throw new Error("Lead retention boundary is required before persistence.");
+	}
 	const existingLead = await repository.findLeadByIdempotencyKey(
 		intake.lead.idempotencyKey,
 	);
@@ -87,6 +94,7 @@ export async function commitLeadOutbox({
 		return await repository.transaction(async (tx) => {
 			const lead = await tx.createLead({
 				...intake.lead,
+				retentionUntil,
 				status: "new",
 			});
 			const deliveries: LeadDeliveryRecord[] = [];
@@ -100,7 +108,10 @@ export async function commitLeadOutbox({
 						status: "pending",
 						attempts: 0,
 						nextAttemptAt: nowIso,
-						idempotencyKey: buildLeadDeliveryIdempotencyKey(lead.id, channel.id),
+						idempotencyKey: buildLeadDeliveryIdempotencyKey(
+							lead.id,
+							channel.id,
+						),
 					}),
 				);
 			}
@@ -122,21 +133,20 @@ export async function commitLeadOutbox({
 	}
 }
 
-export async function accelerateLeadDeliveryJobs({
+export async function accelerateCommittedLeadDeliveryJobs({
+	deliveries,
 	repository,
-	nowIso,
 	enqueue,
 }: {
+	deliveries: LeadDeliveryRecord[];
 	repository: LeadOutboxRepository;
-	nowIso: string;
 	enqueue: (leadDeliveryId: string) => Promise<string | undefined>;
 }): Promise<void> {
-	const plans = await planRecoverableLeadDeliveryJobs(repository, nowIso);
-	for (const plan of plans) {
+	for (const delivery of deliveries.filter((item) => !item.jobId)) {
 		try {
-			const jobId = await enqueue(plan.input.leadDeliveryId);
+			const jobId = await enqueue(delivery.id);
 			if (jobId && repository.attachDeliveryJobId) {
-				await repository.attachDeliveryJobId(plan.deliveryId, jobId);
+				await repository.attachDeliveryJobId(delivery.id, jobId);
 			}
 		} catch {
 			// Immediate enqueue is optional. Sweeper remains the correctness path.

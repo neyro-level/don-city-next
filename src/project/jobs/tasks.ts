@@ -16,7 +16,10 @@ import {
 	listPayloadJobsByConcurrencyKey,
 } from "../../core/data-access/system/jobs/index.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
-import { claimPendingDeliveryRecoveryLease } from "../../core/data-access/system/sql/index.ts";
+import {
+	claimPendingDeliveryRecoveryLease,
+	recoverStaleSendingDeliveryIfStillStale,
+} from "../../core/data-access/system/sql/index.ts";
 import { catalogRetentionThreshold } from "../../core/ingest/catalog-retention.ts";
 import { dispatchDueFeeds } from "../../core/ingest/dispatch-due-feeds.ts";
 import { fetchConditionalFeed } from "../../core/ingest/feed-fetcher.ts";
@@ -708,6 +711,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				req,
 			});
 
+			let recoveredSending = 0;
 			for (const delivery of staleSending.docs) {
 				const recovered = recoverStaleSendingDelivery(
 					{
@@ -728,21 +732,17 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					projectConfig.leadDelivery,
 				);
 				if (!recovered) continue;
-				await systemPayload.update({
-					collection: "lead-deliveries",
-					id: delivery.id,
-					data: {
-						status: recovered.status,
-						nextAttemptAt: recovered.nextAttemptAt,
-						jobId: recovered.jobId ?? null,
-						claimedAt: recovered.claimedAt ?? null,
-						heartbeatAt: recovered.heartbeatAt ?? null,
-						lastErrorKind: recovered.lastErrorKind,
-						lastErrorRedacted: recovered.lastErrorRedacted,
-						attemptLog: recovered.attemptLog,
+				const recoveredId = await recoverStaleSendingDeliveryIfStillStale(
+					req.payload,
+					{
+						deliveryId: String(delivery.id),
+						staleBeforeIso: staleThreshold,
+						nowIso: recovered.nextAttemptAt ?? recoveryNowIso,
+						maxAttemptLogEntries:
+							projectConfig.leadDelivery.maxAttemptLogEntries,
 					},
-					req,
-				});
+				);
+				if (recoveredId) recoveredSending += 1;
 			}
 
 			const duePending = await systemPayload.find({
@@ -856,7 +856,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 
 			return {
 				output: {
-					recoveredSending: staleSending.docs.length,
+					recoveredSending,
 					queuedPending,
 				},
 			};

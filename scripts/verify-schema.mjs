@@ -113,6 +113,17 @@ BEGIN
 	) THEN
 		RAISE EXCEPTION 'Lead delivery relation must be NOT NULL with ON DELETE CASCADE';
 	END IF;
+
+	IF NOT EXISTS (
+		SELECT 1
+		FROM pg_attribute
+		WHERE attrelid = 'leads'::regclass
+			AND attname = 'retention_until'
+			AND attnotnull
+			AND NOT attisdropped
+	) THEN
+		RAISE EXCEPTION 'Lead retention boundary must be NOT NULL';
+	END IF;
 END $$;
 `);
 
@@ -236,7 +247,8 @@ BEGIN
 		consent_accepted,
 		consent_version,
 		consent_consented_at,
-		idempotency_key
+		idempotency_key,
+		retention_until
 	)
 	VALUES (
 		'Verify Lead',
@@ -246,7 +258,8 @@ BEGIN
 		true,
 		'pd-verify',
 		now(),
-		'verify-schema-lead'
+		'verify-schema-lead',
+		now() + INTERVAL '100 days'
 	)
 	RETURNING id INTO fixture_lead_id;
 

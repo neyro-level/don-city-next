@@ -218,10 +218,11 @@ export const Leads: CollectionConfig = {
 		{
 			name: "retentionUntil",
 			type: "date",
+			required: true,
 			index: true,
 			admin: {
 				description:
-					"Optional per-row retention boundary. Project default leadRetentionDays remains canonical unless set.",
+					"Mandatory per-row PII retention boundary derived from the canonical project policy.",
 			},
 		},
 		{

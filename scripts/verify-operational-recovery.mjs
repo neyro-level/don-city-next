@@ -44,6 +44,7 @@ assert.equal(payloadJobTaskSlugs.catalogLifecycle, "catalogLifecycle");
 for (const required of [
 	"interruptRecoverableImportRun",
 	"claimPendingDeliveryRecoveryLease",
+	"recoverStaleSendingDeliveryIfStillStale",
 	"recoverStaleSendingDelivery",
 	"contentPurgedAt: purgedAt",
 ]) {
@@ -93,6 +94,10 @@ assert.ok(
 assert.ok(
 	jobs.includes("recoverStaleSendingDelivery"),
 	"recovery job must delegate state transition to the core state helper",
+);
+assert.ok(
+	jobs.includes("recoverStaleSendingDeliveryIfStillStale"),
+	"stale sending recovery must retain its status/heartbeat predicate through the atomic mutation",
 );
 assert.ok(
 	healthRoute.includes("pendingDeliveryOrphanThresholdMs"),

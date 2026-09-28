@@ -3,8 +3,10 @@ import { readFileSync } from "node:fs";
 import {
 	buildFraudFingerprint,
 	createInProcessLeadRateLimiter,
+	deriveLeadFraudHmacKey,
 	evaluateLeadRateLimit,
 	hitInProcessLeadRateLimit,
+	leadFraudHmacKeyContext,
 	normalizePhoneToE164,
 	prepareLeadIntake,
 	resolveEnabledLeadChannels,
@@ -101,6 +103,48 @@ const hmacFingerprint = buildFraudFingerprint(
 );
 assert.equal(hmacFingerprint.startsWith("lead-fraud:"), true);
 assert.notEqual(hmacFingerprint, accepted.lead.fraudFingerprint);
+
+const payloadSecret = "fixture-payload-root-secret-at-least-32-characters";
+assert.equal(leadFraudHmacKeyContext, "don-city:lead-fraud:v1");
+const derivedFraudKey = deriveLeadFraudHmacKey(payloadSecret);
+assert.equal(derivedFraudKey, deriveLeadFraudHmacKey(payloadSecret));
+assert.notEqual(
+	derivedFraudKey,
+	payloadSecret,
+	"fraud HMAC must not reuse PAYLOAD_SECRET directly",
+);
+assert.notEqual(
+	buildFraudFingerprint(
+		{
+			phoneE164: "+79161234567",
+			sourcePage: "/kontakty",
+			submittedAt: "2026-09-16T12:00:00.000Z",
+		},
+		derivedFraudKey,
+	),
+	buildFraudFingerprint(
+		{
+			phoneE164: "+79161234567",
+			sourcePage: "/kontakty",
+			submittedAt: "2026-09-16T12:00:00.000Z",
+		},
+		payloadSecret,
+	),
+	"derived fraud domain must produce a different fingerprint than direct root-key reuse",
+);
+assert.throws(
+	() => deriveLeadFraudHmacKey("   "),
+	/PAYLOAD_SECRET is required/,
+);
+const publicLeadGateway = readFileSync(
+	"src/core/data-access/public/leads.ts",
+	"utf8",
+);
+assert.ok(publicLeadGateway.includes("deriveLeadFraudHmacKey"));
+assert.ok(
+	!publicLeadGateway.includes("fraudHmacKey: runtimeEnv.PAYLOAD_SECRET,"),
+	"public intake must not use PAYLOAD_SECRET directly as its fraud HMAC key",
+);
 
 assert.deepEqual(resolveEnabledLeadChannels({}), []);
 assert.deepEqual(
