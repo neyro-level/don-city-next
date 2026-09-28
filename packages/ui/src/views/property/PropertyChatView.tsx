@@ -184,7 +184,7 @@ export function PropertyChatView({
 					) : null}
 
 					{resultMessage ? (
-						<div className="rounded-md border border-[var(--property-chat-border-danger)] bg-[var(--property-chat-surface-danger)] px-3 py-2 text-body font-semibold text-[var(--error)]">
+						<div className="rounded-md border border-[var(--status-danger-border)] bg-[var(--status-danger-surface)] px-3 py-2 text-body font-semibold text-[var(--error)]">
 							{resultMessage}
 						</div>
 					) : null}

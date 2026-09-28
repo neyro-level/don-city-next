@@ -103,7 +103,7 @@ export function FieldDescription({
 		<p
 			data-slot="field-description"
 			className={cn(
-				"text-label leading-step-body text-[var(--field-content-primary)]",
+				"text-label leading-step-body text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}

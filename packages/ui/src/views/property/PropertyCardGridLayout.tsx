@@ -50,8 +50,8 @@ export function PropertyCardGridLayout({
 		<article
 			className={`group relative cursor-pointer rounded-lg bg-[var(--surface-card)]/0 transition duration-300 ${
 				isList
-					? "grid overflow-hidden border border-[var(--border)] bg-[var(--surface-card)] shadow-none hover:-translate-y-0.5 hover:shadow-[var(--property-card-shadow-list-hover)] md:grid-cols-[320px_minmax(0,1fr)_210px]"
-					: "-m-2 overflow-visible border border-transparent p-2 shadow-[var(--property-card-shadow-grid-rest)] transition-shadow lg:shadow-none hover:-translate-y-0.5 hover:border-[var(--border)] hover:bg-[var(--surface-card)] hover:shadow-[var(--property-card-shadow-grid-hover)]"
+					? "grid overflow-hidden border border-[var(--border)] bg-[var(--surface-card)] shadow-none hover:-translate-y-0.5 hover:shadow-[var(--shadow-raised)] md:grid-cols-[320px_minmax(0,1fr)_210px]"
+					: "-m-2 overflow-visible border border-transparent p-2 shadow-[var(--shadow-card)] transition-shadow lg:shadow-none hover:-translate-y-0.5 hover:border-[var(--border)] hover:bg-[var(--surface-card)] hover:shadow-[var(--shadow-raised)]"
 			}`}
 		>
 			<LinkRenderer
@@ -66,7 +66,7 @@ export function PropertyCardGridLayout({
 
 			<div className={isList ? "p-3 md:pr-0" : ""}>
 				<div
-					className={`relative z-20 touch-pan-y select-none overflow-hidden rounded-lg bg-[var(--surface-muted)] ${isList ? "aspect-[16/10] md:h-full md:min-h-53.5" : "aspect-[3/2] shadow-[var(--property-card-shadow-media-rest)] transition duration-300 group-hover:shadow-[var(--property-card-shadow-media-hover)]"}`}
+					className={`relative z-20 touch-pan-y select-none overflow-hidden rounded-lg bg-[var(--surface-muted)] ${isList ? "aspect-[16/10] md:h-full md:min-h-53.5" : "aspect-[3/2] shadow-[var(--shadow-card)] transition duration-300 group-hover:shadow-[var(--shadow-raised)]"}`}
 					onTouchStart={onGalleryTouchStart}
 					onTouchEnd={onGalleryTouchEnd}
 				>
@@ -152,7 +152,7 @@ export function PropertyCardGridLayout({
 								))}
 							</div>
 
-							<span className="absolute bottom-2.5 right-2.5 z-20 inline-flex min-h-6 items-center gap-1 rounded-md bg-[var(--surface-dark)]/66 px-2 text-caption font-bold tabular-nums text-white shadow-[var(--property-card-shadow-badge)] backdrop-blur-sm">
+							<span className="absolute bottom-2.5 right-2.5 z-20 inline-flex min-h-6 items-center gap-1 rounded-md bg-[var(--surface-dark)]/66 px-2 text-caption font-bold tabular-nums text-white shadow-[var(--shadow-card)] backdrop-blur-sm">
 								<ImageIcon className="size-3" aria-hidden />
 								{activeImage + 1}/{images.length}
 							</span>

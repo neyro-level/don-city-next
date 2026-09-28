@@ -58,7 +58,7 @@ export function AccordionContent({
 	return (
 		<AccordionPrimitive.Content
 			data-slot="accordion-content"
-			className="overflow-hidden text-body text-[var(--accordion-content-primary)]"
+			className="overflow-hidden text-body text-[var(--content-strong)]"
 			{...props}
 		>
 			<div className={cn("pb-4 pt-0 leading-step-copy", className)}>

@@ -19,7 +19,7 @@ export function BreadcrumbList({ className, ...props }: ComponentProps<"ol">) {
 		<ol
 			data-slot="breadcrumb-list"
 			className={cn(
-				"flex flex-wrap items-center gap-1.5 text-body text-[var(--breadcrumb-content-primary)]",
+				"flex flex-wrap items-center gap-1.5 text-body text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}
@@ -78,7 +78,7 @@ export function BreadcrumbSeparator({
 		<li
 			data-slot="breadcrumb-separator"
 			aria-hidden="true"
-			className={cn("text-[var(--breadcrumb-content-secondary)]", className)}
+			className={cn("text-[var(--content-subtle)]", className)}
 			{...props}
 		>
 			{children ?? <ChevronRight className="size-3.5" />}

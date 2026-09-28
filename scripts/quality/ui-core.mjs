@@ -221,6 +221,24 @@ assert.deepEqual(
 	].sort(),
 	"typography must expose only the canonical roles and the approved decorative step exception",
 );
+const exceptionStart = globals.indexOf("/* Approved component exceptions:");
+const exceptionEnd = globals.indexOf("/* End approved component exceptions. */");
+const componentExceptionTokens = [
+	...globals
+		.slice(exceptionStart, exceptionEnd)
+		.matchAll(/^\s*(--[a-z0-9-]+):/gm),
+]
+	.map((match) => match[1])
+	.sort();
+assert.ok(exceptionStart >= 0 && exceptionEnd > exceptionStart);
+assert.ok(
+	componentExceptionTokens.every((token) =>
+		/^--(?:catalog-hero-overlay-|home-action-shadow|site-header-shadow|house-project-preview-visual-primary)/.test(
+			token,
+		),
+	),
+	"component-specific tokens are limited to documented visual exceptions",
+);
 const legacyTypographyRole =
 	/\btext-(?:display(?:-[a-z-]+)?|section(?:-[a-z-]+)?|heading(?:-[a-z-]+)?|editorial-[a-z-]+|micro(?:-tight)?|overline|support(?:-dense)?|lead(?:-compact)?|body-(?:large|compact|dense|emphasis|highlight|fluid)|caption-(?:tight|dense|relaxed)|label-relaxed|card-(?:large|fluid|compact(?:-(?:medium|large))?|title(?:-large)?|section|heading-fluid)|price(?:-(?:large|medium|mobile))?|selection-title|profile-title|calculator-result|property-title|dialog-(?:title|subtitle)|footer-title|route-status|thank-you)\b/;
 for (const path of walk(join(root, "packages", "ui", "src"))) {

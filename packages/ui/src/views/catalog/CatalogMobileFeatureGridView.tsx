@@ -94,7 +94,7 @@ export function CatalogMobileFeatureGridView({
 							</>
 						);
 						const className =
-							"group flex min-h-40 flex-col rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-4 shadow-[var(--property-card-shadow-grid-rest)] transition active:scale-[0.985] md:min-h-44 md:p-5";
+							"group flex min-h-40 flex-col rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-4 shadow-[var(--shadow-card)] transition active:scale-[0.985] md:min-h-44 md:p-5";
 
 						return item.href && LinkRenderer ? (
 							<LinkRenderer

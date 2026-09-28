@@ -48,7 +48,7 @@ export function PropertyViewingRequestView({
 }) {
 	return (
 		<section
-			className="rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-viewing-request-shadow-subtle)] md:p-6"
+			className="rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="property-viewing-title"
 		>
 			<div className="grid gap-5">
@@ -97,7 +97,7 @@ export function PropertyViewingRequestView({
 										type="button"
 										data-visual-dynamic
 										onClick={() => onSelectDate(date.value)}
-										className={`grid min-h-19 min-w-25.5 snap-start content-start rounded-lg border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:min-w-0 md:min-h-20 ${selected ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-white" : "border-transparent bg-[var(--background)] text-[var(--text-primary)] hover:border-[var(--input)] hover:bg-[var(--property-viewing-request-surface-selected)]"}`}
+										className={`grid min-h-19 min-w-25.5 snap-start content-start rounded-lg border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:min-w-0 md:min-h-20 ${selected ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-white" : "border-transparent bg-[var(--background)] text-[var(--text-primary)] hover:border-[var(--input)] hover:bg-[var(--surface-subtle)]"}`}
 										aria-pressed={selected}
 									>
 										<span className="truncate text-body-sm font-semibold leading-step-body md:text-body">
@@ -162,7 +162,7 @@ export function PropertyViewingRequestView({
 					</label>
 					{result ? (
 						<p
-							className={`text-body font-semibold ${result.ok ? "text-[var(--property-viewing-request-content-success)]" : "text-[var(--accent)]"}`}
+							className={`text-body font-semibold ${result.ok ? "text-[var(--status-success)]" : "text-[var(--accent)]"}`}
 						>
 							{result.message}
 						</p>

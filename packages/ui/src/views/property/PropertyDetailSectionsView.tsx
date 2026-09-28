@@ -36,7 +36,7 @@ export function PropertyDetailSummaryView({
 }) {
 	return (
 		<Card
-			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-detail-sections-shadow-subtle)] md:p-6"
+			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="object-page-title"
 		>
 			<div className="grid gap-2">
@@ -133,7 +133,7 @@ export function PropertyDescriptionView({
 
 	return (
 		<Card
-			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-detail-sections-shadow-subtle)] md:p-6"
+			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="object-description-title"
 		>
 			<h2
@@ -178,7 +178,7 @@ export function PropertyDetailsView({
 }) {
 	return (
 		<Card
-			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-detail-sections-shadow-subtle)] md:p-6"
+			className="grid gap-4 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="object-details-title"
 		>
 			<h2
@@ -211,7 +211,7 @@ export function PropertyDetailsView({
 export function PropertyBuildingView({ description }: { description: string }) {
 	return (
 		<Card
-			className="grid gap-3.5 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-detail-sections-shadow-subtle)] md:p-6"
+			className="grid gap-3.5 rounded-lg border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="object-building-title"
 		>
 			<h2

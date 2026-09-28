@@ -19,36 +19,36 @@ export function HtmlSitemapListingView({
 			: "Резерв объектов";
 	const basePath = `/sitemap/${page.kind}`;
 	return (
-		<main className="bg-[var(--html-sitemap-listing-surface-primary)] text-[var(--html-sitemap-listing-content-primary)]">
-			<header className="border-b border-[var(--html-sitemap-listing-border-primary)] bg-[var(--surface-card)]">
+		<main className="bg-[var(--surface-subtle)] text-[var(--content-strong)]">
+			<header className="border-b border-[var(--border-default)] bg-[var(--surface-card)]">
 				<div className="mx-auto max-w-295 px-5 py-9 md:px-8 md:py-12">
 					{breadcrumbs}
 					<LinkRenderer
 						href="/sitemap"
-						className="inline-flex min-h-11 items-center gap-2 text-body font-bold text-[var(--html-sitemap-listing-content-secondary)] hover:text-[var(--accent)]"
+						className="inline-flex min-h-11 items-center gap-2 text-body font-bold text-[var(--content-subtle)] hover:text-[var(--accent)]"
 					>
 						<ArrowLeft className="size-4" aria-hidden /> Карта сайта
 					</LinkRenderer>
 					<h1 className="mt-4 text-h2 font-extrabold leading-tight-copy md:text-h1">
 						{title}
 					</h1>
-					<p className="mt-3 text-body text-[var(--html-sitemap-listing-content-tertiary)]">
+					<p className="mt-3 text-body text-[var(--content-subtle)]">
 						Страница {page.page} из {totalPages}. Всего объектов: {page.total}.
 					</p>
 				</div>
 			</header>
 			<section className="mx-auto max-w-295 px-5 py-8 md:px-8 md:py-12">
-				<div className="grid gap-px overflow-hidden rounded-lg border border-[var(--html-sitemap-listing-border-primary)] bg-[var(--html-sitemap-listing-surface-secondary)] sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid gap-px overflow-hidden rounded-lg border border-[var(--border-default)] bg-[var(--surface-subtle)] sm:grid-cols-2 lg:grid-cols-3">
 					{page.items.map((item) => (
 						<LinkRenderer
 							key={item.id}
 							href={`/obekty/${item.slug}`}
-							className="group flex min-h-22 gap-3 bg-[var(--surface-card)] p-4 transition hover:bg-[var(--html-sitemap-listing-surface-tertiary)]"
+							className="group flex min-h-22 gap-3 bg-[var(--surface-card)] p-4 transition hover:bg-[var(--surface-subtle)]"
 						>
-							<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--html-sitemap-listing-surface-subtle)] text-[var(--accent)]">
+							<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--accent)]">
 								<Building2 className="size-4" aria-hidden />
 							</span>
-							<span className="min-w-0 text-body font-semibold leading-step-body text-[var(--html-sitemap-listing-content-subtle)] group-hover:text-[var(--accent)]">
+							<span className="min-w-0 text-body font-semibold leading-step-body text-[var(--content-subtle)] group-hover:text-[var(--accent)]">
 								{item.title}
 							</span>
 						</LinkRenderer>
@@ -61,7 +61,7 @@ export function HtmlSitemapListingView({
 					{page.page > 1 ? (
 						<LinkRenderer
 							href={`${basePath}/${page.page - 1}`}
-							className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--html-sitemap-listing-border-secondary)] bg-[var(--surface-card)] px-4 text-body font-bold"
+							className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border-default)] bg-[var(--surface-card)] px-4 text-body font-bold"
 						>
 							<ArrowLeft className="size-4" aria-hidden /> Назад
 						</LinkRenderer>
@@ -70,7 +70,7 @@ export function HtmlSitemapListingView({
 						typeof item === "string" ? (
 							<span
 								key={item}
-								className="grid min-h-11 min-w-11 place-items-center text-body text-[var(--html-sitemap-listing-content-secondary)]"
+								className="grid min-h-11 min-w-11 place-items-center text-body text-[var(--content-subtle)]"
 							>
 								…
 							</span>
@@ -79,7 +79,7 @@ export function HtmlSitemapListingView({
 								key={item}
 								href={`${basePath}/${item}`}
 								ariaCurrent={item === page.page ? "page" : undefined}
-								className={`grid min-h-11 min-w-11 place-items-center rounded-lg border px-3 text-body font-bold ${item === page.page ? "border-[var(--html-sitemap-listing-border-tertiary)] bg-[var(--html-sitemap-listing-surface-muted)] text-white" : "border-[var(--html-sitemap-listing-border-secondary)] bg-[var(--surface-card)] text-[var(--html-sitemap-listing-content-muted)]"}`}
+								className={`grid min-h-11 min-w-11 place-items-center rounded-lg border px-3 text-body font-bold ${item === page.page ? "border-[var(--border-default)] bg-[var(--surface-inverse)] text-white" : "border-[var(--border-default)] bg-[var(--surface-card)] text-[var(--content-subtle)]"}`}
 							>
 								{item}
 							</LinkRenderer>
@@ -88,7 +88,7 @@ export function HtmlSitemapListingView({
 					{page.page < totalPages ? (
 						<LinkRenderer
 							href={`${basePath}/${page.page + 1}`}
-							className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--html-sitemap-listing-surface-muted)] px-4 text-body font-bold text-white"
+							className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--surface-inverse)] px-4 text-body font-bold text-white"
 						>
 							Далее <ArrowRight className="size-4" aria-hidden />
 						</LinkRenderer>

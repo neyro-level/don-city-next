@@ -85,7 +85,7 @@ function CatalogMortgageInlineGridCard({
 	onRequest,
 }: CardProps) {
 	return (
-		<article className="group col-span-full overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card-soft)] transition duration-300 hover:border-[var(--catalog-mortgage-help-card-border-hover)] hover:shadow-[var(--catalog-mortgage-help-card-shadow-feature)]">
+		<article className="group col-span-full overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card-soft)] transition duration-300 hover:border-[var(--border-default)] hover:shadow-[var(--shadow-raised)]">
 			<div className="grid md:grid-cols-[minmax(300px,0.9fr)_minmax(0,1.1fr)]">
 				<div className="relative h-55 overflow-hidden bg-[var(--surface-muted)] md:h-auto md:min-h-63">
 					<ImageRenderer
@@ -137,8 +137,8 @@ function CatalogMortgageGridCard({
 	onRequest,
 }: CardProps) {
 	return (
-		<article className="group flex h-117.5 min-w-0 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card)] transition duration-300 hover:border-[var(--catalog-mortgage-help-card-border-hover)] hover:shadow-[var(--catalog-mortgage-help-card-shadow-card)]">
-			<div className="relative h-53.5 overflow-hidden bg-[var(--catalog-mortgage-help-card-surface-media)]">
+		<article className="group flex h-117.5 min-w-0 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card)] transition duration-300 hover:border-[var(--border-default)] hover:shadow-[var(--shadow-card)]">
+			<div className="relative h-53.5 overflow-hidden bg-[var(--surface-subtle)]">
 				<ImageRenderer
 					src={content.imageSrc}
 					alt={content.imageAlt}
@@ -188,7 +188,7 @@ function CatalogMortgageEditorialListCard({
 }: CardProps) {
 	return (
 		<article className="group bg-transparent py-6">
-			<div className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--catalog-mortgage-help-card-surface-panel)] transition duration-300 group-hover:border-[var(--catalog-mortgage-help-card-border-hover)] group-hover:shadow-[var(--catalog-mortgage-help-card-shadow-panel)]">
+			<div className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-subtle)] transition duration-300 group-hover:border-[var(--border-default)] group-hover:shadow-[var(--shadow-raised)]">
 				<div className="grid md:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_440px]">
 					<div className="flex min-h-66.5 flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10">
 						<div className="min-w-0">
@@ -217,7 +217,7 @@ function CatalogMortgageEditorialListCard({
 						/>
 					</div>
 
-					<div className="relative h-55 overflow-hidden bg-[var(--catalog-mortgage-help-card-surface-media)] md:h-auto">
+					<div className="relative h-55 overflow-hidden bg-[var(--surface-subtle)] md:h-auto">
 						<ImageRenderer
 							src={content.imageSrc}
 							alt={content.imageAlt}
@@ -226,7 +226,7 @@ function CatalogMortgageEditorialListCard({
 							className="object-cover object-center transition duration-700 group-hover:scale-[1.018]"
 						/>
 						<div
-							className="absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r from-[var(--catalog-mortgage-help-card-surface-panel)] to-transparent md:block"
+							className="absolute inset-y-0 left-0 hidden w-24 bg-gradient-to-r from-[var(--surface-subtle)] to-transparent md:block"
 							aria-hidden
 						/>
 					</div>
@@ -246,7 +246,7 @@ function MortgageHelpButton({
 		<Button
 			type="button"
 			onClick={() => onRequest?.(source, formType)}
-			className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body font-semibold text-white transition hover:bg-[var(--catalog-mortgage-help-card-surface-action-hover)]"
+			className="inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body font-semibold text-white transition hover:bg-[var(--surface-inverse)]"
 		>
 			{label}
 		</Button>

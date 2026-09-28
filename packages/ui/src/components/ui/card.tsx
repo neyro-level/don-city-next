@@ -64,7 +64,7 @@ export function CardDescription({
 		<p
 			data-slot="card-description"
 			className={cn(
-				"text-body leading-step-copy text-[var(--text-secondary,var(--card-visual-primary))]",
+				"text-body leading-step-copy text-[var(--text-secondary,var(--content-strong))]",
 				className,
 			)}
 			{...props}

@@ -92,14 +92,14 @@ export function CatalogShowcaseView({
 		>
 			<div className="mx-auto max-w-site-frame px-5">
 				{headline ? (
-					<div className="mb-7 rounded-lg border border-[var(--catalog-controls-border-headline)] bg-[var(--surface-card-soft)] px-5 py-5 md:px-6 md:py-6">
+					<div className="mb-7 rounded-lg border border-[var(--border-default)] bg-[var(--surface-card-soft)] px-5 py-5 md:px-6 md:py-6">
 						<h1 className="max-w-230 text-h4 font-extrabold leading-card-title-relaxed text-[var(--text-primary)] md:text-h2 lg:text-h2">
 							{headline}
 						</h1>
 					</div>
 				) : null}
 				{beforeControls}
-				<div className="rounded-lg bg-[var(--surface-card)] p-4 shadow-[var(--catalog-controls-shadow-panel)] lg:p-5">
+				<div className="rounded-lg bg-[var(--surface-card)] p-4 shadow-[var(--shadow-raised)] lg:p-5">
 					<div className="flex flex-wrap items-end justify-between gap-3">
 						<p className="text-h4 font-extrabold leading-tight-copy text-[var(--text-primary)] md:text-h2">
 							Найдено: <span className="tabular-nums">{resultLabel}</span>
@@ -279,7 +279,7 @@ export function CatalogLoadMoreView({
 							type="button"
 							onClick={onLoadMore}
 							disabled={loading}
-							className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-7 text-body font-extrabold text-white shadow-[var(--catalog-controls-shadow-action)] transition hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:shadow-[var(--catalog-controls-shadow-action-hover)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 sm:min-w-55"
+							className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-7 text-body font-extrabold text-white shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:shadow-[var(--shadow-raised)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 sm:min-w-55"
 						>
 							{loading ? (
 								<>
@@ -315,14 +315,14 @@ export function CatalogLoadMoreView({
 								key={item.key}
 								href={item.href}
 								ariaCurrent={item.current ? "page" : undefined}
-								className={`grid min-h-11 place-items-center rounded-lg border px-3 text-body font-bold ${item.current ? "border-[var(--surface-dark)] bg-[var(--surface-dark)] text-white" : "border-[var(--catalog-controls-border-pagination)] bg-[var(--surface-card)] text-[var(--surface-dark)]"}`}
+								className={`grid min-h-11 place-items-center rounded-lg border px-3 text-body font-bold ${item.current ? "border-[var(--surface-dark)] bg-[var(--surface-dark)] text-white" : "border-[var(--border-default)] bg-[var(--surface-card)] text-[var(--surface-dark)]"}`}
 							>
 								{item.label}
 							</Link>
 						) : (
 							<span
 								key={item.key}
-								className="grid min-h-11 min-w-11 place-items-center text-body text-[var(--catalog-controls-content-pagination)]"
+								className="grid min-h-11 min-w-11 place-items-center text-body text-[var(--content-strong)]"
 							>
 								{item.label}
 							</span>

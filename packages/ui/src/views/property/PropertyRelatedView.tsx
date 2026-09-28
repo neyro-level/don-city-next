@@ -31,7 +31,7 @@ export function PropertyRelatedView({
 						href={item.href}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="group grid overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card)] transition hover:-translate-y-0.5 hover:border-[var(--input)] hover:shadow-[var(--property-related-shadow-card)]"
+						className="group grid overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card)] transition hover:-translate-y-0.5 hover:border-[var(--input)] hover:shadow-[var(--shadow-card)]"
 					>
 						<div className="relative aspect-[4/3] bg-[var(--surface-muted)]">
 							{item.image ? (

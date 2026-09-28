@@ -49,7 +49,7 @@ export function PropertyCardListLayout({
 	title,
 }: PropertyCardLayoutProps) {
 	return (
-		<article className="group relative grid cursor-pointer gap-5 bg-transparent p-4 transition duration-300 hover:relative hover:z-10 hover:rounded-lg hover:bg-[var(--surface-card-soft)] hover:shadow-[var(--property-card-shadow-raised)] md:grid-cols-[300px_minmax(0,1fr)_230px] md:px-0 md:py-6">
+		<article className="group relative grid cursor-pointer gap-5 bg-transparent p-4 transition duration-300 hover:relative hover:z-10 hover:rounded-lg hover:bg-[var(--surface-card-soft)] hover:shadow-[var(--shadow-raised)] md:grid-cols-[300px_minmax(0,1fr)_230px] md:px-0 md:py-6">
 			<LinkRenderer
 				href={path}
 				target="_blank"
@@ -122,7 +122,7 @@ export function PropertyCardListLayout({
 								/>
 							))}
 						</div>
-						<span className="absolute bottom-3 right-3 z-20 inline-flex min-h-7 items-center gap-1 rounded-full bg-[var(--surface-dark)]/72 px-2.5 text-caption font-bold tabular-nums text-white shadow-[var(--property-card-shadow-counter)] backdrop-blur-sm">
+						<span className="absolute bottom-3 right-3 z-20 inline-flex min-h-7 items-center gap-1 rounded-full bg-[var(--surface-dark)]/72 px-2.5 text-caption font-bold tabular-nums text-white shadow-[var(--shadow-card)] backdrop-blur-sm">
 							<ImageIcon className="size-3.5" aria-hidden />
 							{activeImage + 1}/{images.length}
 						</span>
@@ -167,7 +167,7 @@ export function PropertyCardListLayout({
 							onClick={stop}
 							data-analytics-context="catalog_property_card"
 							data-analytics-item={listing.slug}
-							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold tabular-nums text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
+							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold tabular-nums text-white transition hover:bg-[var(--surface-inverse)] lg:text-body sm:min-w-47.5"
 						>
 							<Phone className="size-[17.6px] lg:size-4" aria-hidden />
 							{phone}
@@ -183,7 +183,7 @@ export function PropertyCardListLayout({
 								stop(event);
 								setPhoneVisible(true);
 							}}
-							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold text-white transition hover:bg-[var(--property-card-surface-action-hover)] lg:text-body sm:min-w-47.5"
+							className="relative z-20 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--surface-dark)] px-5 text-center text-body-lg font-semibold text-white transition hover:bg-[var(--surface-inverse)] lg:text-body sm:min-w-47.5"
 						>
 							<Phone className="" aria-hidden />
 							Показать телефон

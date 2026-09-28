@@ -53,8 +53,8 @@ function CatalogNewBuildingSelectionGridCard({
 }) {
 	return (
 		<article className="-m-2 min-w-0 p-2">
-			<div className="flex h-full min-h-85.5 flex-col rounded-lg border border-[var(--catalog-new-building-selection-card-border-default)] bg-[var(--accent-soft)] p-5 transition duration-300 hover:-translate-y-0.5 hover:border-[var(--catalog-new-building-selection-card-border-hover)] hover:shadow-[var(--catalog-new-building-selection-card-shadow-card)]">
-				<div className="flex size-11 items-center justify-center rounded-lg bg-[var(--surface-card)] text-[var(--accent)] shadow-[var(--catalog-new-building-selection-card-shadow-subtle)]">
+			<div className="flex h-full min-h-85.5 flex-col rounded-lg border border-[var(--border-default)] bg-[var(--accent-soft)] p-5 transition duration-300 hover:-translate-y-0.5 hover:border-[var(--border-default)] hover:shadow-[var(--shadow-card)]">
+				<div className="flex size-11 items-center justify-center rounded-lg bg-[var(--surface-card)] text-[var(--accent)] shadow-[var(--shadow-card)]">
 					<Building2 className="size-5" aria-hidden />
 				</div>
 				<h3 className="mt-5 text-h4 font-extrabold leading-tight-copy text-[var(--text-primary)]">
@@ -88,7 +88,7 @@ function CatalogNewBuildingSelectionListCard({
 }) {
 	return (
 		<article className="bg-transparent py-6">
-			<div className="grid gap-5 rounded-lg border border-[var(--catalog-new-building-selection-card-border-default)] bg-[var(--accent-soft)] p-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
+			<div className="grid gap-5 rounded-lg border border-[var(--border-default)] bg-[var(--accent-soft)] p-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
 				<div className="max-w-2xl">
 					<p className="text-caption font-bold uppercase tracking-caps text-[var(--accent)]">
 						{copy.eyebrow}
