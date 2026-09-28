@@ -1,7 +1,7 @@
 # Backlog
 
 Status: Active
-Version: 1.3
+Version: 1.4
 Updated: 2026-09-28
 
 ## Delivered
@@ -19,24 +19,25 @@ Updated: 2026-09-28
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Live Conformance v13
+## NOW — Constitution Remediation v1
 
-- [x] Owner approved exact Plan ID `AMS-DON-CITY-LIVE-CONFORMANCE` v13 at `2026-09-27T21:09:12+03:00`.
-- [x] Canonical v12→v13 non-destructive Upgrade passed in the one existing Beads store: 22/22 epics, 84 tasks, 106 managed nodes, zero drift/cycles.
-- [x] Production remains the mandatory final stage, has no autonomous task and requires a separate explicit release command.
-- [x] Execute the implementation Beads ready-loop through all R11/R12/UI/OPS delivery epics. Beads remains the only per-task execution state.
-- [x] Converge active docs, catalog/geo/SEO/legal/UI contracts and final exact-head documentation evidence in dependency order.
+- [x] Owner approved exact Plan ID `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 at `2026-09-28T21:41:18+03:00`.
+- [x] Successor inventory imported and reconciled `CLEAN` in the one existing Beads store: 5/5 epics, 44 implementation tasks, 5 delivery tasks, 54 managed nodes, zero drift/cycles; two stale v6 claims explicitly frozen as history.
+- [ ] Execute EPIC-01…05 through five SourceCraft streams with their approved `MERGE_AFTER_GATE` policy.
+- [ ] Stop on the exact final candidate before production.
+- [ ] Production is the final `PROD-01/02` owner gate and requires a separate explicit command `Выпускаем production`.
 
-Earlier CP-01…CP-08 evidence remains delivered history. It is not the current
-program and does not create a persistent staging database or a second task graph.
+Earlier v13 and CP-01…CP-08 evidence remains delivered history. It is not the
+current program and does not create a persistent staging database or a second
+Task Manager store.
 
-## v13 Delivery Order
+## v1 Remediation Delivery Order
 
-1. W0: DOC-00, OPS-00 and the read-only inventory diagnostic establish factual contracts.
-2. W1–W3: catalog/geo/SEO/legal/UI implementation follows the exact dependencies in the approved plan.
-3. W4: locality activation was owner-approved for Макеевка and delivered with only hub, apartments, houses and land routes.
-4. W5: `DC11-DOC-FINAL` proves the exact candidate and active-document convergence.
-5. W6: `DC11-PROD-FINAL` is mandatory and last; it requires a separate release command and no task follows it.
+1. W1: transaction/SQL contracts, SEO route evidence and UI inventory.
+2. W2: EPIC-01 import/data remediation and independent EPIC-03 SEO work.
+3. W3: EPIC-02 leads/outbox and EPIC-04 UI normalization after their narrow contract dependencies.
+4. W4: EPIC-05 integrated exact candidate, disposable proof and factual documentation.
+5. W5: `PROD-01/02` only after a separate owner release command; no autonomous production task follows EPIC-05.
 
 ## Open Production Readiness
 

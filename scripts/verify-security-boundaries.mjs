@@ -88,6 +88,8 @@ const collectionFileBySlug = {
 const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
+	leads: "ownersOrLeadIntake",
+	"lead-deliveries": "ownersOrLeadIntake",
 	"listing-contents": "publicListingContentReadAccess",
 	media: "publicMediaReadAccess",
 	redirects: "publicRedirectReadAccess",
@@ -365,8 +367,8 @@ for (const file of [...filesUnder("src"), ...filesUnder("scripts")]) {
 
 const leadsCollection = read("src/project/collections/Leads.ts");
 assert.ok(!leadsCollection.includes("adminsAndOwners"));
-assert.match(leadsCollection, /create:\s*systemGatewayOnly/);
-assert.match(leadsCollection, /read:\s*ownersOnly/);
+assert.match(leadsCollection, /create:\s*leadIntakeOnly/);
+assert.match(leadsCollection, /read:\s*ownersOrLeadIntake/);
 assert.match(leadsCollection, /update:\s*ownersOnly/);
 assert.match(leadsCollection, /delete:\s*ownersOnly/);
 assert.ok(
@@ -376,9 +378,9 @@ assert.ok(
 
 const deliveriesCollection = read("src/project/collections/LeadDeliveries.ts");
 assert.ok(!deliveriesCollection.includes("adminsAndOwners"));
-assert.match(deliveriesCollection, /create:\s*systemGatewayOnly/);
-assert.match(deliveriesCollection, /read:\s*ownersOnly/);
-assert.match(deliveriesCollection, /update:\s*systemGatewayOnly/);
+assert.match(deliveriesCollection, /create:\s*leadIntakeOnly/);
+assert.match(deliveriesCollection, /read:\s*ownersOrLeadIntake/);
+assert.match(deliveriesCollection, /update:\s*leadIntakeOnly/);
 assert.match(deliveriesCollection, /delete:\s*ownersOnly/);
 assert.ok(
 	deliveriesCollection.includes('hasRole(req.user, ["owner"])'),
@@ -398,7 +400,7 @@ assert.equal(
 );
 assert.ok(
 	read("scripts/quality/architecture-guard.mjs").includes(
-		"systemOverrideAccess import outside System Gateway whitelist",
+		"systemOverrideAccess outside System Gateway",
 	),
 	"architecture guard must fail business imports of systemOverrideAccess",
 );

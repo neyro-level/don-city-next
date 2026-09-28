@@ -1,13 +1,13 @@
 import type { Payload, PayloadRequest } from "payload";
+import { internalAccessMode } from "../../access/internal-modes.ts";
 import type {
 	LeadDeliveryRecord,
 	LeadOutboxRepository,
 	LeadOutboxTransaction,
 	LeadRecord,
 } from "../../leads/outbox.ts";
-import { systemOverrideAccess } from "../system/overrides.ts";
 
-const access = systemOverrideAccess("system-job");
+const intakeAccess = internalAccessMode("lead-intake");
 
 type TransactionalDb = {
 	beginTransaction?: (
@@ -20,10 +20,7 @@ type TransactionalDb = {
 function asRequest(
 	transactionID?: string | number,
 ): PayloadRequest | undefined {
-	if (transactionID === undefined) {
-		return undefined;
-	}
-	return { transactionID } as PayloadRequest;
+	return internalAccessMode("lead-intake", transactionID).req;
 }
 
 function relationId(value: unknown): string {
@@ -137,7 +134,8 @@ export function createPayloadLeadOutboxRepository(
 					},
 					depth: 0,
 					...(req ? { req } : {}),
-					...access,
+					overrideAccess: intakeAccess.overrideAccess,
+					context: intakeAccess.context,
 				});
 				return mapLead(created as unknown as Record<string, unknown>);
 			},
@@ -155,7 +153,8 @@ export function createPayloadLeadOutboxRepository(
 					},
 					depth: 0,
 					...(req ? { req } : {}),
-					...access,
+					overrideAccess: intakeAccess.overrideAccess,
+					context: intakeAccess.context,
 				});
 				return mapDelivery(created as unknown as Record<string, unknown>);
 			},
@@ -189,7 +188,8 @@ export function createPayloadLeadOutboxRepository(
 				where: { idempotencyKey: { equals: idempotencyKey } },
 				limit: 1,
 				depth: 0,
-				...access,
+				overrideAccess: intakeAccess.overrideAccess,
+				context: intakeAccess.context,
 			});
 			const doc = found.docs[0] as unknown as
 				| Record<string, unknown>
@@ -202,7 +202,8 @@ export function createPayloadLeadOutboxRepository(
 				where: { lead: { equals: Number(leadId) } },
 				limit: 50,
 				depth: 0,
-				...access,
+				overrideAccess: intakeAccess.overrideAccess,
+				context: intakeAccess.context,
 			});
 			return found.docs.map((doc) =>
 				mapDelivery(doc as unknown as Record<string, unknown>),
@@ -220,7 +221,8 @@ export function createPayloadLeadOutboxRepository(
 				},
 				limit: 50,
 				depth: 0,
-				...access,
+				overrideAccess: intakeAccess.overrideAccess,
+				context: intakeAccess.context,
 			});
 			return found.docs.map((doc) =>
 				mapDelivery(doc as unknown as Record<string, unknown>),
@@ -232,7 +234,8 @@ export function createPayloadLeadOutboxRepository(
 				id: Number(deliveryId),
 				data: { jobId },
 				depth: 0,
-				...access,
+				overrideAccess: intakeAccess.overrideAccess,
+				context: intakeAccess.context,
 			});
 		},
 	};

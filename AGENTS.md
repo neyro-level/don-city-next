@@ -3,7 +3,7 @@
 ## Контекст
 
 - Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + Payload Platform.
-- Current implementation: production baseline with documented Core 5.5/UI 5.0 drift; conformance work is governed by exact APPROVED plan `AMS-DON-CITY-LIVE-CONFORMANCE` v13 and its Beads evidence.
+- Current implementation: production baseline with documented Core 5.5/UI 5.0 drift; remediation is governed by exact APPROVED plan `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 and its Beads evidence.
 - Profile: `catalog`, `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 - Repository mode: `SOURCECRAFT_PRIMARY_GITHUB_MIRROR`.
 - UX: public commercial catalog + CMS-native Payload Admin.
@@ -15,7 +15,7 @@
 3. Normative baselines: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md` and `AMS_UI_CORE_v5.0_FINAL.md`.
 4. Текущий scope в `01_PRD.md`, `02_PRODUCT_STRUCTURE.md`, `03_ARCHITECTURE.md`.
 5. `docs/DELIVERY_STATE.yaml` и READY task в `04_BACKLOG.md`.
-6. Exact APPROVED execution contract: `docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`.
+6. Exact APPROVED execution contract: `docs/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`.
 
 ## Инварианты
 
@@ -28,4 +28,4 @@
 
 ## Команды
 
-Фактические runtime-команды появляются после EPIC-01 и берутся только из `package.json`. Не выдумывать их до клонирования starter baseline.
+Фактические runtime-команды берутся только из текущего `package.json`. Не выдумывать команды и не запускать production без отдельного owner intent.

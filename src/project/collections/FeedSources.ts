@@ -1,8 +1,16 @@
 import type { CollectionConfig, PayloadRequest } from "payload";
-import { queueManualFeedImport, approveSuspiciousDeactivation } from "../../core/ingest/owner-feed-operations.ts";
+import { ingestGatewayOnly } from "../../core/access/internal-modes.ts";
+import {
+	adminsAndOwners,
+	hasRole,
+	ownersOnly,
+} from "../../core/access/roles.ts";
 import { normalizeEnabledFeedNextDueAt } from "../../core/ingest/feed-schedule.ts";
+import {
+	approveSuspiciousDeactivation,
+	queueManualFeedImport,
+} from "../../core/ingest/owner-feed-operations.ts";
 import { getRuntimeClock } from "../../core/time/clock.ts";
-import { adminsAndOwners, hasRole, ownersOnly } from "../../core/access/roles.ts";
 
 export const FeedSources: CollectionConfig = {
 	slug: "feed-sources",
@@ -69,7 +77,7 @@ export const FeedSources: CollectionConfig = {
 	access: {
 		create: adminsAndOwners,
 		read: adminsAndOwners,
-		update: adminsAndOwners,
+		update: (args) => adminsAndOwners(args) || ingestGatewayOnly(args),
 		delete: ownersOnly,
 	},
 	endpoints: [

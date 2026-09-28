@@ -1,4 +1,10 @@
-import type { CollectionConfig, FieldAccess, PayloadRequest } from "payload";
+import type {
+	Access,
+	CollectionConfig,
+	FieldAccess,
+	PayloadRequest,
+} from "payload";
+import { ingestGatewayOnly } from "../../core/access/internal-modes.ts";
 import {
 	adminsAndOwners,
 	hasRole,
@@ -42,6 +48,8 @@ const fieldAdminsAndOwners: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner", "admin"]);
 const fieldOwnersOnly: FieldAccess = ({ req }) => hasRole(req.user, ["owner"]);
 const publicIdentityReadAccess: FieldAccess = () => true;
+const adminsOwnersOrIngest: Access = (args) =>
+	adminsAndOwners(args) || ingestGatewayOnly(args);
 
 const privateFieldAccess = {
 	read: fieldAdminsAndOwners,
@@ -57,9 +65,9 @@ export const Properties: CollectionConfig = {
 		defaultColumns: ["slug", "origin", "market", "status", "updatedAt"],
 	},
 	access: {
-		create: adminsAndOwners,
+		create: adminsOwnersOrIngest,
 		read: publicPropertyReadAccess,
-		update: adminsAndOwners,
+		update: adminsOwnersOrIngest,
 		delete: ownersOnly,
 	},
 	endpoints: [

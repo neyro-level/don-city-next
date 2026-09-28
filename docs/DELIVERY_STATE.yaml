@@ -1,22 +1,22 @@
 schema_version: 1
-program: AMS-DON-CITY-LIVE-CONFORMANCE
-plan_version: v13
+program: AMS-DON-CITY-CONSTITUTION-REMEDIATION
+plan_version: v1
 plan_status: APPROVED
-current_wave: LIVE_CONFORMANCE_W6
-current_epic: DC11-PROD-FINAL
-current_task: authorized-final-production-release
-next_action: execute-one-exact-main-release-then-close-without-follow-up
+current_wave: W1_CONTRACTS_INVENTORY
+current_epic: EPIC-01
+current_task: developer-handoff-ready
+next_action: claim-first-ready-task-and-start-epic-01-stream
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  documentation_baseline_sha: 22468c0db317842e0df6edd60ed6f07cb1f1bb16
-  active_branch: codex/dc11-final-release-contract
+  documentation_baseline_sha: a6cdbfc3a1a1348f65934ca202f39baec5c09bca
+  active_branch: codex/dc-constitution-remediation-plan
 task_manager:
   initialized: true
   reconciliation: CLEAN
   current_task: none
-  reason: all non-production v13 work is delivered; owner authorized the mandatory final release on 2026-09-28
+  reason: exact v1 approved and imported; 5/5 epics, 49 tasks and 54 managed nodes reconcile with zero drift/cycles
 live_conformance:
   dc10_ops_00:
     status: delivered

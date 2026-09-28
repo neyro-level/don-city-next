@@ -60,34 +60,53 @@ export type ImportFeedRuntimeDeps = {
 	rollbackImportTransaction?: (transactionId: string | number) => Promise<void>;
 	createRepository: (
 		feedSourceId: string,
-		transactionId?: string | number,
+		transactionId: string | number,
 	) => FeedIngestRepository;
 	ingest?: typeof ingestNormalizedFeed;
-	finishRun: (input: {
-		importRunId: string;
-		now: Date;
-		status: "success" | "unchanged" | "suspicious" | "interrupted" | "failed";
-		offeredCount?: number;
-		createdCount?: number;
-		updatedCount?: number;
-		skippedCount?: number;
-		warningCount?: number;
-		errorCount?: number;
-		feedHash?: string;
-		lastErrorRedacted?: string;
-	}) => Promise<void>;
-	recordSourceContact: (input: {
-		feedSourceId: string;
-		patch: FeedSourceBaselinePatch;
-	}) => Promise<void>;
-	consumeDeactivationApproval?: (input: {
-		feedSourceId: string;
-		importRunId: string;
-		now: Date;
-	}) => Promise<boolean>;
+	finishRun: (
+		input: {
+			importRunId: string;
+			now: Date;
+			status:
+				| "success"
+				| "unchanged"
+				| "suspicious"
+				| "interrupted"
+				| "failed";
+			offeredCount?: number;
+			createdCount?: number;
+			updatedCount?: number;
+			skippedCount?: number;
+			warningCount?: number;
+			errorCount?: number;
+			feedHash?: string;
+			lastErrorRedacted?: string;
+		},
+		transactionId?: string | number,
+	) => Promise<void>;
+	recordSourceContact: (
+		input: {
+			feedSourceId: string;
+			patch: FeedSourceBaselinePatch;
+		},
+		transactionId?: string | number,
+	) => Promise<void>;
+	consumeDeactivationApproval?: (
+		input: {
+			feedSourceId: string;
+			importRunId: string;
+			now: Date;
+		},
+		transactionId: string | number,
+	) => Promise<boolean>;
 	invalidatePublicCache?: (
 		targets: FeedIngestResult["invalidatedTargets"],
 	) => Promise<{ ok: boolean }>;
+	reportOperationalWarning?: (input: {
+		code: "cache_invalidation_failed" | "post_commit_import_error";
+		feedSourceId: string;
+		importRunId: string;
+	}) => Promise<void>;
 	allowedImageHosts: ReadonlySet<string>;
 };
 
@@ -100,6 +119,41 @@ export type ImportFeedRuntimeResult =
 			cacheInvalidated?: boolean;
 			maxBufferedOffersObserved?: number;
 	  };
+
+type ImportTransactionCapability = {
+	begin: () => Promise<string | number>;
+	commit: (transactionId: string | number) => Promise<void>;
+	rollback: (transactionId: string | number) => Promise<void>;
+};
+
+function requireImportTransactionCapability(
+	deps: ImportFeedRuntimeDeps,
+): ImportTransactionCapability {
+	if (
+		typeof deps.beginImportTransaction !== "function" ||
+		typeof deps.commitImportTransaction !== "function" ||
+		typeof deps.rollbackImportTransaction !== "function"
+	) {
+		throw new Error(
+			"Fetched feed import requires begin, commit and rollback transaction hooks.",
+		);
+	}
+
+	return {
+		begin: deps.beginImportTransaction,
+		commit: deps.commitImportTransaction,
+		rollback: deps.rollbackImportTransaction,
+	};
+}
+
+function isValidTransactionId(
+	transactionId: unknown,
+): transactionId is string | number {
+	return (
+		(typeof transactionId === "string" && transactionId.trim().length > 0) ||
+		(typeof transactionId === "number" && Number.isFinite(transactionId))
+	);
+}
 
 function emptyIngestResult(): FeedIngestResult {
 	return {
@@ -157,8 +211,13 @@ export async function runImportFeed(
 		tick: () =>
 			deps.touchHeartbeat({ importRunId: input.importRunId, now: deps.now() }),
 	});
+	let executionState: "before_transaction" | "transaction_open" | "committed" =
+		"before_transaction";
 	let transactionId: string | number | undefined;
-	let transactionSettled = false;
+	let transactionCapability: ImportTransactionCapability | undefined;
+	let committedResult:
+		| Extract<ImportFeedRuntimeResult, { claimed: true }>
+		| undefined;
 	let fetchedForCleanup:
 		| Extract<FetchFeedResult, { status: "fetched" }>
 		| undefined;
@@ -195,17 +254,13 @@ export async function runImportFeed(
 			return { claimed: true, status: "unchanged" };
 		}
 		fetchedForCleanup = fetched;
-		const transactionHooks = [
-			deps.beginImportTransaction,
-			deps.commitImportTransaction,
-			deps.rollbackImportTransaction,
-		];
-		if (transactionHooks.some(Boolean) && !transactionHooks.every(Boolean)) {
-			throw new Error(
-				"Import transaction hooks must be configured as a complete set.",
-			);
+		transactionCapability = requireImportTransactionCapability(deps);
+		const startedTransactionId = await transactionCapability.begin();
+		if (!isValidTransactionId(startedTransactionId)) {
+			throw new Error("Fetched feed import requires a valid transaction ID.");
 		}
-		transactionId = await deps.beginImportTransaction?.();
+		transactionId = startedTransactionId;
+		executionState = "transaction_open";
 
 		const parse = deps.parseFeed ?? parseYrlFeed;
 		const ingest = deps.ingest ?? ingestNormalizedFeed;
@@ -361,11 +416,14 @@ export async function runImportFeed(
 		};
 		let decision = decideFeedRunCompletion(decisionInput);
 		if (decision.reason === "approved_deactivation") {
-			const consumed = await deps.consumeDeactivationApproval?.({
-				feedSourceId: source.id,
-				importRunId: input.importRunId,
-				now: seenBefore,
-			});
+			const consumed = await deps.consumeDeactivationApproval?.(
+				{
+					feedSourceId: source.id,
+					importRunId: input.importRunId,
+					now: seenBefore,
+				},
+				transactionId,
+			);
 			if (!consumed) {
 				decision = decideFeedRunCompletion({
 					...decisionInput,
@@ -393,72 +451,105 @@ export async function runImportFeed(
 			}
 		}
 
-		if (transactionId !== undefined) {
-			await deps.commitImportTransaction?.(transactionId);
-			transactionSettled = true;
-		}
+		await deps.finishRun(
+			{
+				importRunId: input.importRunId,
+				now: deps.now(),
+				status: decision.status,
+				offeredCount: ingestResult.offeredCount,
+				createdCount: ingestResult.createdCount,
+				updatedCount: ingestResult.updatedCount,
+				skippedCount: ingestResult.skippedCount,
+				warningCount: ingestResult.warningCount,
+				errorCount: ingestResult.errorCount,
+				feedHash: bodyHash,
+			},
+			transactionId,
+		);
+		await deps.recordSourceContact(
+			{
+				feedSourceId: source.id,
+				patch: buildFeedSourceBaselinePatch({
+					status: decision.status,
+					parserCompleted: parsed.stats.parserCompleted,
+					criticalStructuralError: parsed.stats.criticalStructuralAnomaly,
+					nowIso: deps.now().toISOString(),
+					etag: fetched.etag,
+					lastModified: fetched.lastModified,
+					feedHash: bodyHash,
+					offeredCount: ingestResult.offeredCount,
+				}),
+			},
+			transactionId,
+		);
+
+		await transactionCapability.commit(transactionId);
+		executionState = "committed";
+		committedResult = {
+			claimed: true,
+			status: decision.status,
+			ingest: ingestResult,
+			maxBufferedOffersObserved,
+		};
 
 		let cacheOk = true;
 		if (
 			ingestResult.invalidatedTargets.length > 0 &&
 			deps.invalidatePublicCache
 		) {
-			const cacheResult = await deps.invalidatePublicCache(
-				ingestResult.invalidatedTargets,
-			);
-			cacheOk = cacheResult.ok;
+			try {
+				const cacheResult = await deps.invalidatePublicCache(
+					ingestResult.invalidatedTargets,
+				);
+				cacheOk = cacheResult.ok;
+			} catch {
+				cacheOk = false;
+			}
 			if (!cacheOk) {
 				ingestResult.warningCount += 1;
+				try {
+					await deps.reportOperationalWarning?.({
+						code: "cache_invalidation_failed",
+						feedSourceId: source.id,
+						importRunId: input.importRunId,
+					});
+				} catch {
+					// The committed data truth remains authoritative even if warning transport fails.
+				}
 			}
 		}
-
-		await deps.finishRun({
-			importRunId: input.importRunId,
-			now: deps.now(),
-			status: decision.status,
-			offeredCount: ingestResult.offeredCount,
-			createdCount: ingestResult.createdCount,
-			updatedCount: ingestResult.updatedCount,
-			skippedCount: ingestResult.skippedCount,
-			warningCount: ingestResult.warningCount,
-			errorCount: ingestResult.errorCount,
-			feedHash: bodyHash,
-		});
-		await deps.recordSourceContact({
-			feedSourceId: source.id,
-			patch: buildFeedSourceBaselinePatch({
-				status: decision.status,
-				parserCompleted: parsed.stats.parserCompleted,
-				criticalStructuralError: parsed.stats.criticalStructuralAnomaly,
-				nowIso: deps.now().toISOString(),
-				etag: fetched.etag,
-				lastModified: fetched.lastModified,
-				feedHash: bodyHash,
-				offeredCount: ingestResult.offeredCount,
-			}),
-		});
-		return {
-			claimed: true,
-			status: decision.status,
-			ingest: ingestResult,
-			cacheInvalidated: cacheOk,
-			maxBufferedOffersObserved,
-		};
+		return { ...committedResult, cacheInvalidated: cacheOk };
 	} catch {
-		await fetchedForCleanup?.cancel?.("import failed").catch(() => undefined);
-		if (transactionId !== undefined && !transactionSettled) {
+		if (executionState === "committed" && committedResult) {
+			if (committedResult.ingest) {
+				committedResult.ingest.warningCount += 1;
+			}
 			await deps
-				.rollbackImportTransaction?.(transactionId)
+				.reportOperationalWarning?.({
+					code: "post_commit_import_error",
+					feedSourceId: input.feedSourceId,
+					importRunId: input.importRunId,
+				})
 				.catch(() => undefined);
-			transactionSettled = true;
+			return { ...committedResult, cacheInvalidated: false };
 		}
-		await deps.finishRun({
-			importRunId: input.importRunId,
-			now: deps.now(),
-			status: "failed",
-			lastErrorRedacted:
-				"Import feed failed without exposing destination details.",
-		});
+		await fetchedForCleanup?.cancel?.("import failed").catch(() => undefined);
+		if (
+			transactionId !== undefined &&
+			transactionCapability &&
+			executionState === "transaction_open"
+		) {
+			await transactionCapability.rollback(transactionId).catch(() => undefined);
+		}
+		await deps
+			.finishRun({
+				importRunId: input.importRunId,
+				now: deps.now(),
+				status: "failed",
+				lastErrorRedacted:
+					"Import feed failed without exposing destination details.",
+			})
+			.catch(() => undefined);
 		return { claimed: true, status: "failed" };
 	} finally {
 		heartbeat.stop();

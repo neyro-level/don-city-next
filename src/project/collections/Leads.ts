@@ -1,15 +1,18 @@
-import type { CollectionConfig, FieldAccess } from "payload";
+import type { Access, CollectionConfig, FieldAccess } from "payload";
 import {
-	hasRole,
-	ownersOnly,
-	systemGatewayOnly,
-} from "../../core/access/roles.ts";
+	hasInternalAccessMode,
+	leadIntakeOnly,
+} from "../../core/access/internal-modes.ts";
+import { hasRole, ownersOnly } from "../../core/access/roles.ts";
 import { consentEvidenceFields } from "../legal.config.ts";
 
 const ownerPiiFieldAccess: FieldAccess = ({ req }) =>
 	hasRole(req.user, ["owner"]);
-const systemPiiCreateAccess: FieldAccess = () => false;
+const leadIntakePiiCreateAccess: FieldAccess = ({ req }) =>
+	hasInternalAccessMode(req, "lead-intake");
 const immutableIntakeUpdateAccess: FieldAccess = () => false;
+const ownersOrLeadIntake: Access = (args) =>
+	ownersOnly(args) || leadIntakeOnly(args);
 
 const piiFieldAccess: {
 	read: FieldAccess;
@@ -17,14 +20,15 @@ const piiFieldAccess: {
 	update: FieldAccess;
 } = {
 	read: ownerPiiFieldAccess,
-	create: systemPiiCreateAccess,
+	create: leadIntakePiiCreateAccess,
 	update: ownerPiiFieldAccess,
 };
 
 export const Leads: CollectionConfig = {
 	slug: "leads",
-	// Public intake is POST /api/public/leads via Public Gateway + System Gateway.
-	// Generic collection create stays closed; only a named System Gateway may persist.
+	// Public intake is POST /api/public/leads via Public Gateway.
+	// Generic collection create stays closed to anonymous traffic; the gateway supplies
+	// the explicit lead-intake access context without bypassing access control.
 	versions: false,
 	admin: {
 		group: "Operations",
@@ -34,8 +38,8 @@ export const Leads: CollectionConfig = {
 			"Owner operations: agency workflow status and PII retention. External delivery state lives in Lead Deliveries.",
 	},
 	access: {
-		create: systemGatewayOnly,
-		read: ownersOnly,
+		create: leadIntakeOnly,
+		read: ownersOrLeadIntake,
 		update: ownersOnly,
 		delete: ownersOnly,
 	},

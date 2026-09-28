@@ -57,5 +57,30 @@ export function assertSqlOperationManifest(name, content) {
 			/reason:\s*"[^"\n]+"/,
 			`${name}: ${operation} reason is missing`,
 		);
+		for (const field of [
+			"file",
+			"purpose",
+			"trigger",
+			"inputType",
+			"localApiReplacement",
+			"decisionSource",
+			"integrationProof",
+		]) {
+			assert.match(
+				block,
+				new RegExp(`${field}:\\s*"[^"\\n]+"`),
+				`${name}: ${operation} ${field} is missing`,
+			);
+		}
+		assert.match(
+			block,
+			/containsPii:\s*(?:true|false)/,
+			`${name}: ${operation} containsPii is missing`,
+		);
+		assert.match(
+			block,
+			/userInput:\s*(?:true|false)/,
+			`${name}: ${operation} userInput is missing`,
+		);
 	}
 }

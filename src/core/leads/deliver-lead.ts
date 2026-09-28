@@ -1,11 +1,10 @@
 import type { Payload, TaskHandlerResult } from "payload";
-import { systemOverrideAccess } from "../data-access/system/overrides.ts";
+import { createSystemJobPayloadGateway } from "../data-access/system/job-payload.ts";
 import { claimLeadDeliveryRow } from "../data-access/system/sql/index.ts";
 import {
 	parseOutboundHostList,
 	safeOutboundFetch,
 } from "../security/safe-outbound-client.ts";
-import { parseTestApprovedOrigins } from "../security/test-destinations.ts";
 import { sendCustomWebhookLead } from "./adapters/custom-webhook.ts";
 import { sendMaxLead } from "./adapters/max.ts";
 import type { LeadDeliveryPolicy } from "./delivery-policy.ts";
@@ -16,8 +15,6 @@ import {
 } from "./delivery-state.ts";
 import type { LeadDeliveryRecord, LeadRecord } from "./outbox.ts";
 
-const access = systemOverrideAccess("system-job");
-
 export type DeliverLeadEnv = {
 	LEAD_OUTBOUND_HOSTS?: string;
 	MAX_API_URL?: string;
@@ -25,9 +22,6 @@ export type DeliverLeadEnv = {
 	MAX_CHAT_ID?: string;
 	CUSTOM_WEBHOOK_URL?: string;
 	CUSTOM_WEBHOOK_HMAC_SECRET?: string;
-	AMS_ALLOW_TEST_DESTINATIONS?: string;
-	AMS_TEST_APPROVED_ORIGINS?: string;
-	NODE_ENV?: string;
 };
 
 export type DeliverLeadTaskResult = {
@@ -115,7 +109,7 @@ async function persistDelivery(
 	payload: Payload,
 	delivery: LeadDeliveryStateRecord,
 ): Promise<void> {
-	await payload.update({
+	await createSystemJobPayloadGateway(payload).update({
 		collection: "lead-deliveries",
 		id: Number(delivery.id),
 		data: {
@@ -132,7 +126,6 @@ async function persistDelivery(
 			attemptLog: delivery.attemptLog,
 		},
 		depth: 0,
-		...access,
 	});
 }
 
@@ -141,18 +134,18 @@ async function invokeAdapter({
 	lead,
 	delivery,
 	env,
+	approvedTestOrigins,
 	nowIso,
 }: {
 	channelId: string;
 	lead: LeadRecord;
 	delivery: LeadDeliveryRecord;
 	env: DeliverLeadEnv;
+	approvedTestOrigins: readonly string[];
 	nowIso: string;
 }): Promise<{ result: LeadDeliveryResult; httpAttempted: boolean }> {
 	const allowedHosts = parseOutboundHostList(env.LEAD_OUTBOUND_HOSTS);
-	const approvedExactOrigins = parseTestApprovedOrigins(
-		env as NodeJS.ProcessEnv,
-	);
+	const approvedExactOrigins = [...approvedTestOrigins];
 	const approvedHttpHosts = approvedExactOrigins.map(
 		(origin) => new URL(origin).hostname,
 	);
@@ -245,6 +238,7 @@ export async function runDeliverLeadTask({
 	leadDeliveryId,
 	nowIso,
 	env,
+	approvedTestOrigins = [],
 	queueRetry,
 	policy,
 }: {
@@ -252,6 +246,7 @@ export async function runDeliverLeadTask({
 	leadDeliveryId: string;
 	nowIso: string;
 	env: DeliverLeadEnv;
+	approvedTestOrigins?: readonly string[];
 	queueRetry: QueueLeadDeliveryRetry;
 	policy: LeadDeliveryPolicy;
 }): Promise<TaskHandlerResult<"deliverLead"> & DeliverLeadTaskResult> {
@@ -265,11 +260,11 @@ export async function runDeliverLeadTask({
 		};
 	}
 
-	const leadDoc = await payload.findByID({
+	const systemPayload = createSystemJobPayloadGateway(payload);
+	const leadDoc = await systemPayload.findByID({
 		collection: "leads",
 		id: Number(claimed.leadId),
 		depth: 0,
-		...access,
 	});
 	const lead = asLeadRecord(leadDoc as unknown as Record<string, unknown>);
 	const deliveryRecord: LeadDeliveryRecord = {
@@ -301,6 +296,7 @@ export async function runDeliverLeadTask({
 			lead,
 			delivery: deliveryRecord,
 			env,
+			approvedTestOrigins,
 			nowIso,
 		});
 	} catch {
@@ -327,12 +323,11 @@ export async function runDeliverLeadTask({
 			leadDeliveryId: completed.id,
 			waitUntil: new Date(completed.nextAttemptAt),
 		});
-		await payload.update({
+		await systemPayload.update({
 			collection: "lead-deliveries",
 			id: Number(completed.id),
 			data: { jobId: retryJobId },
 			depth: 0,
-			...access,
 		});
 	}
 

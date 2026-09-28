@@ -1,5 +1,6 @@
 import { sql } from "@payloadcms/db-postgres/drizzle";
 import type { Payload } from "payload";
+import { requirePayloadTransactionExecutor } from "../../system/payload-transaction.ts";
 
 /**
  * Approved parameterized SQL for ingest claims, SKIP LOCKED, and heartbeat.
@@ -9,52 +10,98 @@ export const ingestSqlLayer = "src/core/data-access/ingest/sql" as const;
 
 export const approvedIngestSqlOperations = {
 	claimDueFeedSources: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose: "Claim a bounded due-feed batch without duplicate dispatch.",
+		trigger:
+			"Atomic concurrency: UPDATE plus FOR UPDATE SKIP LOCKED and RETURNING.",
+		inputType: "Internal clock and configured batch size.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No supported Payload Local API primitive proves the same concurrent claim.",
+		decisionSource: "TASK-01.7 and ADR-0014.",
+		integrationProof: "verify:jobs-config and verify:integration.",
 		invariant:
 			"Each due feed source is claimed by at most one dispatcher tick.",
 		reason: "Requires one UPDATE with FOR UPDATE SKIP LOCKED and RETURNING.",
 	},
 	claimQueuedImportRun: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose: "Atomically claim one queued import run.",
+		trigger:
+			"Atomic conditional queued-to-running transition with affected-row result.",
+		inputType: "Internal import-run ID and clock.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No; Payload 3.90.1 bulk update pre-reads before per-document writes.",
+		decisionSource: "TASK-01.7 and ADR-0014.",
+		integrationProof: "verify:integration queued-import concurrency proof.",
 		invariant:
 			"Exactly one queued-to-running transition can win for an import run.",
 		reason:
 			"Payload 3.90.1 bulk update reads before per-document updates and cannot prove an atomic conditional claim.",
 	},
 	interruptRecoverableImportRun: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose:
+			"Interrupt one import only while its stale/orphan predicate still matches.",
+		trigger: "Atomic recovery arbitration between worker and janitor.",
+		inputType: "Internal ID, status, timestamps and redacted reason enum.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement: "No; read then update permits two recovery winners.",
+		decisionSource: "ADR-0011 exact named exception.",
+		integrationProof: "verify:integration two-worker recovery proof.",
 		invariant:
 			"A stale running or orphaned queued import run can be interrupted by at most one recovery worker while its recovery predicate still matches.",
 		reason:
 			"The status/timestamp predicate and terminal transition must be one conditional statement with an affected result.",
 	},
 	touchImportRunHeartbeat: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose: "Refresh heartbeat only for a currently running import.",
+		trigger: "Atomic status predicate plus timestamp update.",
+		inputType: "Internal import-run ID and clock.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No; a read/update split can heartbeat a terminal run.",
+		decisionSource: "TASK-01.7 and ADR-0014.",
+		integrationProof: "verify:integration independent-heartbeat proof.",
 		invariant: "Only a running import run receives a heartbeat.",
 		reason:
 			"The status predicate and timestamp update must be one conditional statement.",
 	},
-	touchFeedPropertiesLastSeenAt: {
-		invariant:
-			"Only properties owned by the selected feed source and external IDs are touched.",
-		reason:
-			"A bounded set update avoids one Local API round trip per unchanged property.",
-	},
-	countMissingActiveFeedProperties: {
-		invariant:
-			"The safety count uses the same source, status, and last-seen predicate as deactivation.",
-		reason:
-			"The aggregate must be evaluated by PostgreSQL without loading candidate rows.",
-	},
-	deactivateMissingFeedProperties: {
-		invariant:
-			"Only active, unseen properties from the selected feed source are archived.",
-		reason:
-			"The guarded bulk transition must use the exact safety-count predicate.",
-	},
 	consumeDeactivationApproval: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose: "Consume one matching, valid and unexpired deactivation approval.",
+		trigger: "Atomic single-use approval validation and consumption.",
+		inputType: "Internal feed-source/import-run IDs and clock.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement: "No; read/update can consume the same approval twice.",
+		decisionSource: "TASK-01.7, ADR-0014 and transaction carrier ADR-0013.",
+		integrationProof:
+			"verify:feed-ingest rollback proof and verify:integration.",
 		invariant:
 			"A matching approval with approvedAt and a future expiry can be consumed only once.",
 		reason:
 			"Approval validation and consumption require one conditional update.",
 	},
 	finishImportRun: {
+		file: "src/core/data-access/ingest/sql/index.ts",
+		purpose: "Write one terminal result only for the running worker.",
+		trigger:
+			"Atomic running predicate, terminal mutation and affected-row result.",
+		inputType: "Internal ID, terminal enum, counters, hash and redacted error.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No; a read/update split cannot prove single terminal ownership.",
+		decisionSource: "TASK-01.7, ADR-0014 and transaction carrier ADR-0013.",
+		integrationProof:
+			"verify:feed-ingest terminal-state proof and verify:integration.",
 		invariant:
 			"Only the worker owning a running import can make one terminal transition.",
 		reason:
@@ -93,13 +140,18 @@ function getDrizzle(payload: Payload): DrizzleExecutor {
 	return drizzle;
 }
 
-function executeApprovedIngestSql(
+async function executeApprovedIngestSql(
 	payload: Payload,
 	operation: ApprovedIngestSqlOperation,
 	query: unknown,
+	transactionId?: string | number,
 ): Promise<unknown> {
 	void approvedIngestSqlOperations[operation];
-	return getDrizzle(payload).execute(query);
+	const executor =
+		transactionId === undefined
+			? getDrizzle(payload)
+			: await requirePayloadTransactionExecutor(payload, transactionId);
+	return executor.execute(query);
 }
 
 function rowsFrom(result: unknown): Array<Record<string, unknown>> {
@@ -294,110 +346,10 @@ export async function touchImportRunHeartbeat(
 	return rowsFrom(result).length > 0;
 }
 
-const ingestSqlBatchSize = 200;
-
-function chunkValues(values: string[], size = ingestSqlBatchSize): string[][] {
-	const chunks: string[][] = [];
-	for (let index = 0; index < values.length; index += size) {
-		chunks.push(values.slice(index, index + size));
-	}
-	return chunks;
-}
-
-function sqlStringList(values: string[]) {
-	return sql.join(
-		values.map((value) => sql`${value}`),
-		sql`, `,
-	);
-}
-
-export async function touchFeedPropertiesLastSeenAt(
-	payload: Payload,
-	input: {
-		feedSourceId: string;
-		importRunId: string;
-		externalIds: string[];
-		now: Date;
-	},
-): Promise<number> {
-	if (input.externalIds.length === 0) return 0;
-	const now = input.now.toISOString();
-	let touched = 0;
-	for (const chunk of chunkValues(input.externalIds)) {
-		const result = await executeApprovedIngestSql(
-			payload,
-			"touchFeedPropertiesLastSeenAt",
-			sql`
-			UPDATE properties
-			SET
-				last_seen_at = ${now}::timestamptz,
-				last_import_run_id = ${input.importRunId}::integer,
-				updated_at = ${now}::timestamptz
-			WHERE origin = 'feed'
-				AND feed_source_id = ${input.feedSourceId}::integer
-				AND external_id IN (${sqlStringList(chunk)})
-			RETURNING id
-		`,
-		);
-		touched += rowsFrom(result).length;
-	}
-	return touched;
-}
-
-export async function countMissingActiveFeedProperties(
-	payload: Payload,
-	input: { feedSourceId: string; seenBefore: Date },
-): Promise<number> {
-	const seenBefore = input.seenBefore.toISOString();
-	const result = await executeApprovedIngestSql(
-		payload,
-		"countMissingActiveFeedProperties",
-		sql`
-		SELECT count(*)::int AS count
-		FROM properties
-		WHERE origin = 'feed'
-			AND feed_source_id = ${input.feedSourceId}::integer
-			AND status = 'active'
-			AND (last_seen_at IS NULL OR last_seen_at < ${seenBefore}::timestamptz)
-	`,
-	);
-	return asNumber(rowsFrom(result)[0]?.count, 0);
-}
-
-export async function deactivateMissingFeedProperties(
-	payload: Payload,
-	input: {
-		feedSourceId: string;
-		importRunId: string;
-		seenBefore: Date;
-		now: Date;
-	},
-): Promise<number> {
-	const now = input.now.toISOString();
-	const seenBefore = input.seenBefore.toISOString();
-	const result = await executeApprovedIngestSql(
-		payload,
-		"deactivateMissingFeedProperties",
-		sql`
-		UPDATE properties
-		SET
-			status = 'archived',
-			deactivated_at = ${now}::timestamptz,
-			deactivated_by_run_id = ${input.importRunId}::integer,
-			updated_at = ${now}::timestamptz
-		WHERE origin = 'feed'
-			AND feed_source_id = ${input.feedSourceId}::integer
-			AND status = 'active'
-			AND (last_seen_at IS NULL OR last_seen_at < ${seenBefore}::timestamptz)
-		RETURNING id
-	`,
-	);
-	return rowsFrom(result).length;
-}
-
 export async function consumeDeactivationApproval(
 	payload: Payload,
 	input: { feedSourceId: string; importRunId: string; now: Date },
+	transactionId?: string | number,
 ): Promise<boolean> {
 	const now = input.now.toISOString();
 	const result = await executeApprovedIngestSql(
@@ -414,7 +366,8 @@ export async function consumeDeactivationApproval(
 			AND deactivation_approval_expires_at IS NOT NULL
 			AND deactivation_approval_expires_at > ${now}::timestamptz
 		RETURNING id
-	`,
+		`,
+		transactionId,
 	);
 	return rowsFrom(result).length > 0;
 }
@@ -434,6 +387,7 @@ export async function finishImportRun(
 		feedHash?: string;
 		lastErrorRedacted?: string;
 	},
+	transactionId?: string | number,
 ): Promise<boolean> {
 	const now = input.now.toISOString();
 	const result = await executeApprovedIngestSql(
@@ -456,7 +410,8 @@ export async function finishImportRun(
 		WHERE id = ${input.importRunId}::integer
 			AND status = 'running'
 		RETURNING id
-	`,
+		`,
+		transactionId,
 	);
 	return rowsFrom(result).length > 0;
 }

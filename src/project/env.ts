@@ -189,6 +189,14 @@ export function evaluateRuntimeEnv(
 		if (!env[key]?.trim()) addInvalid(missing, key);
 	}
 	if (mode === "runtime") {
+		for (const key of Object.keys(env)) {
+			if (
+				key === "AMS_ALLOW_TEST_DESTINATIONS" ||
+				key.startsWith("AMS_TEST_")
+			) {
+				addInvalid(missing, key);
+			}
+		}
 		if (env.AMS_PROFILE?.trim() && env.AMS_PROFILE !== "REALTY_BASE") {
 			addInvalid(missing, "AMS_PROFILE");
 		}

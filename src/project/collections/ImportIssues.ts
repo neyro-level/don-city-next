@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { ingestGatewayOnly } from "../../core/access/internal-modes.ts";
 import { adminsAndOwners, ownersOnly } from "../../core/access/roles.ts";
 
 export const ImportIssues: CollectionConfig = {
@@ -11,7 +12,7 @@ export const ImportIssues: CollectionConfig = {
 			"Owner operations: import warnings/errors with redacted messages and source links.",
 	},
 	access: {
-		create: () => false,
+		create: ingestGatewayOnly,
 		read: adminsAndOwners,
 		update: () => false,
 		delete: ownersOnly,

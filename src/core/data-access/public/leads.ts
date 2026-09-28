@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { Payload, PayloadRequest } from "payload";
+import type { Payload } from "payload";
 import { clientReadinessConfig } from "../../../project/client-readiness.config.ts";
 import { runtimeEnv } from "../../../project/env.ts";
 import { legalConsentConfig } from "../../../project/legal.config.ts";
@@ -17,7 +17,7 @@ import {
 } from "../../leads/index.ts";
 import { normalizeCanonicalSourcePage } from "../../leads/intake.ts";
 import { createPayloadLeadOutboxRepository } from "../leads/payload-outbox-repository.ts";
-import { systemOverrideAccess } from "../system/overrides.ts";
+import { systemQueuePayloadJob } from "../system/queue-job.ts";
 import { publicGatewayReadAccess } from "./access-mode.ts";
 import { getPublicGatewayPayload } from "./payload.ts";
 
@@ -39,16 +39,11 @@ async function enqueueLeadDelivery(
 	payload: Payload,
 	leadDeliveryId: string,
 ): Promise<string | undefined> {
-	const queued = (await payload.jobs.queue({
+	const queued = (await systemQueuePayloadJob({
+		payload,
 		task: "deliverLead" as never,
 		queue: "lead-deliveries",
 		input: { leadDeliveryId } as never,
-		req: {
-			payload,
-			user: null,
-			context: systemOverrideAccess("system-job").context,
-		} as unknown as PayloadRequest,
-		...systemOverrideAccess("system-job"),
 	})) as { id?: number | string };
 
 	return queued.id === undefined ? undefined : String(queued.id);

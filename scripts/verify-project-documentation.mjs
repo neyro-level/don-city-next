@@ -22,6 +22,7 @@ for (const path of [
 	"docs/04_BACKLOG.md",
 	"docs/05_RELEASE_CHECKLIST.md",
 	"docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md",
+	"docs/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md",
 	"docs/DELIVERY_STATE.yaml",
 	"docs/DESIGN.md",
 	"docs/OPERATIONS.md",
@@ -71,10 +72,10 @@ requireAll("docs/06_DESIGN_SYSTEM.md", [
 requireAll("docs/README.md", [
 	"| project profile, runtime choices and fail-closed readiness | `PROJECT.md` |",
 	"| active project design policy | `DESIGN.md` |",
-	"`AMS-DON-CITY-LIVE-CONFORMANCE` v13",
+	"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
 ]);
 requireAll("docs/03_ARCHITECTURE.md", [
-	"`AMS-DON-CITY-LIVE-CONFORMANCE` v13",
+	"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
 	"Exactly one persistent production database exists",
 	"Production публично индексируется",
 	"`PROJECT_CLASS=COMMERCIAL`",
@@ -92,9 +93,9 @@ requireAll("docs/OPERATIONS.md", [
 	"## Incident Procedure",
 ]);
 requireAll("docs/04_BACKLOG.md", [
-	"## NOW — Live Conformance v13",
-	"106 managed nodes",
-	"DC11-PROD-FINAL",
+	"## NOW — Constitution Remediation v1",
+	"54 managed nodes",
+	"`PROD-01/02`",
 ]);
 requireAll("docs/01_PRD.md", [
 	"Production live и публично индексируется",
@@ -105,16 +106,18 @@ requireAll("docs/02_PRODUCT_STRUCTURE.md", [
 	"registry/content gates",
 ]);
 requireAll("docs/05_RELEASE_CHECKLIST.md", [
-	"Status: Active — final v13 production release authorized",
+	"Status: Active — remediation release candidate not yet complete",
 	"exact deployed SHA/image",
-	"DC11-PROD-FINAL",
+	"## Constitution Remediation v1 Production Entry",
+	"`Выпускаем production`",
 	"must not promote a fail-closed",
 ]);
 requireAll("docs/DELIVERY_STATE.yaml", [
-	"program: AMS-DON-CITY-LIVE-CONFORMANCE",
-	"plan_version: v13",
+	"program: AMS-DON-CITY-CONSTITUTION-REMEDIATION",
+	"plan_version: v1",
+	"reconciliation: CLEAN",
+	"current_task: developer-handoff-ready",
 	"status: LIVE_PUBLIC_OBSERVED",
-	"authorized: true",
 	"release_target: exact SourceCraft origin/main attested by the manual release-main workflow",
 	"cp_03:",
 	"pull_request: 79",

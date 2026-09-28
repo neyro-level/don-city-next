@@ -320,6 +320,11 @@ assert.ok(
 );
 
 let ingestCalls = 0;
+const successfulTransactionHooks = (transactionId) => ({
+	beginImportTransaction: async () => transactionId,
+	commitImportTransaction: async () => undefined,
+	rollbackImportTransaction: async () => undefined,
+});
 const unchanged = await runImportFeed(
 	{
 		now: () => new Date("2026-09-18T06:00:00.000Z"),
@@ -415,6 +420,7 @@ const boundedRuntime = await runImportFeed(
 			sha256: Promise.resolve("bounded-hash"),
 			cancel: async () => undefined,
 		}),
+		...successfulTransactionHooks("tx-bounded"),
 		parseFeed: async ({ onOffer }) => {
 			for (let index = 0; index < 10_001; index += 1) {
 				await onOffer?.({ ...offer, externalId: `bounded-${index}` });
@@ -498,6 +504,7 @@ const duplicateSafetyRuntime = await runImportFeed(
 			sha256: Promise.resolve("duplicate-safety-hash"),
 			cancel: async () => undefined,
 		}),
+		...successfulTransactionHooks("tx-duplicate-safety"),
 		parseFeed: async ({ onOffer }) => {
 			for (let index = 0; index < 50; index += 1) {
 				await onOffer?.({ ...offer, externalId: `unique-${index}` });
@@ -553,6 +560,7 @@ assert.equal(
 );
 
 let cacheWarningFinish;
+let cacheWarningReported = 0;
 const cacheWarningRuntime = await runImportFeed(
 	{
 		now: () => new Date("2026-09-18T06:00:00.000Z"),
@@ -575,6 +583,7 @@ const cacheWarningRuntime = await runImportFeed(
 			sha256: Promise.resolve("cache-warning-hash"),
 			cancel: async () => undefined,
 		}),
+		...successfulTransactionHooks("tx-cache-warning"),
 		parseFeed: async ({ onOffer }) => {
 			await onOffer?.(offer);
 			return {
@@ -600,6 +609,10 @@ const cacheWarningRuntime = await runImportFeed(
 			invalidatedTargets: [{ type: "tag", tag: "properties" }],
 		}),
 		invalidatePublicCache: async () => ({ ok: false }),
+		reportOperationalWarning: async ({ code }) => {
+			assert.equal(code, "cache_invalidation_failed");
+			cacheWarningReported += 1;
+		},
 		finishRun: async (finish) => {
 			cacheWarningFinish = finish;
 		},
@@ -611,8 +624,95 @@ const cacheWarningRuntime = await runImportFeed(
 assert.equal(cacheWarningRuntime.status, "success");
 assert.equal(cacheWarningRuntime.cacheInvalidated, false);
 assert.equal(cacheWarningRuntime.ingest?.warningCount, 1);
+assert.equal(cacheWarningReported, 1);
 assert.equal(cacheWarningFinish?.status, "success");
-assert.equal(cacheWarningFinish?.warningCount, 1);
+assert.equal(
+	cacheWarningFinish?.warningCount,
+	0,
+	"post-commit cache warnings must not rewrite atomic import finalization",
+);
+
+let cacheExceptionCommitted = false;
+let cacheExceptionRolledBack = false;
+const cacheExceptionTerminalStatuses = [];
+let cacheExceptionWarningReported = false;
+const cacheExceptionRuntime = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "cache-exception-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "cache-exception-source",
+			code: "cache-exception",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "CACHE_EXCEPTION_FEED_URL",
+			lastOfferCount: null,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/cache-exception.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			sha256: Promise.resolve("cache-exception-hash"),
+			cancel: async () => undefined,
+		}),
+		beginImportTransaction: async () => "tx-cache-exception",
+		commitImportTransaction: async () => {
+			cacheExceptionCommitted = true;
+		},
+		rollbackImportTransaction: async () => {
+			cacheExceptionRolledBack = true;
+		},
+		createRepository: () => createRepository(),
+		parseFeed: async ({ onOffer }) => {
+			await onOffer?.({ ...offer, externalId: "cache-exception-offer" });
+			return {
+				offers: [],
+				issues: [],
+				stats: {
+					offersSeen: 1,
+					maxRetainedCharsObserved: 0,
+					maxBufferedOffersObserved: 1,
+					parserCompleted: true,
+					criticalStructuralAnomaly: false,
+				},
+			};
+		},
+		ingest: async () => ({
+			offeredCount: 1,
+			createdCount: 1,
+			updatedCount: 0,
+			skippedCount: 0,
+			warningCount: 0,
+			errorCount: 0,
+			invalidatedTargets: [{ type: "tag", tag: "properties" }],
+		}),
+		finishRun: async ({ status }) => {
+			cacheExceptionTerminalStatuses.push(status);
+		},
+		recordSourceContact: async () => undefined,
+		invalidatePublicCache: async () => {
+			throw new Error("forced post-commit cache transport failure");
+		},
+		reportOperationalWarning: async () => {
+			cacheExceptionWarningReported = true;
+		},
+		allowedImageHosts: new Set(),
+	},
+	{
+		feedSourceId: "cache-exception-source",
+		importRunId: "cache-exception-run",
+	},
+);
+assert.equal(cacheExceptionRuntime.status, "success");
+assert.equal(cacheExceptionRuntime.cacheInvalidated, false);
+assert.equal(cacheExceptionRuntime.ingest?.warningCount, 1);
+assert.equal(cacheExceptionCommitted, true);
+assert.equal(cacheExceptionRolledBack, false);
+assert.deepEqual(cacheExceptionTerminalStatuses, ["success"]);
+assert.equal(cacheExceptionWarningReported, true);
 
 let approvalDeactivationCalls = 0;
 let approvalFinishStatus;
@@ -651,6 +751,7 @@ const rejectedApproval = await runImportFeed(
 			sha256: Promise.resolve("approval-hash"),
 			cancel: async () => undefined,
 		}),
+		...successfulTransactionHooks("tx-approval"),
 		parseFeed: async () => ({
 			offers: [],
 			issues: [],
@@ -688,6 +789,236 @@ assert.equal(
 	0,
 	"failed one-time approval consumption must prevent destructive deactivation",
 );
+
+const atomicTransactionId = "tx-atomic-finalization";
+const atomicEvents = [];
+const committedAtomicState = {
+	inventoryWrites: 0,
+	deactivations: 0,
+	approvalConsumed: false,
+	terminalStatus: undefined,
+	baseline: undefined,
+};
+const stagedAtomicState = {
+	inventoryWrites: 0,
+	deactivations: 0,
+	approvalConsumed: false,
+	terminalStatus: undefined,
+	baseline: undefined,
+};
+const atomicSuccess = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "atomic-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "atomic-source",
+			code: "atomic",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "ATOMIC_FEED_URL",
+			lastOfferCount: 100,
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+			deactivationApproval: {
+				runId: "atomic-run",
+				approvedAt: "2026-09-18T05:00:00.000Z",
+				expiresAt: "2026-09-18T07:00:00.000Z",
+			},
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/atomic.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			etag: '"atomic-etag"',
+			lastModified: "Thu, 18 Sep 2026 06:00:00 GMT",
+			sha256: Promise.resolve("atomic-hash"),
+			cancel: async () => undefined,
+		}),
+		beginImportTransaction: async () => {
+			atomicEvents.push("begin");
+			return atomicTransactionId;
+		},
+		commitImportTransaction: async (transactionId) => {
+			assert.equal(transactionId, atomicTransactionId);
+			atomicEvents.push("commit");
+			Object.assign(committedAtomicState, stagedAtomicState);
+		},
+		rollbackImportTransaction: async () => {
+			throw new Error("successful atomic finalization must not roll back");
+		},
+		createRepository: (_feedSourceId, transactionId) => {
+			assert.equal(transactionId, atomicTransactionId);
+			return {
+				...createRepository(),
+				countMissingActive: async () => 51,
+				deactivateMissing: async () => {
+					atomicEvents.push("deactivate");
+					stagedAtomicState.deactivations = 51;
+					return 51;
+				},
+			};
+		},
+		parseFeed: async ({ onOffer }) => {
+			for (let index = 0; index < 100; index += 1) {
+				await onOffer?.({ ...offer, externalId: `atomic-${index}` });
+			}
+			return {
+				offers: [],
+				issues: [],
+				stats: {
+					offersSeen: 100,
+					maxRetainedCharsObserved: 0,
+					maxBufferedOffersObserved: 100,
+					parserCompleted: true,
+					criticalStructuralAnomaly: false,
+				},
+			};
+		},
+		ingest: async ({ offers }) => {
+			atomicEvents.push("inventory");
+			stagedAtomicState.inventoryWrites += offers.length;
+			return {
+				offeredCount: offers.length,
+				createdCount: offers.length,
+				updatedCount: 0,
+				skippedCount: 0,
+				warningCount: 0,
+				errorCount: 0,
+				invalidatedTargets: [],
+			};
+		},
+		consumeDeactivationApproval: async (_input, transactionId) => {
+			assert.equal(transactionId, atomicTransactionId);
+			atomicEvents.push("approval");
+			stagedAtomicState.approvalConsumed = true;
+			return true;
+		},
+		finishRun: async ({ status }, transactionId) => {
+			assert.equal(transactionId, atomicTransactionId);
+			atomicEvents.push("terminal");
+			stagedAtomicState.terminalStatus = status;
+		},
+		recordSourceContact: async ({ patch }, transactionId) => {
+			assert.equal(transactionId, atomicTransactionId);
+			atomicEvents.push("baseline");
+			stagedAtomicState.baseline = patch;
+		},
+		invalidatePublicCache: async () => {
+			atomicEvents.push("cache");
+			return { ok: true };
+		},
+		allowedImageHosts: new Set(),
+	},
+	{ feedSourceId: "atomic-source", importRunId: "atomic-run" },
+);
+assert.equal(atomicSuccess.status, "success");
+assert.equal(committedAtomicState.inventoryWrites, 100);
+assert.equal(committedAtomicState.deactivations, 51);
+assert.equal(committedAtomicState.approvalConsumed, true);
+assert.equal(committedAtomicState.terminalStatus, "success");
+assert.equal(committedAtomicState.baseline?.lastOfferCount, 100);
+assert.equal(committedAtomicState.baseline?.lastFeedHash, "atomic-hash");
+assert.ok(atomicEvents.indexOf("terminal") < atomicEvents.indexOf("commit"));
+assert.ok(atomicEvents.indexOf("baseline") < atomicEvents.indexOf("commit"));
+assert.ok(atomicEvents.indexOf("commit") < atomicEvents.indexOf("cache"));
+
+const rolledBackState = {
+	deactivations: 0,
+	approvalConsumed: false,
+	terminalStatus: undefined,
+	baseline: undefined,
+};
+let stagedRollbackState = { ...rolledBackState };
+const atomicFailure = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "rollback-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "rollback-source",
+			code: "rollback",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "ROLLBACK_FEED_URL",
+			lastOfferCount: 1,
+			safetyThresholdPercent: 100,
+			maxDeactivationsPerRun: 0,
+			deactivationApproval: {
+				runId: "rollback-run",
+				approvedAt: "2026-09-18T05:00:00.000Z",
+				expiresAt: "2026-09-18T07:00:00.000Z",
+			},
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/rollback.xml",
+		fetchFeed: async () => ({
+			status: "fetched",
+			body: [],
+			sha256: Promise.resolve("rollback-hash"),
+			cancel: async () => undefined,
+		}),
+		beginImportTransaction: async () => "tx-rollback-finalization",
+		commitImportTransaction: async () => {
+			throw new Error("forced finalization failure must not commit");
+		},
+		rollbackImportTransaction: async () => {
+			stagedRollbackState = { ...rolledBackState };
+		},
+		createRepository: () => ({
+			...createRepository(),
+			countMissingActive: async () => 1,
+			deactivateMissing: async () => {
+				stagedRollbackState.deactivations = 1;
+				return 1;
+			},
+		}),
+		parseFeed: async ({ onOffer }) => {
+			await onOffer?.({ ...offer, externalId: "rollback-offer" });
+			return {
+				offers: [],
+				issues: [],
+				stats: {
+					offersSeen: 1,
+					maxRetainedCharsObserved: 0,
+					maxBufferedOffersObserved: 1,
+					parserCompleted: true,
+					criticalStructuralAnomaly: false,
+				},
+			};
+		},
+		ingest: async ({ offers }) => ({
+			offeredCount: offers.length,
+			createdCount: offers.length,
+			updatedCount: 0,
+			skippedCount: 0,
+			warningCount: 0,
+			errorCount: 0,
+			invalidatedTargets: [],
+		}),
+		consumeDeactivationApproval: async () => {
+			stagedRollbackState.approvalConsumed = true;
+			return true;
+		},
+		finishRun: async ({ status }, transactionId) => {
+			if (transactionId === undefined) {
+				rolledBackState.terminalStatus = status;
+				return;
+			}
+			stagedRollbackState.terminalStatus = status;
+		},
+		recordSourceContact: async ({ patch }) => {
+			stagedRollbackState.baseline = patch;
+			throw new Error("forced baseline persistence failure");
+		},
+		allowedImageHosts: new Set(),
+	},
+	{ feedSourceId: "rollback-source", importRunId: "rollback-run" },
+);
+assert.equal(atomicFailure.status, "failed");
+assert.equal(rolledBackState.deactivations, 0);
+assert.equal(rolledBackState.approvalConsumed, false);
+assert.equal(rolledBackState.baseline, undefined);
+assert.equal(rolledBackState.terminalStatus, "failed");
 
 const { chunkCacheTargets, postBatchedHttpRevalidate } = await import(
 	"../src/core/cache/http-revalidate.ts"
@@ -807,6 +1138,131 @@ const disabledRuntime = await runImportFeed(
 );
 assert.equal(disabledRuntime.status, "failed");
 assert.equal(disabledFetchCalls, 0);
+
+let rejectedFailureTransitionCalls = 0;
+const rejectedFailureTransition = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "rejected-failure-transition-run",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "rejected-failure-transition-source",
+			code: "rejected-failure-transition",
+			enabled: false,
+			market: "secondary",
+			feedUrlRef: "REJECTED_FAILURE_TRANSITION_URL",
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/rejected.xml",
+		fetchFeed: async () => {
+			throw new Error("disabled source must not fetch");
+		},
+		createRepository: () => createRepository(),
+		finishRun: async ({ status }) => {
+			assert.equal(status, "failed");
+			rejectedFailureTransitionCalls += 1;
+			throw new Error("running-to-failed guard rejected the transition");
+		},
+		recordSourceContact: async () => undefined,
+		allowedImageHosts: new Set(),
+	},
+	{
+		feedSourceId: "rejected-failure-transition-source",
+		importRunId: "rejected-failure-transition-run",
+	},
+);
+assert.equal(rejectedFailureTransition.status, "failed");
+assert.equal(rejectedFailureTransitionCalls, 1);
+
+for (const transactionPreflightCase of [
+	{
+		name: "missing hooks",
+		hooks: {},
+	},
+	{
+		name: "invalid transaction ID",
+		hooks: {
+			beginImportTransaction: async () => "",
+			commitImportTransaction: async () => undefined,
+			rollbackImportTransaction: async () => undefined,
+		},
+	},
+	{
+		name: "missing commit hook",
+		hooks: {
+			beginImportTransaction: async () => "must-not-start",
+			rollbackImportTransaction: async () => undefined,
+		},
+	},
+	{
+		name: "missing rollback hook",
+		hooks: {
+			beginImportTransaction: async () => "must-not-start",
+			commitImportTransaction: async () => undefined,
+		},
+	},
+]) {
+	let repositoryCreations = 0;
+	let inventoryWrites = 0;
+	const result = await runImportFeed(
+		{
+			now: () => new Date("2026-09-18T06:00:00.000Z"),
+			claimQueuedImportRun: async () => `preflight-${transactionPreflightCase.name}`,
+			touchHeartbeat: async () => undefined,
+			loadFeedSource: async () => ({
+				id: "preflight-source",
+				code: "preflight",
+				enabled: true,
+				market: "secondary",
+				feedUrlRef: "PREFLIGHT_FEED_URL",
+				lastOfferCount: null,
+				safetyThresholdPercent: 30,
+				maxDeactivationsPerRun: 50,
+			}),
+			resolveFeedUrl: () => "https://feeds.example.test/preflight.xml",
+			fetchFeed: async () => ({
+				status: "fetched",
+				body: [],
+				sha256: Promise.resolve("preflight-hash"),
+				cancel: async () => undefined,
+			}),
+			...transactionPreflightCase.hooks,
+			createRepository: () => {
+				repositoryCreations += 1;
+				return createRepository();
+			},
+			parseFeed: async ({ onOffer }) => {
+				await onOffer?.(offer);
+				return {
+					offers: [],
+					issues: [],
+					stats: {
+						offersSeen: 1,
+						maxRetainedCharsObserved: 0,
+						maxBufferedOffersObserved: 1,
+						parserCompleted: true,
+						criticalStructuralAnomaly: false,
+					},
+				};
+			},
+			ingest: async () => {
+				inventoryWrites += 1;
+				return emptyIngestResultForRuntimeTest();
+			},
+			finishRun: async ({ status }) => assert.equal(status, "failed"),
+			recordSourceContact: async () => undefined,
+			allowedImageHosts: new Set(),
+		},
+		{
+			feedSourceId: "preflight-source",
+			importRunId: `preflight-${transactionPreflightCase.name}`,
+		},
+	);
+	assert.equal(result.status, "failed", transactionPreflightCase.name);
+	assert.equal(repositoryCreations, 0, transactionPreflightCase.name);
+	assert.equal(inventoryWrites, 0, transactionPreflightCase.name);
+}
 
 let transactionWrites = 0;
 let transactionCommitted = false;
@@ -1077,5 +1533,17 @@ function createRepository() {
 		async invalidateCache(targets) {
 			cacheInvalidations.push(targets);
 		},
+	};
+}
+
+function emptyIngestResultForRuntimeTest() {
+	return {
+		offeredCount: 0,
+		createdCount: 0,
+		updatedCount: 0,
+		skippedCount: 0,
+		warningCount: 0,
+		errorCount: 0,
+		invalidatedTargets: [],
 	};
 }

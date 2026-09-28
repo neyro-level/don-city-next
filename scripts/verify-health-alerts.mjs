@@ -32,9 +32,7 @@ const alerts = buildOperationalAlerts({
 
 assert.ok(alerts.some((alert) => alert.code === "feeds_suspicious_runs"));
 assert.ok(alerts.some((alert) => alert.code === "delivery_stale_sending"));
-assert.ok(
-	alerts.some((alert) => alert.code === "storage_media_unavailable"),
-);
+assert.ok(alerts.some((alert) => alert.code === "storage_media_unavailable"));
 
 const cacheAlerts = buildOperationalAlerts({
 	feeds: {
@@ -261,6 +259,25 @@ const productionLike = {
 };
 assert.equal(evaluateRuntimeEnv(productionLike, "runtime").ok, true);
 assert.doesNotThrow(() => parseProjectEnv(productionLike, "runtime"));
+for (const key of [
+	"AMS_ALLOW_TEST_DESTINATIONS",
+	"AMS_TEST_APPROVED_ORIGINS",
+	"AMS_TEST_FUTURE_FLAG",
+]) {
+	const evaluated = evaluateRuntimeEnv(
+		{ ...productionLike, [key]: "fixture-test-only-value" },
+		"runtime",
+	);
+	assert.ok(evaluated.missing.includes(key));
+	assert.throws(
+		() =>
+			parseProjectEnv(
+				{ ...productionLike, [key]: "fixture-test-only-value" },
+				"runtime",
+			),
+		/Project env fail-fast/,
+	);
+}
 assert.equal(
 	evaluateRuntimeEnv(
 		{

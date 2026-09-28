@@ -8,14 +8,14 @@ import {
 	interruptRecoverableImportRun,
 	touchImportRunHeartbeat,
 } from "../../core/data-access/ingest/sql/index.ts";
+import { countPublicCatalogProperties } from "../../core/data-access/public/catalog.ts";
+import { buildListingCatalogQuery } from "../../core/data-access/public/listing-catalog-query.ts";
+import { createSystemJobPayloadGateway } from "../../core/data-access/system/job-payload.ts";
 import {
 	inspectPayloadJob,
 	listPayloadJobsByConcurrencyKey,
 } from "../../core/data-access/system/jobs/index.ts";
-import { systemOverrideAccess } from "../../core/data-access/system/overrides.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
-import { countPublicCatalogProperties } from "../../core/data-access/public/catalog.ts";
-import { buildListingCatalogQuery } from "../../core/data-access/public/listing-catalog-query.ts";
 import { claimPendingDeliveryRecoveryLease } from "../../core/data-access/system/sql/index.ts";
 import { catalogRetentionThreshold } from "../../core/ingest/catalog-retention.ts";
 import { dispatchDueFeeds } from "../../core/ingest/dispatch-due-feeds.ts";
@@ -70,8 +70,6 @@ type GenericPayloadJobTask = TaskConfig<{
 
 const minuteInMs = 60_000;
 const pendingDeliveryRecoveryLeaseMinutes = 5;
-const jobAccess = systemOverrideAccess("system-job");
-
 function nowDate() {
 	return getRuntimeClock().now();
 }
@@ -102,50 +100,46 @@ async function applyLeadRetentionTransaction({
 		);
 	}
 	const transactionReq = { ...req, transactionID } as PayloadRequest;
+	const systemPayload = createSystemJobPayloadGateway(req.payload);
 
 	try {
-		const deliveries = await req.payload.find({
+		const deliveries = await systemPayload.find({
 			collection: "lead-deliveries",
 			where: { lead: { equals: leadId } },
 			pagination: false,
 			depth: 0,
 			req: transactionReq,
-			...jobAccess,
 		});
 
 		for (const delivery of deliveries.docs) {
 			if (retentionMode === "delete") {
-				await req.payload.delete({
+				await systemPayload.delete({
 					collection: "lead-deliveries",
 					id: delivery.id,
 					req: transactionReq,
-					...jobAccess,
 				});
 				continue;
 			}
-			await req.payload.update({
+			await systemPayload.update({
 				collection: "lead-deliveries",
 				id: delivery.id,
 				data: purgeDeliveryDiagnostics(purgedAt),
 				req: transactionReq,
-				...jobAccess,
 			});
 		}
 
 		if (retentionMode === "delete") {
-			await req.payload.delete({
+			await systemPayload.delete({
 				collection: "leads",
 				id: leadId,
 				req: transactionReq,
-				...jobAccess,
 			});
 		} else {
-			await req.payload.update({
+			await systemPayload.update({
 				collection: "leads",
 				id: leadId,
 				data: anonymizeLeadFields(purgedAt),
 				req: transactionReq,
-				...jobAccess,
 			});
 		}
 
@@ -220,12 +214,13 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		schedule: getStaticSchedule(payloadJobTaskSlugs.dispatchDueFeeds),
 		handler: async ({ req }) => {
 			const now = nowDate();
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
 			const result = await dispatchDueFeeds({
 				now,
 				batchSize: projectConfig.dispatchBatchSize,
 				claimDueFeedSources: (input) => claimDueFeedSources(req.payload, input),
 				createQueuedImportRun: async ({ feedSourceId, now: queuedAt }) => {
-					const created = await req.payload.create({
+					const created = await systemPayload.create({
 						collection: "import-runs",
 						data: {
 							feedSource: Number(feedSourceId),
@@ -233,7 +228,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 							queuedAt: queuedAt.toISOString(),
 							heartbeatAt: queuedAt.toISOString(),
 						},
-						...systemOverrideAccess("system-job"),
 					});
 					return { id: String(created.id) };
 				},
@@ -247,11 +241,10 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					return { id: String(queuedJob.id) };
 				},
 				attachJobId: async ({ importRunId, jobId }) => {
-					await req.payload.update({
+					await systemPayload.update({
 						collection: "import-runs",
 						id: importRunId,
 						data: { jobId },
-						...systemOverrideAccess("system-job"),
 					});
 				},
 			});
@@ -280,6 +273,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		},
 		handler: async ({ req, input }) => {
 			const payload = req.payload;
+			const systemPayload = createSystemJobPayloadGateway(payload);
 			const testOrigins = parseTestApprovedOrigins(process.env);
 			const testHosts = [
 				...new Set(testOrigins.map((origin) => new URL(origin).hostname)),
@@ -292,11 +286,10 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 						await touchImportRunHeartbeat(payload, tick);
 					},
 					loadFeedSource: async (feedSourceId) => {
-						const source = await payload.findByID({
+						const source = await systemPayload.findByID({
 							collection: "feed-sources",
 							id: feedSourceId,
 							depth: 0,
-							...systemOverrideAccess("system-job"),
 						});
 						return {
 							id: String(source.id),
@@ -359,25 +352,38 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 							feedSourceId,
 							transactionId,
 						),
-					finishRun: async (finish) => {
-						const transitioned = await finishImportRun(payload, finish);
+					finishRun: async (finish, transactionId) => {
+						const transitioned = await finishImportRun(
+							payload,
+							finish,
+							transactionId,
+						);
 						if (!transitioned) {
 							throw new Error(
 								"Import run terminal transition rejected because it is no longer running.",
 							);
 						}
 					},
-					recordSourceContact: async ({ feedSourceId, patch }) => {
+					recordSourceContact: async (
+						{ feedSourceId, patch },
+						transactionId,
+					) => {
 						if (Object.keys(patch).length === 0) return;
-						await payload.update({
+						await systemPayload.update({
 							collection: "feed-sources",
 							id: feedSourceId,
 							data: patch,
-							...systemOverrideAccess("system-job"),
+							req:
+								transactionId === undefined
+									? undefined
+									: ({
+											...req,
+											transactionID: transactionId,
+										} as PayloadRequest),
 						});
 					},
-					consumeDeactivationApproval: (input) =>
-						consumeDeactivationApproval(payload, input),
+					consumeDeactivationApproval: (input, transactionId) =>
+						consumeDeactivationApproval(payload, input, transactionId),
 					invalidatePublicCache: async (targets) => {
 						const result = await invalidatePublicCache({
 							baseUrl: runtimeEnv.INTERNAL_REVALIDATE_BASE_URL,
@@ -386,6 +392,12 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 							reason: "import-feed",
 						});
 						return { ok: result.ok };
+					},
+					reportOperationalWarning: async (warning) => {
+						payload.logger.warn({
+							msg: "Post-commit public cache invalidation failed.",
+							...warning,
+						});
 					},
 					allowedImageHosts: parseImageHostEnv(runtimeEnv.EXTERNAL_IMAGE_HOSTS),
 				},
@@ -403,14 +415,14 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		label: "Jobs janitor",
 		schedule: getStaticSchedule(payloadJobTaskSlugs.jobsJanitor),
 		handler: async ({ req }) => {
-			const recentSuccess = await req.payload.find({
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
+			const recentSuccess = await systemPayload.find({
 				collection: "import-runs",
 				where: { status: { equals: "success" } },
 				sort: "-finishedAt",
 				limit: 5,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 			const importStaleMs = importStaleThresholdMs(
 				observedSuccessfulDurationMs(recentSuccess.docs),
@@ -424,7 +436,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 			const queuedOrphanBefore = new Date(
 				nowDate().getTime() - queuedOrphanMs,
 			).toISOString();
-			const staleRuns = await req.payload.find({
+			const staleRuns = await systemPayload.find({
 				collection: "import-runs",
 				where: {
 					or: [
@@ -452,7 +464,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				limit: 20,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 
 			let interruptedRuns = 0;
@@ -513,6 +524,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		label: "Lead retention cleanup",
 		schedule: getStaticSchedule(payloadJobTaskSlugs.leadRetentionCleanup),
 		handler: async ({ req }) => {
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
 			const decision = planLeadRetentionRun(projectConfig.leadRetentionDays);
 			if (!decision.destructive) {
 				return {
@@ -524,7 +536,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				};
 			}
 
-			const expiredLeads = await req.payload.find({
+			const expiredLeads = await systemPayload.find({
 				collection: "leads",
 				where: {
 					and: [
@@ -535,7 +547,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				limit: 20,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 			const purgedAt = nowIso();
 			let deleted = 0;
@@ -573,6 +584,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		label: "Catalog lifecycle",
 		schedule: getStaticSchedule(payloadJobTaskSlugs.catalogLifecycle),
 		handler: async ({ req }) => {
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
 			const retentionDays = projectConfig.archiveRetentionDays;
 			if (!isConfiguredRetentionDays(retentionDays)) {
 				return {
@@ -586,7 +598,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				nowDate(),
 				retentionDays,
 			).toISOString();
-			const archivedProperties = await req.payload.find({
+			const archivedProperties = await systemPayload.find({
 				collection: "properties",
 				where: {
 					and: [
@@ -598,12 +610,11 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				limit: 20,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 			const purgedAt = nowIso();
 
 			for (const property of archivedProperties.docs) {
-				await req.payload.update({
+				await systemPayload.update({
 					collection: "properties",
 					id: property.id,
 					data: {
@@ -612,7 +623,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 						contentPurgedAt: purgedAt,
 					},
 					req,
-					...jobAccess,
 				});
 				// Purge never writes a homepage redirect; public path becomes 410
 				// unless an explicit redirects.from row already exists.
@@ -626,13 +636,13 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		label: "Refresh listing Content Gate state",
 		schedule: getStaticSchedule(payloadJobTaskSlugs.refreshListingContentGate),
 		handler: async ({ req }) => {
-			const rows = await req.payload.find({
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
+			const rows = await systemPayload.find({
 				collection: "listing-contents",
 				where: { status: { equals: "approved" } },
 				pagination: false,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 			const evaluatedAt = nowDate();
 			let updated = 0;
@@ -656,12 +666,11 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					now: evaluatedAt,
 					lastThresholdPassedAt: row.lastThresholdPassedAt,
 				});
-				await req.payload.update({
+				await systemPayload.update({
 					collection: "listing-contents",
 					id: row.id,
 					data: state,
 					req,
-					...jobAccess,
 				});
 				updated += 1;
 			}
@@ -674,6 +683,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 		label: "Recover lead deliveries",
 		schedule: getStaticSchedule(payloadJobTaskSlugs.recoverLeadDeliveries),
 		handler: async ({ req }) => {
+			const systemPayload = createSystemJobPayloadGateway(req.payload);
 			const recoveryNowIso = nowIso();
 			const pendingOrphanBefore = new Date(
 				nowDate().getTime() -
@@ -685,7 +695,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				nowDate().getTime() -
 					projectConfig.leadDelivery.staleSendingThresholdMinutes * 60_000,
 			).toISOString();
-			const staleSending = await req.payload.find({
+			const staleSending = await systemPayload.find({
 				collection: "lead-deliveries",
 				where: {
 					and: [
@@ -696,7 +706,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				limit: 20,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 
 			for (const delivery of staleSending.docs) {
@@ -719,7 +728,7 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					projectConfig.leadDelivery,
 				);
 				if (!recovered) continue;
-				await req.payload.update({
+				await systemPayload.update({
 					collection: "lead-deliveries",
 					id: delivery.id,
 					data: {
@@ -733,11 +742,10 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 						attemptLog: recovered.attemptLog,
 					},
 					req,
-					...systemOverrideAccess("system-job"),
 				});
 			}
 
-			const duePending = await req.payload.find({
+			const duePending = await systemPayload.find({
 				collection: "lead-deliveries",
 				where: {
 					and: [
@@ -748,7 +756,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 				limit: 20,
 				depth: 0,
 				req,
-				...jobAccess,
 			});
 
 			let queuedPending = 0;
@@ -806,12 +813,11 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 
 				if (liveJobId) {
 					if (String(delivery.jobId ?? "") !== liveJobId) {
-						await req.payload.update({
+						await systemPayload.update({
 							collection: "lead-deliveries",
 							id: delivery.id,
 							data: { jobId: liveJobId },
 							req,
-							...systemOverrideAccess("system-job"),
 						});
 					}
 					continue;
@@ -837,14 +843,13 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					waitUntil: recoveryLeaseUntil,
 				})) as { id: number | string };
 
-				await req.payload.update({
+				await systemPayload.update({
 					collection: "lead-deliveries",
 					id: leasedId,
 					data: {
 						jobId: String(queuedJob.id),
 					},
 					req,
-					...systemOverrideAccess("system-job"),
 				});
 				queuedPending += 1;
 			}
@@ -880,9 +885,6 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 					MAX_CHAT_ID: runtimeEnv.MAX_CHAT_ID,
 					CUSTOM_WEBHOOK_URL: runtimeEnv.CUSTOM_WEBHOOK_URL,
 					CUSTOM_WEBHOOK_HMAC_SECRET: runtimeEnv.CUSTOM_WEBHOOK_HMAC_SECRET,
-					AMS_ALLOW_TEST_DESTINATIONS: process.env.AMS_ALLOW_TEST_DESTINATIONS,
-					AMS_TEST_APPROVED_ORIGINS: process.env.AMS_TEST_APPROVED_ORIGINS,
-					NODE_ENV: process.env.NODE_ENV,
 				},
 				queueRetry: async ({ leadDeliveryId, waitUntil }) => {
 					const queued = (await queueTask({

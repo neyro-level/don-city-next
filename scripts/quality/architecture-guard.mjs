@@ -66,19 +66,9 @@ for (const file of filesUnder("src")) {
 	}
 	if (
 		content.includes("systemOverrideAccess") &&
-		!(
-			name.startsWith("src/core/data-access/system/") ||
-			name.startsWith("src/project/jobs/") ||
-			name.startsWith("src/core/data-access/leads/") ||
-			name.startsWith("src/core/data-access/public/") ||
-			name === "src/core/ingest/payload-feed-ingest-repository.ts" ||
-			name === "src/core/leads/deliver-lead.ts"
-		)
+		!name.startsWith("src/core/data-access/system/")
 	) {
-		report(
-			file,
-			"systemOverrideAccess import outside System Gateway whitelist",
-		);
+		report(file, "systemOverrideAccess outside System Gateway");
 	}
 	if (/hostname\s*:\s*["']\*+["']/.test(content))
 		report(file, "wildcard image hostname");
@@ -466,6 +456,8 @@ const denyAnonymousFiles = {
 const classifiedPublicReadAccess = {
 	pages: "publicPageReadAccess",
 	properties: "publicPropertyReadAccess",
+	leads: "ownersOrLeadIntake",
+	"lead-deliveries": "ownersOrLeadIntake",
 	"listing-contents": "publicListingContentReadAccess",
 	media: "publicMediaReadAccess",
 	redirects: "publicRedirectReadAccess",

@@ -137,6 +137,14 @@ const fixture = await startFixtureHttpServer({
 process.env.AMS_ALLOW_TEST_DESTINATIONS = "true";
 process.env.AMS_TEST_APPROVED_ORIGINS = fixture.origin;
 assert.deepEqual(parseTestApprovedOrigins(process.env), [fixture.origin]);
+assert.throws(
+	() =>
+		parseTestApprovedOrigins({
+			NODE_ENV: "production",
+			AMS_TEST_APPROVED_ORIGINS: fixture.origin,
+		}),
+	/Production configuration contains test-only variables/,
+);
 
 const revalidation = await postBatchedHttpRevalidate({
 	baseUrl: fixture.origin,

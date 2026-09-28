@@ -1,12 +1,12 @@
-import type { CollectionConfig, PayloadRequest } from "payload";
-import {
-	hasRole,
-	ownersOnly,
-	systemGatewayOnly,
-} from "../../core/access/roles.ts";
+import type { Access, CollectionConfig, PayloadRequest } from "payload";
+import { leadIntakeOnly } from "../../core/access/internal-modes.ts";
+import { hasRole, ownersOnly } from "../../core/access/roles.ts";
 import { retryLeadDeliveryThroughSystemGateway } from "../../core/data-access/system/lead-delivery-retry.ts";
 import { systemQueueJob } from "../../core/data-access/system/queue-job.ts";
 import { projectConfig } from "../project.config.ts";
+
+const ownersOrLeadIntake: Access = (args) =>
+	ownersOnly(args) || leadIntakeOnly(args);
 
 export const LeadDeliveries: CollectionConfig = {
 	slug: "lead-deliveries",
@@ -26,9 +26,9 @@ export const LeadDeliveries: CollectionConfig = {
 			"Owner operations: delivery state, manual retry/recovery and safe diagnostics. CRM channel rows may exist, but CRM adapter execution is deferred until owner enables it.",
 	},
 	access: {
-		create: systemGatewayOnly,
-		read: ownersOnly,
-		update: systemGatewayOnly,
+		create: leadIntakeOnly,
+		read: ownersOrLeadIntake,
+		update: leadIntakeOnly,
 		delete: ownersOnly,
 	},
 	endpoints: [

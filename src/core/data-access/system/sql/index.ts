@@ -9,11 +9,31 @@ export const systemSqlLayer = "src/core/data-access/system/sql" as const;
 
 export const approvedSystemSqlOperations = {
 	claimLeadDeliveryRow: {
+		file: "src/core/data-access/system/sql/index.ts",
+		purpose:
+			"Claim one due lead delivery and increment its attempt exactly once.",
+		trigger: "Atomic pending-to-sending transition with affected-row result.",
+		inputType: "Internal delivery ID and clock.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement:
+			"No; read/update allows duplicate outbound delivery attempts.",
+		decisionSource: "TASK-01.7 and ADR-0014.",
+		integrationProof: "verify:integration lead-delivery claim proof.",
 		invariant: "Exactly one due pending delivery can transition to sending.",
 		reason:
 			"Claim, attempt increment, and affected result must be one conditional statement.",
 	},
 	claimPendingDeliveryRecoveryLease: {
+		file: "src/core/data-access/system/sql/index.ts",
+		purpose: "Lease one stale pending delivery before replacement-job enqueue.",
+		trigger: "Atomic recovery arbitration between concurrent janitors.",
+		inputType: "Internal delivery ID and threshold/lease timestamps.",
+		containsPii: false,
+		userInput: false,
+		localApiReplacement: "No; read/update permits duplicate replacement jobs.",
+		decisionSource: "ADR-0011 exact named exception.",
+		integrationProof: "verify:integration two-worker one-job recovery proof.",
 		invariant:
 			"Only one recovery worker can lease a sufficiently old pending delivery before enqueueing a replacement job.",
 		reason:

@@ -1,7 +1,7 @@
 # DON CITY
 
-Status: Active — production live and publicly crawlable
-Version: 1.2
+Status: Active — constitution remediation v1 approved
+Version: 1.3
 Updated: 2026-09-28
 
 ## Что создаём
@@ -31,9 +31,9 @@ Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload P
 
 The current implementation is partially converged, not fully certified. Exact
 gaps, dependencies and evidence are governed by APPROVED Plan ID
-`AMS-DON-CITY-LIVE-CONFORMANCE` v13 in
-`AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md`. Earlier CP evidence remains history,
-not current execution state.
+`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. Earlier plans and
+CP evidence remain history, not current execution state.
 
 ## Source of Truth
 
@@ -51,8 +51,10 @@ not current execution state.
 | operations / runtime | `OPERATIONS.md` |
 | SourceCraft Spaces pilot | `SOURCECRAFT_SPACES.md` |
 | SourceCraft organization/platform audit | `SOURCECRAFT_PLATFORM_AUDIT.md` |
-| детальный execution/SEO/data contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` |
+| текущий approved remediation contract | `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md` |
+| предыдущий live-conformance contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` (history) |
 | долговечные архитектурные решения | `adr/README.md` |
+| активный реестр допустимых raw SQL операций | `RAW_SQL_REGISTER.md` |
 | история contract | `CHANGELOG.md` |
 
 `06_DESIGN_SYSTEM.md` is a superseded history pointer. `research/**`,

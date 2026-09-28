@@ -1,26 +1,13 @@
 import type { Payload, PayloadRequest } from "payload";
 import { relationId } from "../../project/geo/constraints.ts";
 import { resolveFeedGeo } from "../../project/geo/feed-match.ts";
-import {
-	countMissingActiveFeedProperties,
-	deactivateMissingFeedProperties,
-	touchFeedPropertiesLastSeenAt,
-} from "../data-access/ingest/sql/index.ts";
-import { systemOverrideAccess } from "../data-access/system/overrides.ts";
+import { internalAccessMode } from "../access/internal-modes.ts";
 import type {
 	FeedImportIssueDraft,
 	FeedIngestRepository,
 	FeedPropertyRecord,
 	FeedPropertyWriteData,
 } from "./feed-ingest.ts";
-
-const importAccess = {
-	...systemOverrideAccess("system-job"),
-	context: {
-		...systemOverrideAccess("system-job").context,
-		source: "import" as const,
-	},
-};
 
 function redactIssueMessage(message: string): string {
 	return message
@@ -107,15 +94,14 @@ export function createPayloadFeedIngestRepository(
 	feedSourceId: string,
 	transactionId?: string | number,
 ): FeedIngestRepository {
-	const req =
-		transactionId === undefined
-			? undefined
-			: ({
-					payload,
-					user: null,
-					context: importAccess.context,
-					transactionID: transactionId,
-				} as unknown as PayloadRequest);
+	const importAccess = internalAccessMode("ingest", transactionId);
+	const req = importAccess.req
+		? ({
+				...importAccess.req,
+				payload,
+				user: null,
+			} as unknown as PayloadRequest)
+		: undefined;
 	return {
 		async findFeedProperty({ feedSourceId: sourceId, externalId }) {
 			if (sourceId !== feedSourceId) {
@@ -133,7 +119,8 @@ export function createPayloadFeedIngestRepository(
 				limit: 1,
 				depth: 0,
 				req,
-				...importAccess,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 			const doc = found.docs[0];
 			return doc ? asRecord(doc) : undefined;
@@ -147,7 +134,8 @@ export function createPayloadFeedIngestRepository(
 				draft: false,
 				data: await toPropertyData(payload, data),
 				req,
-				...importAccess,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 			return asRecord(created);
 		},
@@ -164,7 +152,8 @@ export function createPayloadFeedIngestRepository(
 				limit: 1,
 				depth: 0,
 				req,
-				...importAccess,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 			if (!found.docs[0]) {
 				throw new Error("Feed ingest repository is source-scoped.");
@@ -209,7 +198,8 @@ export function createPayloadFeedIngestRepository(
 				draft: false,
 				data: patch,
 				req,
-				...importAccess,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 			return asRecord(updated);
 		},
@@ -229,7 +219,8 @@ export function createPayloadFeedIngestRepository(
 					messageRedacted: redactIssueMessage(issue.messageRedacted),
 				},
 				req,
-				...importAccess,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 		},
 		async touchLastSeenAt({
@@ -241,62 +232,49 @@ export function createPayloadFeedIngestRepository(
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
 			}
-			if (req) {
-				if (externalIds.length === 0) return;
-				await payload.update({
-					collection: "properties",
-					where: {
-						and: [
-							{ origin: { equals: "feed" } },
-							{ feedSource: { equals: Number(sourceId) } },
-							{ externalId: { in: externalIds } },
-						],
-					},
-					data: {
-						lastSeenAt: nowIso,
-						lastImportRun: Number(importRunId),
-					},
-					req,
-					...importAccess,
-				});
-				return;
-			}
-			await touchFeedPropertiesLastSeenAt(payload, {
-				feedSourceId: sourceId,
-				importRunId,
-				externalIds,
-				now: new Date(nowIso),
+			if (externalIds.length === 0) return;
+			await payload.update({
+				collection: "properties",
+				where: {
+					and: [
+						{ origin: { equals: "feed" } },
+						{ feedSource: { equals: Number(sourceId) } },
+						{ externalId: { in: externalIds } },
+					],
+				},
+				data: {
+					lastSeenAt: nowIso,
+					lastImportRun: Number(importRunId),
+				},
+				req,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
 		},
 		async countMissingActive({ feedSourceId: sourceId, seenBeforeIso }) {
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
 			}
-			if (req) {
-				const result = await payload.count({
-					collection: "properties",
-					where: {
-						and: [
-							{ origin: { equals: "feed" } },
-							{ feedSource: { equals: Number(sourceId) } },
-							{ status: { equals: "active" } },
-							{
-								or: [
-									{ lastSeenAt: { exists: false } },
-									{ lastSeenAt: { less_than: seenBeforeIso } },
-								],
-							},
-						],
-					},
-					req,
-					...importAccess,
-				});
-				return result.totalDocs;
-			}
-			return countMissingActiveFeedProperties(payload, {
-				feedSourceId: sourceId,
-				seenBefore: new Date(seenBeforeIso),
+			const result = await payload.count({
+				collection: "properties",
+				where: {
+					and: [
+						{ origin: { equals: "feed" } },
+						{ feedSource: { equals: Number(sourceId) } },
+						{ status: { equals: "active" } },
+						{
+							or: [
+								{ lastSeenAt: { exists: false } },
+								{ lastSeenAt: { less_than: seenBeforeIso } },
+							],
+						},
+					],
+				},
+				req,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
+			return result.totalDocs;
 		},
 		async deactivateMissing({
 			feedSourceId: sourceId,
@@ -307,38 +285,31 @@ export function createPayloadFeedIngestRepository(
 			if (sourceId !== feedSourceId) {
 				throw new Error("Feed ingest repository is source-scoped.");
 			}
-			if (req) {
-				const result = await payload.update({
-					collection: "properties",
-					where: {
-						and: [
-							{ origin: { equals: "feed" } },
-							{ feedSource: { equals: Number(sourceId) } },
-							{ status: { equals: "active" } },
-							{
-								or: [
-									{ lastSeenAt: { exists: false } },
-									{ lastSeenAt: { less_than: seenBeforeIso } },
-								],
-							},
-						],
-					},
-					data: {
-						status: "archived",
-						deactivatedAt: nowIso,
-						deactivatedByRun: Number(importRunId),
-					},
-					req,
-					...importAccess,
-				});
-				return result.docs.length;
-			}
-			return deactivateMissingFeedProperties(payload, {
-				feedSourceId: sourceId,
-				importRunId,
-				seenBefore: new Date(seenBeforeIso),
-				now: new Date(nowIso),
+			const result = await payload.update({
+				collection: "properties",
+				where: {
+					and: [
+						{ origin: { equals: "feed" } },
+						{ feedSource: { equals: Number(sourceId) } },
+						{ status: { equals: "active" } },
+						{
+							or: [
+								{ lastSeenAt: { exists: false } },
+								{ lastSeenAt: { less_than: seenBeforeIso } },
+							],
+						},
+					],
+				},
+				data: {
+					status: "archived",
+					deactivatedAt: nowIso,
+					deactivatedByRun: Number(importRunId),
+				},
+				req,
+				overrideAccess: importAccess.overrideAccess,
+				context: importAccess.context,
 			});
+			return result.docs.length;
 		},
 	};
 }

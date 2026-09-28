@@ -1,7 +1,7 @@
 # Release Checklist
 
-Status: Active — final v13 production release authorized
-Version: 1.3
+Status: Active — remediation release candidate not yet complete
+Version: 1.4
 Updated: 2026-09-28
 
 ## Historical Release Evidence
@@ -20,7 +20,7 @@ Updated: 2026-09-28
 - [x] SourceCraft release attestation run 82 passed for exact main SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d`.
 - [x] Approved logo, compact header mark, footer lockup and favicon are live; desktop/mobile visual smoke passed.
 
-## Final v13 Release Entry
+## Historical v13 Release Entry
 
 - [x] Deliver CP-04 with its required DB/media/performance evidence.
 - [x] Deliver CP-03 after the approved narrow OD-03 exception and atomic DB concurrency evidence (PR 79, RISKY gate 91).
@@ -56,6 +56,20 @@ Updated: 2026-09-28
 - Real feed remains disabled until a separately approved endpoint/allowlist.
 - Newbuild/ЖК review is future owner-planned product work, not a scheduled
   post-production monitoring task.
+
+## Constitution Remediation v1 Production Entry
+
+- [ ] EPIC-01…05 are merged through their exact-head SourceCraft gates.
+- [ ] Final candidate SHA is clean, unchanged and bound to the required local,
+      integration and disposable-environment evidence.
+- [ ] Production owner/admin, external monitoring, canonical NAP, backup,
+      jobs ownership, rollback and exact deployed identity prerequisites are
+      factually proved or fail closed.
+- [ ] Owner issues the separate explicit command `Выпускаем production` for
+      that exact candidate.
+- [ ] Run one SourceCraft exact-main release workflow, one rollout and one
+      bounded live acceptance sequence; do not create an autonomous follow-up
+      monitoring task.
 
 ## Stop Conditions
 

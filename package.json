@@ -78,6 +78,7 @@
 		"verify:site-settings": "node --experimental-strip-types scripts/verify-site-settings.ts",
 		"verify:contracts-dto": "node --experimental-strip-types scripts/verify-contracts-dto.ts",
 		"verify:feed-ingest": "node --experimental-strip-types scripts/verify-feed-ingest.mjs",
+		"verify:payload-transaction-contract": "node scripts/verify-payload-transaction-contract.mjs",
 		"verify:feed-onboarding:integration": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/integration/feed-onboarding-suite.ts",
 		"verify:feed-lifecycle": "node --experimental-strip-types scripts/verify-feed-lifecycle.mjs",
 		"verify:manual-ownership": "node --experimental-strip-types scripts/verify-manual-ownership.mjs",

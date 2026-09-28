@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { sql } from "@payloadcms/db-postgres";
 import { getPayload } from "payload";
 import config from "../../payload.config.ts";
 import {
@@ -18,10 +19,12 @@ import {
 import { submitPublicLead } from "../../src/core/data-access/public/leads.ts";
 import { findPublicPage } from "../../src/core/data-access/public/pages.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
+import { requirePayloadTransactionExecutor } from "../../src/core/data-access/system/payload-transaction.ts";
 import { createPayloadFeedIngestRepository } from "../../src/core/ingest/payload-feed-ingest-repository.ts";
 import { runDeliverLeadTask } from "../../src/core/leads/deliver-lead.ts";
 import { defineLeadDeliveryPolicy } from "../../src/core/leads/delivery-policy.ts";
 import { pendingDeliveryOrphanThresholdMs } from "../../src/core/operations/recovery-thresholds.ts";
+import { parseTestApprovedOrigins } from "../../src/core/security/test-destinations.ts";
 import { resolvePropertyPageLifecycle } from "../../src/core/seo/property.ts";
 import {
 	getMediaDirectory,
@@ -1171,10 +1174,8 @@ await runDeliverLeadTask({
 		MAX_API_URL: process.env.MAX_API_URL,
 		MAX_BOT_TOKEN: process.env.MAX_BOT_TOKEN,
 		MAX_CHAT_ID: process.env.MAX_CHAT_ID,
-		AMS_ALLOW_TEST_DESTINATIONS: process.env.AMS_ALLOW_TEST_DESTINATIONS,
-		AMS_TEST_APPROVED_ORIGINS: process.env.AMS_TEST_APPROVED_ORIGINS,
-		NODE_ENV: process.env.NODE_ENV,
 	},
+	approvedTestOrigins: parseTestApprovedOrigins(process.env),
 	queueRetry: async ({ waitUntil }) => {
 		capturedWaitUntil = waitUntil.toISOString();
 		return "policy-timing-job";
@@ -1239,10 +1240,8 @@ await assert.rejects(
 				MAX_API_URL: process.env.MAX_API_URL,
 				MAX_BOT_TOKEN: process.env.MAX_BOT_TOKEN,
 				MAX_CHAT_ID: process.env.MAX_CHAT_ID,
-				AMS_ALLOW_TEST_DESTINATIONS: process.env.AMS_ALLOW_TEST_DESTINATIONS,
-				AMS_TEST_APPROVED_ORIGINS: process.env.AMS_TEST_APPROVED_ORIGINS,
-				NODE_ENV: process.env.NODE_ENV,
 			},
+			approvedTestOrigins: parseTestApprovedOrigins(process.env),
 			queueRetry: async () => {
 				throw new Error("fixture enqueue crash");
 			},
@@ -1483,6 +1482,34 @@ await transactionalRepository.createImportIssue({
 	externalId: rollbackIssueCode,
 	messageRedacted: "Transactional rollback proof.",
 });
+const rollbackReq = {
+	payload,
+	user: null,
+	context: access.context,
+	transactionID: rollbackTransactionId,
+} as unknown as import("payload").PayloadRequest;
+const transactionExecutor = await requirePayloadTransactionExecutor(
+	payload,
+	rollbackTransactionId,
+);
+await transactionExecutor.execute(sql`
+	UPDATE import_issues
+	SET message_redacted = 'Transaction-bound SQL proof.'
+	WHERE external_id = ${rollbackIssueCode}
+`);
+const transactionVisibleIssue = await payload.find({
+	collection: "import-issues",
+	where: { externalId: { equals: rollbackIssueCode } },
+	limit: 1,
+	depth: 0,
+	req: rollbackReq,
+	...access,
+});
+assert.equal(
+	transactionVisibleIssue.docs[0]?.messageRedacted,
+	"Transaction-bound SQL proof.",
+	"Local API and retained SQL must observe the same Payload transaction session",
+);
 await payload.db.rollbackTransaction(rollbackTransactionId);
 const rolledBackIssues = await payload.find({
 	collection: "import-issues",
