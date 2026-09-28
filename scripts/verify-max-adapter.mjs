@@ -44,19 +44,23 @@ const retryable = await sendMaxLead({
 	transport: async () => ({
 		ok: false,
 		status: 503,
-		errorCode: "max_unavailable",
+		errorCode: "+79161234567 bearer-secret raw-response-body",
 	}),
 });
 assert.equal(retryable.delivery.kind, "retryable");
-assert.equal(retryable.safeLog.safeCode, "max_unavailable");
+assert.equal(retryable.safeLog.safeCode, "max_http_503");
 assertSafe(retryable.safeLog);
 
 const permanent = await sendMaxLead({
 	lead,
-	transport: async () => ({ ok: false, status: 400, errorCode: "bad_payload" }),
+	transport: async () => ({
+		ok: false,
+		status: 400,
+		errorCode: "ivan@example.test token raw-body",
+	}),
 });
 assert.equal(permanent.delivery.kind, "permanent");
-assert.equal(permanent.safeLog.safeCode, "bad_payload");
+assert.equal(permanent.safeLog.safeCode, "max_http_400");
 assertSafe(permanent.safeLog);
 
 console.log("verify-max-adapter: ok");

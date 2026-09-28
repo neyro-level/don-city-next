@@ -87,6 +87,7 @@
 		"verify:lead-context:integration": "node --conditions=react-server ./node_modules/payload/bin.js run scripts/integration/lead-context-suite.ts",
 		"verify:lead-outbox": "node --experimental-strip-types scripts/verify-lead-outbox.mjs",
 		"verify:lead-delivery-state": "node --experimental-strip-types scripts/verify-lead-delivery-state.mjs",
+		"verify:lead-pii-regression": "node --experimental-strip-types scripts/verify-lead-pii-regression.mjs",
 		"verify:analytics": "node --experimental-strip-types scripts/verify-analytics.ts",
 		"verify:content-inventory": "node --experimental-strip-types scripts/verify-content-inventory-activation.ts",
 		"verify:content-gate-persistence": "node scripts/verify-content-gate-persistence.mjs",

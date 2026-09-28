@@ -153,8 +153,7 @@ export async function sendCustomWebhookLead({
 		};
 	}
 
-	const safeCode =
-		response.errorCode ?? `custom_webhook_http_${response.status}`;
+	const safeCode = `custom_webhook_http_${response.status}`;
 	if (outcome === "retryable") {
 		return {
 			delivery: {

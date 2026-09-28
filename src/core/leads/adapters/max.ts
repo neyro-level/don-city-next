@@ -60,7 +60,7 @@ export async function sendMaxLead({
 	}
 
 	if (outcome === "retryable") {
-		const safeCode = response.errorCode ?? `max_http_${response.status}`;
+		const safeCode = `max_http_${response.status}`;
 		return {
 			delivery: {
 				kind: "retryable",
@@ -71,7 +71,7 @@ export async function sendMaxLead({
 		};
 	}
 
-	const safeCode = response.errorCode ?? `max_http_${response.status}`;
+	const safeCode = `max_http_${response.status}`;
 	return {
 		delivery: {
 			kind: "permanent",
