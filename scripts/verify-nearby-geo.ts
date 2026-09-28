@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
-import type { PublicPropertyPageState } from "../src/core/data-access/public/provider.ts";
 import type { NearbyGeoAvailability } from "../src/core/data-access/public/nearby-geo.ts";
+import type { PublicPropertyPageState } from "../src/core/data-access/public/provider.ts";
 import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.ts";
+import { siteProfile } from "../src/project/site.profile.ts";
 
 const makeevka: NearbyGeoAvailability = {
 	slug: "makeevka",
@@ -9,8 +10,8 @@ const makeevka: NearbyGeoAvailability = {
 	nameGenitive: "Макеевки",
 	nameLocative: "Макеевке",
 	preposition: "в",
-	activeObjects: 2,
-	activeByCategory: { apartment: 2, house: 0, land: 0 },
+	activeObjects: 6,
+	activeByCategory: { apartment: 2, house: 2, land: 2 },
 };
 
 function property(input: {
@@ -57,10 +58,9 @@ async function resolve(path: string) {
 
 for (const [path, query] of [
 	["/makeevka/", { geoSlug: "makeevka" }],
-	[
-		"/makeevka/kvartiry/",
-		{ category: "apartment", geoSlug: "makeevka" },
-	],
+	["/makeevka/kvartiry/", { category: "apartment", geoSlug: "makeevka" }],
+	["/makeevka/doma/", { category: "house", geoSlug: "makeevka" }],
+	["/makeevka/uchastki/", { category: "land", geoSlug: "makeevka" }],
 ] as const) {
 	const result = await resolve(path);
 	assert.equal(result.kind, "page", path);
@@ -77,9 +77,10 @@ for (const [path, query] of [
 }
 
 for (const path of [
-	"/makeevka/doma/",
-	"/makeevka/uchastki/",
+	"/makeevka/kommercheskaya/",
 	"/makeevka/kvartiry/centralnyy/",
+	"/makeevka/kvartiry/odnokomnatnye/",
+	"/makeyevka/",
 ]) {
 	assert.deepEqual(
 		await resolve(path),
@@ -101,6 +102,34 @@ const primaryProperty = await resolve("/kvartiry/kvartira-donetsk-1042/");
 assert.equal(primaryProperty.kind, "page");
 if (primaryProperty.kind === "page") {
 	assert.equal(primaryProperty.geoLinks, undefined);
+}
+
+const mutableProfile = siteProfile as unknown as {
+	nearbyGeoRouteAllowlist: Record<string, readonly string[]>;
+};
+const approvedRoutes = mutableProfile.nearbyGeoRouteAllowlist;
+try {
+	mutableProfile.nearbyGeoRouteAllowlist = {};
+	for (const path of ["/makeevka/", "/makeevka/kvartiry/"]) {
+		assert.deepEqual(
+			await resolve(path),
+			{ kind: "notFound", statusCode: 404 },
+			`pre-gate route leaked: ${path}`,
+		);
+	}
+	const preGateProperty = await resolve("/kvartiry/kvartira-makeyevka-2042/");
+	assert.equal(preGateProperty.kind, "page");
+	if (preGateProperty.kind === "page") {
+		assert.equal(preGateProperty.geoLinks, undefined);
+		assert.equal(
+			preGateProperty.internalLinks.some((link) =>
+				link.href.startsWith("/makeevka/"),
+			),
+			false,
+		);
+	}
+} finally {
+	mutableProfile.nearbyGeoRouteAllowlist = approvedRoutes;
 }
 
 console.log("RP-08 nearby geo fixture: PASS");

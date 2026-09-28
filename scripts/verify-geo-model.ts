@@ -34,8 +34,28 @@ const textilshchik = csv
 assert.ok(textilshchik, "Textilshchik seed must exist.");
 assert.match(
 	textilshchik,
-	/"tekstilshchik","microdistrict","donetsk","","на","Текстильщике"/,
+	/"tekstilshchik","microdistrict","donetsk","","на","Текстильщике","Текстильщика"/,
 );
+
+const districtFixtures = ([
+	[20, "Будённовский", "budennovskiy", "Будённовского", "Будённовском", "Будённовский район"],
+	[21, "Ворошиловский", "voroshilovskiy", "Ворошиловского", "Ворошиловском", "Ворошиловский район"],
+	[22, "Калининский", "kalininskiy", "Калининского", "Калининском", "Калининский район"],
+	[23, "Киевский", "kievskiy", "Киевского", "Киевском", "Киевский район"],
+	[24, "Кировский", "kirovskiy", "Кировского", "Кировском", "Кировский район"],
+	[25, "Куйбышевский", "kuybyshevskiy", "Куйбышевского", "Куйбышевском", "Куйбышевский район"],
+	[26, "Ленинский", "leninskiy", "Ленинского", "Ленинском", "Ленинский район"],
+	[27, "Петровский", "petrovskiy", "Петровского", "Петровском", "Петровский район"],
+	[28, "Пролетарский", "proletarskiy", "Пролетарского", "Пролетарском", "Пролетарский район"],
+	[11, "Текстильщик", "tekstilshchik", "Текстильщика", "Текстильщике", "мкр. Текстильщик"],
+] as const).map(([id, name, slug, nameGenitive, nameLocative, synonym]) => ({
+	id,
+	name,
+	slug,
+	nameGenitive,
+	nameLocative,
+	synonyms: [{ value: synonym }],
+}));
 
 const calls: unknown[] = [];
 const payload = {
@@ -46,7 +66,7 @@ const payload = {
 		}
 		if (input.collection === "districts") {
 			assert.deepEqual(input.where, { city: { equals: 7 } });
-			return { docs: [{ id: 11, name: "Текстильщик", slug: "tekstilshchik" }] };
+			return { docs: districtFixtures };
 		}
 		if (input.collection === "regions") return { docs: [] };
 		throw new Error(`Unexpected collection: ${String(input.collection)}`);
@@ -74,6 +94,24 @@ const containedTextilshchik = await resolveFeedGeo(payload, {
 });
 assert.equal(containedTextilshchik.district, 11);
 assert.equal(containedTextilshchik.needsReview, false);
+
+for (const districtFixture of districtFixtures.filter(
+	(item) => item.slug !== "tekstilshchik",
+)) {
+	const bySynonym = await resolveFeedGeo(payload, {
+		locality: "Донецк",
+		district: districtFixture.synonyms[0]?.value,
+	});
+	assert.equal(bySynonym.district, districtFixture.id);
+	assert.equal(bySynonym.needsReview, false);
+
+	const byLocative = await resolveFeedGeo(payload, {
+		locality: "Донецк",
+		district: `${districtFixture.nameLocative} районе`,
+	});
+	assert.equal(byLocative.district, districtFixture.id);
+	assert.equal(byLocative.needsReview, false);
+}
 
 const otherCityPayload = {
 	async find(input: Record<string, unknown>) {

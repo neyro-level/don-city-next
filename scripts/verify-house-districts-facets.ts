@@ -35,13 +35,13 @@ for (const entry of houseDistricts) {
 		assert.equal(entry.tier, "P2");
 		assert.equal(entry.broad, expectedBroad);
 		assert.equal(entry.source, "wordstat_v1");
-		assert.equal(entry.minActiveObjects, "5");
+		assert.equal(entry.minActiveObjects, "3");
 	} else {
 		assert.ok(testDistricts.has(entry.districtSlug));
 		assert.equal(entry.tier, "TEST");
 		assert.equal(entry.broad, "");
 		assert.equal(entry.source, "fallback_no_wordstat");
-		assert.equal(entry.minActiveObjects, "10");
+		assert.equal(entry.minActiveObjects, "3");
 	}
 
 	const gatedOff = await resolveProjectPublicRoute(
@@ -77,7 +77,7 @@ assert.ok(dacha);
 assert.equal(dacha.tier, "TEST");
 assert.equal(dacha.broad, "");
 assert.equal(dacha.source, "fallback_no_wordstat");
-assert.equal(dacha.minActiveObjects, "10");
+assert.equal(dacha.minActiveObjects, "3");
 
 const dachaOff = await resolveProjectPublicRoute(["donetsk", "doma", "dachi"], {
 	loadProperty,

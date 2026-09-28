@@ -55,7 +55,6 @@ export function buildRobots(
 			},
 		],
 		sitemap: new URL("/sitemap.xml", host).toString(),
-		host,
 	};
 }
 
@@ -71,9 +70,8 @@ export function buildRobotsText(policy: IndexingPolicy, host: string): string {
 		"Allow: /api/media/file/",
 		"Disallow: /admin/",
 		"Disallow: /api/",
-		"Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid /",
+		"Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&fbclid /",
 		`Sitemap: ${new URL("/sitemap.xml", origin).toString()}`,
-		`Host: ${origin.host}`,
 		"",
 	].join("\n");
 }

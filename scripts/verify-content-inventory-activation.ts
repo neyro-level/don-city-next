@@ -6,7 +6,7 @@ import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.
 import { seoRegistry } from "../src/project/seo-registry.generated.ts";
 import { siteProfile } from "../src/project/site.profile.ts";
 
-assert.deepEqual(siteProfile.inventoryThreshold, { P1: 5, P2: 5, TEST: 10 });
+assert.deepEqual(siteProfile.inventoryThreshold, { P1: 3, P2: 3, TEST: 3 });
 
 const queue = buildListingContentQueue(seoRegistry);
 assert.ok(queue.length > 0);
@@ -29,7 +29,7 @@ for (const entry of queue) {
 const p1Entry = queue.find((entry) => entry.tier === "P1");
 assert.ok(p1Entry);
 const passingEvidence = {
-	activeObjects: 5,
+	activeObjects: 3,
 	introduction: "Уникальный проверенный текст страницы. ".repeat(20),
 	contextFacts: [{ source: "owner-reviewed-source", checkedAt: "2026-09-25" }],
 	serverRendered: true,
@@ -83,5 +83,5 @@ const catalogView = readFileSync(
 assert.match(catalogView, /section-catalog-introduction/);
 
 console.log(
-	`Content/inventory activation verified: ${queue.length} gated pages, P1/P2=5, TEST=10.`,
+	`Content/inventory activation verified: ${queue.length} gated pages, unified threshold=3.`,
 );

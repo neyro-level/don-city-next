@@ -188,7 +188,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "owner_scope_cp02a",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -340,7 +340,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -359,7 +359,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "145",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -378,7 +378,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "147",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -397,7 +397,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -416,7 +416,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "116",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -435,7 +435,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -454,7 +454,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "97",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -473,7 +473,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "97",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -492,7 +492,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "115",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -511,7 +511,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "137",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -530,7 +530,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "68",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -549,7 +549,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -568,7 +568,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -587,7 +587,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -606,7 +606,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "67",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -625,7 +625,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "70",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -644,7 +644,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -663,7 +663,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -682,7 +682,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -701,7 +701,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "184",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -720,7 +720,7 @@ export const seoRegistry = [
 		"tier": "P1",
 		"broad": "145",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -739,7 +739,7 @@ export const seoRegistry = [
 		"tier": "P2",
 		"broad": "66",
 		"source": "wordstat_v1",
-		"minActiveObjects": "5",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -758,7 +758,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -777,7 +777,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	},
@@ -796,7 +796,7 @@ export const seoRegistry = [
 		"tier": "TEST",
 		"broad": "",
 		"source": "fallback_no_wordstat",
-		"minActiveObjects": "10",
+		"minActiveObjects": "3",
 		"contentGateRequired": "true",
 		"status": "candidate"
 	}

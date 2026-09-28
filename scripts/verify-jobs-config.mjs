@@ -35,6 +35,7 @@ const expectedQueues = new Map([
 				"jobsJanitor",
 				"leadRetentionCleanup",
 				"catalogLifecycle",
+				"refreshListingContentGate",
 				"recoverLeadDeliveries",
 			],
 		},

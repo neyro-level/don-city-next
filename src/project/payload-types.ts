@@ -133,6 +133,7 @@ export interface Config {
       jobsJanitor: TaskJobsJanitor;
       leadRetentionCleanup: TaskLeadRetentionCleanup;
       catalogLifecycle: TaskCatalogLifecycle;
+      refreshListingContentGate: TaskRefreshListingContentGate;
       recoverLeadDeliveries: TaskRecoverLeadDeliveries;
       deliverLead: TaskDeliverLead;
       inline: {
@@ -442,7 +443,14 @@ export interface City {
   nameGenitive: string;
   nameLocative: string;
   preposition: string;
+  localityKind: 'primary_city' | 'nearby_locality';
+  latitude?: number | null;
+  longitude?: number | null;
+  coordinatesVerifiedAt?: string | null;
   agglomerationOf?: (number | null) | City;
+  agglomerationDistanceKm?: number | null;
+  agglomerationApproved: boolean;
+  agglomerationApprovedAt?: string | null;
   ownerVerified: boolean;
   sortOrder: number;
   isPublished: boolean;
@@ -464,6 +472,13 @@ export interface District {
   sortOrder: number;
   preposition?: string | null;
   nameLocative?: string | null;
+  nameGenitive?: string | null;
+  synonyms?:
+    | {
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
   ownerVerified: boolean;
   isPublished: boolean;
   publishedAt?: string | null;
@@ -568,6 +583,9 @@ export interface ListingContent {
       }[]
     | null;
   approvedAt?: string | null;
+  inventorySnapshot?: number | null;
+  inventoryEvaluatedAt?: string | null;
+  lastThresholdPassedAt?: string | null;
   approvedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -821,6 +839,7 @@ export interface PayloadJob {
           | 'jobsJanitor'
           | 'leadRetentionCleanup'
           | 'catalogLifecycle'
+          | 'refreshListingContentGate'
           | 'recoverLeadDeliveries'
           | 'deliverLead';
         taskID: string;
@@ -863,6 +882,7 @@ export interface PayloadJob {
         | 'jobsJanitor'
         | 'leadRetentionCleanup'
         | 'catalogLifecycle'
+        | 'refreshListingContentGate'
         | 'recoverLeadDeliveries'
         | 'deliverLead'
       )
@@ -1145,7 +1165,14 @@ export interface CitiesSelect<T extends boolean = true> {
   nameGenitive?: T;
   nameLocative?: T;
   preposition?: T;
+  localityKind?: T;
+  latitude?: T;
+  longitude?: T;
+  coordinatesVerifiedAt?: T;
   agglomerationOf?: T;
+  agglomerationDistanceKm?: T;
+  agglomerationApproved?: T;
+  agglomerationApprovedAt?: T;
   ownerVerified?: T;
   sortOrder?: T;
   isPublished?: T;
@@ -1166,6 +1193,13 @@ export interface DistrictsSelect<T extends boolean = true> {
   sortOrder?: T;
   preposition?: T;
   nameLocative?: T;
+  nameGenitive?: T;
+  synonyms?:
+    | T
+    | {
+        value?: T;
+        id?: T;
+      };
   ownerVerified?: T;
   isPublished?: T;
   publishedAt?: T;
@@ -1195,6 +1229,9 @@ export interface ListingContentsSelect<T extends boolean = true> {
         id?: T;
       };
   approvedAt?: T;
+  inventorySnapshot?: T;
+  inventoryEvaluatedAt?: T;
+  lastThresholdPassedAt?: T;
   approvedBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1620,6 +1657,14 @@ export interface TaskLeadRetentionCleanup {
  * via the `definition` "TaskCatalogLifecycle".
  */
 export interface TaskCatalogLifecycle {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRefreshListingContentGate".
+ */
+export interface TaskRefreshListingContentGate {
   input?: unknown;
   output?: unknown;
 }

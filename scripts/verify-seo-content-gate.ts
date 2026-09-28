@@ -7,6 +7,7 @@ import {
 	isListingSitemapEligible,
 	resolveListingQueryCanonical,
 } from "../src/platform/seo/content-gate.ts";
+import { nextListingInventoryGateState } from "../src/platform/seo/content-gate-state.ts";
 
 const candidate = seoRegistryById.get("APT_DIST_KALIN");
 assert.ok(candidate, "fixture candidate must exist");
@@ -14,12 +15,12 @@ assert.ok(candidate, "fixture candidate must exist");
 const incomplete = evaluateListingContentGate(candidate, siteProfile);
 assert.deepEqual(incomplete, {
 	passed: false,
-	threshold: 5,
+	threshold: 3,
 	reasons: ["missing_evidence"],
 });
 
 const evidence = {
-	activeObjects: 5,
+	activeObjects: 3,
 	introduction: "а".repeat(600),
 	contextFacts: [{ source: "official district register", checkedAt: "2026-09-24" }],
 	serverRendered: true,
@@ -27,7 +28,7 @@ const evidence = {
 };
 assert.deepEqual(evaluateListingContentGate(candidate, siteProfile, evidence), {
 	passed: true,
-	threshold: 5,
+	threshold: 3,
 	reasons: [],
 });
 assert.equal(
@@ -47,17 +48,71 @@ assert.equal(
 
 const tooFewObjects = evaluateListingContentGate(candidate, siteProfile, {
 	...evidence,
-	activeObjects: 4,
+	activeObjects: 2,
 });
 assert.equal(tooFewObjects.passed, false);
 assert.ok(tooFewObjects.reasons.includes("inventory_below_threshold"));
+
+const now = new Date("2026-09-28T12:00:00.000Z");
+const graceStartedAt = "2026-08-29T12:00:00.000Z";
+const graceEvidence = {
+	...evidence,
+	activeObjects: 1,
+	lastThresholdPassedAt: graceStartedAt,
+};
+assert.equal(
+	evaluateListingContentGate(candidate, siteProfile, graceEvidence, now).passed,
+	true,
+	"One or two objects may retain indexability through day 30.",
+);
+assert.equal(
+	evaluateListingContentGate(
+		candidate,
+		siteProfile,
+		graceEvidence,
+		new Date("2026-09-28T12:00:00.001Z"),
+	).passed,
+	false,
+	"Grace expires immediately after 30 calendar days.",
+);
+assert.equal(
+	evaluateListingContentGate(
+		candidate,
+		siteProfile,
+		{ ...graceEvidence, activeObjects: 0 },
+		now,
+	).passed,
+	false,
+	"Zero inventory must fail immediately even during grace.",
+);
+
+const passingState = nextListingInventoryGateState({
+	activeObjects: 3,
+	threshold: 3,
+	now,
+});
+assert.equal(passingState.lastThresholdPassedAt, now.toISOString());
+const graceState = nextListingInventoryGateState({
+	activeObjects: 2,
+	threshold: 3,
+	now: new Date("2026-09-29T12:00:00.000Z"),
+	lastThresholdPassedAt: passingState.lastThresholdPassedAt,
+});
+assert.equal(graceState.lastThresholdPassedAt, passingState.lastThresholdPassedAt);
+const zeroState = nextListingInventoryGateState({
+	activeObjects: 0,
+	threshold: 3,
+	now: new Date("2026-09-30T12:00:00.000Z"),
+	lastThresholdPassedAt: passingState.lastThresholdPassedAt,
+});
+assert.equal(zeroState.lastThresholdPassedAt, passingState.lastThresholdPassedAt);
 
 const testCandidate = seoRegistryById.get("LAND_FACET_SNT");
 assert.ok(testCandidate, "TEST fixture candidate must exist");
 assert.equal(
 	evaluateListingContentGate(testCandidate, siteProfile, {
 		...evidence,
-		activeObjects: 9,
+		activeObjects: 2,
 	}).passed,
 	false,
 );

@@ -99,6 +99,8 @@ assert.deepEqual(districts.headers, [
 	"parentSlug",
 	"preposition",
 	"nameLocative",
+	"nameGenitive",
+	"synonyms",
 	"apartmentTier",
 	"apartmentBroad",
 	"apartmentSource",
@@ -194,6 +196,11 @@ assertUnique(
 	districts.rows.map((row) => `${row.citySlug}/${row.slug}`),
 	"District city/slug identities",
 );
+assert.equal(
+	districts.rows.filter((row) => row.type === "administrative_district").length,
+	9,
+	"Donetsk must have exactly nine administrative district seeds",
+);
 
 for (const row of seo.rows) {
 	assert.match(
@@ -253,8 +260,8 @@ for (const row of seo.rows) {
 			);
 			assert.equal(
 				row.minActiveObjects,
-				"10",
-				`${row.registryId} TEST threshold mismatch`,
+				"3",
+				`${row.registryId} unified threshold mismatch`,
 			);
 		} else {
 			assert.match(
@@ -269,8 +276,8 @@ for (const row of seo.rows) {
 			);
 			assert.equal(
 				row.minActiveObjects,
-				"5",
-				`${row.registryId} P1/P2 threshold mismatch`,
+				"3",
+				`${row.registryId} unified threshold mismatch`,
 			);
 		}
 	}
@@ -278,6 +285,19 @@ for (const row of seo.rows) {
 
 for (const row of districts.rows) {
 	assert.equal(row.citySlug, "donetsk", `${row.slug} must belong to Donetsk`);
+	assert.ok(row.name, `${row.slug} name is required`);
+	assert.ok(row.preposition, `${row.slug} preposition is required`);
+	assert.ok(row.nameLocative, `${row.slug} locative form is required`);
+	assert.ok(row.nameGenitive, `${row.slug} genitive form is required`);
+	const synonyms = row.synonyms
+		.split("|")
+		.map((value) => value.trim())
+		.filter(Boolean);
+	assert.ok(synonyms.length >= 3, `${row.slug} requires explicit feed synonyms`);
+	assertUnique(
+		synonyms.map((value) => value.toLocaleLowerCase("ru-RU").replaceAll("ё", "е")),
+		`${row.slug} normalized synonyms`,
+	);
 	assert.equal(
 		row.isPublished,
 		"true",
@@ -324,6 +344,8 @@ assert.deepEqual(
 		parentSlug: textilshchik?.parentSlug,
 		preposition: textilshchik?.preposition,
 		nameLocative: textilshchik?.nameLocative,
+		nameGenitive: textilshchik?.nameGenitive,
+		synonyms: textilshchik?.synonyms,
 		apartmentTier: textilshchik?.apartmentTier,
 		apartmentBroad: textilshchik?.apartmentBroad,
 		apartmentSource: textilshchik?.apartmentSource,
@@ -334,6 +356,8 @@ assert.deepEqual(
 		parentSlug: "",
 		preposition: "на",
 		nameLocative: "Текстильщике",
+		nameGenitive: "Текстильщика",
+		synonyms: "мкр. Текстильщик|микрорайон Текстильщик|на Текстильщике",
 		apartmentTier: "P1",
 		apartmentBroad: "137",
 		apartmentSource: "wordstat_v1",

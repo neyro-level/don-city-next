@@ -35,9 +35,12 @@ export const siteProfile = {
 		makeevka: {},
 	},
 	nearbyGeoAliases: { makeevka: ["Макеевка"] },
+	nearbyGeoRouteAllowlist: {
+		makeevka: ["hub", "kvartiry", "doma", "uchastki"],
+	},
 	defaultNearbyGeoStatus: "NOINDEX_AUTO",
 	tiers: { P1: { minBroad: 100 }, P2: { minBroad: 50 } },
-	inventoryThreshold: { P1: 5, P2: 5, TEST: 10 },
+	inventoryThreshold: { P1: 3, P2: 3, TEST: 3 },
 	facetWhitelist: {
 		kvartiry: ["odnokomnatnye", "dvuhkomnatnye", "trehkomnatnye"],
 		doma: ["dachi"],

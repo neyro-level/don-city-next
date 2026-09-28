@@ -222,6 +222,10 @@ export const fixtureHome: HomePageDTO = {
 		},
 	],
 	leadContext: leadContext("general", projectUrls.home),
+	primaryAction: {
+		label: "Смотреть объекты",
+		href: projectUrls.primaryCatalog,
+	},
 	featuredPropertyId: fixtureProperties[0]?.id ?? "",
 	serviceLinks: [
 		{

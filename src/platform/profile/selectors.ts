@@ -45,3 +45,14 @@ export function selectActiveCategoryLinks<Category extends string>(
 export function isGeoSwitcherVisible(profile: SiteProfile): boolean {
 	return profile.geoMode === "MULTI_GEO";
 }
+
+export function isNearbyGeoRouteApproved(
+	profile: Pick<SiteProfile, "primaryGeo" | "nearbyGeoRouteAllowlist">,
+	geo: string,
+	route: string,
+): boolean {
+	const allowed = profile.nearbyGeoRouteAllowlist?.[geo] as
+		| readonly string[]
+		| undefined;
+	return geo !== profile.primaryGeo && (allowed?.includes(route) ?? false);
+}

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 
 import { toHomePageDTO } from "../src/core/data-access/public/dto.ts";
 import { seoRegistryById } from "../src/project/seo-registry.generated.ts";
+import { siteProfile } from "../src/project/site.profile.ts";
+import { projectUrls } from "../src/project/url-grammar.ts";
 
 const home = seoRegistryById.get("HOME");
 assert.ok(home, "HOME registry entry must exist");
@@ -29,5 +31,23 @@ assert.deepEqual(page.seo, {
 });
 assert.equal(page.lead, home.description);
 assert.equal(page.seo.canonicalPath, "/");
+assert.deepEqual(page.primaryAction, {
+	label: "Смотреть объекты",
+	href: projectUrls.primaryCatalog,
+});
 
-console.log("EPIC-19 home metadata and H1 contract: PASS");
+const exposedHomeLinks = [
+	page.primaryAction.href,
+	...page.serviceLinks.map((link) => link.href),
+];
+assert.equal(exposedHomeLinks.includes("/nedvizhimost"), false);
+for (const [category, status] of Object.entries(siteProfile.categoryStatus)) {
+	if (status === "ACTIVE") continue;
+	assert.equal(
+		exposedHomeLinks.some((href) => href.split("/").includes(category)),
+		false,
+		`Inactive category leaked into homepage links: ${category}`,
+	);
+}
+
+console.log("EPIC-19 home metadata, H1 and active-link contract: PASS");

@@ -48,6 +48,8 @@ try {
 	const city = await payload.create({
 		collection: "cities",
 		data: {
+			localityKind: "primary_city",
+			agglomerationApproved: false,
 			name: `EPIC-39 Донецк ${suffix}`,
 			slug: `epic39-city-${suffix}`,
 			region: region.id,

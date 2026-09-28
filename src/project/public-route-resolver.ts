@@ -10,6 +10,7 @@ import {
 } from "../platform/catalog/house-types.ts";
 import type { LandFacetSlug } from "../platform/catalog/land-facets.ts";
 import type { PageKey } from "../platform/grammar/types.ts";
+import { isNearbyGeoRouteApproved } from "../platform/profile/selectors.ts";
 import {
 	effectiveListingRobots,
 	type ListingContentGateEvidence,
@@ -135,6 +136,7 @@ const domainCategory = {
 	kvartiry: "apartment",
 	doma: "house",
 	uchastki: "land",
+	kommercheskaya: "commercial",
 } as const;
 
 const nearbyCategoryCopy = {
@@ -461,6 +463,10 @@ async function resolveNearbyGeoPage(
 	key: Extract<PageKey, { kind: "geoHub" | "categoryGeo" }>,
 	dependencies: PublicRouteDependencies,
 ): Promise<ResolvedPublicRoute> {
+	const approvedRoute = key.kind === "geoHub" ? "hub" : key.category;
+	if (!isNearbyGeoRouteApproved(siteProfile, key.geo, approvedRoute)) {
+		return { kind: "notFound", statusCode: 404 };
+	}
 	const availability = await dependencies.loadNearbyGeo?.(key.geo);
 	if (!availability?.activeObjects) {
 		return { kind: "notFound", statusCode: 404 };
@@ -468,7 +474,11 @@ async function resolveNearbyGeoPage(
 	if (key.kind === "geoHub") {
 		const internalLinks = Object.entries(nearbyCategoryCopy).flatMap(
 			([category, copy]) =>
-				availability.activeByCategory[copy.category]
+				isNearbyGeoRouteApproved(
+					siteProfile,
+					key.geo,
+					category as keyof typeof nearbyCategoryCopy,
+				) && availability.activeByCategory[copy.category]
 					? [
 							{
 								href: buildProjectUrl({
@@ -544,6 +554,7 @@ async function propertyNearbyGeoLinks(
 	if (!property) return undefined;
 	const slug = nearbyGeoSlugForCity(property.city);
 	if (!slug) return undefined;
+	if (!isNearbyGeoRouteApproved(siteProfile, slug, "hub")) return undefined;
 	const availability = await dependencies.loadNearbyGeo?.(slug);
 	if (!availability?.activeObjects) return undefined;
 	const categorySlug = propertyCategoryToSlug(
@@ -556,7 +567,11 @@ async function propertyNearbyGeoLinks(
 			label: `Недвижимость ${availability.preposition} ${availability.nameLocative}`,
 		},
 	];
-	if (domain && availability.activeByCategory[domain]) {
+	if (
+		domain &&
+		isNearbyGeoRouteApproved(siteProfile, slug, categorySlug) &&
+		availability.activeByCategory[domain]
+	) {
 		links.push({
 			href: buildProjectUrl({
 				kind: "categoryGeo",

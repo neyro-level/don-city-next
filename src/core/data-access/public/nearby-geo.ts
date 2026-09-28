@@ -2,6 +2,8 @@ import "server-only";
 
 import type { PropertyCategory } from "@ams/realtbase-contracts";
 import type { Payload, Where } from "payload";
+import { isApprovedNearbyPair } from "@/project/geo/agglomeration";
+import { relationId } from "@/project/geo/constraints";
 import type { CitiesSelect, City } from "@/project/payload-types";
 import { publicPropertyPublicationWhere } from "./catalog";
 import { publicGatewayPolicy } from "./policy";
@@ -15,6 +17,14 @@ const publicCitySelect = {
 	nameLocative: true,
 	preposition: true,
 	isPublished: true,
+	localityKind: true,
+	latitude: true,
+	longitude: true,
+	coordinatesVerifiedAt: true,
+	agglomerationOf: true,
+	agglomerationDistanceKm: true,
+	agglomerationApproved: true,
+	agglomerationApprovedAt: true,
 } satisfies CitiesSelect<true>;
 
 type PublicCity = Pick<
@@ -26,6 +36,31 @@ type PublicCity = Pick<
 	| "nameLocative"
 	| "preposition"
 	| "isPublished"
+	| "localityKind"
+	| "latitude"
+	| "longitude"
+	| "coordinatesVerifiedAt"
+	| "agglomerationOf"
+	| "agglomerationDistanceKm"
+	| "agglomerationApproved"
+	| "agglomerationApprovedAt"
+>;
+
+const primaryCitySelect = {
+	isPublished: true,
+	localityKind: true,
+	latitude: true,
+	longitude: true,
+	coordinatesVerifiedAt: true,
+} satisfies CitiesSelect<true>;
+
+type PublicPrimaryCity = Pick<
+	City,
+	| "isPublished"
+	| "localityKind"
+	| "latitude"
+	| "longitude"
+	| "coordinatesVerifiedAt"
 >;
 
 export type NearbyGeoAvailability = {
@@ -53,6 +88,21 @@ export async function findNearbyGeoAvailability(
 	});
 	const city = cityResult.docs[0] as PublicCity | undefined;
 	if (!city?.isPublished) return null;
+	const primaryCityId = relationId(city.agglomerationOf);
+	if (!primaryCityId) return null;
+	const primaryCityResult = await payload.find({
+		collection: "cities",
+		where: { id: { equals: primaryCityId } },
+		limit: 1,
+		depth: publicGatewayPolicy.depth,
+		select: primaryCitySelect,
+		overrideAccess: publicGatewayPolicy.overrideAccess,
+		context: publicGatewayPolicy.context,
+	});
+	const primaryCity = primaryCityResult.docs[0] as
+		| PublicPrimaryCity
+		| undefined;
+	if (!primaryCity || !isApprovedNearbyPair(city, primaryCity)) return null;
 
 	const cityWhere: Where = {
 		and: [publicPropertyPublicationWhere, { city: { equals: city.id } }],

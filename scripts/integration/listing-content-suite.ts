@@ -5,6 +5,7 @@ import { countPublicCatalogProperties } from "../../src/core/data-access/public/
 import { findApprovedListingContent } from "../../src/core/data-access/public/listing-content.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
 import { evaluateListingContentGate } from "../../src/platform/seo/content-gate.ts";
+import { nextListingInventoryGateState } from "../../src/platform/seo/content-gate-state.ts";
 import { seoRegistryById } from "../../src/project/seo-registry.generated.ts";
 import { siteProfile } from "../../src/project/site.profile.ts";
 
@@ -49,6 +50,8 @@ try {
 	const city = await payload.create({
 		collection: "cities",
 		data: {
+			localityKind: "primary_city",
+			agglomerationApproved: false,
 			name: "Донецк",
 			slug: "donetsk",
 			region: region.id,
@@ -134,6 +137,28 @@ try {
 		user: owner,
 	});
 	created.push({ collection: "listing-contents", id: listingContent.id });
+	const persistedState = nextListingInventoryGateState({
+		activeObjects: 5,
+		threshold: 3,
+		now: new Date(now),
+	});
+	await payload.update({
+		collection: "listing-contents",
+		id: listingContent.id,
+		data: persistedState,
+		...systemOverrideAccess("system-job"),
+	});
+	await assert.rejects(
+		() =>
+			payload.update({
+				collection: "listing-contents",
+				id: listingContent.id,
+				data: { introduction: "б".repeat(600) },
+				...systemOverrideAccess("system-job"),
+			}),
+		/Only an owner/,
+		"Content Gate maintenance must not mutate approved editorial content.",
+	);
 
 	const [content, activeObjects] = await Promise.all([
 		findApprovedListingContent(payload, "APT_DIST_KALIN"),
@@ -144,6 +169,7 @@ try {
 		}),
 	]);
 	assert.equal(content?.introduction, introduction);
+	assert.equal(content?.lastThresholdPassedAt, now);
 	assert.equal(activeObjects, 5);
 	const entry = seoRegistryById.get("APT_DIST_KALIN");
 	assert.ok(entry);
@@ -154,6 +180,7 @@ try {
 			contextFacts: content?.contextFacts,
 			serverRendered: true,
 			propertyLinksInHtml: true,
+			lastThresholdPassedAt: content?.lastThresholdPassedAt,
 		}).passed,
 		true,
 	);

@@ -23,7 +23,7 @@ for (const [slug, room, tier, broad] of facets) {
 	assert.ok(entry, `${slug} registry entry is required`);
 	assert.equal(entry.tier, tier);
 	assert.equal(entry.broad, broad);
-	assert.equal(entry.minActiveObjects, "5");
+	assert.equal(entry.minActiveObjects, "3");
 
 	const pathResult = await resolveProjectPublicRoute(
 		["donetsk", "kvartiry", slug],

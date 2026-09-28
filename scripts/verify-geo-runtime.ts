@@ -19,11 +19,33 @@ try {
 	});
 	const city = cities.docs[0];
 	assert.ok(city, "Donetsk seed is required for geo runtime verification.");
+	const canonicalDistricts = await payload.find({
+		collection: "districts",
+		where: { city: { equals: city.id } },
+		pagination: false,
+		depth: 0,
+		...access,
+	});
+	assert.equal(canonicalDistricts.docs.length, 10);
+	assert.equal(
+		canonicalDistricts.docs.filter(
+			(district) => district.type === "administrative_district",
+		).length,
+		9,
+	);
+	for (const district of canonicalDistricts.docs) {
+		assert.ok(district.preposition);
+		assert.ok(district.nameLocative);
+		assert.ok(district.nameGenitive);
+		assert.ok((district.synonyms?.length ?? 0) >= 3);
+	}
 
 	await assert.rejects(
 		payload.create({
 			collection: "cities",
 			data: {
+				localityKind: "nearby_locality",
+				agglomerationApproved: false,
 				name: "Collision fixture",
 				slug: "kvartiry",
 				region: typeof city.region === "number" ? city.region : city.region.id,
@@ -78,6 +100,17 @@ try {
 	assert.equal(known.city, city.id);
 	assert.equal(known.district, textilshchik.docs[0]?.id);
 	assert.equal(known.needsReview, false);
+
+	for (const district of canonicalDistricts.docs) {
+		const synonym = district.synonyms?.[0]?.value;
+		assert.ok(synonym, `Stored synonym is required for ${district.slug}.`);
+		const synonymMatch = await resolveFeedGeo(payload, {
+			locality: "Донецк",
+			district: synonym,
+		});
+		assert.equal(synonymMatch.district, district.id);
+		assert.equal(synonymMatch.needsReview, false);
+	}
 
 	const unknown = await resolveFeedGeo(payload, {
 		locality: "Донецк",

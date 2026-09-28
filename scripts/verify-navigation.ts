@@ -38,8 +38,8 @@ const makeevka: NearbyGeoAvailability = {
 	nameGenitive: "Макеевки",
 	nameLocative: "Макеевке",
 	preposition: "в",
-	activeObjects: 2,
-	activeByCategory: { apartment: 2, house: 0, land: 0 },
+	activeObjects: 6,
+	activeByCategory: { apartment: 2, house: 2, land: 2 },
 };
 
 const dependencies = {
@@ -122,8 +122,8 @@ if (propertyPage.kind === "page") {
 }
 
 assert.equal(crawled.has("/makeevka/kvartiry/"), true);
-assert.equal(crawled.has("/makeevka/doma/"), false);
-assert.equal(crawled.has("/makeevka/uchastki/"), false);
+assert.equal(crawled.has("/makeevka/doma/"), true);
+assert.equal(crawled.has("/makeevka/uchastki/"), true);
 
 console.log(
 	`RP-09 internal-link crawl: PASS (${crawled.size} canonical targets)`,

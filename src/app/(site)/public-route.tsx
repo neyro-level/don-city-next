@@ -22,6 +22,7 @@ import { resolvePublicRoute } from "@/core/routing/resolve-public-route";
 import {
 	buildBreadcrumbJsonLd,
 	buildCatalogItemListJsonLd,
+	buildLawyerServiceJsonLd,
 	buildOrganizationJsonLd,
 	buildPropertyJsonLd,
 	JsonLdScript,
@@ -163,7 +164,12 @@ export async function ResolvedPublicRoutePage({
 	if (result.kind === "notFound") notFound();
 	if (result.kind === "redirect") permanentRedirect(result.destination);
 	if (result.kind === "gone") {
-		return <GonePropertyPageView slug={result.publicUrlId} />;
+		return (
+			<GonePropertyPageView
+				slug={result.publicUrlId}
+				catalogHref={projectUrls.primaryCatalog}
+			/>
+		);
 	}
 	if (result.property) {
 		const leadPage: MarketingPageDTO = {
@@ -281,6 +287,7 @@ export async function ResolvedPublicRoutePage({
 	const needsNap = [
 		"kontakty",
 		"o-kompanii",
+		"yurist",
 		"politika-konfidencialnosti",
 		"soglasie-na-obrabotku-personalnyh-dannyh",
 	].includes(staticSlug);
@@ -321,6 +328,9 @@ export async function ResolvedPublicRoutePage({
 	return (
 		<>
 			{nap ? <JsonLdScript data={buildOrganizationJsonLd(nap)} /> : null}
+			{staticSlug === "yurist" && nap ? (
+				<JsonLdScript data={buildLawyerServiceJsonLd(staticPage, nap)} />
+			) : null}
 			<JsonLdScript
 				data={buildBreadcrumbJsonLd(
 					breadcrumbJsonLdItems(result.breadcrumbs, result.canonicalPath),

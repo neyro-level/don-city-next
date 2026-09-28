@@ -115,6 +115,12 @@ export const Districts: CollectionConfig = {
 		},
 		{ name: "preposition", type: "text" },
 		{ name: "nameLocative", type: "text" },
+		{ name: "nameGenitive", type: "text" },
+		{
+			name: "synonyms",
+			type: "array",
+			fields: [{ name: "value", type: "text", required: true }],
+		},
 		{
 			name: "ownerVerified",
 			type: "checkbox",

@@ -56,6 +56,13 @@ const baseDependencies = {
 	loadProperty: async () => null,
 	loadDistrictParentSlug: async () => null,
 };
+const completeEvidence = {
+	activeObjects: 3,
+	introduction: "а".repeat(600),
+	contextFacts: [{ source: "district-registry", checkedAt: "2026-09-28" }],
+	serverRendered: true,
+	propertyLinksInHtml: true,
+};
 
 for (const entry of apartmentEntries) {
 	const result = await resolveProjectPublicRoute(
@@ -77,6 +84,45 @@ for (const entry of apartmentEntries) {
 	});
 	assert.equal(result.breadcrumbs.at(-1)?.label, entry.h1);
 	assert.equal(result.breadcrumbs.length, 4);
+
+	const gatedOn = await resolveProjectPublicRoute(
+		entry.url.split("/").filter(Boolean),
+		{
+			...baseDependencies,
+			loadListingContentGateEvidence: async () => completeEvidence,
+		},
+	);
+	assert.equal(gatedOn.kind, "page");
+	if (gatedOn.kind === "page") assert.equal(gatedOn.robots.indexing, "index");
+
+	const grace = await resolveProjectPublicRoute(
+		entry.url.split("/").filter(Boolean),
+		{
+			...baseDependencies,
+			loadListingContentGateEvidence: async () => ({
+				...completeEvidence,
+				activeObjects: 1,
+				lastThresholdPassedAt: new Date().toISOString(),
+			}),
+		},
+	);
+	assert.equal(grace.kind, "page");
+	if (grace.kind === "page") assert.equal(grace.robots.indexing, "index");
+
+	const zero = await resolveProjectPublicRoute(
+		entry.url.split("/").filter(Boolean),
+		{
+			...baseDependencies,
+			loadListingContentGateEvidence: async () => ({
+				...completeEvidence,
+				activeObjects: 0,
+				propertyLinksInHtml: false,
+				lastThresholdPassedAt: new Date().toISOString(),
+			}),
+		},
+	);
+	assert.equal(zero.kind, "page");
+	if (zero.kind === "page") assert.equal(zero.robots.indexing, "noindex");
 }
 
 const textilshchik = rows.find((row) => row.slug === "tekstilshchik");
@@ -109,7 +155,7 @@ for (const row of rows.filter(
 	const entry = apartmentEntries.find(
 		(candidate) => candidate.districtSlug === row.slug,
 	);
-	assert.equal(entry?.minActiveObjects, "10");
+	assert.equal(entry?.minActiveObjects, "3");
 }
 
 const withParent = await resolveProjectPublicRoute(

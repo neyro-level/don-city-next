@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isDeepStrictEqual } from "node:util";
 import {
 	adminsAndOwners,
 	hasRole,
@@ -39,6 +40,27 @@ export const ListingContents: CollectionConfig = {
 	hooks: {
 		beforeChange: [
 			async ({ data, originalDoc, req }) => {
+				const systemOperation = (
+					req.context as { systemGatewayOperation?: string } | undefined
+				)?.systemGatewayOperation;
+				const inventoryStateFields = new Set([
+					"inventorySnapshot",
+					"inventoryEvaluatedAt",
+					"lastThresholdPassedAt",
+					"updatedAt",
+				]);
+				const inventoryStateWrite =
+					systemOperation === "system-job" &&
+					originalDoc != null &&
+					Object.entries(data).every(
+						([key, value]) =>
+							inventoryStateFields.has(key) ||
+							isDeepStrictEqual(
+								value,
+								(originalDoc as Record<string, unknown>)[key],
+							),
+					);
+				if (inventoryStateWrite) return data;
 				const nextStatus = data.status ?? originalDoc?.status ?? "draft";
 				const touchesApprovedContent =
 					nextStatus === "approved" || originalDoc?.status === "approved";
@@ -160,6 +182,22 @@ export const ListingContents: CollectionConfig = {
 			],
 		},
 		{ name: "approvedAt", type: "date", admin: { readOnly: true } },
+		{
+			name: "inventorySnapshot",
+			type: "number",
+			min: 0,
+			admin: { readOnly: true },
+		},
+		{
+			name: "inventoryEvaluatedAt",
+			type: "date",
+			admin: { readOnly: true },
+		},
+		{
+			name: "lastThresholdPassedAt",
+			type: "date",
+			admin: { readOnly: true },
+		},
 		{
 			name: "approvedBy",
 			type: "relationship",

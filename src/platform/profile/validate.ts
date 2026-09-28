@@ -39,6 +39,37 @@ export function validateSiteProfile(profile: SiteProfile): string[] {
 		}
 	}
 
+	for (const [geo, routes] of Object.entries(
+		profile.nearbyGeoRouteAllowlist ?? {},
+	)) {
+		if (!slugPattern.test(geo)) {
+			violations.push(`nearbyGeoRouteAllowlist.${geo} is not a URL slug`);
+		}
+		if (!(geo in profile.geoCategoryStatus)) {
+			violations.push(`nearbyGeoRouteAllowlist.${geo} is not a known geo`);
+		}
+		if (geo === profile.primaryGeo) {
+			violations.push(
+				`nearbyGeoRouteAllowlist.${geo} cannot target primaryGeo`,
+			);
+		}
+		const unique = new Set<string>();
+		for (const route of routes ?? []) {
+			if (route !== "hub" && !(route in profile.categoryStatus)) {
+				violations.push(`nearbyGeoRouteAllowlist.${geo}.${route} is unknown`);
+			}
+			if (unique.has(route)) {
+				violations.push(
+					`nearbyGeoRouteAllowlist.${geo}.${route} is duplicated`,
+				);
+			}
+			unique.add(route);
+		}
+		if (unique.size > 0 && !unique.has("hub")) {
+			violations.push(`nearbyGeoRouteAllowlist.${geo} requires hub`);
+		}
+	}
+
 	for (const [tier, value] of Object.entries(profile.tiers)) {
 		if (!Number.isFinite(value.minBroad) || value.minBroad < 0) {
 			violations.push(`tiers.${tier}.minBroad must be non-negative`);
@@ -46,7 +77,9 @@ export function validateSiteProfile(profile: SiteProfile): string[] {
 	}
 	for (const [tier, value] of Object.entries(profile.inventoryThreshold)) {
 		if (!Number.isInteger(value) || value < 0) {
-			violations.push(`inventoryThreshold.${tier} must be a non-negative integer`);
+			violations.push(
+				`inventoryThreshold.${tier} must be a non-negative integer`,
+			);
 		}
 	}
 
@@ -57,7 +90,9 @@ export function validateSiteProfile(profile: SiteProfile): string[] {
 		const unique = new Set<string>();
 		for (const facet of facets ?? []) {
 			if (!slugPattern.test(facet)) {
-				violations.push(`facetWhitelist.${category}.${facet} is not a URL slug`);
+				violations.push(
+					`facetWhitelist.${category}.${facet} is not a URL slug`,
+				);
 			}
 			if (unique.has(facet)) {
 				violations.push(`facetWhitelist.${category}.${facet} is duplicated`);
