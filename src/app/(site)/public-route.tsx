@@ -14,6 +14,7 @@ import { PropertyPageView } from "@ams/realtbase-ui/public/property-page";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
+import { cache } from "react";
 import {
 	getCachedPublicCatalog,
 	getCachedPublicNap,
@@ -121,12 +122,68 @@ function breadcrumbJsonLdItems(
 	}));
 }
 
+function stableSearchParamsKey(searchParams: PublicRouteSearchParams): string {
+	return JSON.stringify(
+		Object.fromEntries(
+			Object.entries(searchParams).sort(([left], [right]) =>
+				left.localeCompare(right),
+			),
+		),
+	);
+}
+
+function isOutOfRangeCatalogPage(catalog: {
+	list: { page: number; totalPages: number };
+}): boolean {
+	return (
+		(catalog.list.page > 1 && catalog.list.totalPages === 0) ||
+		catalog.list.page > catalog.list.totalPages
+	);
+}
+
+const resolvePublicRouteRequestCached = cache(
+	async (segmentsKey: string, searchParamsKey: string) => {
+		const segments = JSON.parse(segmentsKey) as string[];
+		const searchParams = JSON.parse(searchParamsKey) as PublicRouteSearchParams;
+		const result = await resolvePublicRoute(segments, searchParams);
+		if (result.kind !== "page" || !result.catalogQuery) {
+			return { result, catalog: null, outOfRange: false } as const;
+		}
+		const catalog = await getCachedPublicCatalog({
+			identity: result.identity,
+			query: {
+				...result.catalogQuery,
+				limit: 24,
+				page: result.catalogQuery.page ?? 1,
+			},
+		});
+		return {
+			result,
+			catalog,
+			outOfRange: isOutOfRangeCatalogPage(catalog),
+		} as const;
+	},
+);
+
+function resolvePublicRouteRequest(
+	segments: readonly string[],
+	searchParams: PublicRouteSearchParams,
+) {
+	return resolvePublicRouteRequestCached(
+		JSON.stringify(segments),
+		stableSearchParamsKey(searchParams),
+	);
+}
+
 export async function generateResolvedRouteMetadata(
 	segments: readonly string[],
 	searchParams: PublicRouteSearchParams = {},
 ): Promise<Metadata> {
-	const result = await resolvePublicRoute(segments, searchParams);
-	if (result.kind === "notFound") {
+	const { result, outOfRange } = await resolvePublicRouteRequest(
+		segments,
+		searchParams,
+	);
+	if (result.kind === "notFound" || outOfRange) {
 		return withProjectIndexingPolicy({
 			title: "Страница не найдена | ДОН СИТИ",
 			robots: { index: false, follow: false },
@@ -160,8 +217,12 @@ export async function ResolvedPublicRoutePage({
 	segments: readonly string[];
 	searchParams?: PublicRouteSearchParams;
 }) {
-	const result = await resolvePublicRoute(segments, searchParams);
+	const { result, catalog, outOfRange } = await resolvePublicRouteRequest(
+		segments,
+		searchParams,
+	);
 	if (result.kind === "notFound") notFound();
+	if (outOfRange) notFound();
 	if (result.kind === "redirect") permanentRedirect(result.destination);
 	if (result.kind === "gone") {
 		return (
@@ -223,20 +284,7 @@ export async function ResolvedPublicRoutePage({
 		);
 	}
 	if (result.catalogQuery) {
-		const catalog = await getCachedPublicCatalog({
-			identity: result.identity,
-			query: {
-				...result.catalogQuery,
-				limit: 24,
-				page: result.catalogQuery.page ?? 1,
-			},
-		});
-		if (
-			(catalog.list.page > 1 && catalog.list.totalPages === 0) ||
-			catalog.list.page > catalog.list.totalPages
-		) {
-			notFound();
-		}
+		if (!catalog) throw new Error("Catalog request state is unavailable.");
 		return (
 			<>
 				<JsonLdScript data={buildCatalogItemListJsonLd(catalog.list)} />

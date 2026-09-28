@@ -252,7 +252,21 @@ for (const builder of [
 }
 assert.match(
 	publicRouteSource,
-	/catalog\.list\.page > catalog\.list\.totalPages/,
+	/const resolvePublicRouteRequestCached = cache/,
+);
+assert.equal(
+	(publicRouteSource.match(/resolvePublicRouteRequest\(/g) ?? []).length,
+	3,
+	"Metadata and page rendering must share one request-scoped resolver.",
+);
+assert.match(publicRouteSource, /result\.kind === "notFound" \|\| outOfRange/);
+assert.match(publicRouteSource, /if \(outOfRange\) notFound\(\)/);
+assert.match(publicRouteSource, /robots: \{ index: false, follow: false \}/);
+assert.doesNotMatch(
+	publicRouteSource.match(
+		/if \(result\.kind === "notFound" \|\| outOfRange\)[\s\S]*?\n\t\}/,
+	)?.[0] ?? "",
+	/canonical|alternates/,
 );
 const propertyViewSource = readFileSync(
 	"packages/ui/src/views/property/StarterPropertyPageView.tsx",

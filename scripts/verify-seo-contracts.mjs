@@ -94,10 +94,10 @@ assert.deepEqual(
 const robotsSource = readFileSync("src/app/robots.txt/route.ts", "utf8");
 assert.ok(robotsSource.includes("buildRobotsText("));
 assert.ok(robotsSource.includes("getProjectIndexingPolicy()"));
-assert.ok(
-	readFileSync("src/app/layout.tsx", "utf8").includes(
-		"metadataRobotsForPolicy(getProjectIndexingPolicy())",
-	),
+assert.doesNotMatch(
+	readFileSync("src/app/layout.tsx", "utf8"),
+	/robots\s*:/,
+	"Root metadata must not conflict with Next.js automatic 404 noindex metadata.",
 );
 
 const adversarialJsonLd = {
