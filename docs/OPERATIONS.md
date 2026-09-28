@@ -1,15 +1,18 @@
 # DON CITY — Operations Contract
 
 Status: active production, publicly crawlable
-Updated: 2026-09-27
+Updated: 2026-09-28
 
 ## Current Runtime
 
-- Production: `https://doncity-home.ru`; read-only HTTP evidence from 2026-09-27 confirms an indexable homepage, crawl-allowed `robots.txt` and sitemap publication.
+- Production: `https://doncity-home.ru`; bounded HTTP evidence from 2026-09-28 confirms an indexable homepage, crawl-allowed `robots.txt` and sitemap publication.
 - Exact deployed SHA/image for that observed public state is not yet bound to release evidence. SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d` and image `don-city-next:production-cd5c74391265` remain the prior recorded noindex rollback baseline.
 - One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`.
 - Exactly one persistent managed PostgreSQL 18 database and private Timeweb S3 production identity exist. Non-production DB proof is disposable, isolated and removed after use.
-- Exactly one jobs owner: production `JOBS_AUTORUN=true`; disposable proof runtime keeps jobs disabled.
+- The former persistent staging runtime, logical database, empty bucket and
+  Secret Master `/staging` folder were removed under explicit owner approval.
+- Exactly one application runtime and jobs owner remain: production
+  `JOBS_AUTORUN=true`.
 - One prior image and compose file are retained as the immediate rollback point.
 
 ## Deploy and Rollback
@@ -23,11 +26,14 @@ Updated: 2026-09-27
 ## Backup Truth
 
 - Provider PostgreSQL backup exists and an isolated temporary restore/migration rehearsal passed; the temporary database was removed.
-- Обязательная независимая копия БД создаётся командой `pg_dump -Fc` и хранится offsite; до устойчивого расписания и freshness evidence это остаётся открытым blocker.
+- Независимая копия БД создаётся ежедневным `doncity-backup.timer` через
+  `pg_dump -Fc`, проверяется `pg_restore --list` и хранится offsite; timer
+  enabled/active, а последний service result успешен.
 - Если когда-либо активирован local-media fallback, перед rollout отдельно archive `MEDIA_DIR`; текущий production использует private S3 и не считает локальный каталог media backup.
-- Authenticated health still lacks durable successful DB backup freshness and reports `backup_db_failure`.
-- Media backup/versioning and sampled restore are not yet proven; health reports `backup_media_failure`.
-- Until both signals are durable, health may remain `degraded` and indexing must remain disabled.
+- Media copy and representative checksum restore are proven without mutation
+  of the production object.
+- Authenticated health reports current DB/media backup freshness, overall
+  `ok`, all application/database/storage/jobs components `ok` and zero alerts.
 
 ## Feed, Leads and PII
 
@@ -57,7 +63,6 @@ Updated: 2026-09-27
 
 - create the first production owner;
 - connect approved independent alert/delivery channel;
-- close durable DB/media backup freshness and sampled media restore;
 - verify canonical NAP externally with the owner;
 - run a production SEO/lifecycle crawl;
 - bind the observed public state to exact deployed SHA/image evidence.

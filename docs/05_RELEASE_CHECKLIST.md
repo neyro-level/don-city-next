@@ -2,7 +2,7 @@
 
 Status: Active — public production; next release not authorized
 Version: 1.2
-Updated: 2026-09-27
+Updated: 2026-09-28
 
 ## Historical Release Evidence
 
@@ -25,13 +25,17 @@ Updated: 2026-09-27
 - [x] Deliver CP-04 with its required DB/media/performance evidence.
 - [x] Deliver CP-03 after the approved narrow OD-03 exception and atomic DB concurrency evidence (PR 79, RISKY gate 91).
 - [x] Historical CP-08 candidate proof passed; it does not define the v13 release candidate.
+- [x] Retire the persistent staging runtime, logical database, empty S3 bucket
+      and Secret Master `/staging` folder; preserve the production resources
+      and shared S3 credential.
 - [ ] Create the first production owner user.
 - [ ] Verify NAP against external owner/Yandex Business truth.
 - [x] Keep unapproved terms and managed contract PDF in explicit `ABSENT`
       state: no public route, footer/navigation/sitemap link or file URL.
 - [ ] Connect independent alert and approved lead-delivery channel; prove redacted delivery smoke.
-- [ ] Implement and sample-restore media backup/versioning.
-- [ ] Expose trustworthy DB/media backup freshness in authenticated health; health must not be degraded.
+- [x] Implement and sample-restore media backup/versioning.
+- [x] Expose trustworthy DB/media backup freshness in authenticated health;
+      bounded 2026-09-28 proof returned `ok` with zero alerts.
 - [ ] Run full production crawl for canonical, robots, sitemap, JSON-LD, 404/410 and lifecycle.
 - [ ] Provide and approve a real feed endpoint/allowlist before enabling any source.
 - [x] Public indexing is already observed; exact deployed SHA/image still requires factual reconciliation.
