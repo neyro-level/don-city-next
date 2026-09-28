@@ -20,3 +20,4 @@ Master plan остаётся источником полного contract; ADR �
 | [ADR-0012](ADR-0012-home-primary-action-contract.md) | Accepted | Require the homepage primary action in base contract 2.0.0 |
 | [ADR-0013](ADR-0013-payload-transaction-session.md) | Accepted | Pin Payload 3.90.1 transactionID to the exact PostgreSQL session executor |
 | [ADR-0014](ADR-0014-raw-sql-register.md) | Accepted | Freeze the complete named raw SQL register and revert supported Local API operations |
+| [ADR-0015](ADR-0015-stale-sending-recovery.md) | Accepted | Add one atomic stale-sending recovery operation with exact heartbeat arbitration |

@@ -21,6 +21,7 @@ all register fields. A generic `query(string)` API is forbidden.
 | `finishImportRun` | same | Persist one terminal result | conditional terminal mutation + affected row | internal ID/result/counters/redacted error | no | no | no; split operation loses terminal ownership | TASK-01.7, ADR-0013, ADR-0014 | `verify:feed-ingest`, `verify:integration` |
 | `claimLeadDeliveryRow` | `src/core/data-access/system/sql/index.ts` | Claim one due delivery and increment once | conditional claim + affected row | internal ID, clock | no | no | no; split operation risks duplicate delivery | TASK-01.7, ADR-0014 | `verify:integration` |
 | `claimPendingDeliveryRecoveryLease` | same | Lease one stale pending delivery | concurrent recovery arbitration | internal ID/threshold/lease timestamps | no | no | no; split operation risks duplicate job | ADR-0011 exact exception | `verify:integration` |
+| `recoverStaleSendingDeliveryIfStillStale` | same | Recover one still-stale sending delivery and append bounded safe audit evidence | status + heartbeat predicate, mutation and affected row must be atomic | internal ID/threshold/clock/log bound | no | no | no; Payload 3.90.1 reads matching IDs before per-ID writes | TASK-02.4, ADR-0015 | `verify:integration` two-worker one-winner and live-heartbeat proofs |
 
 External feed values are untrusted data but are never raw SQL strings: retained
 templates accept only typed scalar values through Drizzle parameter binding.
@@ -36,4 +37,3 @@ path and were removed from the raw SQL surface:
 
 All three use the explicit ingest access mode with `overrideAccess:false`; when
 an import transaction exists, the same `PayloadRequest.transactionID` is used.
-

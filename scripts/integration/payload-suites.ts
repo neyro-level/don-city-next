@@ -20,6 +20,7 @@ import { submitPublicLead } from "../../src/core/data-access/public/leads.ts";
 import { findPublicPage } from "../../src/core/data-access/public/pages.ts";
 import { systemOverrideAccess } from "../../src/core/data-access/system/overrides.ts";
 import { requirePayloadTransactionExecutor } from "../../src/core/data-access/system/payload-transaction.ts";
+import { recoverStaleSendingDeliveryIfStillStale } from "../../src/core/data-access/system/sql/index.ts";
 import { createPayloadFeedIngestRepository } from "../../src/core/ingest/payload-feed-ingest-repository.ts";
 import { runDeliverLeadTask } from "../../src/core/leads/deliver-lead.ts";
 import { defineLeadDeliveryPolicy } from "../../src/core/leads/delivery-policy.ts";
@@ -1310,6 +1311,100 @@ assert.ok(
 		(entry) => entry.safeCode === "stale_sending_recovered",
 	),
 	"15-minute policy must recover stale sending before the 30-minute orphan threshold",
+);
+const staleRaceDelivery = await createRetryFixture(
+	"stale-sending-race",
+	"+79990000017",
+);
+await payload.update({
+	collection: "lead-deliveries",
+	id: staleRaceDelivery.id,
+	data: {
+		status: "sending",
+		attempts: 1,
+		claimedAt: staleHeartbeat,
+		heartbeatAt: staleHeartbeat,
+	},
+	...access,
+});
+const staleRaceResults = await Promise.all([
+	recoverStaleSendingDeliveryIfStillStale(payload, {
+		deliveryId: String(staleRaceDelivery.id),
+		staleBeforeIso: new Date(
+			clock.now().getTime() -
+				projectConfig.leadDelivery.staleSendingThresholdMinutes * 60_000,
+		).toISOString(),
+		nowIso: clock.nowIso(),
+		maxAttemptLogEntries: projectConfig.leadDelivery.maxAttemptLogEntries,
+	}),
+	recoverStaleSendingDeliveryIfStillStale(payload, {
+		deliveryId: String(staleRaceDelivery.id),
+		staleBeforeIso: new Date(
+			clock.now().getTime() -
+				projectConfig.leadDelivery.staleSendingThresholdMinutes * 60_000,
+		).toISOString(),
+		nowIso: clock.nowIso(),
+		maxAttemptLogEntries: projectConfig.leadDelivery.maxAttemptLogEntries,
+	}),
+]);
+assert.equal(
+	staleRaceResults.filter(Boolean).length,
+	1,
+	"two stale-sending recovery workers must produce exactly one mutation winner",
+);
+const staleRaceAfter = await payload.findByID({
+	collection: "lead-deliveries",
+	id: staleRaceDelivery.id,
+	depth: 0,
+	...access,
+});
+assert.equal(staleRaceAfter.status, "pending");
+assert.equal(
+	staleRaceAfter.attemptLog?.filter(
+		(entry) => entry.safeCode === "stale_sending_recovered",
+	).length,
+	1,
+	"the atomic winner must append exactly one recovery audit entry",
+);
+const liveHeartbeatDelivery = await createRetryFixture(
+	"live-heartbeat-race",
+	"+79990000018",
+);
+await payload.update({
+	collection: "lead-deliveries",
+	id: liveHeartbeatDelivery.id,
+	data: {
+		status: "sending",
+		attempts: 1,
+		claimedAt: staleHeartbeat,
+		heartbeatAt: clock.nowIso(),
+	},
+	...access,
+});
+assert.equal(
+	await recoverStaleSendingDeliveryIfStillStale(payload, {
+		deliveryId: String(liveHeartbeatDelivery.id),
+		staleBeforeIso: new Date(
+			clock.now().getTime() -
+				projectConfig.leadDelivery.staleSendingThresholdMinutes * 60_000,
+		).toISOString(),
+		nowIso: clock.nowIso(),
+		maxAttemptLogEntries: projectConfig.leadDelivery.maxAttemptLogEntries,
+	}),
+	undefined,
+	"a refreshed worker heartbeat must defeat stale recovery",
+);
+assert.equal(
+	(
+		await payload.findByID({
+			collection: "lead-deliveries",
+			id: liveHeartbeatDelivery.id,
+			depth: 0,
+			...access,
+		})
+	).status,
+	"sending",
+	"stale recovery must not overwrite the live worker state",
 );
 const recoveredCrashDelivery = await payload.findByID({
 	collection: "lead-deliveries",
