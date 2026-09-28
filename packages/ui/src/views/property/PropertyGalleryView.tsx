@@ -60,7 +60,7 @@ export function PropertyGalleryView({
 	const [activeTab, setActiveTab] = useState<TabKey>("photos");
 
 	return (
-		<div className="grid h-98 grid-rows-[minmax(0,1fr)_50px] gap-2 md:h-127.5 md:grid-rows-[minmax(0,1fr)_52px] lg:h-160 lg:gap-3 lg:rounded-lg lg:border lg:border-[var(--border)] lg:bg-[var(--surface-card)] lg:p-3 lg:shadow-[var(--property-gallery-shadow-panel)]">
+		<div className="grid h-98 grid-rows-[minmax(0,1fr)_50px] gap-2 md:h-127.5 md:grid-rows-[minmax(0,1fr)_52px] lg:h-160 lg:gap-3 lg:rounded-lg lg:border lg:border-[var(--border)] lg:bg-[var(--surface-card)] lg:p-3 lg:shadow-[var(--shadow-raised)]">
 			<div
 				id={`property-media-panel-${activeTab}`}
 				role="tabpanel"
@@ -124,7 +124,7 @@ export function PropertyGalleryView({
 							rel="noreferrer"
 							data-analytics-event="map_open"
 							data-analytics-context="property_gallery_map"
-							className="absolute bottom-3 right-3 inline-flex min-h-10 items-center gap-2 rounded-lg bg-[var(--surface-card)] px-3 text-label font-semibold text-[var(--text-primary)] shadow-[var(--property-gallery-shadow-control)] transition hover:text-[var(--accent)] max-md:bottom-2 max-md:right-2"
+							className="absolute bottom-3 right-3 inline-flex min-h-10 items-center gap-2 rounded-lg bg-[var(--surface-card)] px-3 text-label font-semibold text-[var(--text-primary)] shadow-[var(--shadow-card)] transition hover:text-[var(--accent)] max-md:bottom-2 max-md:right-2"
 						>
 							<MapPin className="size-3.5" aria-hidden />
 							Открыть на карте
@@ -169,7 +169,7 @@ export function PropertyGalleryView({
 
 function MediaPlaceholder({ title }: { title: string }) {
 	return (
-		<div className="relative grid h-full place-items-center overflow-hidden bg-[radial-gradient(circle_at_18%_18%,var(--surface)_0%,var(--accent-soft)_30%,transparent_58%),linear-gradient(135deg,var(--property-gallery-surface-soft)_0%,var(--surface-card-soft)_48%,var(--surface)_100%)] p-6 text-center">
+		<div className="relative grid h-full place-items-center overflow-hidden bg-[radial-gradient(circle_at_18%_18%,var(--surface)_0%,var(--accent-soft)_30%,transparent_58%),linear-gradient(135deg,var(--surface-subtle)_0%,var(--surface-card-soft)_48%,var(--surface)_100%)] p-6 text-center">
 			<svg
 				className="absolute inset-0 h-full w-full"
 				viewBox="0 0 720 420"
@@ -186,7 +186,7 @@ function MediaPlaceholder({ title }: { title: string }) {
 					>
 						<stop stopColor="var(--surface)" />
 						<stop offset="0.55" stopColor="var(--accent-soft)" />
-						<stop offset="1" stopColor="var(--property-gallery-surface-soft)" />
+						<stop offset="1" stopColor="var(--surface-subtle)" />
 					</linearGradient>
 					<filter
 						id="object-video-placeholder-shadow"
@@ -219,7 +219,7 @@ function MediaPlaceholder({ title }: { title: string }) {
 					<path
 						d="M150 112H570V306H150z"
 						fill="url(#object-video-room-gradient)"
-						stroke="var(--property-gallery-border)"
+						stroke="var(--border-default)"
 						strokeWidth="2"
 					/>
 					<path
@@ -263,7 +263,7 @@ function MediaPlaceholder({ title }: { title: string }) {
 				</g>
 			</svg>
 			<div className="relative self-end pb-8 max-md:pb-5">
-				<p className="rounded-lg border border-white/70 bg-[var(--surface-card)]/88 px-5 py-3 text-body-large font-semibold leading-tight-copy text-[var(--text-primary)] shadow-[var(--property-gallery-shadow-caption)] backdrop-blur-sm max-md:px-4 max-md:py-2.5 max-md:text-body">
+				<p className="rounded-lg border border-white/70 bg-[var(--surface-card)]/88 px-5 py-3 text-body-lg font-semibold leading-tight-copy text-[var(--text-primary)] shadow-[var(--shadow-card)] backdrop-blur-sm max-md:px-4 max-md:py-2.5 max-md:text-body">
 					{title}
 				</p>
 			</div>

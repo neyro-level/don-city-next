@@ -33,7 +33,7 @@ export function AccordionTrigger({
 			<AccordionPrimitive.Trigger
 				data-slot="accordion-trigger"
 				className={cn(
-					"group/accordion flex flex-1 items-center justify-between gap-4 py-4 text-left text-body font-semibold text-[var(--text-primary)] transition duration-[var(--motion-duration-fast)] ease-site hover:text-[var(--accent)]",
+					"group/accordion flex flex-1 items-center justify-between gap-4 py-4 text-left text-body font-semibold text-[var(--text-primary)] transition duration-200 ease-in-out hover:text-[var(--accent)]",
 					className,
 				)}
 				{...props}
@@ -41,7 +41,7 @@ export function AccordionTrigger({
 				{children}
 				{trailing ?? (
 					<ChevronDown
-						className="size-4 shrink-0 transition duration-[var(--motion-duration-fast)] ease-site group-data-[state=open]/accordion:rotate-180"
+						className="size-4 shrink-0 transition duration-200 ease-in-out group-data-[state=open]/accordion:rotate-180"
 						aria-hidden
 					/>
 				)}
@@ -58,7 +58,7 @@ export function AccordionContent({
 	return (
 		<AccordionPrimitive.Content
 			data-slot="accordion-content"
-			className="overflow-hidden text-body text-[var(--accordion-content-primary)]"
+			className="overflow-hidden text-body text-[var(--content-strong)]"
 			{...props}
 		>
 			<div className={cn("pb-4 pt-0 leading-step-copy", className)}>

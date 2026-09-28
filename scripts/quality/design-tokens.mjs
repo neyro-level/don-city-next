@@ -89,7 +89,7 @@ const forbiddenStyles = primitiveStyleFiles.flatMap((path) => {
 		);
 		const hasUntokenizedMotion =
 			/\btransition(?:-|\s)/.test(line) &&
-			!line.includes("duration-[var(--motion-duration-");
+			!(/\bduration-(?:200|300)\b/.test(line) && /\bease-in-out\b/.test(line));
 		return hasForbiddenLiteral || hasUntokenizedMotion
 			? [`${relative(root, path)}:${index + 1}`]
 			: [];
@@ -249,13 +249,11 @@ const required = [
 	"--text-primary",
 	"--border",
 	"--accent",
-	"--site-type-display",
+	"--site-type-h1",
 	"--site-type-body",
 	"--site-radius-sm",
 	"--site-radius-lg",
 	"--site-radius-full",
-	"--site-font-weight-medium",
-	"--site-font-weight-bold",
 	"--site-frame-max",
 	"--site-frame-floating-max",
 	"--container-copy-measure",
@@ -269,9 +267,6 @@ const required = [
 	"--control-height-md",
 	"--control-radius",
 	"--focus-ring-soft",
-	"--motion-duration-standard",
-	"--motion-ease-standard",
-	"--motion-ease-emphasized",
 	"--color-background",
 	"--font-sans",
 ];

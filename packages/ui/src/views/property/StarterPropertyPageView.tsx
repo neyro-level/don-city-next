@@ -4,7 +4,6 @@ import type {
 	PropertyDetailsDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
-import { AnalyticsViewEvent } from "../../analytics";
 import { Button } from "../../components/ui/button";
 import {
 	Card,
@@ -34,21 +33,14 @@ export function PropertyPageView({
 }) {
 	return (
 		<>
-			<AnalyticsViewEvent
-				event={{
-					event: "property_open",
-					pageKey: pageIdentity?.pageKey,
-					geoSlug: pageIdentity?.geoSlug,
-					category: pageIdentity?.category,
-				}}
-			/>
 			<section
 				id="section-property-gallery"
-				data-analytics-event="property_open"
+				data-analytics-view="property_open"
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
+				data-analytics-category={pageIdentity?.category}
 			>
-				<Section space="hero">
+				<Section as="div" space="hero">
 					<Container>
 						<nav
 							aria-label="Хлебные крошки"
@@ -80,10 +72,10 @@ export function PropertyPageView({
 									/>
 								</div>
 								<section id="section-property-summary">
-									<h1 className="mt-8 text-display-small font-extrabold leading-heading">
+									<h1 className="mt-8 text-h1 font-extrabold leading-heading">
 										{property.title}
 									</h1>
-									<p className="mt-2 text-body-large text-content-default">
+									<p className="mt-2 text-body-lg text-content-default">
 										{property.address}
 									</p>
 								</section>
@@ -103,7 +95,7 @@ export function PropertyPageView({
 									</dl>
 								</section>
 								<section id="section-property-description">
-									<p className="mt-8 text-body-large text-content-default">
+									<p className="mt-8 text-body-lg text-content-default">
 										{property.description}
 									</p>
 								</section>
@@ -111,7 +103,7 @@ export function PropertyPageView({
 							<aside id="section-property-actions">
 								<Card elevation="raised" className="sticky top-32">
 									<CardHeader>
-										<p className="text-display-small font-semibold leading-tight-copy">
+										<p className="text-h1 font-semibold leading-tight-copy">
 											{property.price?.label ?? "Цена по запросу"}
 										</p>
 										<CardDescription>{property.address}</CardDescription>
@@ -150,11 +142,11 @@ export function PropertyPageView({
 					id="section-property-legal-check"
 					className="bg-surface-raised"
 				>
-					<Section>
+					<Section as="div">
 						<Container size="narrow">
 							<Card>
 								<CardHeader>
-									<h2 className="text-display-small font-semibold leading-tight-copy">
+									<h2 className="text-h1 font-semibold leading-tight-copy">
 										Юридическая проверка объекта
 									</h2>
 									<CardDescription>
@@ -177,10 +169,17 @@ export function PropertyPageView({
 					</Section>
 				</section>
 			) : null}
-			<section id="section-property-related" className="bg-surface-subtle">
-				<Section>
+			<section
+				id="section-property-related"
+				aria-labelledby="property-related-title"
+				className="bg-surface-subtle"
+			>
+				<Section as="div">
 					<Container>
-						<SectionHeader title="Похожие объекты" />
+						<SectionHeader
+							titleId="property-related-title"
+							title="Похожие объекты"
+						/>
 						{property.related.length ? (
 							<div className="mt-8 grid gap-6 md:grid-cols-2">
 								{property.related.map((item) => (
@@ -188,7 +187,7 @@ export function PropertyPageView({
 								))}
 							</div>
 						) : (
-							<p className="mt-8 text-body-large text-content-default">
+							<p className="mt-8 text-body-lg text-content-default">
 								Похожие объекты появятся, когда в каталоге будет достаточно
 								опубликованных предложений.
 							</p>
@@ -197,7 +196,7 @@ export function PropertyPageView({
 				</Section>
 			</section>
 			<section id="section-property-lead">
-				<Section>
+				<Section as="div">
 					<Container size="narrow">
 						{leadContext ? (
 							<LeadFormView

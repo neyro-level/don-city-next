@@ -30,11 +30,11 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 					</p>
 					<h1
 						id="home-hero-title"
-						className="mt-4 max-w-4xl text-display font-extrabold leading-display-tight tracking-display"
+						className="mt-4 max-w-4xl text-h1 font-extrabold leading-display-tight tracking-display"
 					>
 						{page.title}
 					</h1>
-					<p className="mt-5 max-w-2xl text-body-large leading-step-relaxed text-content-default">
+					<p className="mt-5 max-w-2xl text-body-lg leading-step-relaxed text-content-default">
 						{page.lead}
 					</p>
 					<div className="mt-7 flex flex-wrap gap-3">
@@ -72,16 +72,14 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 export function HomeServicesSection({ page }: Pick<HomeSectionProps, "page">) {
 	return (
 		<section id="section-home-services" aria-labelledby="home-services-title">
-			<Section>
+			<Section as="div">
 				<Container>
 					<SectionHeader
+						titleId="home-services-title"
 						eyebrow="Направления"
 						title="Чем можем помочь"
 						description="Покупка, продажа, аренда и ипотечное сопровождение в одном агентстве."
 					/>
-					<h2 id="home-services-title" className="sr-only">
-						Услуги
-					</h2>
 					<div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 						{page.serviceLinks.map((item) => (
 							<Card key={item.href}>
@@ -111,21 +109,19 @@ export function HomeFeaturedSection({
 			aria-labelledby="home-featured-title"
 			className="bg-surface-subtle"
 		>
-			<Section>
+			<Section as="div">
 				<Container>
 					<SectionHeader
+						titleId="home-featured-title"
 						title="Актуальные предложения"
 						description="Карточки объектов из рабочего каталога агентства."
 					/>
-					<h2 id="home-featured-title" className="sr-only">
-						Избранные объекты
-					</h2>
 					{featured ? (
 						<div className="mt-8 max-w-xl">
 							<PublicPropertyCard property={featured} />
 						</div>
 					) : (
-						<p className="mt-8 text-body-large text-content-default">
+						<p className="mt-8 text-body-lg text-content-default">
 							Как только объекты появятся в каталоге, они отобразятся здесь.
 						</p>
 					)}
@@ -138,22 +134,20 @@ export function HomeFeaturedSection({
 export function HomeProcessSection({ page }: Pick<HomeSectionProps, "page">) {
 	return (
 		<section id="section-home-process" aria-labelledby="home-process-title">
-			<Section>
+			<Section as="div">
 				<Container size="narrow">
 					<SectionHeader
+						titleId="home-process-title"
 						eyebrow={page.sections[0]?.title}
 						title="Как мы работаем"
 						description={page.sections[0]?.text}
 					/>
-					<h2 id="home-process-title" className="sr-only">
-						Процесс
-					</h2>
 					<ol className="mt-8 grid gap-4 md:grid-cols-3">
 						{page.sections[0]?.items?.map((item, index) => (
 							<li key={item}>
 								<Card>
 									<CardHeader>
-										<p className="text-display-small font-extrabold text-action-primary">
+										<p className="text-h1 font-extrabold text-action-primary">
 											0{index + 1}
 										</p>
 										<CardTitle>{item}</CardTitle>
@@ -175,15 +169,13 @@ export function HomeTrustSection() {
 			aria-labelledby="home-trust-title"
 			className="bg-surface-subtle"
 		>
-			<Section>
+			<Section as="div">
 				<Container size="narrow">
 					<SectionHeader
+						titleId="home-trust-title"
 						title="Почему с нами спокойнее"
 						description="Проверяем документы, сопровождаем показ и помогаем довести сделку до регистрации."
 					/>
-					<h2 id="home-trust-title" className="sr-only">
-						Доверие
-					</h2>
 				</Container>
 			</Section>
 		</section>
@@ -193,7 +185,7 @@ export function HomeTrustSection() {
 export function HomeLeadSection({ page }: Pick<HomeSectionProps, "page">) {
 	return (
 		<section id="section-home-lead" aria-labelledby="home-lead-title">
-			<Section>
+			<Section as="div">
 				<Container size="narrow">
 					<h2 id="home-lead-title" className="sr-only">
 						Заявка

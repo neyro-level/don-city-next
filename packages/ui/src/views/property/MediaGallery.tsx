@@ -96,7 +96,7 @@ export function MediaGallery({
 
 	const controlClass =
 		variant === "light-controls"
-			? "bg-[var(--surface-card)] text-[var(--text-primary)] shadow-[var(--media-gallery-shadow-primary)] hover:bg-[var(--home-articles-chip)]"
+			? "bg-[var(--surface-card)] text-[var(--text-primary)] shadow-[var(--shadow-card)] hover:bg-[var(--surface-subtle)]"
 			: "border border-[var(--media-control-border)] bg-[var(--media-control-surface)] text-[var(--media-control-content)] hover:bg-[var(--surface-dark)]";
 
 	return (
@@ -144,7 +144,7 @@ export function MediaGallery({
 							type="button"
 							onClick={() => api?.scrollPrev()}
 							className={cn(
-								"absolute left-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg transition duration-[var(--motion-duration-fast)] ease-site lg:left-5",
+								"absolute left-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg transition duration-200 ease-in-out lg:left-5",
 								controlClass,
 							)}
 							aria-label="Предыдущее фото"
@@ -156,7 +156,7 @@ export function MediaGallery({
 							type="button"
 							onClick={() => api?.scrollNext()}
 							className={cn(
-								"absolute right-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg transition duration-[var(--motion-duration-fast)] ease-site lg:right-5",
+								"absolute right-3 top-1/2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg transition duration-200 ease-in-out lg:right-5",
 								controlClass,
 							)}
 							aria-label="Следующее фото"

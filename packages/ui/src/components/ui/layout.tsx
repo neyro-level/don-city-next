@@ -127,12 +127,12 @@ export function SectionHeader({
 				) : null}
 				<h2
 					id={titleId}
-					className="text-section-title font-semibold leading-section-title text-content-strong"
+					className="text-h2 font-semibold leading-section-title text-content-strong"
 				>
 					{title}
 				</h2>
 				{description ? (
-					<p className="mt-3 text-body leading-step-copy text-content-default md:text-body-large">
+					<p className="mt-3 text-body leading-step-copy text-content-default md:text-body-lg">
 						{description}
 					</p>
 				) : null}

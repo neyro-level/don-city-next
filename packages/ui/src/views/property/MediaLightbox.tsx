@@ -103,7 +103,7 @@ export function MediaLightbox({
 							<Button
 								type="button"
 								variant="plain"
-								className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-[var(--motion-duration-fast)] ease-site hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
+								className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-200 ease-in-out hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
 								onClick={() => setZoomed((value) => !value)}
 								aria-label={zoomed ? "Уменьшить фото" : "Увеличить фото"}
 								aria-pressed={zoomed}
@@ -114,7 +114,7 @@ export function MediaLightbox({
 								<Button
 									type="button"
 									variant="plain"
-									className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-[var(--motion-duration-fast)] ease-site hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
+									className="inline-flex size-10 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-200 ease-in-out hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary"
 									onClick={() => void toggleFullscreen()}
 									aria-label={fullscreen ? "Выйти из полноэкранного режима" : "На весь экран"}
 								>
@@ -136,7 +136,7 @@ export function MediaLightbox({
 									src={activeSlide.src}
 									srcSet={activeSlide.browserSrcSet}
 									alt={activeSlide.alt}
-									className={`max-h-full max-w-full object-contain transition-transform duration-[var(--motion-duration-fast)] ease-site ${zoomed ? "scale-150 cursor-zoom-out" : "scale-100"}`}
+									className={`max-h-full max-w-full object-contain transition-transform duration-200 ease-in-out ${zoomed ? "scale-150 cursor-zoom-out" : "scale-100"}`}
 								/>
 							</button>
 						) : null}
@@ -146,7 +146,7 @@ export function MediaLightbox({
 								<Button
 									type="button"
 									variant="plain"
-									className="absolute left-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-[var(--motion-duration-fast)] ease-site hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary sm:left-5"
+									className="absolute left-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-200 ease-in-out hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary sm:left-5"
 									onClick={() => move(-1)}
 									aria-label="Предыдущее фото"
 								>
@@ -155,7 +155,7 @@ export function MediaLightbox({
 								<Button
 									type="button"
 									variant="plain"
-									className="absolute right-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-[var(--motion-duration-fast)] ease-site hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary sm:right-5"
+									className="absolute right-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg bg-surface-raised/12 transition-colors duration-200 ease-in-out hover:bg-surface-raised/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary sm:right-5"
 									onClick={() => move(1)}
 									aria-label="Следующее фото"
 								>
@@ -173,7 +173,7 @@ export function MediaLightbox({
 									key={slide.src}
 									type="button"
 									variant="plain"
-									className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors duration-[var(--motion-duration-fast)] ease-site focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary ${slideIndex === index ? "border-action-primary" : "border-transparent"}`}
+									className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors duration-200 ease-in-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action-primary ${slideIndex === index ? "border-action-primary" : "border-transparent"}`}
 									onClick={() => {
 										setZoomed(false);
 										onView(slideIndex);

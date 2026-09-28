@@ -17,11 +17,11 @@ export function HtmlSitemapView({
 	linkRenderer: SiteLinkRenderer;
 }) {
 	return (
-		<main className="bg-[var(--surface-card)] pb-24 text-[var(--html-sitemap-content-primary)] md:pb-32">
+		<main className="bg-[var(--surface-card)] pb-24 text-[var(--content-strong)] md:pb-32">
 			<section className="mx-auto max-w-site-frame px-5 pb-7 pt-7 md:pb-9 md:pt-9 lg:pb-10 lg:pt-10">
 				{breadcrumbs}
-				<div className="flex flex-col gap-4 border-b border-[var(--html-sitemap-border-primary)] pb-5 md:flex-row md:items-end md:justify-between">
-					<h1 className="text-section-small font-semibold leading-tight-copy md:text-section-prominent">
+				<div className="flex flex-col gap-4 border-b border-[var(--border-default)] pb-5 md:flex-row md:items-end md:justify-between">
+					<h1 className="text-h2 font-semibold leading-tight-copy md:text-h2">
 						Опубликованные страницы
 					</h1>
 					<dl
@@ -69,12 +69,12 @@ function SitemapSection({
 	const columns = section.columns.filter((column) => column.items.length);
 	if (!columns.length) return null;
 	return (
-		<details className="group border-b border-[var(--html-sitemap-border-primary)] py-5 first:pt-0">
+		<details className="group border-b border-[var(--border-default)] py-5 first:pt-0">
 			<summary className="flex cursor-pointer list-none items-center justify-between gap-5 [&::-webkit-details-marker]:hidden">
 				<span className="min-w-0">
 					<span
 						id={sectionId(section.title)}
-						className="block text-lead font-semibold leading-tight-copy text-[var(--text-primary)] md:text-heading-small"
+						className="block text-body-lg font-semibold leading-tight-copy text-[var(--text-primary)] md:text-h4"
 					>
 						{section.title}
 					</span>
@@ -119,7 +119,7 @@ function Column({
 	return (
 		<div className="min-w-0">
 			{column.title ? (
-				<h3 className="text-body-compact font-semibold leading-step-body text-[var(--text-primary)]">
+				<h3 className="text-body-lg font-semibold leading-step-body text-[var(--text-primary)]">
 					{column.title}
 				</h3>
 			) : null}
@@ -143,7 +143,7 @@ function TextLink({
 	return (
 		<LinkRenderer
 			href={item.href}
-			className={`text-body leading-step-body text-[var(--html-sitemap-content-secondary)] transition hover:text-[var(--accent)] ${item.emphasis ? "font-semibold" : "font-medium"}`}
+			className={`text-body leading-step-body text-[var(--content-subtle)] transition hover:text-[var(--accent)] ${item.emphasis ? "font-semibold" : "font-medium"}`}
 		>
 			{item.label}
 		</LinkRenderer>
@@ -160,15 +160,15 @@ function Counter({
 }) {
 	return (
 		<div
-			className={`rounded-lg px-3 py-2 text-right md:min-w-33 ${featured ? "bg-[var(--accent)] text-white" : "bg-[var(--html-sitemap-surface-primary)] text-[var(--html-sitemap-content-primary)]"}`}
+			className={`rounded-lg px-3 py-2 text-right md:min-w-33 ${featured ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-subtle)] text-[var(--content-strong)]"}`}
 		>
 			<dt
-				className={`text-overline font-medium uppercase leading-flat tracking-label ${featured ? "text-white/78" : "text-[var(--text-muted)]"}`}
+				className={`text-caption font-medium uppercase leading-flat tracking-label ${featured ? "text-white/78" : "text-[var(--text-muted)]"}`}
 			>
 				{label}
 			</dt>
 			<dd
-				className={`mt-1 font-semibold leading-flat ${featured ? "text-lead md:text-heading-small" : "text-body-large md:text-lead"}`}
+				className={`mt-1 font-semibold leading-flat ${featured ? "text-body-lg md:text-h4" : "text-body-lg md:text-body-lg"}`}
 			>
 				{value}
 			</dd>

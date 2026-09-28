@@ -91,7 +91,7 @@ function validateCatalog(catalog: Catalog): void {
 			errors.push(`invalid price for ${item.externalId}`);
 		}
 		const publicCopy = `${item.title}\n${item.publicAddress}\n${item.description}`;
-		if (/\+?7[\s(\-]*\d{3}/.test(publicCopy)) {
+		if (/\+?7[\s(-]*\d{3}/.test(publicCopy)) {
 			errors.push(`phone-like PII in public copy for ${item.externalId}`);
 		}
 	}

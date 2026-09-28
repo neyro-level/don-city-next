@@ -5,11 +5,6 @@ import type {
 	PropertyListDTO,
 	PublicPageIdentityDTO,
 } from "@ams/realtbase-contracts";
-import {
-	type AnalyticsFilterKey,
-	AnalyticsViewEvent,
-	type CatalogViewAnalyticsEvent,
-} from "../../analytics";
 import { Badge } from "../../components/ui/badge";
 import { Container, Section, SectionHeader } from "../../components/ui/layout";
 import { PublicPropertyCard } from "../property/StarterPropertyCardView";
@@ -32,6 +27,12 @@ export type CatalogPaginationItem = {
 	href?: string;
 	current?: boolean;
 };
+export type CatalogViewAnalyticsEvent =
+	| "all_property_view"
+	| "category_catalog_view"
+	| "district_view"
+	| "facet_view";
+export type AnalyticsFilterKey = "rooms" | "houseType";
 
 const defaultCopy: CatalogPageCopy = {
 	eyebrow: "Каталог",
@@ -68,32 +69,24 @@ export function CatalogPageView({
 }) {
 	return (
 		<>
-			<AnalyticsViewEvent
-				event={{
-					event: analyticsEvent,
-					pageKey: pageIdentity?.pageKey,
-					geoSlug: pageIdentity?.geoSlug,
-					category: pageIdentity?.category,
-				}}
-			/>
-			{analyticsFilterKeys.length ? (
-				<AnalyticsViewEvent
-					event={{
-						event: "filter_apply",
-						pageKey: pageIdentity?.pageKey,
-						geoSlug: pageIdentity?.geoSlug,
-						category: pageIdentity?.category,
-						filterKeys: analyticsFilterKeys,
-					}}
-				/>
-			) : null}
 			<section
 				id="section-catalog-hero"
 				className="border-b border-border bg-surface-raised py-[var(--section-space-md)]"
-				data-analytics-event={analyticsEvent}
+				data-analytics-view={analyticsEvent}
 				data-analytics-geo-slug={pageIdentity?.geoSlug}
 				data-analytics-page-key={pageIdentity?.pageKey}
+				data-analytics-category={pageIdentity?.category}
 			>
+				{analyticsFilterKeys.length ? (
+					<span
+						hidden
+						data-analytics-view="filter_apply"
+						data-analytics-geo-slug={pageIdentity?.geoSlug}
+						data-analytics-page-key={pageIdentity?.pageKey}
+						data-analytics-category={pageIdentity?.category}
+						data-analytics-filter-keys={analyticsFilterKeys.join(",")}
+					/>
+				) : null}
 				<Container>
 					{breadcrumbs.length ? (
 						<nav
@@ -115,19 +108,19 @@ export function CatalogPageView({
 					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
 						{copy.eyebrow}
 					</p>
-					<h1 className="mt-4 text-display font-extrabold tracking-display">
+					<h1 className="mt-4 text-h1 font-extrabold tracking-display">
 						{copy.title}
 					</h1>
-					<p className="mt-4 max-w-2xl text-body-large text-content-default">
+					<p className="mt-4 max-w-2xl text-body-lg text-content-default">
 						{copy.description}
 					</p>
 				</Container>
 			</section>
 			{copy.introduction ? (
 				<section id="section-catalog-introduction">
-					<Section>
+					<Section as="div">
 						<Container size="narrow">
-							<p className="whitespace-pre-line text-body-large text-content-default">
+							<p className="whitespace-pre-line text-body-lg text-content-default">
 								{copy.introduction}
 							</p>
 						</Container>
@@ -135,7 +128,7 @@ export function CatalogPageView({
 				</section>
 			) : null}
 			<section id="section-catalog-filters" aria-label="Фильтры">
-				<Section>
+				<Section as="div">
 					<Container>
 						<fieldset className="mb-8 flex flex-wrap gap-2">
 							<legend className="sr-only">Доступные фильтры</legend>
@@ -164,16 +157,20 @@ export function CatalogPageView({
 					</Container>
 				</nav>
 			) : null}
-			<section id="section-catalog-toolbar" aria-label="Результаты">
+			<section
+				id="section-catalog-toolbar"
+				aria-labelledby="catalog-toolbar-title"
+			>
 				<Container>
 					<SectionHeader
+						titleId="catalog-toolbar-title"
 						title={`Найдено: ${filters.resultLabel}`}
 						description="Показываем только подтверждённые характеристики объекта."
 					/>
 				</Container>
 			</section>
 			<section id="section-catalog-grid">
-				<Section>
+				<Section as="div">
 					<Container>
 						{list.items.length ? (
 							<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -184,7 +181,7 @@ export function CatalogPageView({
 						) : (
 							<p
 								id="section-catalog-empty"
-								className="text-body-large text-content-default"
+								className="text-body-lg text-content-default"
 							>
 								{copy.emptyMessage}
 							</p>
@@ -220,7 +217,7 @@ export function CatalogPageView({
 				</Section>
 			</section>
 			<section id="section-catalog-cta">
-				<Section className="bg-surface-subtle">
+				<Section as="div" className="bg-surface-subtle">
 					<Container size="narrow">
 						<LeadFormView
 							context={leadContext}

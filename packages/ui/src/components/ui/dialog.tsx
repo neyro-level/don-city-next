@@ -18,7 +18,7 @@ export function DialogOverlay({
 		<DialogPrimitive.Overlay
 			data-slot="dialog-overlay"
 			className={cn(
-				"fixed inset-0 z-50 bg-[var(--dialog-effect-primary)] backdrop-blur-[var(--overlay-blur)]",
+				"fixed inset-0 z-50 bg-[var(--overlay-default)] backdrop-blur-[var(--overlay-blur)]",
 				className,
 			)}
 			{...props}
@@ -57,7 +57,7 @@ export function DialogContent({
 				{children}
 				{showClose ? (
 					<DialogPrimitive.Close
-						className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-lg bg-[var(--dialog-surface-primary)] text-[var(--text-secondary)] transition duration-[var(--motion-duration-fast)] ease-site hover:bg-[var(--dialog-surface-secondary)] focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
+						className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--text-secondary)] transition duration-200 ease-in-out hover:bg-[var(--surface-subtle)] focus-visible:outline focus-visible:outline-[length:var(--focus-ring-width)] focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]"
 						aria-label="Закрыть"
 					>
 						<X className="size-5" aria-hidden />
@@ -99,7 +99,7 @@ export function DialogTitle({
 		<DialogPrimitive.Title
 			data-slot="dialog-title"
 			className={cn(
-				"text-section-small font-semibold text-[var(--text-primary)]",
+				"text-h2 font-semibold text-[var(--text-primary)]",
 				className,
 			)}
 			{...props}
@@ -115,7 +115,7 @@ export function DialogDescription({
 		<DialogPrimitive.Description
 			data-slot="dialog-description"
 			className={cn(
-				"text-body leading-step-copy text-[var(--dialog-content-primary)]",
+				"text-body leading-step-copy text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}

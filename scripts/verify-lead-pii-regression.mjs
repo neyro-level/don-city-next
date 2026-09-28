@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { normalizeAnalyticsEvent } from "../packages/ui/src/analytics-contract.ts";
+import { normalizeAnalyticsEvent } from "../src/platform/analytics/contract.ts";
 import {
 	assertNoPiiInDiagnostics,
 	buildLeadIdempotencyKey,

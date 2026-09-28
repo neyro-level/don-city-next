@@ -48,7 +48,7 @@ export function PropertyViewingRequestView({
 }) {
 	return (
 		<section
-			className="rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--property-viewing-request-shadow-subtle)] md:p-6"
+			className="rounded-lg border border-[var(--border)] bg-[var(--surface-card)] p-5 shadow-[var(--shadow-card)] md:p-6"
 			aria-labelledby="property-viewing-title"
 		>
 			<div className="grid gap-5">
@@ -56,7 +56,7 @@ export function PropertyViewingRequestView({
 					<div>
 						<h2
 							id="property-viewing-title"
-							className="text-heading-medium font-semibold leading-tight-copy text-[var(--text-primary)] sm:text-section-large md:text-heading-extra-large"
+							className="text-h3 font-semibold leading-tight-copy text-[var(--text-primary)] sm:text-h2 md:text-h2"
 						>
 							Запланируйте просмотр
 						</h2>
@@ -97,10 +97,10 @@ export function PropertyViewingRequestView({
 										type="button"
 										data-visual-dynamic
 										onClick={() => onSelectDate(date.value)}
-										className={`grid min-h-19 min-w-25.5 snap-start content-start rounded-lg border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:min-w-0 md:min-h-20 ${selected ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-white" : "border-transparent bg-[var(--background)] text-[var(--text-primary)] hover:border-[var(--input)] hover:bg-[var(--property-viewing-request-surface-selected)]"}`}
+										className={`grid min-h-19 min-w-25.5 snap-start content-start rounded-lg border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:min-w-0 md:min-h-20 ${selected ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-white" : "border-transparent bg-[var(--background)] text-[var(--text-primary)] hover:border-[var(--input)] hover:bg-[var(--surface-subtle)]"}`}
 										aria-pressed={selected}
 									>
-										<span className="truncate text-support font-semibold leading-step-body md:text-body">
+										<span className="truncate text-body-sm font-semibold leading-step-body md:text-body">
 											{date.label}
 										</span>
 										<span
@@ -123,7 +123,7 @@ export function PropertyViewingRequestView({
 								onChange={(event) => onNameChange(event.target.value)}
 								autoComplete="name"
 								placeholder="Имя"
-								className="min-h-14 rounded-lg border border-transparent bg-[var(--background)] px-5 text-body-large font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-card)]"
+								className="min-h-14 rounded-lg border border-transparent bg-[var(--background)] px-5 text-body-lg font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-card)]"
 							/>
 						</label>
 						<label className="grid gap-2">
@@ -139,7 +139,7 @@ export function PropertyViewingRequestView({
 								required
 								placeholder="+7 9XX XXX-XX-XX"
 								maxLength={18}
-								className="min-h-14 rounded-lg border border-transparent bg-[var(--background)] px-5 text-body-large font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-card)]"
+								className="min-h-14 rounded-lg border border-transparent bg-[var(--background)] px-5 text-body-lg font-medium text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-card)]"
 							/>
 						</label>
 						<Button
@@ -162,7 +162,7 @@ export function PropertyViewingRequestView({
 					</label>
 					{result ? (
 						<p
-							className={`text-body font-semibold ${result.ok ? "text-[var(--property-viewing-request-content-success)]" : "text-[var(--accent)]"}`}
+							className={`text-body font-semibold ${result.ok ? "text-[var(--status-success)]" : "text-[var(--accent)]"}`}
 						>
 							{result.message}
 						</p>

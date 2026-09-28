@@ -175,10 +175,10 @@ export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
 					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
 						{page.eyebrow}
 					</p>
-					<h1 className="mt-4 text-display font-extrabold leading-display-tight tracking-display">
+					<h1 className="mt-4 text-h1 font-extrabold leading-display-tight tracking-display">
 						{page.title}
 					</h1>
-					<p className="mt-5 max-w-[var(--container-copy-measure)] text-body-large leading-step-relaxed text-content-default">
+					<p className="mt-5 max-w-[var(--container-copy-measure)] text-body-lg leading-step-relaxed text-content-default">
 						{page.lead}
 					</p>
 				</Container>

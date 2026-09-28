@@ -27,7 +27,7 @@ export function CatalogMapFrameView({
 			<div className="order-1 relative min-h-[420px] bg-[var(--surface-subtle)] lg:order-2 lg:min-h-0">
 				{canvas}
 				{statusMessage ? (
-					<div className="absolute inset-0 grid place-items-center p-6 text-center text-body font-semibold text-[var(--new-building-map-content-strong)]">
+					<div className="absolute inset-0 grid place-items-center p-6 text-center text-body font-semibold text-[var(--content-strong)]">
 						{statusMessage}
 					</div>
 				) : null}

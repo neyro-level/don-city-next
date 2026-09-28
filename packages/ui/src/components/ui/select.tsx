@@ -13,7 +13,7 @@ export const Select = React.forwardRef<
 				variant === "native"
 					? className
 					: cn(
-							"h-[var(--control-height-md)] w-full rounded-[var(--control-radius)] border border-[var(--input)] bg-[var(--surface)] px-[var(--control-padding-sm)] text-body text-[var(--foreground)] outline-none transition-colors duration-[var(--motion-duration-fast)] ease-site focus-visible:border-[var(--ring)] focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)] disabled:cursor-not-allowed disabled:opacity-50",
+							"h-[var(--control-height-md)] w-full rounded-[var(--control-radius)] border border-[var(--input)] bg-[var(--surface)] px-[var(--control-padding-sm)] text-body text-[var(--foreground)] outline-none transition-colors duration-200 ease-in-out focus-visible:border-[var(--ring)] focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)] disabled:cursor-not-allowed disabled:opacity-50",
 							className,
 						)
 			}
