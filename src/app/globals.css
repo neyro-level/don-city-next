@@ -71,8 +71,6 @@
   --accent-border: color-mix(in srgb, var(--accent) 15%, transparent);
   --warning: #996000;
   --error: #9e1c1c;
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(0, 0, 0, 0.04);
-  --shadow-dialog: 0 28px 80px rgba(24, 22, 24, 0.18);
   --home-shadow-action: 0 4px 12px var(--home-action-shadow);
   --home-shadow-action-hover: 0 6px 16px var(--home-action-shadow-hover);
   --site-radius-sm: 8px;
@@ -122,7 +120,6 @@
   --site-type-label: 12px;
   --site-type-caption: 11px;
   --site-type-heading-leading: 1.1;
-  --site-type-heading-leading: 1.2;
   --site-type-card-leading: 1.3;
   --site-type-body-leading: 1.7;
   --site-type-support-leading: 1.55;

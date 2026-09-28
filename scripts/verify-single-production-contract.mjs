@@ -58,7 +58,7 @@ const serverOperator = requireFragments("scripts/ops/Invoke-DonCityServerInvento
 	"staging_container_count=%s",
 	"staging_runtime_directory=absent",
 	"production_health=%s",
-	"-replace \"\`r\`n\", \"\`n\"",
+	"-replace \"`r`n\", \"`n\"",
 	"CleanupFailedTransport",
 	"failed_transport=absent",
 	"CleanupFailedRelease",

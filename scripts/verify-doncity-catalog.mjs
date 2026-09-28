@@ -29,7 +29,7 @@ for (const item of catalog.items) {
 	assert.ok(item.sourceImageCount > 0, `${item.externalId}: images are required`);
 	assert.ok(item.price > 0, `${item.externalId}: price is required`);
 	const publicCopy = `${item.title}\n${item.publicAddress}\n${item.description}`;
-	assert.doesNotMatch(publicCopy, /\+?7[\s(\-]*\d{3}/, `${item.externalId}: phone-like PII`);
+	assert.doesNotMatch(publicCopy, /\+?7[\s(-]*\d{3}/, `${item.externalId}: phone-like PII`);
 }
 
 console.log("DON CITY listing catalog: PASS (12 listings, 3 house/land-attached)");
