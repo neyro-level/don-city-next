@@ -96,8 +96,7 @@ assert.equal(
 
 const nginxContracts = [
 	"deploy/clients/timeweb/nginx/site.conf.example",
-	"deploy/clients/timeweb/production/nginx.production-noindex.conf.example",
-	"deploy/clients/timeweb/staging/nginx.staging.conf.example",
+	"deploy/clients/timeweb/production/nginx.production-public.conf.example",
 ];
 
 for (const path of nginxContracts) {

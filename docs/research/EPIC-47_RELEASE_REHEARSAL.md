@@ -103,6 +103,6 @@ reclassified as PASS.
 - Implementation task/head: `dcv4-task-47-implement` / `b6cd1b4…`.
 - Verification task/head: `dcv4-task-47-verify` / `bef16fb…`.
 - Evidence paths: this record, `docs/DELIVERY_STATE.yaml` and
-  `deploy/clients/timeweb/proofs/STAGING_PROOF.md`.
+  `docs/research/EPIC-45_LIVE_STAGING_VERIFICATION.md`.
 - The pending delivery task owns PR, exact-head RISKY gate and canonical-main
   merge evidence. It does not authorize production.

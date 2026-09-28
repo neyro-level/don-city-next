@@ -13,6 +13,5 @@ if [ "$checkout" != "$origin_main" ]; then
 fi
 
 node scripts/verify-release-artifact.mjs
-node scripts/verify-doncity-catalog.mjs
 
-printf '%s\n' "Exact-main noindex release attestation passed: $checkout"
+printf '%s\n' "Exact-main public release attestation passed: $checkout"

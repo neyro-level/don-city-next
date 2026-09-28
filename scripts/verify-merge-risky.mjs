@@ -28,8 +28,6 @@ execFileSync("pnpm", ["verify"], {
 	env: {
 		...process.env,
 		AMS_REQUIRE_INTEGRATION_DB: "true",
-		AMS_EXPECT_CLIENT_READINESS_BLOCKERS:
-			"required-host-allowlists-missing,client-storage-deployment-contract-missing",
 		DATABASE_URI_TEST: testUri,
 		DATABASE_URI: testUri,
 	},

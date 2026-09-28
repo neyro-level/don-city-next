@@ -1,5 +1,5 @@
 param(
-  [ValidateSet('Inventory', 'RetireRuntime', 'VerifyRuntime', 'OperationalProof')]
+  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof')]
   [string]$Action = 'Inventory',
   [string]$CodexHome = $(if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' })
 )
@@ -33,6 +33,11 @@ function Invoke-SshCommand {
     [string]$PrivateKey,
     [string]$RemoteCommand
   )
+
+  # PowerShell here-strings use Windows CRLF. Normalize before passing a
+  # multi-line command to the Linux host; otherwise Bash receives literal CR
+  # bytes in control-flow tokens (for example `do\r`) and refuses the command.
+  $RemoteCommand = $RemoteCommand -replace "`r`n", "`n"
 
   $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
   $keyPath = Join-Path $tempRoot ("doncity-codex-{0}.key" -f [guid]::NewGuid().ToString('N'))
@@ -107,8 +112,10 @@ printf 'host=%s\n' "$(hostname)"
 printf 'user=%s\n' "$(id -un)"
 sudo -n docker ps -a --format '{{.ID}}|{{.Names}}|{{.Image}}|{{.Status}}'
 for container_id in $(sudo -n docker ps -aq); do
-  sudo -n docker inspect --format '{{.Name}}|{{index .Config.Labels "com.docker.compose.project"}}|{{index .Config.Labels "com.docker.compose.project.working_dir"}}|{{index .Config.Labels "com.docker.compose.project.config_files"}}|{{index .Config.Labels "com.docker.compose.service"}}' "$container_id"
+  sudo -n docker inspect --format '{{.Name}}|{{index .Config.Labels "com.docker.compose.project"}}|{{index .Config.Labels "com.docker.compose.project.working_dir"}}|{{index .Config.Labels "com.docker.compose.project.config_files"}}|{{index .Config.Labels "com.docker.compose.service"}}|{{.Image}}|{{index .Config.Labels "org.opencontainers.image.revision"}}' "$container_id"
 done
+printf 'staging_container_count=%s\n' "$(sudo -n docker ps -aq --filter 'name=^/doncity-staging-app$' | wc -l)"
+if sudo -n test -d /srv/doncity/staging; then printf 'staging_runtime_directory=present\n'; else printf 'staging_runtime_directory=absent\n'; fi
 '@
   Invoke-SshCommand `
     -HostName $secrets.DONCITY_SERVER_SSH_HOST `
@@ -117,56 +124,18 @@ done
     -RemoteCommand $remoteCommand
 }
 
-if ($Action -eq 'RetireRuntime') {
+if ($Action -eq 'ProductionContract') {
   $remoteCommand = @'
 set -eu
-docker_cmd='sudo -n docker'
-staging_name='doncity-staging-app'
-production_name='doncity-production-app'
-staging_dir='/srv/doncity/staging'
-staging_compose='/srv/doncity/staging/compose.yml'
-
-staging_count=$($docker_cmd ps -aq --filter "name=^/${staging_name}$" | wc -l)
-production_count=$($docker_cmd ps -aq --filter "name=^/${production_name}$" | wc -l)
-[ "$staging_count" -eq 1 ] || { echo 'refused: expected exactly one staging container' >&2; exit 21; }
-[ "$production_count" -eq 1 ] || { echo 'refused: expected exactly one production container' >&2; exit 22; }
-
-staging_id=$($docker_cmd ps -aq --filter "name=^/${staging_name}$")
-production_id=$($docker_cmd ps -aq --filter "name=^/${production_name}$")
-actual_project=$($docker_cmd inspect --format '{{index .Config.Labels "com.docker.compose.project"}}' "$staging_id")
-actual_dir=$($docker_cmd inspect --format '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' "$staging_id")
-actual_compose=$($docker_cmd inspect --format '{{index .Config.Labels "com.docker.compose.project.config_files"}}' "$staging_id")
-production_dir=$($docker_cmd inspect --format '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' "$production_id")
-staging_image=$($docker_cmd inspect --format '{{.Config.Image}}' "$staging_id")
-
-[ "$actual_project" = 'staging' ] || { echo 'refused: staging Compose project mismatch' >&2; exit 23; }
-[ "$actual_dir" = "$staging_dir" ] || { echo 'refused: staging working directory mismatch' >&2; exit 24; }
-[ "$actual_compose" = "$staging_compose" ] || { echo 'refused: staging Compose file mismatch' >&2; exit 25; }
-[ "$production_dir" = '/srv/doncity/production' ] || { echo 'refused: production working directory mismatch' >&2; exit 26; }
-[ "$actual_dir" != "$production_dir" ] || { echo 'refused: shared runtime directory' >&2; exit 27; }
-[ "$(readlink -f "$staging_dir")" = "$staging_dir" ] || { echo 'refused: staging path is not canonical' >&2; exit 28; }
-[ -f "$staging_compose" ] || { echo 'refused: staging Compose file missing' >&2; exit 29; }
-
-sudo -n docker compose --project-name staging --project-directory "$staging_dir" -f "$staging_compose" down --volumes --remove-orphans
-[ -z "$($docker_cmd ps -aq --filter "name=^/${staging_name}$")" ] || { echo 'staging container remains' >&2; exit 30; }
-
-image_users=$($docker_cmd ps -aq --filter "ancestor=${staging_image}" | wc -l)
-if [ "$image_users" -eq 0 ]; then
-  $docker_cmd image rm "$staging_image" >/dev/null
-fi
-
-sudo -n find "$staging_dir" -xdev -mindepth 1 -depth -delete
-sudo -n rmdir "$staging_dir"
-
-production_running=$($docker_cmd inspect --format '{{.State.Running}}' "$production_id")
-production_health=$($docker_cmd inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}not-configured{{end}}' "$production_id")
-[ "$production_running" = 'true' ] || { echo 'production is not running' >&2; exit 31; }
-[ "$production_health" = 'healthy' ] || { echo 'production is not healthy' >&2; exit 32; }
-printf 'staging_runtime=absent\n'
-printf 'staging_runtime_directory=absent\n'
-printf 'staging_image_users=%s\n' "$image_users"
-printf 'production_runtime=running\n'
-printf 'production_health=%s\n' "$production_health"
+production_dir='/srv/doncity/production'
+compose_file="${production_dir}/compose.yml"
+[ "$(readlink -f "$production_dir")" = "$production_dir" ] || { echo 'production_directory=invalid'; exit 11; }
+sudo -n test -f "$compose_file" || { echo 'production_compose=missing'; exit 12; }
+printf 'compose_project=production\n'
+printf 'compose_service_count=%s\n' "$(sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" config --services | wc -l)"
+printf 'compose_services=%s\n' "$(sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" config --services | paste -sd, -)"
+printf 'compose_images=%s\n' "$(sudo -n docker compose --project-name production --project-directory "$production_dir" -f "$compose_file" config --images | paste -sd, -)"
+printf 'env_file_present=%s\n' "$(if sudo -n test -f "${production_dir}/.env"; then echo yes; else echo no; fi)"
 '@
   Invoke-SshCommand `
     -HostName $secrets.DONCITY_SERVER_SSH_HOST `
@@ -175,7 +144,7 @@ printf 'production_health=%s\n' "$production_health"
     -RemoteCommand $remoteCommand
 }
 
-if ($Action -eq 'VerifyRuntime') {
+if ($Action -eq 'ProductionPreflight') {
   $remoteCommand = @'
 set -eu
 docker_cmd='sudo -n docker'

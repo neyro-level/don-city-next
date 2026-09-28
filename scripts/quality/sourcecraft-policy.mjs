@@ -5,11 +5,13 @@ const gateScript = readFileSync("scripts/verify-sourcecraft-gate.sh", "utf8");
 const required = [
 	"merge-standard:",
 	"merge-risky:",
-	"release-main-noindex:",
+	"release-main:",
 	"expected_commit_sha",
 	"EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit_sha }}",
 	"sh scripts/verify-sourcecraft-gate.sh",
 	"sh scripts/verify-sourcecraft-release.sh",
+	"corepack enable",
+	"pnpm verify:final-release-contract",
 ];
 const forbidden = [
 	/^\s*on\s*:/m,

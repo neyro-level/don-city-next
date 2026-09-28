@@ -1,7 +1,7 @@
 # Technical Architecture
 
 Status: Active
-Version: 1.2
+Version: 1.3
 Updated: 2026-09-28
 
 ## Normative Baseline and Conformance
@@ -10,10 +10,9 @@ Updated: 2026-09-28
 - UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
 - Current conformance plan: `AMS-DON-CITY-LIVE-CONFORMANCE` v13.
-- Current conformance status: `PRE-RELEASE CANDIDATE`. All v13 implementation
-  epics are delivered; `DC11-DOC-FINAL` owns exact-head convergence before the
-  separately authorized mandatory production stage. Earlier CP evidence remains
-  historical.
+- Current conformance status: `FINAL RELEASE AUTHORIZED`. All v13 implementation
+  epics and `DC11-DOC-FINAL` are delivered; the owner authorized the mandatory
+  last production stage on 2026-09-28. Earlier CP evidence remains historical.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
@@ -109,7 +108,7 @@ monitoring or follow-up stage after production.
 ## 7. SEO and UI Contracts
 
 - UX: `PUBLIC_COMMERCIAL`; Payload Admin: `CMS_NATIVE_ADMIN`.
-- Site Profile: `SINGLE_GEO` Donetsk; активны secondary market и категории `kvartiry`, `doma`, `uchastki`.
+- Site Profile: `SINGLE_GEO` Donetsk; активны secondary market и категории `kvartiry`, `doma`, `uchastki`, `kommercheskaya`.
 - Server Components по умолчанию; client boundaries только для интерактивных leaves.
 - Data boundary: DTO/ViewModel from Public Gateway; raw Payload documents не передаются в reusable UI.
 - Public API `@ams/realtbase-ui` закрыт десятью canonical entrypoints: analytics,
