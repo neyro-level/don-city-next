@@ -160,6 +160,35 @@ for (const path of walk(join(root, "packages", "ui", "src"))) {
 	);
 }
 
+const canonicalPrimitiveOwners = new Map([
+	["Button", "packages/ui/src/components/ui/button.tsx"],
+	["Input", "packages/ui/src/components/ui/input.tsx"],
+	["Dialog", "packages/ui/src/components/ui/dialog.tsx"],
+	["Card", "packages/ui/src/components/ui/card.tsx"],
+	["Table", "packages/ui/src/components/ui/table.tsx"],
+]);
+const discoveredPrimitiveOwners = new Map(
+	[...canonicalPrimitiveOwners.keys()].map((name) => [name, []]),
+);
+const primitiveDeclarationPattern =
+	/export\s+(?:const|function)\s+(Button|Input|Dialog|Card|Table)\b/g;
+for (const path of walk(join(root, "packages", "ui", "src"))) {
+	if (!/\.[cm]?[jt]sx?$/.test(path)) continue;
+	const source = readFileSync(path, "utf8");
+	const owner = relative(root, path).replaceAll("\\", "/");
+	for (const match of source.matchAll(primitiveDeclarationPattern)) {
+		discoveredPrimitiveOwners.get(match[1]).push(owner);
+	}
+}
+for (const [name, expectedOwner] of canonicalPrimitiveOwners) {
+	const owners = discoveredPrimitiveOwners.get(name).sort();
+	if (owners.length !== 1 || owners[0] !== expectedOwner) {
+		failures.push(
+			`${name} must have exactly one canonical owner ${expectedOwner}; found: ${owners.join(", ") || "none"}`,
+		);
+	}
+}
+
 const layout = readFileSync(join(root, "src", "app", "layout.tsx"), "utf8");
 const globals = readFileSync(join(root, "src", "app", "globals.css"), "utf8");
 const themeBoundary = globals.indexOf("@theme inline");
