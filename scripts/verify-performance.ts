@@ -77,7 +77,8 @@ assert.match(
 assert.match(imageAdapter, /decoding="async"/);
 assert.match(cacheProvider, /unstable_cache/);
 assert.match(cacheProvider, /publicDataRevalidateSeconds/);
-assert.match(uiPackage, /"\.\/starter\/catalog-page"/);
+assert.match(uiPackage, /"\.\/public\/catalog-page"/);
+assert.doesNotMatch(uiPackage, /"\.\/starter\/catalog-page"/);
 assert.doesNotMatch(publicRoute, /from "@ams\/realtbase-ui"/);
 assert.doesNotMatch(publicLayout, /from "@ams\/realtbase-ui"/);
 assert.doesNotMatch(publicHeader, /from "@ams\/realtbase-ui"/);

@@ -17,6 +17,9 @@ export type SiteProfile<
 	categoryStatus: Record<Category, ProfileStatus>;
 	geoCategoryStatus: Record<string, Partial<Record<Category, ProfileStatus>>>;
 	nearbyGeoAliases?: Partial<Record<string, readonly string[]>>;
+	nearbyGeoRouteAllowlist?: Partial<
+		Record<string, readonly ("hub" | Category)[]>
+	>;
 	defaultNearbyGeoStatus: ProfileStatus;
 	tiers: Record<string, { minBroad: number }>;
 	inventoryThreshold: Record<string, number>;

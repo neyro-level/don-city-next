@@ -1,14 +1,12 @@
 import assert from "node:assert/strict";
 import {
 	isGeoSwitcherVisible,
+	isNearbyGeoRouteApproved,
 	resolveCategoryRoute,
 	selectActiveCategoryLinks,
 	validateSiteProfile,
 } from "../src/platform/profile/index.ts";
-import {
-	type SiteCategory,
-	siteProfile,
-} from "../src/project/site.profile.ts";
+import { type SiteCategory, siteProfile } from "../src/project/site.profile.ts";
 
 assert.deepEqual(validateSiteProfile(siteProfile), []);
 assert.equal(isGeoSwitcherVisible(siteProfile), false);
@@ -26,12 +24,27 @@ assert.equal(
 		siteProfile,
 		siteProfile.primaryGeo,
 		"kommercheskaya",
-	)
-		.statusCode,
+	).statusCode,
 	200,
 );
 assert.equal(siteProfile.marketStatus.newbuild, "PREPARED_OFF");
 assert.equal(siteProfile.categoryStatus.novostroyki, "PREPARED_OFF");
+assert.equal(isNearbyGeoRouteApproved(siteProfile, "makeevka", "hub"), true);
+for (const route of ["kvartiry", "doma", "uchastki"] as const) {
+	assert.equal(isNearbyGeoRouteApproved(siteProfile, "makeevka", route), true);
+}
+assert.equal(
+	isNearbyGeoRouteApproved(siteProfile, "makeevka", "kommercheskaya"),
+	false,
+);
+assert.equal(
+	isNearbyGeoRouteApproved(
+		{ ...siteProfile, nearbyGeoRouteAllowlist: {} },
+		"makeevka",
+		"hub",
+	),
+	false,
+);
 
 const apartmentCandidate = {
 	category: "kvartiry" as const,
