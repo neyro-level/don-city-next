@@ -9,6 +9,14 @@ import {
 } from "./indexing-policy.ts";
 import { siteConfig } from "./site.config.ts";
 
+export const projectDefaultSocialImage = {
+	kind: "managed",
+	src: "/brand/don-city-social-default.png",
+	alt: "ДОН СИТИ — агентство недвижимости",
+	width: 1200,
+	height: 630,
+} as const;
+
 export function withProjectIndexingPolicy(
 	metadata: Metadata,
 	policy: IndexingPolicy = getProjectIndexingPolicy(),
@@ -24,7 +32,14 @@ export function toMetadata(
 	seo: PageSEOContract,
 	policy: IndexingPolicy = getProjectIndexingPolicy(),
 ): Metadata {
-	const pageMetadata = toPlatformMetadata(seo, {
+	const seoWithSocialFallback: PageSEOContract = {
+		...seo,
+		openGraph: {
+			...seo.openGraph,
+			image: seo.openGraph?.image ?? projectDefaultSocialImage,
+		},
+	};
+	const pageMetadata = toPlatformMetadata(seoWithSocialFallback, {
 		absoluteUrl,
 		brandName: siteConfig.brandName,
 		locale: siteConfig.locale,
