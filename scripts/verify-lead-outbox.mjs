@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createPayloadLeadOutboxRepository } from "../src/core/data-access/leads/payload-outbox-repository.ts";
 import {
-	accelerateLeadDeliveryJobs,
+	accelerateCommittedLeadDeliveryJobs,
 	commitLeadOutbox,
 	planRecoverableLeadDeliveryJobs,
 	prepareLeadIntake,
@@ -82,16 +82,41 @@ const afterEnqueueRecoveryPlan = await planRecoverableLeadDeliveryJobs(
 assert.equal(afterEnqueueRecoveryPlan.length, 1);
 assert.equal(afterEnqueueRecoveryPlan[0].deliveryId, "delivery-2");
 
-let enqueueCalls = 0;
-await accelerateLeadDeliveryJobs({
+repository.deliveries.push({
+	id: "delivery-b-orphan",
+	lead: "lead-b",
+	channelId: "crm-main",
+	channelKind: "crm",
+	status: "pending",
+	attempts: 0,
+	nextAttemptAt: "2026-09-16T12:00:00.000Z",
+	idempotencyKey: "lead:b:channel:crm-main",
+});
+const enqueuedIds = [];
+await accelerateCommittedLeadDeliveryJobs({
+	deliveries: committed.deliveries,
 	repository,
-	nowIso: "2026-09-16T12:10:00.000Z",
+	enqueue: async (deliveryId) => {
+		enqueuedIds.push(deliveryId);
+		return `job-${deliveryId}`;
+	},
+});
+assert.deepEqual(enqueuedIds, ["delivery-2"]);
+assert.equal(enqueuedIds.includes("delivery-b-orphan"), false);
+repository.deliveries = repository.deliveries.filter(
+	(delivery) => delivery.id !== "delivery-b-orphan",
+);
+
+let enqueueFailures = 0;
+await accelerateCommittedLeadDeliveryJobs({
+	deliveries: [{ ...committed.deliveries[1], jobId: undefined }],
+	repository,
 	enqueue: async () => {
-		enqueueCalls += 1;
+		enqueueFailures += 1;
 		throw new Error("enqueue unavailable");
 	},
 });
-assert.equal(enqueueCalls, 1);
+assert.equal(enqueueFailures, 1);
 assert.equal(
 	repository.leads.length,
 	1,

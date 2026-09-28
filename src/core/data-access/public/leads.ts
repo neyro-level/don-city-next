@@ -10,7 +10,7 @@ import { buildPropertyUrl } from "../../../project/url-grammar.ts";
 import { resolveEnabledLeadChannels } from "../../leads/channels.ts";
 import { hitInProcessLeadRateLimit } from "../../leads/in-process-rate-limit.ts";
 import {
-	accelerateLeadDeliveryJobs,
+	accelerateCommittedLeadDeliveryJobs,
 	commitLeadOutbox,
 	type LeadIntakeRejected,
 	prepareLeadIntake,
@@ -142,9 +142,9 @@ export async function submitPublicLead({
 	});
 
 	if (!committed.reusedExistingLead) {
-		await accelerateLeadDeliveryJobs({
+		await accelerateCommittedLeadDeliveryJobs({
+			deliveries: committed.deliveries,
 			repository,
-			nowIso,
 			enqueue: (leadDeliveryId) => enqueueLeadDelivery(payload, leadDeliveryId),
 		});
 	}

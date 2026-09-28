@@ -61,7 +61,7 @@ export {
 } from "./intake.ts";
 export { isLiveFuturePayloadJob } from "./job-liveness.ts";
 export {
-	accelerateLeadDeliveryJobs,
+	accelerateCommittedLeadDeliveryJobs,
 	buildLeadDeliveryIdempotencyKey,
 	commitLeadOutbox,
 	type LeadChannelConfig,
