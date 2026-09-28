@@ -116,15 +116,20 @@ requireFragments("docs/OPERATIONS.md", [
 
 const contractPackage = JSON.parse(read("packages/contracts/package.json"));
 const contractLock = JSON.parse(read("packages/contracts/contracts.lock.json"));
-assert.equal(contractPackage.version, "2.0.0");
-assert.equal(contractLock.contractVersion, "2.0.0");
+assert.equal(contractPackage.version, "2.1.0");
+assert.equal(contractLock.contractVersion, "2.1.0");
 requireFragments("packages/contracts/src/index.ts", [
-	'contractVersion = "2.0.0"',
+	'contractVersion = "2.1.0"',
 ]);
 requireFragments("docs/adr/ADR-0012-home-primary-action-contract.md", [
 	"Status: Accepted",
 	"HomePageDTO.primaryAction",
 	"2.0.0",
+]);
+requireFragments("docs/adr/ADR-0016-public-nap-opening-hours.md", [
+	"Status: Accepted",
+	"PublicNapDTO",
+	"2.1.0",
 ]);
 
 const inventory = JSON.parse(read("docs/task-manager-inventory.v2.json"));
