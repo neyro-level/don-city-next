@@ -1,8 +1,8 @@
 # Release Checklist
 
 Status: Active — remediation release candidate not yet complete
-Version: 1.4
-Updated: 2026-09-28
+Version: 1.5
+Updated: 2026-09-29
 
 ## Historical Release Evidence
 
@@ -49,24 +49,28 @@ Updated: 2026-09-28
 ## Open Product Operations (not release blockers)
 
 - Production owner account remains an explicit owner-controlled setup action.
-- Canonical NAP remains `PENDING_EXTERNAL_VERIFICATION`; the site does not claim
-  independent verification.
-- Lead delivery and independent alert destination remain disconnected and
-  fail-closed; no unverified endpoint is enabled by this release.
+- Canonical NAP is owner-confirmed and matches the single repository/live source;
+  unverified `geo` and `sameAs` remain omitted.
+- External uptime alerting is proved through SourceCraft run `145` and private
+  test issue `#1`. Lead delivery remains disconnected and fail-closed.
 - Real feed remains disabled until a separately approved endpoint/allowlist.
 - Newbuild/ЖК review is future owner-planned product work, not a scheduled
   post-production monitoring task.
 
 ## Constitution Remediation v1 Production Entry
 
-- [ ] EPIC-01…05 are merged through their exact-head SourceCraft gates.
+- [x] EPIC-01…04 are merged through their exact-head SourceCraft gates.
+- [ ] EPIC-05 is merged through its exact-head SourceCraft gate.
 - [ ] Final candidate SHA is clean, unchanged and bound to the required local,
       integration and disposable-environment evidence.
+- [ ] When the diff requires staging, prove `EPHEMERAL_ON_DEMAND` isolation:
+      disposable DB/non-production secrets and storage, sanitized data,
+      noindex/restricted access, explicit jobs ownership and cleanup.
 - [ ] Production owner/admin, external monitoring, canonical NAP, backup,
       jobs ownership, rollback and exact deployed identity prerequisites are
       factually proved or fail closed.
-- [ ] Owner issues the separate explicit command `Выпускаем production` for
-      that exact candidate.
+- [x] Owner issued the separate explicit command `Выпускаем production` on 2026-09-29;
+      it applies to this completed exact candidate only.
 - [ ] Run one SourceCraft exact-main release workflow, one rollout and one
       bounded live acceptance sequence; do not create an autonomous follow-up
       monitoring task.

@@ -1,4 +1,26 @@
+on:
+  schedule:
+    - workflows: production-uptime-monitor
+      interval: 15m
+      description: DON CITY public availability probe and SourceCraft issue alert
+
 workflows:
+  production-uptime-monitor:
+    inputs:
+      force_alert:
+        type: string
+        default: "false"
+        description: Set to true only to prove the independent alert path.
+    tasks:
+      - name: probe-public-production
+        env:
+          MONITOR_FORCE_ALERT: ${{ inputs.force_alert }}
+          MONITOR_URL: https://doncity-home.ru/
+        cubes:
+          - name: sourcecraft-external-uptime-probe
+            script:
+              - sh scripts/ci/sourcecraft-uptime-monitor.sh
+
   registry-auth-probe:
     inputs:
       expected_commit_sha:

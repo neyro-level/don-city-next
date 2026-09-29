@@ -14,7 +14,7 @@ const readiness = requireFragments("src/project/client-readiness.config.ts", [
 	"jobsActiveRuntimeCount: 1",
 	"nginx: true",
 	"automaticBackup: true",
-	"externalMonitoring: false",
+	"externalMonitoring: true",
 ]);
 assert.doesNotMatch(readiness, /jobsActiveRuntimeCount:\s*null/);
 
@@ -22,16 +22,20 @@ requireFragments("docs/OPERATIONS.md", [
 	"Exactly one application runtime and jobs owner remain",
 	"Authenticated health reports current DB/media backup freshness",
 	"no separate post-production monitoring task",
+	"stagingMode = EPHEMERAL_ON_DEMAND",
+	"persistentStaging = false",
+	"A SourceCraft Space is a development workspace, not staging by default",
+	"JOBS_AUTORUN` is explicit and defaults to `false`",
 ]);
 requireFragments("docs/03_ARCHITECTURE.md", [
 	"Exactly one persistent production database exists",
 	"Persistent staging/shadow/mirror database запрещена",
-	"`externalMonitoring` remains fail-closed",
+	"external SourceCraft availability monitor as enabled",
 ]);
 requireFragments("docs/PROJECT.md", [
 	"no persistent staging/shadow/mirror DB exists",
-	"`nginx=true` and `automaticBackup=true`",
-	"`externalMonitoring` remains fail-closed `false`",
+	"`nginx=true`, `automaticBackup=true` and `externalMonitoring=true`",
+	"`externalMonitoring=true` reflect",
 ]);
 requireFragments("docs/DELIVERY_STATE.yaml", [
 	"persistent_runtime_count: 1",
@@ -41,6 +45,10 @@ requireFragments("docs/DELIVERY_STATE.yaml", [
 	"staging_database: absent",
 	"staging_bucket: absent",
 	"staging_secret_folder: absent",
+	"stagingMode: EPHEMERAL_ON_DEMAND",
+	"persistentStaging: false",
+	"sourcecraft_space_is_staging: false",
+	"cleanup_evidence_required: true",
 ]);
 
 for (const file of [

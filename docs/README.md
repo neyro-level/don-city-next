@@ -1,8 +1,8 @@
 # DON CITY
 
-Status: Active — constitution remediation v1 approved
-Version: 1.3
-Updated: 2026-09-28
+Status: Active — constitution remediation v1 / EPIC-05 release-candidate work
+Version: 1.4
+Updated: 2026-09-29
 
 ## Что создаём
 
@@ -14,6 +14,13 @@ Updated: 2026-09-28
 
 ## Текущий статус
 
+- EPIC-01…04 exact approved remediation graph merged through SourceCraft gates;
+  EPIC-05 is the active execution scope and must stop on the exact candidate
+  before any separately authorized production action.
+- Observed public state, deployed artifact identity, code main state,
+  operational readiness, real feed readiness and lead delivery readiness are
+  separate facts; the current matrix is owned by `OPERATIONS.md` and
+  `DELIVERY_STATE.yaml`.
 - Production отвечает на `https://doncity-home.ru`; read-only evidence от 2026-09-27 подтверждает индексируемую homepage, разрешающий `robots.txt` и опубликованный sitemap.
 - Exact deployed SHA/image для текущего публично индексируемого состояния ещё должен быть привязан к release evidence; прежний noindex release `cd5c743912650525f84d2d110e6a43c4e6c6e35d` остаётся историческим rollback evidence, а не заявлением о текущей identity.
 - `DC10-R11-00` доставил воспроизводимую read-only redacted production-матрицу:

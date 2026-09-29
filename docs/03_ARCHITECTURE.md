@@ -1,19 +1,22 @@
 # Technical Architecture
 
 Status: Active
-Version: 1.4
-Updated: 2026-09-28
+Version: 1.5
+Updated: 2026-09-29
 
 ## Normative Baseline and Conformance
 
 - Platform baseline: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md`.
 - UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
-- Current conformance plan: `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1.
+- Current conformance plan: `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+  `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`.
 - Current conformance status: `APPROVED / IMPLEMENTATION`. EPIC-01…05 may use
   their declared `MERGE_AFTER_GATE` lifecycle. Production is not authorized by
   plan approval and remains a separate final owner gate. Earlier v13/CP evidence
   remains historical.
+- EPIC-01…04 are merged; EPIC-05 is the active release-candidate convergence
+  scope and must preserve the production boundary.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
@@ -87,6 +90,11 @@ not duplicated configuration tables.
   Secret Master `/staging` folder. The shared S3 access identity and all
   production resources were preserved.
 - Non-production database proof создаётся только как disposable isolated local/temporary environment, никогда не разделяет production data/secrets/storage и удаляется после bounded проверки. Persistent staging/shadow/mirror database запрещена.
+- Staging contract is `EPHEMERAL_ON_DEMAND` with `persistentStaging = false`.
+  It is mandatory for migration/schema, auth/access, parser/source identity,
+  major stack upgrade, critical jobs/recovery and other Core-required RISKY
+  releases. SourceCraft Space remains development unless a run proves every
+  staging isolation, noindex, exact-identity and cleanup invariant.
 - Last recorded noindex image `don-city-next:production-cd5c74391265` and prior image `don-city-next:production-31367bfe4adf` are historical rollback evidence. Exact deployed SHA/image for the observed public-indexing state remains pending release evidence.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 - Runtime artifact uses Next.js standalone output. The application image contains
@@ -94,10 +102,11 @@ not duplicated configuration tables.
   by the server; Payload migrations use a separate ephemeral image built from
   the same exact SHA. Both artifacts carry the same revision label.
 
-Repository readiness records the proved host Nginx and automatic backup
-capabilities as enabled. `externalMonitoring` remains fail-closed; required
-availability proof is bounded inside the release gate and does not create a
-monitoring or follow-up stage after production.
+Repository readiness records the proved host Nginx, automatic backup and
+external SourceCraft availability monitor as enabled. The operational schedule
+runs outside the application VPS every 15 minutes and creates a private critical
+SourceCraft issue after one failed run. This is a continuing production control,
+not a monitoring or follow-up stage after production.
 
 ## 6. Jobs, Cache and Lifecycle
 

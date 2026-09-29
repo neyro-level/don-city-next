@@ -2,21 +2,21 @@ schema_version: 1
 program: AMS-DON-CITY-CONSTITUTION-REMEDIATION
 plan_version: v1
 plan_status: APPROVED
-current_wave: W1_CONTRACTS_INVENTORY
-current_epic: EPIC-01
-current_task: developer-handoff-ready
-next_action: claim-first-ready-task-and-start-epic-01-stream
+current_wave: W4_RELEASE_CANDIDATE
+current_epic: EPIC-05
+current_task: TASK-05.1
+next_action: reconcile-active-router-and-continue-epic-05-before-production
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  documentation_baseline_sha: a6cdbfc3a1a1348f65934ca202f39baec5c09bca
-  active_branch: codex/dc-constitution-remediation-plan
+  documentation_baseline_sha: 13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4
+  active_branch: codex/dc-constitution-remediation-epic05
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: none
-  reason: exact v1 approved and imported; 5/5 epics, 49 tasks and 54 managed nodes reconcile with zero drift/cycles
+  current_task: dccr-task-05-1
+  reason: exact v1 remains reconciled CLEAN; EPIC-01 through EPIC-04 are delivered and EPIC-05 is active
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -290,8 +290,8 @@ historical_core55:
     status: prerequisites-and-exact-main-gate
     authorized: true
 production:
-  authorized: true
-  authorization_scope: one v13 DC11-PROD-FINAL release only; authorization is consumed by this release
+  authorized: false
+  authorization_scope: no current authorization; the prior v13 DC11-PROD-FINAL authorization was consumed and cannot authorize remediation v1
   status: LIVE_PUBLIC_OBSERVED
   exact_deployed_sha_source: running container OCI org.opencontainers.image.revision label
   observed_pre_release_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
@@ -316,3 +316,100 @@ production:
     - independent-alert-and-lead-delivery-channel
     - owner-verified-canonical-nap
     - exact-deployed-sha-and-image
+production_state:
+  observed_public_state: LIVE_PUBLIC_OBSERVED
+  deployed_artifact_identity: PENDING_FACTUAL_BINDING
+  code_main_state: "EPIC-01 through EPIC-04 merged at 13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4; EPIC-05 active outside main"
+  operational_readiness: NOT_READY
+  real_feed_readiness: DISABLED_NOT_READY
+  lead_delivery_readiness: DISABLED_NOT_READY
+  production_release_authorized: false
+staging_contract:
+  stagingMode: EPHEMERAL_ON_DEMAND
+  persistentStaging: false
+  sourcecraft_space_is_staging: false
+  production_data_or_secrets_allowed: false
+  jobs_autorun_default: false
+  cleanup_evidence_required: true
+staging_proof:
+  task: TASK-05.4
+  status: PASS
+  candidate_sha: 145b58b0ef436f8c0871647cf4c8d19d646a2403
+  database: don_city_epic05_staging_test
+  data_class: synthetic_non_pii
+  noindex: PASS
+  required_integration_and_build: PASS
+  seo_http_matrix: PASS
+  cleanup: PASS
+  database_absent: true
+  loopback_listeners_absent: true
+  production_mutation: false
+  evidence: docs/research/TASK_05_4_EXACT_CANDIDATE_STAGING_PROOF.md
+external_uptime_monitor:
+  task: TASK-05.5
+  status: PASS
+  execution_origin: SOURCECRAFT_CLOUD
+  public_probe: https://doncity-home.ru/
+  interval_minutes: 15
+  failure_threshold: 1
+  independent_destination: SOURCECRAFT_PRIVATE_CRITICAL_ISSUE
+  test_run: 145
+  test_issue: 1
+  test_issue_status: closed
+  app_secret_in_probe: false
+  evidence: docs/research/TASK_05_5_EXTERNAL_UPTIME_MONITOR.md
+production_admin_preflight:
+  task: TASK-05.6
+  status: PASS
+  owner_identity_count: 1
+  owner_role_count: 1
+  payload_login_route: PASS
+  successful_owner_login: PASS
+  successful_owner_login_at: 2026-09-29T08:33:49+03:00
+  secret_master_owner_credential: PRESENT
+  admin_noindex: PASS
+  nginx_login_rate_limit: PASS
+  nginx_admin_placeholder_absent: true
+  production_mutation: owner-authorized-credential-rotation
+  evidence: docs/research/TASK_05_6_PRODUCTION_ADMIN_PREFLIGHT.md
+canonical_nap_preflight:
+  task: TASK-05.7
+  status: PASS
+  live_matches_repository_candidate: true
+  owner_confirmation: PROVEN_EPIC_07
+  yandex_business_verification: NOT_PROVEN
+  external_registry_conflict: true
+  canonical_authority: OWNER_CONFIRMED_PUBLICATION_SET
+  geo_and_same_as: OMIT_UNVERIFIED
+  production_mutation: false
+  evidence: docs/research/TASK_05_7_CANONICAL_NAP_PREFLIGHT.md
+deployed_identity_contract:
+  task: TASK-05.8
+  engineering_contract: PASS
+  current_runtime_revision: a6cdbfc3a1a1348f65934ca202f39baec5c09bca
+  runtime_and_compose_digest_match: true
+  runtime_count: 1
+  jobs_owner_count: 1
+  current_runtime_health: healthy
+  final_candidate_deployed_identity: PENDING_EXPLICIT_RELEASE
+  production_mutation: false
+  evidence: docs/research/TASK_05_8_EXACT_DEPLOYED_IDENTITY_CONTRACT.md
+final_pre_release_proof:
+  task: TASK-05.9
+  status: PASS
+  proof_candidate_sha: e6aaec62ec39d9eb8f501b8ad00c96eb985c2ddf
+  schema: PASS
+  ui_core: PASS
+  seo_contracts: PASS
+  seo_crawl_exact_candidate: PASS
+  security_boundaries: PASS
+  operational_recovery: PASS
+  production_topology: PASS
+  transport_security: PASS
+  release_artifact: PASS
+  final_release_contract: PASS
+  full_verify: PASS
+  required_db_integration: PASS
+  test_database_removed: true
+  production_mutation: false
+  evidence: docs/research/TASK_05_9_FINAL_PRE_RELEASE_PROOF.md

@@ -1,7 +1,14 @@
 # DON CITY — Operations Contract
 
 Status: active production, publicly crawlable
-Updated: 2026-09-28
+Updated: 2026-09-29
+
+Active execution is governed by exact APPROVED plan
+`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. EPIC-05 may
+prepare and prove an exact release candidate, but production still requires a
+separate owner command. Operational commands are resolved from the current
+root `package.json` and versioned runbooks; historical plans are evidence only.
 
 ## Current Runtime
 
@@ -14,6 +21,49 @@ Updated: 2026-09-28
 - Exactly one application runtime and jobs owner remain: production
   `JOBS_AUTORUN=true`.
 - One prior image and compose file are retained as the immediate rollback point.
+
+## Production State Matrix
+
+These states are independent and must not be collapsed into one “production”
+flag:
+
+| State | Current fact |
+|---|---|
+| Observed public state | `LIVE_PUBLIC_OBSERVED`: the public origin is reachable and indexing is observed. |
+| Deployed artifact identity | `PENDING_FACTUAL_BINDING`: the running public artifact has not yet been bound to an exact SHA/image in current release evidence. |
+| Code main state | SourceCraft `main` contains merged EPIC-01…04 at `13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4`; EPIC-05 changes are not main until its gate and merge. |
+| Operational readiness | `PARTIAL`: owner login, external uptime monitoring and canonical NAP are proved; final exact deployed identity evidence remains open until the approved release. |
+| Real feed readiness | `DISABLED_NOT_READY`: no approved endpoint or outbound/image allowlists. |
+| Lead delivery readiness | `DISABLED_NOT_READY`: no approved independent destination/channel or destination allowlist. |
+
+Observed indexing does not prove artifact identity or operational readiness.
+Likewise, a green code candidate does not authorize production mutation.
+
+## Ephemeral On-Demand Staging
+
+Project staging contract:
+
+```text
+stagingMode = EPHEMERAL_ON_DEMAND
+persistentStaging = false
+```
+
+An isolated staging proof is mandatory before production for schema/migrations,
+auth/access, parser or source identity, major framework/Payload/PostgreSQL
+upgrades, critical jobs/recovery behavior and any other Core-classified RISKY
+release that requires staging.
+
+Every staging proof must use a separate disposable database, non-production
+secrets, synthetic or sanitized non-PII data, `noindex`, restricted access and
+an exact candidate SHA/image. Media testing uses a separate non-production
+storage identity. `JOBS_AUTORUN` is explicit and defaults to `false`; enabling a
+single disposable jobs owner requires the proof step to demand it. Evidence
+must include resource identity, executed matrix and cleanup; all disposable
+runtime, database, storage and credentials are destroyed after capture.
+
+A SourceCraft Space is a development workspace, not staging by default. It may
+host a proof only if the complete isolation, noindex, identity and cleanup
+contract above is explicitly established for that run.
 
 ## Deploy and Rollback
 
@@ -73,15 +123,15 @@ Updated: 2026-09-28
 - `catalogLifecycle` owns archive/purge transitions; manual DB edits are forbidden.
 - Canonical 404/410 behavior is checked through route/lifecycle contracts.
 
-## Current Blockers Before Indexing
+## Open production-readiness / operational evidence
 
-- create the first production owner;
-- connect approved independent alert/delivery channel;
-- verify canonical NAP externally with the owner;
+- prove one successful login for the existing production owner using an
+  owner-held credential without recording the credential, cookie or email;
+- keep the proved SourceCraft uptime alert schedule active; the separate lead-delivery channel remains fail-closed;
 - run a production SEO/lifecycle crawl;
 - bind the observed public state to exact deployed SHA/image evidence.
 
-Production remains online while these evidence gaps are open. Real feed stays off.
+Production remains online while the remaining evidence gaps are open. Real feed stays off.
 
 ## Manual Import and Suspicious Approval
 

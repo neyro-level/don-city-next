@@ -2,16 +2,19 @@
 
 Status: Active — owner-approved brand direction
 Version: 2.0
-Updated: 2026-09-27
+Updated: 2026-09-29
 
 ## Normative UI baseline
 
 The project UI contract is governed by `../AMS_UI_CORE_v5.0_FINAL.md`. This document remains the project-specific design policy; numeric values remain exclusively in `src/app/globals.css`.
 
-Current status is `TARGETED CONFORMANCE`: CP-05 closed the approved typography,
-navigation, error-boundary, accessibility and scanner scope. This is not a claim
-that every future page or optional module is certified; new UI still follows the
-same gates and `REUSE → VARIANT → CREATE` rule.
+Current status is `TARGETED CONFORMANCE`. The active execution contract is exact
+APPROVED plan `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`; its EPIC-04 UI
+normalization is merged and EPIC-05 owns release-candidate proof. Historical
+CP-05 remains evidence, not the current router. This is not a claim that every
+future page or optional module is certified; new UI still follows the same gates
+and `REUSE → VARIANT → CREATE` rule.
 
 ## UI Core 5.0 targeted normalization baseline
 

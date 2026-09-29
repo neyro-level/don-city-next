@@ -10,7 +10,16 @@ const imagePublisher = readFileSync(
 	"scripts/ci/sourcecraft-image-publish.sh",
 	"utf8",
 );
+const uptimeMonitor = readFileSync(
+	"scripts/ci/sourcecraft-uptime-monitor.sh",
+	"utf8",
+);
 const required = [
+	"on:",
+	"schedule:",
+	"production-uptime-monitor:",
+	"interval: 15m",
+	"sh scripts/ci/sourcecraft-uptime-monitor.sh",
 	"registry-auth-probe:",
 	"merge-standard:",
 	"merge-risky:",
@@ -26,10 +35,8 @@ const required = [
 	"sh scripts/ci/sourcecraft-registry-auth-probe.sh",
 ];
 const forbidden = [
-	/^\s*on\s*:/m,
 	/^ {2}push\s*:/m,
 	/^ {2}pull_request\s*:/m,
-	/^ {2}schedule\s*:/m,
 	/service_connection:/m,
 	/cr\.yandex\//m,
 ];
@@ -61,17 +68,30 @@ const publishRequired = [
 const missingPublishProof = publishRequired.filter(
 	(value) => !imagePublisher.includes(value),
 );
+const monitorRequired = [
+	"https://doncity-home.ru/",
+	"SOURCECRAFT_TOKEN",
+	"api.sourcecraft.tech/repos/integrator-p/don-city-next/issues",
+	"--connect-timeout 10",
+	"--max-time 20",
+	"--retry 2",
+	'"visibility":"private"',
+];
+const missingMonitorProof = monitorRequired.filter(
+	(value) => !uptimeMonitor.includes(value),
+);
 
 if (
 	missing.length ||
 	automatic.length ||
 	missingGateProof.length ||
 	missingRegistryProof.length ||
-	missingPublishProof.length
+	missingPublishProof.length ||
+	missingMonitorProof.length
 ) {
 	console.error(
-		`SourceCraft policy FAIL; missing=${missing.join(",") || "none"}; forbidden=${automatic.length}; gate=${missingGateProof.join(",") || "none"}; registry=${missingRegistryProof.join(",") || "none"}; publish=${missingPublishProof.join(",") || "none"}`,
+		`SourceCraft policy FAIL; missing=${missing.join(",") || "none"}; forbidden=${automatic.length}; gate=${missingGateProof.join(",") || "none"}; registry=${missingRegistryProof.join(",") || "none"}; publish=${missingPublishProof.join(",") || "none"}; monitor=${missingMonitorProof.join(",") || "none"}`,
 	);
 	process.exit(1);
 }
-console.log("SourceCraft policy: PASS (manual exact-head only)");
+console.log("SourceCraft policy: PASS (manual delivery workflows plus operational uptime schedule)");

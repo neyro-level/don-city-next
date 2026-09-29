@@ -1,8 +1,8 @@
 # Backlog
 
 Status: Active
-Version: 1.4
-Updated: 2026-09-28
+Version: 1.5
+Updated: 2026-09-29
 
 ## Delivered
 
@@ -23,7 +23,8 @@ Updated: 2026-09-28
 
 - [x] Owner approved exact Plan ID `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 at `2026-09-28T21:41:18+03:00`.
 - [x] Successor inventory imported and reconciled `CLEAN` in the one existing Beads store: 5/5 epics, 44 implementation tasks, 5 delivery tasks, 54 managed nodes, zero drift/cycles; two stale v6 claims explicitly frozen as history.
-- [ ] Execute EPIC-01…05 through five SourceCraft streams with their approved `MERGE_AFTER_GATE` policy.
+- [x] EPIC-01…04 merged through their exact-head SourceCraft gates.
+- [ ] Execute EPIC-05 through its approved `MERGE_AFTER_GATE` policy and bind the exact release candidate.
 - [ ] Stop on the exact final candidate before production.
 - [ ] Production is the final `PROD-01/02` owner gate and requires a separate explicit command `Выпускаем production`.
 
@@ -63,8 +64,8 @@ Task Manager store.
 
 ## Technical Debt / Known Drift
 
-- `clientReadinessConfig` подтверждает Nginx, один jobs runtime и automatic backup;
-  `externalMonitoring` остаётся fail-closed до отдельного доказанного решения.
+- `clientReadinessConfig` подтверждает Nginx, один jobs runtime, automatic backup
+  и внешний SourceCraft uptime monitor; alert path доказывается отдельным test run.
 - Authenticated health имеет статус `ok`; durable DB/media backup freshness и
   sampled restore подтверждены DC10-OPS-00.
 - Старые локальные ветки/worktrees могут содержать уникальные или dirty изменения; их нельзя удалять силой без отдельной сверки/решения.

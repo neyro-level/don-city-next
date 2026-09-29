@@ -44,5 +44,5 @@ export const clientReadinessConfig = {
 	},
 	nginx: true,
 	automaticBackup: true,
-	externalMonitoring: false,
+	externalMonitoring: true,
 } as const satisfies ClientReadinessConfig;

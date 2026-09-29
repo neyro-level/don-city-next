@@ -1,8 +1,10 @@
 # Architecture Decision Records
 
 ADR фиксирует решение, которое должно пережить отдельную задачу или реализацию.
-Master plan остаётся источником полного contract; ADR кратко объясняет, почему
-выбран конкретный вариант и какие ограничения из него следуют.
+Exact APPROVED plan `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+`../DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md` remains the
+active execution contract. ADR кратко объясняет, почему выбран конкретный
+вариант и какие ограничения из него следуют; historical plans are evidence.
 
 | ADR | Статус | Решение |
 |---|---|---|

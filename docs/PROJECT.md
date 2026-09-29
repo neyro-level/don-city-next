@@ -2,7 +2,13 @@
 
 Status: Active — production live and publicly crawlable
 
-Updated: 2026-09-28
+Updated: 2026-09-29
+
+Active execution contract: exact APPROVED plan
+`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
+`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. EPIC-01…04 are
+merged; EPIC-05 owns release-candidate convergence and stops before production.
+Runtime commands come only from the current root `package.json`.
 
 ## 1. Identity and profile
 
@@ -36,6 +42,10 @@ separate architecture decision and runtime proof.
 - The former persistent staging runtime, logical database, S3 bucket and
   Secret Master folder were owner-authorized for retirement and removed on
   2026-09-28; the shared production storage credential was preserved.
+- `stagingMode = EPHEMERAL_ON_DEMAND`; `persistentStaging = false`. Required
+  risky pre-production proof uses disposable isolated DB/secrets/data/storage,
+  noindex and restricted access, exact candidate identity, explicit
+  `JOBS_AUTORUN` and mandatory cleanup evidence.
 - Exactly one production runtime owns Payload job autorun. Handover is
   stop-old-before-enable-new.
 - Secret values and full connection URLs belong to Secret Master scope
@@ -125,9 +135,10 @@ lead operations are activated.
 - Daily offsite DB backup, integrity validation, DB restore rehearsal, media
   copy and sampled checksum restore are proven; authenticated health reports
   current DB/media backup freshness without alerts.
-- `nginx=true` and `automaticBackup=true` now reflect durable operational
-  evidence. `externalMonitoring` remains fail-closed `false`; bounded availability
-  proof stays inside release gates and does not create a post-production task.
+- `nginx=true`, `automaticBackup=true` and `externalMonitoring=true` reflect
+  durable operational evidence. SourceCraft probes the public origin every
+  15 minutes and sends a private critical issue after one failed run; this does
+  not create a post-production task.
 
 ## 9. Admin access
 
@@ -155,7 +166,12 @@ lead operations are activated.
 
 ## 11. Readiness summary
 
-Configured facts are not the same as release readiness. Current blockers are:
+Configured facts, observed public state, deployed artifact identity, code main
+state, operational readiness, real feed readiness and lead delivery readiness
+are separate claims. Their current values are canonical in the Operations
+Production State Matrix and `DELIVERY_STATE.yaml`.
+
+Open production-readiness / operational evidence:
 
 - first production owner;
 - approved independent alert/lead-delivery channel;

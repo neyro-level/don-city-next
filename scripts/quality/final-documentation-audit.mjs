@@ -27,7 +27,7 @@ assert.doesNotMatch(design, /Production остаётся `noindex`/);
 
 const backlog = requireFragments("docs/04_BACKLOG.md", [
 	"Authenticated health имеет статус `ok`",
-	"externalMonitoring` остаётся fail-closed",
+	"внешний SourceCraft uptime monitor",
 ]);
 assert.doesNotMatch(backlog, /Health имеет статус `degraded`/);
 assert.doesNotMatch(backlog, /Закрыть media backup\/versioning/);
@@ -46,9 +46,10 @@ if (constitutionRemediationIsActive) {
 	requireFragments("docs/DELIVERY_STATE.yaml", [
 		"plan_version: v1",
 		"plan_status: APPROVED",
-		"current_epic: EPIC-01",
-		"current_task: developer-handoff-ready",
-		"next_action: claim-first-ready-task-and-start-epic-01-stream",
+		"current_wave: W4_RELEASE_CANDIDATE",
+		"current_epic: EPIC-05",
+		"current_task: TASK-05.1",
+		"next_action: reconcile-active-router-and-continue-epic-05-before-production",
 		"reconciliation: CLEAN",
 	]);
 } else {
@@ -91,8 +92,8 @@ assert.doesNotMatch(siteProfile, /makeevka:\s*\[[^\]]*kommercheskaya/);
 
 requireFragments("docs/PROJECT.md", [
 	"no persistent staging/shadow/mirror DB exists",
-	"`nginx=true` and `automaticBackup=true`",
-	"`externalMonitoring` remains fail-closed `false`",
+	"`nginx=true`, `automaticBackup=true` and `externalMonitoring=true`",
+	"SourceCraft probes the public origin every",
 ]);
 const architectureFragments = [
 	"Exactly one persistent production database exists",
@@ -112,7 +113,13 @@ requireFragments("docs/OPERATIONS.md", [
 	"Exactly one application runtime and jobs owner remain",
 	"Authenticated health reports current DB/media backup freshness",
 	"no separate post-production monitoring task",
+	"## Production State Matrix",
+	"## Open production-readiness / operational evidence",
 ]);
+assert.doesNotMatch(
+	read("docs/OPERATIONS.md"),
+	/## Current Blockers Before Indexing/,
+);
 
 const contractPackage = JSON.parse(read("packages/contracts/package.json"));
 const contractLock = JSON.parse(read("packages/contracts/contracts.lock.json"));
