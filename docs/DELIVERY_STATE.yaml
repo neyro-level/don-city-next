@@ -313,8 +313,8 @@ production:
   release_target: exact SourceCraft origin/main attested by the manual release-main workflow
   historical_noindex_release_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
   historical_noindex_image_tag: don-city-next:production-cd5c74391265
-  last_completed_release_revision: ad16ffebcad985de13fc2b51c0b891c5168be756
-  last_completed_release_digest: sha256:856c8d377d42644e2b58df464d7088332ab32ede849340d2fd6c7ce8eb5cbca3
+  r2_release_revision: ad16ffebcad985de13fc2b51c0b891c5168be756
+  r2_release_digest: sha256:856c8d377d42644e2b58df464d7088332ab32ede849340d2fd6c7ce8eb5cbca3
   merge_gate_run: 163
   release_attestation_run: 164
   url: https://doncity-home.ru
