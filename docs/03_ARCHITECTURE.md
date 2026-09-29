@@ -9,14 +9,12 @@ Updated: 2026-09-29
 - Platform baseline: `AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md`.
 - UI baseline: `AMS_UI_CORE_v5.0_FINAL.md`.
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
-- Current conformance plan: `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
-  `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`.
-- Current conformance status: `APPROVED / IMPLEMENTATION`. EPIC-01…05 may use
-  their declared `MERGE_AFTER_GATE` lifecycle. Production is not authorized by
-  plan approval and remains a separate final owner gate. Earlier v13/CP evidence
-  remains historical.
-- EPIC-01…04 are merged; EPIC-05 is the active release-candidate convergence
-  scope and must preserve the production boundary.
+- Current conformance plan: `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1
+  in `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`.
+- Current status: EPIC-R1 is merged at
+  `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; EPIC-R2 owns final exact-main,
+  production identity and SOT evidence. Owner authorization permits one
+  conditional rollout only after its RISKY gate and merge.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
@@ -95,7 +93,10 @@ not duplicated configuration tables.
   major stack upgrade, critical jobs/recovery and other Core-required RISKY
   releases. SourceCraft Space remains development unless a run proves every
   staging isolation, noindex, exact-identity and cleanup invariant.
-- Last recorded noindex image `don-city-next:production-cd5c74391265` and prior image `don-city-next:production-31367bfe4adf` are historical rollback evidence. Exact deployed SHA/image for the observed public-indexing state remains pending release evidence.
+- Read-only evidence records the currently deployed revision
+  `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and RepoDigest
+  `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`;
+  post-release evidence must bind the final R2 `main` SHA to its new digest.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 - Runtime artifact uses Next.js standalone output. The application image contains
   only traced runtime files, static assets and the minimum Payload source needed

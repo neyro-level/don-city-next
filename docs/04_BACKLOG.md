@@ -1,7 +1,7 @@
 # Backlog
 
 Status: Active
-Version: 1.5
+Version: 1.6
 Updated: 2026-09-29
 
 ## Delivered
@@ -19,26 +19,24 @@ Updated: 2026-09-29
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Constitution Remediation v1
+## NOW — Constitution Cleanup / Production Truth v1
 
-- [x] Owner approved exact Plan ID `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 at `2026-09-28T21:41:18+03:00`.
-- [x] Successor inventory imported and reconciled `CLEAN` in the one existing Beads store: 5/5 epics, 44 implementation tasks, 5 delivery tasks, 54 managed nodes, zero drift/cycles; two stale v6 claims explicitly frozen as history.
-- [x] EPIC-01…04 merged through their exact-head SourceCraft gates.
-- [ ] Execute EPIC-05 through its approved `MERGE_AFTER_GATE` policy and bind the exact release candidate.
-- [ ] Stop on the exact final candidate before production.
-- [ ] Production is the final `PROD-01/02` owner gate and requires a separate explicit command `Выпускаем production`.
+- [x] Owner approved exact Plan ID `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1.
+- [x] Exact inventory imported and reconciled `CLEAN` in the existing Beads store.
+- [x] EPIC-R1 merged through SourceCraft PR `#119`, RISKY gate `160`, main `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`.
+- [x] EPIC-R2 exact-main proof and read-only production identity prove deployed revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` differs from `main`.
+- [ ] Merge final R2 SOT through one exact-head RISKY gate.
+- [ ] Execute the already owner-authorized single release from exact final `main`, then record live SHA/digest evidence without a follow-up code commit.
 
 Earlier v13 and CP-01…CP-08 evidence remains delivered history. It is not the
 current program and does not create a persistent staging database or a second
 Task Manager store.
 
-## v1 Remediation Delivery Order
+## v1 Cleanup / Truth Delivery Order
 
-1. W1: transaction/SQL contracts, SEO route evidence and UI inventory.
-2. W2: EPIC-01 import/data remediation and independent EPIC-03 SEO work.
-3. W3: EPIC-02 leads/outbox and EPIC-04 UI normalization after their narrow contract dependencies.
-4. W4: EPIC-05 integrated exact candidate, disposable proof and factual documentation.
-5. W5: `PROD-01/02` only after a separate owner release command; no autonomous production task follows EPIC-05.
+1. EPIC-R1: constitution cleanup, PR, RISKY gate and merge.
+2. EPIC-R2: exact-main proof, read-only production truth and final SOT convergence.
+3. One conditional release only because production differs from final `main`; bounded live smoke and exact SHA/digest evidence are the terminal stage.
 
 ## Open Production Readiness
 

@@ -1,7 +1,7 @@
 import path from "node:path";
 
 export const canonicalMasterPlan =
-	"docs/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md";
+	"docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md";
 export const historicalV4 = "docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md";
 export const supersededV3 =
 	"docs/archive/AMS_DON_CITY_FINAL_MASTER_PLAN_V3_0_SUPERSEDED.md";
@@ -18,7 +18,7 @@ export function findDocsSourceOfTruthViolations(files) {
 		(file) =>
 			file.name.startsWith("docs/") &&
 			!file.name.startsWith("docs/archive/") &&
-			/^docs\/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_.*\.md$/i.test(file.name),
+			/^docs\/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_.*\.md$/i.test(file.name),
 	);
 
 	if (
@@ -61,7 +61,7 @@ export function findDocsSourceOfTruthViolations(files) {
 	const docsMap = normalized.find((file) => file.name === "docs/README.md");
 	if (
 		!docsMap?.content.includes(
-			"| текущий approved remediation contract | `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md` |",
+			"| текущий approved execution contract | `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md` |",
 		)
 	) {
 		violations.push("docs/README.md must map the current approved remediation contract");
@@ -82,8 +82,8 @@ export function findDocsSourceOfTruthViolations(files) {
 
 	requireCurrent(
 		canonicalMasterPlan,
-		"Plan ID: AMS-DON-CITY-CONSTITUTION-REMEDIATION",
-		"canonical plan must identify constitution remediation v1",
+		"Plan ID: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
+		"canonical plan must identify cleanup and production truth v1",
 	);
 	requireCurrent(
 		canonicalMasterPlan,
@@ -97,12 +97,12 @@ export function findDocsSourceOfTruthViolations(files) {
 	);
 	requireCurrent(
 		canonicalMasterPlan,
-		"Production remains planned as the final `PROD-01/02` owner gate",
-		"canonical plan must keep production behind a separate owner gate",
+		"Production: exactly one rollout only when final production identity differs",
+		"canonical plan must keep production conditional and single-rollout",
 	);
 	requireCurrent(
 		"docs/README.md",
-		"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
+		"`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1",
 		"docs map must identify the current approved plan",
 	);
 	requireCurrent(
@@ -112,12 +112,12 @@ export function findDocsSourceOfTruthViolations(files) {
 	);
 	requireCurrent(
 		"docs/04_BACKLOG.md",
-		"## NOW — Constitution Remediation v1",
-		"backlog must identify the current remediation program",
+		"## NOW — Constitution Cleanup / Production Truth v1",
+		"backlog must identify the current cleanup and production truth program",
 	);
 	requireCurrent(
 		"docs/DELIVERY_STATE.yaml",
-		"program: AMS-DON-CITY-CONSTITUTION-REMEDIATION\nplan_version: v1\nplan_status: APPROVED",
+		"program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH\nplan_version: v1\nplan_status: APPROVED",
 		"delivery state must identify the current approved graph",
 	);
 

@@ -4,16 +4,17 @@ Status: active production, publicly crawlable
 Updated: 2026-09-29
 
 Active execution is governed by exact APPROVED plan
-`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
-`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. EPIC-05 may
-prepare and prove an exact release candidate, but production still requires a
-separate owner command. Operational commands are resolved from the current
+`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. The owner
+has authorized one conditional production release after R2 exact-head gate and
+merge because read-only evidence proves production differs from `main`.
+Operational commands are resolved from the current
 root `package.json` and versioned runbooks; historical plans are evidence only.
 
 ## Current Runtime
 
 - Production: `https://doncity-home.ru`; bounded HTTP evidence from 2026-09-28 confirms an indexable homepage, crawl-allowed `robots.txt` and sitemap publication.
-- Exact deployed SHA/image for that observed public state is not yet bound to release evidence. SHA `cd5c743912650525f84d2d110e6a43c4e6c6e35d` and image `don-city-next:production-cd5c74391265` remain the prior recorded noindex rollback baseline.
+- Read-only production identity is revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` at RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`. It is healthy but behind current `main`.
 - One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`.
 - Exactly one persistent managed PostgreSQL 18 database and private Timeweb S3 production identity exist. Non-production DB proof is disposable, isolated and removed after use.
 - The former persistent staging runtime, logical database, empty bucket and
@@ -30,9 +31,9 @@ flag:
 | State | Current fact |
 |---|---|
 | Observed public state | `LIVE_PUBLIC_OBSERVED`: the public origin is reachable and indexing is observed. |
-| Deployed artifact identity | `PENDING_FACTUAL_BINDING`: the running public artifact has not yet been bound to an exact SHA/image in current release evidence. |
-| Code main state | SourceCraft `main` contains merged EPIC-01…04 at `13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4`; EPIC-05 changes are not main until its gate and merge. |
-| Operational readiness | `PARTIAL`: owner login, external uptime monitoring and canonical NAP are proved; final exact deployed identity evidence remains open until the approved release. |
+| Deployed artifact identity | `EXACT_READ_ONLY_PROOF`: revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e`, RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`. |
+| Code main state | SourceCraft `main` contains merged EPIC-R1 at `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; R2 proof/SOT changes await their exact-head gate and merge. |
+| Operational readiness | `PARTIAL`: external uptime monitoring, backups, jobs ownership and canonical NAP are proved; production-owner access remains an owner-controlled operation. |
 | Real feed readiness | `DISABLED_NOT_READY`: no approved endpoint or outbound/image allowlists. |
 | Lead delivery readiness | `DISABLED_NOT_READY`: no approved independent destination/channel or destination allowlist. |
 
@@ -129,7 +130,7 @@ contract above is explicitly established for that run.
   owner-held credential without recording the credential, cookie or email;
 - keep the proved SourceCraft uptime alert schedule active; the separate lead-delivery channel remains fail-closed;
 - run a production SEO/lifecycle crawl;
-- bind the observed public state to exact deployed SHA/image evidence.
+- after the authorized rollout, bind exact final `main` to the deployed immutable RepoDigest in SourceCraft release and read-only host evidence.
 
 Production remains online while the remaining evidence gaps are open. Real feed stays off.
 

@@ -8,6 +8,7 @@ docs/adr/*.md text eol=lf
 docs/archive/*.md text eol=lf
 docs/research/*.md text eol=lf
 docs/task-manager-inventory.v2.json text eol=lf
+docs/task-manager-r1-r2-inventory.v2.json text eol=lf
 scripts/task-manager/*.mjs text eol=lf
 "docs/AMS_MASTER_PLAN №4.md" text eol=crlf
 docs/orchestration/master-plan-2.inventory.json text eol=lf

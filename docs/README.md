@@ -1,7 +1,7 @@
 # DON CITY
 
-Status: Active — constitution remediation v1 / EPIC-05 release-candidate work
-Version: 1.4
+Status: Active — EPIC-R2 production truth and final release convergence
+Version: 1.5
 Updated: 2026-09-29
 
 ## Что создаём
@@ -14,15 +14,19 @@ Updated: 2026-09-29
 
 ## Текущий статус
 
-- EPIC-01…04 exact approved remediation graph merged through SourceCraft gates;
-  EPIC-05 is the active execution scope and must stop on the exact candidate
-  before any separately authorized production action.
+- Constitution cleanup EPIC-R1 is merged in SourceCraft `main` at
+  `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9` through PR `#119` and RISKY gate
+  run `160`. EPIC-R2 is the active exact-production-truth and final SOT scope.
 - Observed public state, deployed artifact identity, code main state,
   operational readiness, real feed readiness and lead delivery readiness are
   separate facts; the current matrix is owned by `OPERATIONS.md` and
   `DELIVERY_STATE.yaml`.
 - Production отвечает на `https://doncity-home.ru`; read-only evidence от 2026-09-27 подтверждает индексируемую homepage, разрешающий `robots.txt` и опубликованный sitemap.
-- Exact deployed SHA/image для текущего публично индексируемого состояния ещё должен быть привязан к release evidence; прежний noindex release `cd5c743912650525f84d2d110e6a43c4e6c6e35d` остаётся историческим rollback evidence, а не заявлением о текущей identity.
+- Read-only production evidence binds the running revision to
+  `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and the immutable RepoDigest to
+  `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`.
+  It differs from current `main`, therefore one rollout is required after the
+  final R2 gate and merge; an intermediate deployment is forbidden.
 - `DC10-R11-00` доставил воспроизводимую read-only redacted production-матрицу:
   12 опубликованных объектов и 92 фотографии на зафиксированном baseline.
 - Реальный feed отключён; после owner-authorized удаления persistent staging
@@ -38,8 +42,8 @@ Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + AMS Payload P
 
 The current implementation is partially converged, not fully certified. Exact
 gaps, dependencies and evidence are governed by APPROVED Plan ID
-`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
-`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. Earlier plans and
+`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. Earlier plans and
 CP evidence remain history, not current execution state.
 
 ## Source of Truth
@@ -58,7 +62,7 @@ CP evidence remain history, not current execution state.
 | operations / runtime | `OPERATIONS.md` |
 | SourceCraft Spaces pilot | `SOURCECRAFT_SPACES.md` |
 | SourceCraft organization/platform audit | `SOURCECRAFT_PLATFORM_AUDIT.md` |
-| текущий approved remediation contract | `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md` |
+| текущий approved execution contract | `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md` |
 | предыдущий live-conformance contract | `AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md` (history) |
 | долговечные архитектурные решения | `adr/README.md` |
 | активный реестр допустимых raw SQL операций | `RAW_SQL_REGISTER.md` |

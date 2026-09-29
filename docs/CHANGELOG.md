@@ -1,5 +1,15 @@
 # Contract changelog
 
+## 2026-09-29 — Constitution cleanup and production truth
+
+- EPIC-R1 merged through SourceCraft PR `#119`, exact-head RISKY gate run `160`
+  and main `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`.
+- Read-only host proof bound the currently running production revision to
+  `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and immutable RepoDigest
+  `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`.
+- Production is healthy but differs from main, so the owner-authorized path is
+  one R2 gate/merge, one exact-main release, one rollout and bounded live proof.
+
 ## 2026-09-28 — Final pre-release documentation convergence
 
 - Active backlog, design and delivery state were reconciled with public

@@ -1,22 +1,33 @@
 schema_version: 1
-program: AMS-DON-CITY-CONSTITUTION-REMEDIATION
+program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH
 plan_version: v1
 plan_status: APPROVED
-current_wave: W4_RELEASE_CANDIDATE
-current_epic: EPIC-05
-current_task: TASK-05.1
-next_action: reconcile-active-router-and-continue-epic-05-before-production
+current_wave: R2_PRODUCTION_TRUTH
+current_epic: EPIC-R2
+current_task: TASK-R2.3
+next_action: gate-and-merge-r2-then-one-owner-authorized-release
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  documentation_baseline_sha: 13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4
-  active_branch: codex/dc-constitution-remediation-epic05
+  documentation_baseline_sha: 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9
+  active_branch: codex/dc-r2-production-truth
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dccr-task-05-1
-  reason: exact v1 remains reconciled CLEAN; EPIC-01 through EPIC-04 are delivered and EPIC-05 is active
+  current_task: dcrp-task-r2-3
+  reason: exact v1 remains reconciled CLEAN; EPIC-R1 is delivered and EPIC-R2 final SOT convergence is active
+current_release:
+  r1_status: delivered
+  r1_pull_request: 119
+  r1_gate_run: 160
+  r1_main_sha: 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9
+  r2_status: in_progress
+  observed_production_revision: fbc2dab7bf2fc408f2257bc280df0fb45970354e
+  observed_production_digest: sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6
+  deployment_required_after_final_merge: true
+  release_authorized: true
+  rollout_limit: 1
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -290,8 +301,8 @@ historical_core55:
     status: prerequisites-and-exact-main-gate
     authorized: true
 production:
-  authorized: false
-  authorization_scope: no current authorization; the prior v13 DC11-PROD-FINAL authorization was consumed and cannot authorize remediation v1
+  authorized: true
+  authorization_scope: one conditional release of exact final R2 main; no intermediate rollout
   status: LIVE_PUBLIC_OBSERVED
   exact_deployed_sha_source: running container OCI org.opencontainers.image.revision label
   observed_pre_release_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
@@ -318,12 +329,12 @@ production:
     - exact-deployed-sha-and-image
 production_state:
   observed_public_state: LIVE_PUBLIC_OBSERVED
-  deployed_artifact_identity: PENDING_FACTUAL_BINDING
-  code_main_state: "EPIC-01 through EPIC-04 merged at 13cbcd24dd087602ac1167104e8ddd2ba0f7a9b4; EPIC-05 active outside main"
-  operational_readiness: NOT_READY
+  deployed_artifact_identity: "revision fbc2dab7bf2fc408f2257bc280df0fb45970354e; RepoDigest sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6"
+  code_main_state: "EPIC-R1 merged at 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9; EPIC-R2 proof and SOT active outside main"
+  operational_readiness: PARTIAL
   real_feed_readiness: DISABLED_NOT_READY
   lead_delivery_readiness: DISABLED_NOT_READY
-  production_release_authorized: false
+  production_release_authorized: true
 staging_contract:
   stagingMode: EPHEMERAL_ON_DEMAND
   persistentStaging: false

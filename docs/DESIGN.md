@@ -9,9 +9,10 @@ Updated: 2026-09-29
 The project UI contract is governed by `../AMS_UI_CORE_v5.0_FINAL.md`. This document remains the project-specific design policy; numeric values remain exclusively in `src/app/globals.css`.
 
 Current status is `TARGETED CONFORMANCE`. The active execution contract is exact
-APPROVED plan `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
-`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`; its EPIC-04 UI
-normalization is merged and EPIC-05 owns release-candidate proof. Historical
+APPROVED plan `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`; its
+EPIC-R1 typography/radius/guard cleanup is merged and EPIC-R2 owns final
+production-truth proof. Historical
 CP-05 remains evidence, not the current router. This is not a claim that every
 future page or optional module is certified; new UI still follows the same gates
 and `REUSE → VARIANT → CREATE` rule.

@@ -9,13 +9,13 @@ const validFiles = [
 	{
 		name: canonicalMasterPlan,
 		content:
-			"Plan ID: AMS-DON-CITY-CONSTITUTION-REMEDIATION\nVersion: v1\nStatus: APPROVED\nProduction remains planned as the final `PROD-01/02` owner gate",
+			"Plan ID: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH\nVersion: v1\nStatus: APPROVED\nProduction: exactly one rollout only when final production identity differs",
 	},
 	{ name: supersededV3, content: "Status: SUPERSEDED" },
 	{
 		name: "docs/README.md",
 		content:
-			"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1\n| текущий approved remediation contract | `DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md` |",
+			"`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1\n| текущий approved execution contract | `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md` |",
 	},
 ];
 
@@ -33,7 +33,7 @@ assert.deepEqual(
 assert.ok(
 	findDocsSourceOfTruthViolations([
 		...validFiles,
-		{ name: "docs/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V3_0.md", content: "" },
+		{ name: "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V2_0.md", content: "" },
 	]).some((violation) => violation.startsWith("active master plans")),
 );
 assert.ok(
@@ -74,13 +74,13 @@ assert.ok(
 				? {
 						...file,
 						content:
-							"Plan ID: AMS-DON-CITY-CONSTITUTION-REMEDIATION\nVersion: v1\nStatus: APPROVED",
+							"Plan ID: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH\nVersion: v1\nStatus: APPROVED",
 					}
 				: file,
 		),
 	).some((violation) =>
 		violation.startsWith(
-			"canonical plan must keep production behind a separate owner gate",
+			"canonical plan must keep production conditional and single-rollout",
 		),
 	),
 );

@@ -33,23 +33,23 @@ assert.doesNotMatch(backlog, /Health имеет статус `degraded`/);
 assert.doesNotMatch(backlog, /Закрыть media backup\/versioning/);
 
 const delivery = read("docs/DELIVERY_STATE.yaml");
-const constitutionRemediationIsActive = delivery.includes(
-	"program: AMS-DON-CITY-CONSTITUTION-REMEDIATION",
+const cleanupProductionTruthIsActive = delivery.includes(
+	"program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
 );
 
-if (constitutionRemediationIsActive) {
+if (cleanupProductionTruthIsActive) {
 	requireFragments("docs/04_BACKLOG.md", [
-		"## NOW — Constitution Remediation v1",
-		"Production is the final `PROD-01/02` owner gate",
-		"requires a separate explicit command `Выпускаем production`",
+		"## NOW — Constitution Cleanup / Production Truth v1",
+		"Merge final R2 SOT through one exact-head RISKY gate",
+		"already owner-authorized single release",
 	]);
 	requireFragments("docs/DELIVERY_STATE.yaml", [
 		"plan_version: v1",
 		"plan_status: APPROVED",
-		"current_wave: W4_RELEASE_CANDIDATE",
-		"current_epic: EPIC-05",
-		"current_task: TASK-05.1",
-		"next_action: reconcile-active-router-and-continue-epic-05-before-production",
+		"current_wave: R2_PRODUCTION_TRUTH",
+		"current_epic: EPIC-R2",
+		"current_task: TASK-R2.3",
+		"next_action: gate-and-merge-r2-then-one-owner-authorized-release",
 		"reconciliation: CLEAN",
 	]);
 } else {
@@ -99,11 +99,11 @@ const architectureFragments = [
 	"Exactly one persistent production database exists",
 	"Owner-authorized retirement on 2026-09-28",
 ];
-if (constitutionRemediationIsActive) {
+if (cleanupProductionTruthIsActive) {
 	architectureFragments.push(
-		"Current conformance plan: `AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
-		"Current conformance status: `APPROVED / IMPLEMENTATION`",
-		"Production is not authorized by",
+		"Current conformance plan: `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1",
+		"Owner authorization permits one",
+		"conditional rollout only after its RISKY gate and merge",
 	);
 } else {
 	architectureFragments.push("`FINAL RELEASE AUTHORIZED`");
@@ -139,15 +139,21 @@ requireFragments("docs/adr/ADR-0016-public-nap-opening-hours.md", [
 	"2.1.0",
 ]);
 
-const inventory = JSON.parse(read("docs/task-manager-inventory.v2.json"));
-if (constitutionRemediationIsActive) {
+const inventory = JSON.parse(
+	read(
+		cleanupProductionTruthIsActive
+			? "docs/task-manager-r1-r2-inventory.v2.json"
+			: "docs/task-manager-inventory.v2.json",
+	),
+);
+if (cleanupProductionTruthIsActive) {
 	assert.equal(
 		inventory.source.plan_id,
-		"AMS-DON-CITY-CONSTITUTION-REMEDIATION",
+		"DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
 	);
 	assert.equal(inventory.source.version, "v1");
 	assert.equal(
-		inventory.nodes.some((node) => /^PROD-(?:01|02)$/.test(node.key)),
+		inventory.nodes.some((node) => /^PROD-R2$/.test(node.key)),
 		false,
 		"production-only gates must stay outside the autonomous inventory",
 	);

@@ -1,5 +1,5 @@
 param(
-  [ValidateSet('Inventory', 'ProductionContract', 'ProductionPreflight', 'OperationalProof', 'CleanupFailedTransport', 'CleanupFailedRelease')]
+  [ValidateSet('Inventory', 'ProductionIdentity', 'ProductionContract', 'ProductionPreflight', 'OperationalProof', 'CleanupFailedTransport', 'CleanupFailedRelease')]
   [string]$Action = 'Inventory',
   [ValidatePattern('^[0-9a-f]{12}$')]
   [string]$ReleaseShortSha,
@@ -118,6 +118,26 @@ for container_id in $(sudo -n docker ps -aq); do
 done
 printf 'staging_container_count=%s\n' "$(sudo -n docker ps -aq --filter 'name=^/doncity-staging-app$' | wc -l)"
 if sudo -n test -d /srv/doncity/staging; then printf 'staging_runtime_directory=present\n'; else printf 'staging_runtime_directory=absent\n'; fi
+'@
+  Invoke-SshCommand `
+    -HostName $secrets.DONCITY_SERVER_SSH_HOST `
+    -UserName $secrets.DONCITY_DEPLOY_USER `
+    -PrivateKey $secrets.DONCITY_DEPLOY_SSH_KEY `
+    -RemoteCommand $remoteCommand
+}
+
+if ($Action -eq 'ProductionIdentity') {
+  $remoteCommand = @'
+set -eu
+docker_cmd='sudo -n docker'
+production_id=$($docker_cmd ps -q --filter 'name=^/doncity-production-app$')
+[ "$(printf '%s\n' "$production_id" | sed '/^$/d' | wc -l)" -eq 1 ] || { echo 'production_runtime_count=invalid'; exit 71; }
+printf 'container_name=doncity-production-app\n'
+printf 'running_revision=%s\n' "$($docker_cmd inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$production_id")"
+printf 'configured_image=%s\n' "$($docker_cmd inspect --format '{{.Config.Image}}' "$production_id")"
+printf 'image_id=%s\n' "$($docker_cmd inspect --format '{{.Image}}' "$production_id")"
+printf 'repo_digests=%s\n' "$($docker_cmd image inspect --format '{{join .RepoDigests ","}}' "$($docker_cmd inspect --format '{{.Image}}' "$production_id")")"
+printf 'runtime_health=%s\n' "$($docker_cmd inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}not-configured{{end}}' "$production_id")"
 '@
   Invoke-SshCommand `
     -HostName $secrets.DONCITY_SERVER_SSH_HOST `

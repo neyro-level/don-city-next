@@ -23,6 +23,7 @@ for (const path of [
 	"docs/05_RELEASE_CHECKLIST.md",
 	"docs/AMS_DON_CITY_FINAL_MASTER_PLAN_V4_0.md",
 	"docs/DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md",
+	"docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
 	"docs/DELIVERY_STATE.yaml",
 	"docs/DESIGN.md",
 	"docs/OPERATIONS.md",
@@ -93,10 +94,10 @@ requireAll("docs/06_DESIGN_SYSTEM.md", [
 requireAll("docs/README.md", [
 	"| project profile, runtime choices and fail-closed readiness | `PROJECT.md` |",
 	"| active project design policy | `DESIGN.md` |",
-	"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
+	"`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1",
 ]);
 requireAll("docs/03_ARCHITECTURE.md", [
-	"`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1",
+	"`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1",
 	"Exactly one persistent production database exists",
 	"Production публично индексируется",
 	"`PROJECT_CLASS=COMMERCIAL`",
@@ -127,9 +128,9 @@ assert.equal(
 	"Observed public indexing must not be described as blocked before indexing.",
 );
 requireAll("docs/04_BACKLOG.md", [
-	"## NOW — Constitution Remediation v1",
-	"54 managed nodes",
-	"`PROD-01/02`",
+	"## NOW — Constitution Cleanup / Production Truth v1",
+	"EPIC-R1 merged through SourceCraft PR `#119`",
+	"already owner-authorized single release",
 ]);
 requireAll("docs/01_PRD.md", [
 	"Production live и публично индексируется",
@@ -140,28 +141,28 @@ requireAll("docs/02_PRODUCT_STRUCTURE.md", [
 	"registry/content gates",
 ]);
 requireAll("docs/05_RELEASE_CHECKLIST.md", [
-	"Status: Active — remediation release candidate not yet complete",
+	"Status: Active — R2 final release convergence",
 	"exact deployed SHA/image",
-	"## Constitution Remediation v1 Production Entry",
+	"## Constitution Cleanup / Production Truth v1 Entry",
 	"`Выпускаем production`",
 	"must not promote a fail-closed",
 ]);
 requireAll("docs/DELIVERY_STATE.yaml", [
-	"program: AMS-DON-CITY-CONSTITUTION-REMEDIATION",
+	"program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
 	"plan_version: v1",
 	"reconciliation: CLEAN",
-	"current_wave: W4_RELEASE_CANDIDATE",
-	"current_epic: EPIC-05",
-	"current_task: TASK-05.1",
-	"next_action: reconcile-active-router-and-continue-epic-05-before-production",
+	"current_wave: R2_PRODUCTION_TRUTH",
+	"current_epic: EPIC-R2",
+	"current_task: TASK-R2.3",
+	"next_action: gate-and-merge-r2-then-one-owner-authorized-release",
 	"status: LIVE_PUBLIC_OBSERVED",
 	"release_target: exact SourceCraft origin/main attested by the manual release-main workflow",
 	"observed_public_state: LIVE_PUBLIC_OBSERVED",
-	"deployed_artifact_identity: PENDING_FACTUAL_BINDING",
-	"operational_readiness: NOT_READY",
+	"deployed_artifact_identity: \"revision fbc2dab7bf2fc408f2257bc280df0fb45970354e; RepoDigest sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6\"",
+	"operational_readiness: PARTIAL",
 	"real_feed_readiness: DISABLED_NOT_READY",
 	"lead_delivery_readiness: DISABLED_NOT_READY",
-	"production_release_authorized: false",
+	"production_release_authorized: true",
 	"task: TASK-05.4",
 	"candidate_sha: 145b58b0ef436f8c0871647cf4c8d19d646a2403",
 	"seo_http_matrix: PASS",

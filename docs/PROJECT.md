@@ -5,9 +5,10 @@ Status: Active — production live and publicly crawlable
 Updated: 2026-09-29
 
 Active execution contract: exact APPROVED plan
-`AMS-DON-CITY-CONSTITUTION-REMEDIATION` v1 in
-`DON_CITY_FINAL_CONSTITUTION_REMEDIATION_MASTER_PLAN_V2_0.md`. EPIC-01…04 are
-merged; EPIC-05 owns release-candidate convergence and stops before production.
+`DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. EPIC-R1 is
+merged at `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; EPIC-R2 owns exact
+production truth, final documentation and the conditional final release.
 Runtime commands come only from the current root `package.json`.
 
 ## 1. Identity and profile
@@ -178,7 +179,7 @@ Open production-readiness / operational evidence:
 - non-empty verified destination/image/outbound allowlists for any activated
   integration;
 - owner-verified canonical NAP;
-- exact deployed SHA/image evidence for the observed public-indexing state.
+- post-release exact final `main` SHA and immutable image digest evidence.
 
 Until their own gates are closed, real feeds and lead delivery stay disabled.
 The final production stage is last; no separate monitoring, observation,

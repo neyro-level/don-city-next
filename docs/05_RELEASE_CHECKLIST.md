@@ -1,7 +1,7 @@
 # Release Checklist
 
-Status: Active — remediation release candidate not yet complete
-Version: 1.5
+Status: Active — R2 final release convergence
+Version: 1.6
 Updated: 2026-09-29
 
 ## Historical Release Evidence
@@ -57,18 +57,16 @@ Updated: 2026-09-29
 - Newbuild/ЖК review is future owner-planned product work, not a scheduled
   post-production monitoring task.
 
-## Constitution Remediation v1 Production Entry
+## Constitution Cleanup / Production Truth v1 Entry
 
-- [x] EPIC-01…04 are merged through their exact-head SourceCraft gates.
-- [ ] EPIC-05 is merged through its exact-head SourceCraft gate.
-- [ ] Final candidate SHA is clean, unchanged and bound to the required local,
-      integration and disposable-environment evidence.
+- [x] EPIC-R1 is merged through PR `#119`, exact-head RISKY gate `160` and main `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`.
+- [x] Current production is bound read-only to revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`.
+- [ ] EPIC-R2 is merged through its exact-head SourceCraft RISKY gate.
+- [ ] Final `main` SHA is clean and unchanged before release.
 - [ ] When the diff requires staging, prove `EPHEMERAL_ON_DEMAND` isolation:
       disposable DB/non-production secrets and storage, sanitized data,
       noindex/restricted access, explicit jobs ownership and cleanup.
-- [ ] Production owner/admin, external monitoring, canonical NAP, backup,
-      jobs ownership, rollback and exact deployed identity prerequisites are
-      factually proved or fail closed.
+- [x] External monitoring, canonical NAP, backup, jobs ownership, rollback and current deployed identity are factually proved; production-owner access remains an owner-controlled operation and real integrations stay fail-closed.
 - [x] Owner issued the separate explicit command `Выпускаем production` on 2026-09-29;
       it applies to this completed exact candidate only.
 - [ ] Run one SourceCraft exact-main release workflow, one rollout and one
