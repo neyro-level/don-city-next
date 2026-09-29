@@ -29,7 +29,7 @@ export function HtmlSitemapListingView({
 					>
 						<ArrowLeft className="size-4" aria-hidden /> Карта сайта
 					</LinkRenderer>
-					<h1 className="mt-4 text-h2 font-extrabold leading-tight-copy md:text-h1">
+					<h1 className="mt-4 text-h2 font-extrabold md:text-h1">
 						{title}
 					</h1>
 					<p className="mt-3 text-body text-[var(--content-subtle)]">
@@ -48,7 +48,7 @@ export function HtmlSitemapListingView({
 							<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-subtle)] text-[var(--accent)]">
 								<Building2 className="size-4" aria-hidden />
 							</span>
-							<span className="min-w-0 text-body font-semibold leading-step-body text-[var(--content-subtle)] group-hover:text-[var(--accent)]">
+							<span className="min-w-0 text-body font-semibold text-[var(--content-subtle)] group-hover:text-[var(--accent)]">
 								{item.title}
 							</span>
 						</LinkRenderer>

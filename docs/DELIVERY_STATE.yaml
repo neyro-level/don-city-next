@@ -2,32 +2,36 @@ schema_version: 1
 program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH
 plan_version: v1
 plan_status: APPROVED
-current_wave: R2_PRODUCTION_TRUTH
-current_epic: EPIC-R2
-current_task: TASK-R2.3
-next_action: gate-and-merge-r2-then-one-owner-authorized-release
+current_wave: CONTINUOUS_MAINTENANCE
+current_epic: none
+current_task: none
+next_action: none-program-complete
 repository:
   key: don-city-next
   remote: https://git.sourcecraft.dev/integrator-p/don-city-next.git
   default_branch: main
-  documentation_baseline_sha: 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9
-  active_branch: codex/dc-r2-production-truth
+  documentation_baseline: canonical SourceCraft main
+  active_branch: main
 task_manager:
   initialized: true
   reconciliation: CLEAN
-  current_task: dcrp-task-r2-3
-  reason: exact v1 remains reconciled CLEAN; EPIC-R1 is delivered and EPIC-R2 final SOT convergence is active
+  current_task: none
+  reason: exact v1 remains reconciled CLEAN; all imported EPIC-R1 and EPIC-R2 nodes are delivered
 current_release:
   r1_status: delivered
   r1_pull_request: 119
   r1_gate_run: 160
   r1_main_sha: 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9
-  r2_status: in_progress
-  observed_production_revision: fbc2dab7bf2fc408f2257bc280df0fb45970354e
-  observed_production_digest: sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6
-  deployment_required_after_final_merge: true
-  release_authorized: true
+  r2_status: delivered
+  r2_pull_request: 120
+  r2_gate_run: 163
+  r2_release_run: 164
+  r2_main_sha: ad16ffebcad985de13fc2b51c0b891c5168be756
+  r2_production_digest: sha256:856c8d377d42644e2b58df464d7088332ab32ede849340d2fd6c7ce8eb5cbca3
+  deployment_required_after_final_merge: false
+  release_authorized: false
   rollout_limit: 1
+  rollout_count: 1
 live_conformance:
   dc10_ops_00:
     status: delivered
@@ -301,18 +305,18 @@ historical_core55:
     status: prerequisites-and-exact-main-gate
     authorized: true
 production:
-  authorized: true
-  authorization_scope: one conditional release of exact final R2 main; no intermediate rollout
+  authorized: false
+  authorization_scope: consumed by the completed exact-main R2 release
   status: LIVE_PUBLIC_OBSERVED
   exact_deployed_sha_source: running container OCI org.opencontainers.image.revision label
   observed_pre_release_sha: a9edd8ff59f50a888e20dd077cd415ba7817050b
   release_target: exact SourceCraft origin/main attested by the manual release-main workflow
   historical_noindex_release_sha: cd5c743912650525f84d2d110e6a43c4e6c6e35d
   historical_noindex_image_tag: don-city-next:production-cd5c74391265
-  server_image_id: sha256:db58836c84b3287c6a4c288dd81a2e7de6247c57a8240aa3483e8549e833d51c
-  artifact_sha256: 4d90a04f3e557d30fe21a44e9f939316cc95d5a76cd4d649d8f13e934ff2bc9c
-  merge_gate_run: 81
-  release_attestation_run: 82
+  last_completed_release_revision: ad16ffebcad985de13fc2b51c0b891c5168be756
+  last_completed_release_digest: sha256:856c8d377d42644e2b58df464d7088332ab32ede849340d2fd6c7ce8eb5cbca3
+  merge_gate_run: 163
+  release_attestation_run: 164
   url: https://doncity-home.ru
   last_documented_properties: 12
   last_documented_media: 92
@@ -323,18 +327,15 @@ production:
   rollback_image: don-city-next:production-31367bfe4adf
   health: ok
   unresolved_product_operations:
-    - first-production-owner
     - independent-alert-and-lead-delivery-channel
-    - owner-verified-canonical-nap
-    - exact-deployed-sha-and-image
 production_state:
   observed_public_state: LIVE_PUBLIC_OBSERVED
-  deployed_artifact_identity: "revision fbc2dab7bf2fc408f2257bc280df0fb45970354e; RepoDigest sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6"
-  code_main_state: "EPIC-R1 merged at 1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9; EPIC-R2 proof and SOT active outside main"
-  operational_readiness: PARTIAL
+  deployed_artifact_identity: "exact SourceCraft release record plus matching runtime revision label and pinned Compose RepoDigest"
+  code_main_state: "EPIC-R1 and EPIC-R2 delivered; release invariant is SourceCraft main = public GitHub mirror = production revision"
+  operational_readiness: READY
   real_feed_readiness: DISABLED_NOT_READY
   lead_delivery_readiness: DISABLED_NOT_READY
-  production_release_authorized: true
+  production_release_authorized: false
 staging_contract:
   stagingMode: EPHEMERAL_ON_DEMAND
   persistentStaging: false

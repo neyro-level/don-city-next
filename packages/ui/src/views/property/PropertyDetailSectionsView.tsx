@@ -43,19 +43,19 @@ export function PropertyDetailSummaryView({
 				{exclusive ? (
 					<span
 						data-exclusive-badge
-						className="inline-flex min-h-7 w-fit items-center rounded-md bg-[var(--accent)] px-2.5 text-label font-bold leading-flat text-white"
+						className="inline-flex min-h-7 w-fit items-center rounded-md bg-[var(--accent)] px-2.5 text-label font-bold text-white"
 					>
 						Эксклюзив
 					</span>
 				) : null}
 				<h1
 					id="object-page-title"
-					className="text-h2 font-semibold leading-card-title text-[var(--text-primary)]"
+					className="text-h2 font-semibold text-[var(--text-primary)]"
 				>
 					{title}
 				</h1>
 				{address ? (
-					<p className="inline-flex min-w-0 items-center gap-1.5 text-body-sm font-normal leading-step-body text-[var(--text-secondary)]">
+					<p className="inline-flex min-w-0 items-center gap-1.5 text-body-sm font-normal text-[var(--text-secondary)]">
 						<MapPin
 							className="size-3.5 shrink-0 text-[var(--accent)]"
 							aria-hidden
@@ -75,18 +75,18 @@ export function PropertyDetailSummaryView({
 					</p>
 				) : null}
 				<div className="mt-1 lg:hidden" data-property-mobile-price>
-					<p className="text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
+					<p className="text-h4 font-extrabold tabular-nums text-[var(--text-primary)]">
 						{price}
 					</p>
 					{meterPrice ? (
-						<p className="mt-1 text-caption font-semibold leading-step-small text-[var(--text-muted)]">
+						<p className="mt-1 text-caption font-semibold text-[var(--text-muted)]">
 							{meterPrice}
 						</p>
 					) : null}
 				</div>
 			</div>
 			<div className="grid gap-1.5">
-				<p className="text-label font-semibold uppercase tracking-overline-compact text-[var(--text-muted)]">
+				<p className="text-label font-semibold uppercase text-[var(--text-muted)]">
 					Коротко об объекте
 				</p>
 			</div>
@@ -103,10 +103,10 @@ export function PropertyDetailSummaryView({
 								aria-hidden
 							/>
 							<div className="grid min-w-0 gap-0.5">
-								<strong className="text-body font-semibold leading-step-body text-[var(--text-primary)]">
+								<strong className="text-body font-semibold text-[var(--text-primary)]">
 									{item.value}
 								</strong>
-								<span className="text-caption leading-step-small text-[var(--text-muted)]">
+								<span className="text-caption text-[var(--text-muted)]">
 									{item.label}
 								</span>
 							</div>
@@ -138,11 +138,11 @@ export function PropertyDescriptionView({
 		>
 			<h2
 				id="object-description-title"
-				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold text-[var(--text-primary)]"
 			>
 				Описание
 			</h2>
-			<div className="grid w-full gap-2 text-body-sm font-normal leading-support text-[var(--text-secondary)] md:text-body md:leading-support">
+			<div className="grid w-full gap-2 text-body-sm font-normal text-[var(--text-secondary)] md:text-body">
 				{visibleParagraphs.map((paragraph, index) => (
 					<p key={paragraph}>
 						{paragraph}
@@ -159,7 +159,7 @@ export function PropertyDescriptionView({
 					variant="plain"
 					type="button"
 					onClick={() => setExpanded((current) => !current)}
-					className="justify-self-start text-body font-semibold leading-step-body text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
+					className="justify-self-start text-body font-semibold text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
 					aria-expanded={expanded}
 				>
 					{expanded ? "Свернуть" : "Подробнее"}
@@ -183,7 +183,7 @@ export function PropertyDetailsView({
 		>
 			<h2
 				id="object-details-title"
-				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold text-[var(--text-primary)]"
 			>
 				{title}
 			</h2>
@@ -191,7 +191,7 @@ export function PropertyDetailsView({
 				{rows.map((row) => (
 					<div
 						key={`${row.label}-${row.value}`}
-						className="grid grid-cols-[auto_minmax(32px,1fr)_auto] items-baseline gap-2 text-body leading-step-copy"
+						className="grid grid-cols-[auto_minmax(32px,1fr)_auto] items-baseline gap-2 text-body "
 					>
 						<span className="text-[var(--text-secondary)]">{row.label}</span>
 						<span
@@ -216,11 +216,11 @@ export function PropertyBuildingView({ description }: { description: string }) {
 		>
 			<h2
 				id="object-building-title"
-				className="scroll-mt-32.5 text-h3 font-semibold leading-tight-copy text-[var(--text-primary)]"
+				className="scroll-mt-32.5 text-h3 font-semibold text-[var(--text-primary)]"
 			>
 				Дом и район
 			</h2>
-			<p className="text-body-sm font-normal leading-step-copy text-[var(--text-secondary)] md:text-body">
+			<p className="text-body-sm font-normal text-[var(--text-secondary)] md:text-body">
 				{description}
 			</p>
 		</Card>

@@ -86,13 +86,13 @@ export function HouseProjectPreviewView({
 						>
 							Preview-проект
 						</Badge>
-						<h1 className="mt-5 text-h1 font-extrabold leading-tight-copy">
+						<h1 className="mt-5 text-h1 font-extrabold">
 							{project.title}
 						</h1>
 						<p className="mt-4 text-h2 font-extrabold tabular-nums text-[var(--accent)]">
 							{project.areaLabel}
 						</p>
-						<p className="mt-5 text-body leading-step-relaxed text-[var(--text-secondary)]">
+						<p className="mt-5 text-body text-[var(--text-secondary)]">
 							{project.description}
 						</p>
 						{actions}

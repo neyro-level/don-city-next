@@ -132,16 +132,16 @@ export function PropertyCardListLayout({
 
 			<div className="flex min-h-59.5 flex-col md:min-h-72">
 				<div className="min-w-0">
-					<h2 className="text-h4 font-extrabold leading-step-copy tracking-compact text-[var(--text-primary)]">
+					<h2 className="text-h4 font-extrabold text-[var(--text-primary)]">
 						{listTitle}
 					</h2>
-					<div className="mt-2 grid gap-1.5 text-body leading-step-body tracking-copy text-[var(--text-muted)]">
+					<div className="mt-2 grid gap-1.5 text-body text-[var(--text-muted)]">
 						{listing.district && listing.district !== cityName ? (
 							<p className="font-semibold text-[var(--accent)]">
 								{listing.district}
 							</p>
 						) : null}
-						<p className="flex min-w-0 items-center gap-1.5 text-body-lg leading-heading-pixel text-[var(--text-secondary)] lg:text-body lg:leading-step-body">
+						<p className="flex min-w-0 items-center gap-1.5 text-body-lg text-[var(--text-secondary)] lg:text-body">
 							<MapPin
 								className="size-3.5 shrink-0 text-[var(--accent)]"
 								aria-hidden
@@ -155,7 +155,7 @@ export function PropertyCardListLayout({
 				</div>
 
 				{listDescription ? (
-					<p className="mt-8 line-clamp-3 text-body leading-step-copy tracking-copy text-[var(--text-primary)] md:mt-9">
+					<p className="mt-8 line-clamp-3 text-body text-[var(--text-primary)] md:mt-9">
 						{listDescription}
 					</p>
 				) : null}
@@ -215,7 +215,7 @@ export function PropertyCardListLayout({
 						data-catalog-price-row
 						className="flex min-w-0 items-center gap-2 md:justify-end"
 					>
-						<p className="text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)]">
+						<p className="text-h4 font-extrabold tabular-nums text-[var(--text-primary)]">
 							{priceLabel}
 						</p>
 						{showExclusiveBadge ? <ExclusiveBadge /> : null}
@@ -238,7 +238,7 @@ export function PropertyCardListLayout({
 				</div>
 
 				{listingDate ? (
-					<p className="hidden text-right text-label font-medium leading-step-body text-[var(--text-muted)] md:block">
+					<p className="hidden text-right text-label font-medium text-[var(--text-muted)] md:block">
 						{listingDate}
 					</p>
 				) : null}

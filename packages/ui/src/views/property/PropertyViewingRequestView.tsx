@@ -56,11 +56,11 @@ export function PropertyViewingRequestView({
 					<div>
 						<h2
 							id="property-viewing-title"
-							className="text-h3 font-semibold leading-tight-copy text-[var(--text-primary)] sm:text-h2 md:text-h2"
+							className="text-h3 font-semibold text-[var(--text-primary)] sm:text-h2 md:text-h2"
 						>
 							Запланируйте просмотр
 						</h2>
-						<p className="mt-2.5 max-w-140 text-body leading-step-copy text-[var(--text-secondary)]">
+						<p className="mt-2.5 max-w-140 text-body text-[var(--text-secondary)]">
 							С вами свяжется наш сотрудник, где вы обговорите все интересующие
 							вопросы и подтвердите время просмотра.
 						</p>
@@ -100,11 +100,11 @@ export function PropertyViewingRequestView({
 										className={`grid min-h-19 min-w-25.5 snap-start content-start rounded-lg border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:min-w-0 md:min-h-20 ${selected ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-white" : "border-transparent bg-[var(--background)] text-[var(--text-primary)] hover:border-[var(--input)] hover:bg-[var(--surface-subtle)]"}`}
 										aria-pressed={selected}
 									>
-										<span className="truncate text-body-sm font-semibold leading-step-body md:text-body">
+										<span className="truncate text-body-sm font-semibold md:text-body">
 											{date.label}
 										</span>
 										<span
-											className={`mt-1 text-label leading-step-body ${selected ? "text-white/82" : "text-[var(--text-secondary)]"}`}
+											className={`mt-1 text-label ${selected ? "text-white/82" : "text-[var(--text-secondary)]"}`}
 										>
 											{date.dateLabel}
 										</span>
@@ -152,7 +152,7 @@ export function PropertyViewingRequestView({
 						</Button>
 					</div>
 
-					<label className="flex items-start gap-3 text-label leading-step-body text-[var(--text-muted)]">
+					<label className="flex items-start gap-3 text-label text-[var(--text-muted)]">
 						<Checkbox
 							checked={consent}
 							onCheckedChange={(checked) => onConsentChange(checked === true)}

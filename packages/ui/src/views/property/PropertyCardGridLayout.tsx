@@ -167,7 +167,7 @@ export function PropertyCardGridLayout({
 						data-catalog-price-row
 						className="flex min-w-0 items-center justify-between gap-2 pr-1 lg:pr-0"
 					>
-						<p className="min-w-0 text-h4 font-extrabold leading-flat tabular-nums tracking-compact text-[var(--text-primary)] md:text-h4 lg:text-h4">
+						<p className="min-w-0 text-h4 font-extrabold tabular-nums text-[var(--text-primary)] md:text-h4 lg:text-h4">
 							{priceLabel}
 						</p>
 						{showExclusiveBadge ? <ExclusiveBadge /> : null}
@@ -201,10 +201,10 @@ export function PropertyCardGridLayout({
 							})}
 						</div>
 					) : null}
-					<h2 className="col-start-1 row-start-2 line-clamp-2 rounded-md text-h4 font-extrabold leading-heading tracking-compact text-[var(--text-primary)] underline decoration-[var(--accent-border)] decoration-1 underline-offset-3 transition-colors group-active:text-[var(--accent)] md:text-h4 md:leading-card-compact-rem lg:mt-2 lg:text-h4 lg:leading-step-body lg:no-underline lg:group-hover:text-[var(--accent)]">
+					<h2 className="col-start-1 row-start-2 line-clamp-2 rounded-md text-h4 font-extrabold text-[var(--text-primary)] underline decoration-[var(--accent-border)] decoration-1 underline-offset-3 transition-colors group-active:text-[var(--accent)] md:text-h4 lg:mt-2 lg:text-h4 lg:no-underline lg:group-hover:text-[var(--accent)]">
 						{title}
 					</h2>
-					<div className="col-start-1 row-start-3 text-caption leading-card-dense-rem tracking-copy text-[var(--text-muted)] md:text-caption md:leading-card-relaxed-rem lg:mt-2 lg:text-label lg:leading-step-body">
+					<div className="col-start-1 row-start-3 text-caption text-[var(--text-muted)] md:text-caption lg:mt-2 lg:text-label">
 						<p className="flex min-w-0 items-center gap-1 font-semibold text-[var(--text-secondary)] md:gap-1.5">
 							<MapPin
 								className="size-3 shrink-0 text-[var(--accent)] md:size-3.5"
@@ -219,12 +219,12 @@ export function PropertyCardGridLayout({
 					</div>
 				</div>
 				{isList && listing.description ? (
-					<p className="mt-3 line-clamp-3 text-body leading-step-copy tracking-copy text-[var(--text-secondary)]">
+					<p className="mt-3 line-clamp-3 text-body text-[var(--text-secondary)]">
 						{listing.description}
 					</p>
 				) : null}
 				{isList ? (
-					<p className="mt-3 text-caption font-bold uppercase tracking-overline-compact text-[var(--text-muted)]">
+					<p className="mt-3 text-caption font-bold uppercase text-[var(--text-muted)]">
 						{listing.category} · база агентства недвижимости
 					</p>
 				) : null}

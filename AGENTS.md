@@ -3,7 +3,7 @@
 ## Контекст
 
 - Normative target: AMS Realty Platform Core 5.5 + AMS UI Core 5.0 + Payload Platform.
-- Current implementation: constitution cleanup EPIC-R1 is merged in SourceCraft `main` at `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; EPIC-R2 owns exact production truth, final SOT convergence and the already owner-authorized conditional release.
+- Current implementation: constitution cleanup EPIC-R1 and production-truth EPIC-R2 are delivered; SourceCraft `main`, the public GitHub mirror and production were reconciled by the 2026-09-29 release. Mutable exact SHA/digest evidence lives in SourceCraft release records and read-only runtime proof, not as a permanent architecture constant.
 - Profile: `catalog`, `BUILD`, `DELIVERY_PROFILE=CRITICAL`.
 - Repository mode: `SOURCECRAFT_PRIMARY_GITHUB_MIRROR`.
 - UX: public commercial catalog + CMS-native Payload Admin.

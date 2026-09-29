@@ -50,7 +50,7 @@ export function PropertyPageActionsView({
 						<p className="text-body font-extrabold text-[var(--text-primary)]">
 							{agentName}
 						</p>
-						<p className="mt-1 text-label leading-step-body text-[var(--text-muted)]">
+						<p className="mt-1 text-label text-[var(--text-muted)]">
 							Проверит документы, поможет с оформлением ипотеки и торгом.
 						</p>
 					</div>

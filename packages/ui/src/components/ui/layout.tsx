@@ -121,18 +121,18 @@ export function SectionHeader({
 		>
 			<div className="max-w-3xl">
 				{eyebrow ? (
-					<p className="text-label font-semibold uppercase tracking-wide-role text-action-primary">
+					<p className="text-label font-semibold uppercase text-action-primary">
 						{eyebrow}
 					</p>
 				) : null}
 				<h2
 					id={titleId}
-					className="text-h2 font-semibold leading-section-title text-content-strong"
+					className="text-h2 font-semibold text-content-strong"
 				>
 					{title}
 				</h2>
 				{description ? (
-					<p className="mt-3 text-body leading-step-copy text-content-default md:text-body-lg">
+					<p className="mt-3 text-body text-content-default md:text-body-lg">
 						{description}
 					</p>
 				) : null}

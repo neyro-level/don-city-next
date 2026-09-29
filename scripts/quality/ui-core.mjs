@@ -246,8 +246,14 @@ if (/--(?:site-radius|control-radius)[a-z0-9-]*\s*:/.test(globals.slice(0, theme
 }
 const themeEnd = globals.indexOf("\n}", themeBoundary);
 const themeBlock = globals.slice(themeBoundary, themeEnd);
-const typographyRoles = [...themeBlock.matchAll(/^\s*(--text-[a-z0-9-]+):/gm)]
-	.map((match) => match[1])
+const typographyTokens = [...themeBlock.matchAll(/^\s*(--text-[a-z0-9-]+):/gm)]
+	.map((match) => match[1]);
+const typographyRoles = typographyTokens
+	.filter(
+		(token) =>
+			!token.endsWith("--line-height") &&
+			!token.endsWith("--letter-spacing"),
+	)
 	.sort();
 const canonicalTypographyRoles = [
 	"--text-body",
@@ -279,6 +285,21 @@ assert.equal(
 	),
 	false,
 	"an unapproved typography role must fail the allowlist",
+);
+for (const role of canonicalTypographyRoles) {
+	assert.ok(
+		typographyTokens.includes(`${role}--line-height`),
+		`${role} must own its compound line-height`,
+	);
+	assert.ok(
+		typographyTokens.includes(`${role}--letter-spacing`),
+		`${role} must own its compound letter-spacing`,
+	);
+}
+assert.doesNotMatch(
+	themeBlock,
+	/^\s*--(?:leading|tracking)-/m,
+	"parallel public leading/tracking scales are forbidden",
 );
 const radiusRoles = [...themeBlock.matchAll(/^\s*(--radius-[a-z0-9-]+):/gm)]
 	.map((match) => match[1])
@@ -326,9 +347,20 @@ assert.ok(
 );
 const legacyTypographyRole =
 	/\btext-(?:display(?:-[a-z-]+)?|section(?:-[a-z-]+)?|heading(?:-[a-z-]+)?|editorial-[a-z-]+|micro(?:-tight)?|overline|support(?:-dense)?|lead(?:-compact)?|body-(?:large|compact|dense|emphasis|highlight|fluid)|caption-(?:tight|dense|relaxed)|label-relaxed|card-(?:large|fluid|compact(?:-(?:medium|large))?|title(?:-large)?|section|heading-fluid)|price(?:-(?:large|medium|mobile))?|selection-title|profile-title|calculator-result|property-title|dialog-(?:title|subtitle)|footer-title|route-status|thank-you)\b/;
-for (const path of walk(join(root, "packages", "ui", "src"))) {
+const typographyOverride =
+	/(?<![a-z0-9_-])(?:[a-z0-9-]+:)*(?:leading|tracking)-(?:\[[^\]]+\]|[a-z0-9-]+)/i;
+assert.match("leading-hero-tight", typographyOverride);
+assert.match("md:tracking-display", typographyOverride);
+assert.doesNotMatch("text-h1 font-extrabold", typographyOverride);
+const approvedTypographyOverrides = new Set([]);
+for (const path of [
+	...walk(join(root, "packages", "ui", "src")),
+	...walk(join(root, "src", "app")),
+]) {
 	if (!/\.(?:css|tsx?)$/.test(path)) continue;
 	const source = readFileSync(path, "utf8");
+	const consumer = relative(root, path).replaceAll("\\", "/");
+	if (consumer === "src/app/globals.css") continue;
 	if (privateTypographyReference.test(source)) {
 		failures.push(
 			`semantic typography: UI consumer bypasses public role in ${relative(root, path).replaceAll("\\", "/")}`,
@@ -341,7 +373,12 @@ for (const path of walk(join(root, "packages", "ui", "src"))) {
 	}
 	if (legacyTypographyRole.test(source)) {
 		failures.push(
-			`semantic typography: legacy role in ${relative(root, path).replaceAll("\\", "/")}`,
+			`semantic typography: legacy role in ${consumer}`,
+		);
+	}
+	if (typographyOverride.test(source) && !approvedTypographyOverrides.has(consumer)) {
+		failures.push(
+			`semantic typography: line-height/tracking override requires a documented allowlist exception in ${consumer}`,
 		);
 	}
 }

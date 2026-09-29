@@ -11,10 +11,10 @@ Updated: 2026-09-29
 - Payload remains the sole schema/auth/migrations owner; AMS Payload Platform is the implementation layer.
 - Current conformance plan: `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1
   in `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`.
-- Current status: EPIC-R1 is merged at
-  `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; EPIC-R2 owns final exact-main,
-  production identity and SOT evidence. Owner authorization permits one
-  conditional rollout only after its RISKY gate and merge.
+- Current status: EPIC-R1, EPIC-R2 and their single owner-authorized rollout are
+  delivered. The release proved equality of canonical SourceCraft `main`, the
+  public GitHub mirror and production revision; later releases must re-prove
+  that invariant from immutable release/runtime evidence.
 - Project facts, enabled modules, URL policy and operational evidence remain owned by the project Source of Truth; the normative files are not a substitute for those records.
 
 ## 1. Architecture Summary
@@ -93,10 +93,9 @@ not duplicated configuration tables.
   major stack upgrade, critical jobs/recovery and other Core-required RISKY
   releases. SourceCraft Space remains development unless a run proves every
   staging isolation, noindex, exact-identity and cleanup invariant.
-- Read-only evidence records the currently deployed revision
-  `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and RepoDigest
-  `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`;
-  post-release evidence must bind the final R2 `main` SHA to its new digest.
+- Each release binds exact canonical `main` to an immutable RepoDigest through
+  the SourceCraft release record and read-only container revision/digest labels.
+  Mutable SHA/digest values are operational evidence, not architecture constants.
 - Production release выполняется только из clean canonical `main`; host не делает build, install или `git pull`.
 - Runtime artifact uses Next.js standalone output. The application image contains
   only traced runtime files, static assets and the minimum Payload source needed

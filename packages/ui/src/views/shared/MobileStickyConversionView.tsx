@@ -32,10 +32,10 @@ export function MobileStickyConversionView({
 		>
 			<div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
 				<div className="min-w-0 px-2">
-					<p className="truncate text-label font-extrabold leading-step-small">
+					<p className="truncate text-label font-extrabold">
 						{title}
 					</p>
-					<p className="mt-0.5 truncate text-caption font-semibold leading-step-small text-[var(--text-secondary)]">
+					<p className="mt-0.5 truncate text-caption font-semibold text-[var(--text-secondary)]">
 						{note}
 					</p>
 				</div>
@@ -43,7 +43,7 @@ export function MobileStickyConversionView({
 					type="button"
 					tabIndex={visible ? undefined : -1}
 					request={request}
-					className="min-h-12 max-w-44 whitespace-normal px-3 text-center text-label leading-title-compact text-white [&_svg]:text-white"
+					className="min-h-12 max-w-44 whitespace-normal px-3 text-center text-label text-white [&_svg]:text-white"
 				>
 					<Sparkles data-icon="inline-start" aria-hidden />
 					{label}

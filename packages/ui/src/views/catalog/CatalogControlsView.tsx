@@ -93,7 +93,7 @@ export function CatalogShowcaseView({
 			<div className="mx-auto max-w-site-frame px-5">
 				{headline ? (
 					<div className="mb-7 rounded-lg border border-[var(--border-default)] bg-[var(--surface-card-soft)] px-5 py-5 md:px-6 md:py-6">
-						<h1 className="max-w-230 text-h4 font-extrabold leading-card-title-relaxed text-[var(--text-primary)] md:text-h2 lg:text-h2">
+						<h1 className="max-w-230 text-h4 font-extrabold text-[var(--text-primary)] md:text-h2 lg:text-h2">
 							{headline}
 						</h1>
 					</div>
@@ -101,7 +101,7 @@ export function CatalogShowcaseView({
 				{beforeControls}
 				<div className="rounded-lg bg-[var(--surface-card)] p-4 shadow-[var(--shadow-raised)] lg:p-5">
 					<div className="flex flex-wrap items-end justify-between gap-3">
-						<p className="text-h4 font-extrabold leading-tight-copy text-[var(--text-primary)] md:text-h2">
+						<p className="text-h4 font-extrabold text-[var(--text-primary)] md:text-h2">
 							Найдено: <span className="tabular-nums">{resultLabel}</span>
 						</p>
 					</div>
@@ -125,7 +125,7 @@ export function CatalogShowcaseView({
 					{activeFilters.length || clearHref ? (
 						<div className="mt-4 flex flex-wrap items-center gap-2">
 							{activeFilters.length ? (
-								<span className="text-label font-bold uppercase tracking-caps text-[var(--text-muted)]">
+								<span className="text-label font-bold uppercase text-[var(--text-muted)]">
 									Выбрано
 								</span>
 							) : null}
@@ -232,7 +232,7 @@ export function CatalogEmptyStateView({
 	linkRenderer: SiteLinkRenderer;
 }) {
 	return (
-		<div className="mt-4 rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-card)] p-7 text-body leading-step-copy text-[var(--text-secondary)]">
+		<div className="mt-4 rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-card)] p-7 text-body text-[var(--text-secondary)]">
 			{message}
 			<div>
 				<Link
@@ -373,7 +373,7 @@ export function CatalogRangePairView({
 }) {
 	return (
 		<div className="grid min-h-12 grid-cols-2 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-card)]">
-			<label className="border-r border-[var(--border)] px-3 py-1 text-caption font-bold uppercase tracking-overline-compact text-[var(--text-muted)]">
+			<label className="border-r border-[var(--border)] px-3 py-1 text-caption font-bold uppercase text-[var(--text-muted)]">
 				{label} от
 				<Input
 					variant="catalogRange"
@@ -383,7 +383,7 @@ export function CatalogRangePairView({
 					defaultValue={fromValue ?? ""}
 				/>
 			</label>
-			<label className="px-3 py-1 text-caption font-bold uppercase tracking-overline-compact text-[var(--text-muted)]">
+			<label className="px-3 py-1 text-caption font-bold uppercase text-[var(--text-muted)]">
 				до
 				<Input
 					variant="catalogRange"
@@ -409,13 +409,13 @@ export function CatalogSelectView({
 	title: string;
 }) {
 	return (
-		<label className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--surface-card)] px-3 py-1 text-caption font-bold uppercase tracking-overline-compact text-[var(--text-muted)]">
+		<label className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--surface-card)] px-3 py-1 text-caption font-bold uppercase text-[var(--text-muted)]">
 			{title}
 			<Select
 				variant="native"
 				name={name}
 				defaultValue={value ?? ""}
-				className="block w-full bg-transparent pt-0.5 text-body font-semibold normal-case tracking-body text-[var(--text-primary)] outline-none"
+				className="block w-full bg-transparent pt-0.5 text-body font-semibold normal-case text-[var(--text-primary)] outline-none"
 			>
 				<option value="">Любой</option>
 				{options.map((item) => (

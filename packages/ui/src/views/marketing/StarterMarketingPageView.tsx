@@ -80,7 +80,7 @@ function MarketingSections({
 			>
 				{sections.map((section, index) => (
 					<li key={section.title} className="grid gap-3">
-						<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
+						<p className="text-label font-bold uppercase text-action-primary">
 							Шаг {index + 1}
 						</p>
 						<SectionCard section={section} className="h-full" />
@@ -135,7 +135,7 @@ function MarketingSections({
 							<CardHeader>
 								<CardTitle as="h2">{section.title}</CardTitle>
 								{index === 0 ? (
-									<address className="text-body leading-step-copy text-content-default not-italic">
+									<address className="text-body text-content-default not-italic">
 										{section.text}
 									</address>
 								) : (
@@ -172,13 +172,13 @@ export function MarketingPageView({ page }: { page: MarketingPageDTO }) {
 			>
 				<Container size="narrow">
 					<Breadcrumbs items={page.breadcrumbs.items} />
-					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
+					<p className="text-label font-bold uppercase text-action-primary">
 						{page.eyebrow}
 					</p>
-					<h1 className="mt-4 text-h1 font-extrabold leading-display-tight tracking-display">
+					<h1 className="mt-4 text-h1 font-extrabold">
 						{page.title}
 					</h1>
-					<p className="mt-5 max-w-[var(--container-copy-measure)] text-body-lg leading-step-relaxed text-content-default">
+					<p className="mt-5 max-w-[var(--container-copy-measure)] text-body-lg text-content-default">
 						{page.lead}
 					</p>
 				</Container>

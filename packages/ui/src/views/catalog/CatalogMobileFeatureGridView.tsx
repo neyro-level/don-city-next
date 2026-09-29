@@ -59,13 +59,13 @@ export function CatalogMobileFeatureGridView({
 		>
 			<div className="mx-auto max-w-site-frame">
 				{eyebrow ? (
-					<p className="text-caption font-extrabold uppercase tracking-overline text-[var(--accent)]">
+					<p className="text-caption font-extrabold uppercase text-[var(--accent)]">
 						{eyebrow}
 					</p>
 				) : null}
 				<h2
 					id={id}
-					className={`${eyebrow ? "mt-1" : ""} text-h2 font-extrabold leading-section-title text-[var(--text-primary)]`}
+					className={`${eyebrow ? "mt-1" : ""} text-h2 font-extrabold text-[var(--text-primary)]`}
 				>
 					{title}
 				</h2>
@@ -85,10 +85,10 @@ export function CatalogMobileFeatureGridView({
 										/>
 									) : null}
 								</span>
-								<h3 className="mt-auto pt-5 text-body-sm font-extrabold leading-card text-[var(--text-primary)]">
+								<h3 className="mt-auto pt-5 text-body-sm font-extrabold text-[var(--text-primary)]">
 									{item.title}
 								</h3>
-								<p className="mt-2 text-caption font-medium leading-step-small text-[var(--text-secondary)]">
+								<p className="mt-2 text-caption font-medium text-[var(--text-secondary)]">
 									{item.text}
 								</p>
 							</>

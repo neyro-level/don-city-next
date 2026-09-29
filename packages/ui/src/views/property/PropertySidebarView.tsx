@@ -109,7 +109,7 @@ export function PropertySidebarView({
 			<div className="grid gap-2 pt-1.5">
 				<label
 					htmlFor={`property-offer-price-${variant}`}
-					className="text-label font-semibold leading-step-body text-[var(--text-primary)]"
+					className="text-label font-semibold text-[var(--text-primary)]"
 				>
 					Предложите свою цену
 				</label>
@@ -133,17 +133,17 @@ export function PropertySidebarView({
 						₽
 					</span>
 				</div>
-				<p className="text-caption leading-step-small text-[var(--text-muted)]">
+				<p className="text-caption text-[var(--text-muted)]">
 					Можно вводить просто цифрами. Например: 3 700 000.
 				</p>
 			</div>
 
 			<div className="grid gap-2.5">
-				<p className="text-label font-bold leading-step-body text-[var(--text-primary)]">
+				<p className="text-label font-bold text-[var(--text-primary)]">
 					Спросите у продавца
 				</p>
 				<div className="rounded-lg border border-[var(--border)] bg-[var(--surface-card)] px-3 py-3">
-					<label className="flex flex-wrap items-baseline gap-x-1 gap-y-1 text-label font-medium leading-step-body text-[var(--text-primary)]">
+					<label className="flex flex-wrap items-baseline gap-x-1 gap-y-1 text-label font-medium text-[var(--text-primary)]">
 						<span>{defaultQuestion}</span>
 						<Input
 							variant="plain"
@@ -153,11 +153,11 @@ export function PropertySidebarView({
 							onChange={(event) => onMessageChange(event.target.value)}
 							autoFocus={!desktopVariant}
 							placeholder="Здесь можно написать сообщение"
-							className="min-w-42.5 flex-1 bg-transparent text-label font-medium leading-step-body text-[var(--text-primary)] outline-none placeholder:text-[var(--content-subtle)]"
+							className="min-w-42.5 flex-1 bg-transparent text-label font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--content-subtle)]"
 						/>
 					</label>
 					{formattedOfferValue ? (
-						<p className="mt-2 border-t border-[var(--border-default)] pt-2 text-label font-medium leading-step-body text-[var(--text-primary)]">{`Предлагаю ${formattedOfferValue} за этот объект.`}</p>
+						<p className="mt-2 border-t border-[var(--border-default)] pt-2 text-label font-medium text-[var(--text-primary)]">{`Предлагаю ${formattedOfferValue} за этот объект.`}</p>
 					) : null}
 				</div>
 				<div className="flex flex-wrap gap-2">
@@ -192,7 +192,7 @@ export function PropertySidebarView({
 			<div className="grid gap-2">
 				<label
 					htmlFor={`property-chat-phone-${variant}`}
-					className="text-label font-semibold leading-step-body text-[var(--text-primary)]"
+					className="text-label font-semibold text-[var(--text-primary)]"
 				>
 					Телефон для связи
 				</label>
@@ -211,7 +211,7 @@ export function PropertySidebarView({
 				/>
 			</div>
 
-			<label className="flex items-start gap-3 text-caption leading-step-body text-[var(--text-muted)]">
+			<label className="flex items-start gap-3 text-caption text-[var(--text-muted)]">
 				<Checkbox
 					checked={consent}
 					onCheckedChange={(checked) => onConsentChange(checked === true)}
@@ -267,11 +267,11 @@ export function PropertySidebarView({
 			) : null}
 
 			<div className="grid gap-1">
-				<p className="text-h3 font-extrabold leading-tight-copy tabular-nums text-[var(--text-primary)]">
+				<p className="text-h3 font-extrabold tabular-nums text-[var(--text-primary)]">
 					{price}
 				</p>
 				{meterPrice ? (
-					<p className="text-label font-medium leading-step-body text-[var(--text-secondary)]">
+					<p className="text-label font-medium text-[var(--text-secondary)]">
 						{meterPrice} за м²
 					</p>
 				) : null}

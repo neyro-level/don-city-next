@@ -21,7 +21,7 @@ export function HtmlSitemapView({
 			<section className="mx-auto max-w-site-frame px-5 pb-7 pt-7 md:pb-9 md:pt-9 lg:pb-10 lg:pt-10">
 				{breadcrumbs}
 				<div className="flex flex-col gap-4 border-b border-[var(--border-default)] pb-5 md:flex-row md:items-end md:justify-between">
-					<h1 className="text-h2 font-semibold leading-tight-copy md:text-h2">
+					<h1 className="text-h2 font-semibold md:text-h2">
 						Опубликованные страницы
 					</h1>
 					<dl
@@ -74,11 +74,11 @@ function SitemapSection({
 				<span className="min-w-0">
 					<span
 						id={sectionId(section.title)}
-						className="block text-body-lg font-semibold leading-tight-copy text-[var(--text-primary)] md:text-h4"
+						className="block text-body-lg font-semibold text-[var(--text-primary)] md:text-h4"
 					>
 						{section.title}
 					</span>
-					<span className="mt-1 block text-label font-medium leading-step-small text-[var(--text-muted)]">
+					<span className="mt-1 block text-label font-medium text-[var(--text-muted)]">
 						{section.count ?? countItems(columns)} ссылок
 					</span>
 				</span>
@@ -119,7 +119,7 @@ function Column({
 	return (
 		<div className="min-w-0">
 			{column.title ? (
-				<h3 className="text-body-lg font-semibold leading-step-body text-[var(--text-primary)]">
+				<h3 className="text-body-lg font-semibold text-[var(--text-primary)]">
 					{column.title}
 				</h3>
 			) : null}
@@ -143,7 +143,7 @@ function TextLink({
 	return (
 		<LinkRenderer
 			href={item.href}
-			className={`text-body leading-step-body text-[var(--content-subtle)] transition hover:text-[var(--accent)] ${item.emphasis ? "font-semibold" : "font-medium"}`}
+			className={`text-body text-[var(--content-subtle)] transition hover:text-[var(--accent)] ${item.emphasis ? "font-semibold" : "font-medium"}`}
 		>
 			{item.label}
 		</LinkRenderer>
@@ -163,12 +163,12 @@ function Counter({
 			className={`rounded-lg px-3 py-2 text-right md:min-w-33 ${featured ? "bg-[var(--accent)] text-white" : "bg-[var(--surface-subtle)] text-[var(--content-strong)]"}`}
 		>
 			<dt
-				className={`text-caption font-medium uppercase leading-flat tracking-label ${featured ? "text-white/78" : "text-[var(--text-muted)]"}`}
+				className={`text-caption font-medium uppercase ${featured ? "text-white/78" : "text-[var(--text-muted)]"}`}
 			>
 				{label}
 			</dt>
 			<dd
-				className={`mt-1 font-semibold leading-flat ${featured ? "text-body-lg md:text-h4" : "text-body-lg md:text-body-lg"}`}
+				className={`mt-1 font-semibold ${featured ? "text-body-lg md:text-h4" : "text-body-lg md:text-body-lg"}`}
 			>
 				{value}
 			</dd>

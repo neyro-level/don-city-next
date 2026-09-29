@@ -33,27 +33,27 @@ export function LegalDocumentView({
 			<header className="border-b border-[var(--border-default)] bg-[var(--surface-card)]">
 				<div className="mx-auto max-w-295 px-5 py-8 md:px-8 md:py-10">
 					<Breadcrumb className="text-[var(--text-muted)]">
-						<BreadcrumbList className="flex-nowrap gap-x-2 overflow-x-auto py-0.5 text-body leading-step-body">
+						<BreadcrumbList className="flex-nowrap gap-x-2 overflow-x-auto py-0.5 text-body">
 							<BreadcrumbItem>
 								<BreadcrumbLink
 									asChild
-									className="shrink-0 whitespace-nowrap font-medium leading-step-body transition hover:text-[var(--accent)]"
+									className="shrink-0 whitespace-nowrap font-medium transition hover:text-[var(--accent)]"
 								>
 									<LinkRenderer href="/">Главная</LinkRenderer>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator className="size-3.5 shrink-0 self-center text-[var(--content-subtle)]" />
 							<BreadcrumbItem>
-								<BreadcrumbPage className="min-w-0 truncate font-semibold leading-step-body text-[var(--text-primary)]">
+								<BreadcrumbPage className="min-w-0 truncate font-semibold text-[var(--text-primary)]">
 									{document.shortTitle}
 								</BreadcrumbPage>
 							</BreadcrumbItem>
 						</BreadcrumbList>
 					</Breadcrumb>
-					<h1 className="mt-5 max-w-225 text-h2 font-extrabold leading-heading-tight text-[var(--text-primary)] md:text-h1">
+					<h1 className="mt-5 max-w-225 text-h2 font-extrabold text-[var(--text-primary)] md:text-h1">
 						{document.title}
 					</h1>
-					<p className="mt-4 max-w-190 text-body-lg leading-step-copy text-[var(--content-subtle)] md:text-body-lg md:leading-step-relaxed">
+					<p className="mt-4 max-w-190 text-body-lg text-[var(--content-subtle)] md:text-body-lg">
 						{document.description}
 					</p>
 					<div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-label font-semibold text-[var(--content-subtle)]">
@@ -79,7 +79,7 @@ export function LegalDocumentView({
 							<a
 								key={section.title}
 								href={`#section-${index + 1}`}
-								className="block rounded-md px-2 py-2 text-body leading-step-body text-[var(--content-strong)] transition hover:bg-[var(--surface-subtle)] hover:text-[var(--accent)]"
+								className="block rounded-md px-2 py-2 text-body text-[var(--content-strong)] transition hover:bg-[var(--surface-subtle)] hover:text-[var(--accent)]"
 							>
 								{section.title}
 							</a>
@@ -88,7 +88,7 @@ export function LegalDocumentView({
 				</Card>
 
 				<Card className="overflow-hidden rounded-lg border-[var(--border-default)] bg-[var(--surface-card)] px-5 md:px-8">
-					<div className="grid gap-3 py-7 text-body-lg leading-body-relaxed text-[var(--content-strong)] md:py-9 md:text-body-lg">
+					<div className="grid gap-3 py-7 text-body-lg text-[var(--content-strong)] md:py-9 md:text-body-lg">
 						{document.intro.map((paragraph) => (
 							<p key={paragraph}>{paragraph}</p>
 						))}
@@ -100,18 +100,18 @@ export function LegalDocumentView({
 							key={section.title}
 							className="scroll-mt-32 pt-7 last:pb-7 md:pt-9 md:last:pb-9"
 						>
-							<h2 className="text-h4 font-extrabold leading-tight-copy text-[var(--content-inverse)] md:text-h2">
+							<h2 className="text-h4 font-extrabold text-[var(--content-inverse)] md:text-h2">
 								{section.title}
 							</h2>
 							{section.paragraphs?.length ? (
-								<div className="mt-4 grid gap-3 text-body-lg leading-body-relaxed text-[var(--content-strong)] md:text-body-lg">
+								<div className="mt-4 grid gap-3 text-body-lg text-[var(--content-strong)] md:text-body-lg">
 									{section.paragraphs.map((paragraph) => (
 										<p key={paragraph}>{paragraph}</p>
 									))}
 								</div>
 							) : null}
 							{section.items?.length ? (
-								<ul className="mt-4 grid gap-2.5 text-body-lg leading-content text-[var(--content-strong)] md:text-body-lg">
+								<ul className="mt-4 grid gap-2.5 text-body-lg text-[var(--content-strong)] md:text-body-lg">
 									{section.items.map((item) => (
 										<li
 											key={item}

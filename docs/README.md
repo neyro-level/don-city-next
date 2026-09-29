@@ -1,7 +1,7 @@
 # DON CITY
 
-Status: Active — EPIC-R2 production truth and final release convergence
-Version: 1.5
+Status: Active — continuous maintenance after delivered R1/R2 release
+Version: 1.6
 Updated: 2026-09-29
 
 ## Что создаём
@@ -14,27 +14,27 @@ Updated: 2026-09-29
 
 ## Текущий статус
 
-- Constitution cleanup EPIC-R1 is merged in SourceCraft `main` at
-  `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9` through PR `#119` and RISKY gate
-  run `160`. EPIC-R2 is the active exact-production-truth and final SOT scope.
+- Constitution cleanup EPIC-R1 was delivered through PR `#119` / RISKY gate
+  `160`; EPIC-R2 was delivered through PR `#120` / RISKY gate `163`, followed
+  by the single authorized SourceCraft release run `164` and rollout.
 - Observed public state, deployed artifact identity, code main state,
   operational readiness, real feed readiness and lead delivery readiness are
   separate facts; the current matrix is owned by `OPERATIONS.md` and
   `DELIVERY_STATE.yaml`.
-- Production отвечает на `https://doncity-home.ru`; read-only evidence от 2026-09-27 подтверждает индексируемую homepage, разрешающий `robots.txt` и опубликованный sitemap.
-- Read-only production evidence binds the running revision to
-  `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and the immutable RepoDigest to
-  `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`.
-  It differs from current `main`, therefore one rollout is required after the
-  final R2 gate and merge; an intermediate deployment is forbidden.
+- Production отвечает на `https://doncity-home.ru`; final live crawl от
+  2026-09-29 проверил 61 request и 21 sitemap URL без findings.
+- The delivered R2 release reconciled canonical SourceCraft `main`, the public
+  GitHub mirror and the production revision. Exact mutable SHA/digest values are
+  retained by SourceCraft release evidence and read-only runtime labels rather
+  than copied into durable product policy.
 - `DC10-R11-00` доставил воспроизводимую read-only redacted production-матрицу:
   12 опубликованных объектов и 92 фотографии на зафиксированном baseline.
 - Реальный feed отключён; после owner-authorized удаления persistent staging
   остались ровно один production runtime, одна logical DB и один S3 bucket.
   Непроизводственные DB-проверки только disposable и удаляются после bounded proof.
-- DB/media backup freshness и sampled restore подтверждены; NAP, owner account
-  и delivery readiness остаются отдельными проверяемыми фактами и не создают
-  post-production monitoring stage.
+- DB/media backup freshness, sampled restore, canonical NAP, external monitoring
+  and production-owner login are proved. Lead delivery remains a separate
+  fail-closed product operation and does not create a post-production stage.
 
 ## Platform contract
 

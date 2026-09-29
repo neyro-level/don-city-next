@@ -50,7 +50,7 @@ export function CardTitle({
 	return (
 		<Heading
 			data-slot="card-title"
-			className={cn("text-body-lg font-semibold leading-tight-copy", className)}
+			className={cn("text-body-lg font-semibold", className)}
 			{...props}
 		/>
 	);
@@ -64,7 +64,7 @@ export function CardDescription({
 		<p
 			data-slot="card-description"
 			className={cn(
-				"text-body leading-step-copy text-[var(--text-secondary,var(--content-strong))]",
+				"text-body text-[var(--text-secondary,var(--content-strong))]",
 				className,
 			)}
 			{...props}

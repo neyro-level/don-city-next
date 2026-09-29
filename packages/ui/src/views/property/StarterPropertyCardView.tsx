@@ -60,7 +60,7 @@ export function PublicPropertyCard({
 					))}
 				</div>
 				{headingLevel === "h2" ? (
-					<h2 className="text-body-lg font-semibold leading-tight-copy">
+					<h2 className="text-body-lg font-semibold">
 						{heading}
 					</h2>
 				) : (

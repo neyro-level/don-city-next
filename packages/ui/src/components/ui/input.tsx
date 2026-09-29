@@ -9,7 +9,7 @@ export const Input = React.forwardRef<
 >(function Input({ className, type, variant = "default", ...props }, ref) {
 	const semanticClassName =
 		variant === "catalogRange"
-			? "block w-full bg-transparent pt-0.5 text-body font-semibold normal-case tracking-body text-[var(--text-primary)] outline-none focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)]"
+			? "block w-full bg-transparent pt-0.5 text-body font-semibold normal-case text-[var(--text-primary)] outline-none focus-visible:ring-[length:var(--focus-ring-width)] focus-visible:ring-[var(--focus-ring-soft)]"
 			: undefined;
 	return (
 		<input

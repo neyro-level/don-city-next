@@ -8,11 +8,11 @@ Updated: 2026-09-29
 
 The project UI contract is governed by `../AMS_UI_CORE_v5.0_FINAL.md`. This document remains the project-specific design policy; numeric values remain exclusively in `src/app/globals.css`.
 
-Current status is `TARGETED CONFORMANCE`. The active execution contract is exact
-APPROVED plan `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
+Current status is `TARGETED CONFORMANCE`. The delivered execution contract is
+exact APPROVED plan `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
 `DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`; its
-EPIC-R1 typography/radius/guard cleanup is merged and EPIC-R2 owns final
-production-truth proof. Historical
+constitution cleanup, production-truth proof and one authorized rollout are
+complete. Historical
 CP-05 remains evidence, not the current router. This is not a claim that every
 future page or optional module is certified; new UI still follows the same gates
 and `REUSE → VARIANT → CREATE` rule.
@@ -107,11 +107,14 @@ platform-error states are mandatory.
 ### 4.3 Typography
 
 Manrope is the only public typeface. The public scale is limited to `h1`, `h2`,
-`h3`, `h4`, `body-lg`, `body`, `body-sm`, `label` and `caption`; weight,
-line-height and tracking remain independent properties. Commercial pages keep
-one logical `h1`, while repeated sections own visible `h2` headings. Decorative
-display text composes a canonical role with independent weight, tracking and
-line-height; project-only typography roles are not allowed.
+`h3`, `h4`, `body-lg`, `body`, `body-sm`, `label` and `caption`. Every
+`text-*` role is compound and owns font size, line-height and letter-spacing;
+weight remains independently composable. A normal heading therefore uses
+`text-h1 font-extrabold`, without a parallel `leading-*` or `tracking-*` class.
+Such an override is allowed only as a rare documented visual/accessibility
+exception added to the exact guard allowlist. Commercial pages keep one logical
+`h1`, while repeated sections own visible `h2` headings. Project-only
+typography roles are not allowed.
 
 ### 4.4 Containers
 

@@ -21,13 +21,13 @@ export default function GlobalRouteError({
 			aria-labelledby="route-error-title"
 			className="mx-auto grid min-h-[60vh] max-w-3xl place-content-center gap-5 px-5 py-section-lg text-center"
 		>
-			<p className="text-caption font-bold uppercase tracking-overline text-content-default">
+			<p className="text-caption font-bold uppercase text-content-default">
 				Ошибка загрузки
 			</p>
 			<h1 id="route-error-title" className="text-h1 font-bold">
 				Страница временно недоступна
 			</h1>
-			<p className="text-body-lg leading-body text-content-default">
+			<p className="text-body-lg text-content-default">
 				Повторите попытку. Если ошибка сохранится, вернитесь на главную
 				страницу.
 			</p>

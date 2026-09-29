@@ -19,40 +19,38 @@ Updated: 2026-09-29
 - [x] Temporary restore database/rehearsal cleaned; host temp artifact, stale compose backups, old image and excess journals cleaned.
 - [x] Active product documentation reconciled with code and runtime.
 
-## NOW — Constitution Cleanup / Production Truth v1
+## Delivered — Constitution Cleanup / Production Truth v1
 
 - [x] Owner approved exact Plan ID `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1.
 - [x] Exact inventory imported and reconciled `CLEAN` in the existing Beads store.
 - [x] EPIC-R1 merged through SourceCraft PR `#119`, RISKY gate `160`, main `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`.
-- [x] EPIC-R2 exact-main proof and read-only production identity prove deployed revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` differs from `main`.
-- [ ] Merge final R2 SOT through one exact-head RISKY gate.
-- [ ] Execute the already owner-authorized single release from exact final `main`, then record live SHA/digest evidence without a follow-up code commit.
+- [x] EPIC-R2 merged through SourceCraft PR `#120`, exact-head RISKY gate `163` and canonical `main`.
+- [x] SourceCraft release run `164`, one production rollout and bounded live proof reconciled canonical `main`, the public GitHub mirror and production revision.
+- [x] Compound typography follow-up makes each canonical `text-*` role own size, line-height and letter-spacing; parallel consumer `leading-*` / `tracking-*` scales are guarded out.
 
 Earlier v13 and CP-01…CP-08 evidence remains delivered history. It is not the
 current program and does not create a persistent staging database or a second
 Task Manager store.
 
-## v1 Cleanup / Truth Delivery Order
+## v1 Cleanup / Truth Delivery Record
 
 1. EPIC-R1: constitution cleanup, PR, RISKY gate and merge.
 2. EPIC-R2: exact-main proof, read-only production truth and final SOT convergence.
-3. One conditional release only because production differs from final `main`; bounded live smoke and exact SHA/digest evidence are the terminal stage.
+3. One conditional release, bounded live smoke and exact SHA/digest evidence completed the program.
 
 ## Open Production Readiness
 
-1. Создать первого production owner через безопасную bootstrap-команду.
-2. Выбрать и подключить независимый alert/delivery channel; проверить redacted lead delivery.
-3. Проверить canonical NAP по внешним источникам и подтвердить владельцем.
-4. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
-5. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
+1. Выбрать и подключить независимый lead-delivery channel; проверить redacted delivery.
+2. Сохранить реальный feed disabled, пока не предоставлены проверенный URL/allowlist и дата включения.
+3. Найти подтверждённые отдельные объявления участков либо оставить категорию без фиктивного inventory.
 
-## Final Production Gate
+## Final Production Gate — delivered
 
-1. Завершить весь implementation graph и `DC11-DOC-FINAL` на exact candidate SHA.
-2. Подтвердить jobs ownership, backup/restore, health/availability, rollback и Secret Master access до release.
-3. Получить отдельную явную production-команду владельца.
-4. Выпустить один exact-main artifact, выполнить один rollout и bounded live smoke внутри final stage.
-5. После `DC11-PROD-FINAL` не создавать monitoring, observation, reconciliation или follow-up task.
+1. Implementation graph and documentation were completed on the exact candidate.
+2. Jobs ownership, backup/restore, health/availability, rollback and access were proved.
+3. The owner issued the explicit production command.
+4. One exact-main artifact, one rollout and bounded live smoke were completed.
+5. No autonomous monitoring or follow-up task was created after production.
 
 ## LATER
 

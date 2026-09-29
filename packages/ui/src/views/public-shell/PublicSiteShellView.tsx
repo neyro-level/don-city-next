@@ -63,7 +63,7 @@ export function PublicSiteHeaderView({
 						className="size-11 object-contain transition-transform duration-200 group-hover:scale-[1.03]"
 						aria-hidden
 					/>
-					<span className="text-body font-extrabold tracking-caps text-content-strong">
+					<span className="text-body font-extrabold text-content-strong">
 						{header.brandName}
 					</span>
 				</a>
@@ -210,7 +210,7 @@ export function PublicSiteFooterView({ footer }: { footer: SiteFooterDTO }) {
 							className="h-auto w-40 rounded-lg border border-[var(--dark-border)] object-cover shadow-[var(--site-header-shadow-primary)]"
 							loading="lazy"
 						/>
-						<p className="mt-3 max-w-sm text-label leading-step-copy text-[var(--text-dark)]">
+						<p className="mt-3 max-w-sm text-label text-[var(--text-dark)]">
 							Агентство недвижимости: подбор объектов, проверка документов и
 							сопровождение сделки.
 						</p>

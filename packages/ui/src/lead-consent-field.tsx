@@ -25,7 +25,7 @@ export function LeadConsentField({
 			data-source-page={context.sourcePage}
 		>
 			<label
-				className="flex items-start gap-3 text-body leading-step-copy text-[var(--content-default)]"
+				className="flex items-start gap-3 text-body text-[var(--content-default)]"
 				htmlFor={id}
 			>
 				<input

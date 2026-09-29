@@ -39,17 +39,17 @@ const cleanupProductionTruthIsActive = delivery.includes(
 
 if (cleanupProductionTruthIsActive) {
 	requireFragments("docs/04_BACKLOG.md", [
-		"## NOW — Constitution Cleanup / Production Truth v1",
-		"Merge final R2 SOT through one exact-head RISKY gate",
-		"already owner-authorized single release",
+		"## Delivered — Constitution Cleanup / Production Truth v1",
+		"EPIC-R2 merged through SourceCraft PR `#120`",
+		"bounded live proof reconciled canonical `main`",
 	]);
 	requireFragments("docs/DELIVERY_STATE.yaml", [
 		"plan_version: v1",
 		"plan_status: APPROVED",
-		"current_wave: R2_PRODUCTION_TRUTH",
-		"current_epic: EPIC-R2",
-		"current_task: TASK-R2.3",
-		"next_action: gate-and-merge-r2-then-one-owner-authorized-release",
+		"current_wave: CONTINUOUS_MAINTENANCE",
+		"current_epic: none",
+		"current_task: none",
+		"next_action: none-program-complete",
 		"reconciliation: CLEAN",
 	]);
 } else {
@@ -73,7 +73,7 @@ requireFragments("docs/DELIVERY_STATE.yaml", [
 	"autonomous_task: absent",
 	"post_production_monitoring_task: forbidden",
 	"open_p0_p1_contradictions: 0",
-	"authorized: true",
+	"r2_status: delivered",
 ]);
 assert.doesNotMatch(
 	delivery.slice(0, delivery.indexOf("historical_evidence:")),
@@ -102,8 +102,8 @@ const architectureFragments = [
 if (cleanupProductionTruthIsActive) {
 	architectureFragments.push(
 		"Current conformance plan: `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1",
-		"Owner authorization permits one",
-		"conditional rollout only after its RISKY gate and merge",
+		"EPIC-R1, EPIC-R2 and their single owner-authorized rollout",
+		"public GitHub mirror and production revision",
 	);
 } else {
 	architectureFragments.push("`FINAL RELEASE AUTHORIZED`");
@@ -114,7 +114,7 @@ requireFragments("docs/OPERATIONS.md", [
 	"Authenticated health reports current DB/media backup freshness",
 	"no separate post-production monitoring task",
 	"## Production State Matrix",
-	"## Open production-readiness / operational evidence",
+	"## Open product operations (not production-readiness blockers)",
 ]);
 assert.doesNotMatch(
 	read("docs/OPERATIONS.md"),

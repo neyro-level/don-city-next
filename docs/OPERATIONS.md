@@ -3,18 +3,18 @@
 Status: active production, publicly crawlable
 Updated: 2026-09-29
 
-Active execution is governed by exact APPROVED plan
+Delivered execution is governed by exact APPROVED plan
 `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
-`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. The owner
-has authorized one conditional production release after R2 exact-head gate and
-merge because read-only evidence proves production differs from `main`.
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. The R2
+exact-head gate, merge, one authorized production release and final live proof
+are complete.
 Operational commands are resolved from the current
 root `package.json` and versioned runbooks; historical plans are evidence only.
 
 ## Current Runtime
 
-- Production: `https://doncity-home.ru`; bounded HTTP evidence from 2026-09-28 confirms an indexable homepage, crawl-allowed `robots.txt` and sitemap publication.
-- Read-only production identity is revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` at RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`. It is healthy but behind current `main`.
+- Production: `https://doncity-home.ru`; bounded live evidence from 2026-09-29 confirms an indexable homepage, crawl-allowed `robots.txt`, sitemap publication and 21 canonical URLs without findings.
+- Final R2 proof reconciled canonical SourceCraft `main`, the public GitHub mirror and production revision. Exact mutable revision/digest values are read from the SourceCraft release record and runtime labels for each rollout rather than frozen in this runbook.
 - One Timeweb VPS `doncity-server`; host Nginx/TLS → production loopback `3000`.
 - Exactly one persistent managed PostgreSQL 18 database and private Timeweb S3 production identity exist. Non-production DB proof is disposable, isolated and removed after use.
 - The former persistent staging runtime, logical database, empty bucket and
@@ -31,9 +31,9 @@ flag:
 | State | Current fact |
 |---|---|
 | Observed public state | `LIVE_PUBLIC_OBSERVED`: the public origin is reachable and indexing is observed. |
-| Deployed artifact identity | `EXACT_READ_ONLY_PROOF`: revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e`, RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`. |
-| Code main state | SourceCraft `main` contains merged EPIC-R1 at `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; R2 proof/SOT changes await their exact-head gate and merge. |
-| Operational readiness | `PARTIAL`: external uptime monitoring, backups, jobs ownership and canonical NAP are proved; production-owner access remains an owner-controlled operation. |
+| Deployed artifact identity | `EXACT_READ_ONLY_PROOF`: SourceCraft release record, container revision label and pinned Compose RepoDigest must agree. |
+| Code main state | EPIC-R1 and EPIC-R2 are merged; the delivered release proved `SourceCraft main = GitHub mirror = production revision`. |
+| Operational readiness | `READY`: external uptime monitoring, backups, jobs ownership, canonical NAP and production-owner login are proved. |
 | Real feed readiness | `DISABLED_NOT_READY`: no approved endpoint or outbound/image allowlists. |
 | Lead delivery readiness | `DISABLED_NOT_READY`: no approved independent destination/channel or destination allowlist. |
 
@@ -124,15 +124,15 @@ contract above is explicitly established for that run.
 - `catalogLifecycle` owns archive/purge transitions; manual DB edits are forbidden.
 - Canonical 404/410 behavior is checked through route/lifecycle contracts.
 
-## Open production-readiness / operational evidence
+## Open product operations (not production-readiness blockers)
 
-- prove one successful login for the existing production owner using an
-  owner-held credential without recording the credential, cookie or email;
-- keep the proved SourceCraft uptime alert schedule active; the separate lead-delivery channel remains fail-closed;
-- run a production SEO/lifecycle crawl;
-- after the authorized rollout, bind exact final `main` to the deployed immutable RepoDigest in SourceCraft release and read-only host evidence.
+- keep the proved SourceCraft uptime alert schedule active;
+- select and verify an independent lead-delivery channel before enabling delivery;
+- keep the real feed disabled until its endpoint and outbound/image allowlists are separately approved.
 
-Production remains online while the remaining evidence gaps are open. Real feed stays off.
+Production owner login, canonical NAP, external monitoring, bounded live crawl
+and exact release identity have durable evidence. Production remains online;
+real feed and lead delivery stay fail-closed.
 
 ## Manual Import and Suspicious Approval
 

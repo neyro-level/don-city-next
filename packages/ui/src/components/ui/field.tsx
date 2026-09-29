@@ -103,7 +103,7 @@ export function FieldDescription({
 		<p
 			data-slot="field-description"
 			className={cn(
-				"text-label leading-step-body text-[var(--content-strong)]",
+				"text-label text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}
@@ -143,7 +143,7 @@ export function FieldError({
 		<p
 			data-slot="field-error"
 			className={cn(
-				"text-label leading-step-body text-[var(--status-danger)]",
+				"text-label text-[var(--status-danger)]",
 				className,
 			)}
 			{...props}

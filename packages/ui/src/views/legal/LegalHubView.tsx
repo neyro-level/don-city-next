@@ -30,24 +30,24 @@ export function LegalHubView({
 		<main className="min-h-[var(--viewport-content-below-header)] bg-[var(--surface-subtle)] px-4 py-8 text-[var(--content-strong)] sm:px-6 md:py-14 lg:py-16">
 			<Card className="mx-auto max-w-285 overflow-hidden rounded-lg border-[var(--border-default)] bg-[var(--surface-card)] px-5 py-7 shadow-[var(--shadow-card)] sm:px-7 sm:py-9 md:px-10 md:py-11">
 				<Breadcrumb className="mb-5 text-[var(--text-muted)]">
-					<BreadcrumbList className="flex-nowrap gap-x-2 overflow-x-auto py-0.5 text-body leading-step-body">
+					<BreadcrumbList className="flex-nowrap gap-x-2 overflow-x-auto py-0.5 text-body">
 						<BreadcrumbItem>
 							<BreadcrumbLink
 								asChild
-								className="shrink-0 whitespace-nowrap font-medium leading-step-body transition hover:text-[var(--accent)]"
+								className="shrink-0 whitespace-nowrap font-medium transition hover:text-[var(--accent)]"
 							>
 								<LinkRenderer href="/">Главная</LinkRenderer>
 							</BreadcrumbLink>
 						</BreadcrumbItem>
 						<BreadcrumbSeparator className="size-3.5 shrink-0 self-center text-[var(--content-subtle)]" />
 						<BreadcrumbItem>
-							<BreadcrumbPage className="min-w-0 truncate font-semibold leading-step-body text-[var(--text-primary)]">
+							<BreadcrumbPage className="min-w-0 truncate font-semibold text-[var(--text-primary)]">
 								Правовая информация
 							</BreadcrumbPage>
 						</BreadcrumbItem>
 					</BreadcrumbList>
 				</Breadcrumb>
-				<h1 className="text-h2 font-semibold leading-tight-copy text-[var(--content-subtle)] md:text-h1">
+				<h1 className="text-h2 font-semibold text-[var(--content-subtle)] md:text-h1">
 					Правовая информация
 				</h1>
 
@@ -62,7 +62,7 @@ export function LegalHubView({
 							className="group border-[var(--border-default)]"
 						>
 							<AccordionTrigger
-								className="min-h-18 py-5 text-body-lg font-medium leading-step-copy text-[var(--content-subtle)] hover:text-[var(--content-subtle)] md:min-h-20.5 md:py-6 md:text-body-lg"
+								className="min-h-18 py-5 text-body-lg font-medium text-[var(--content-subtle)] hover:text-[var(--content-subtle)] md:min-h-20.5 md:py-6 md:text-body-lg"
 								trailing={
 									<span className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[var(--content-subtle)] transition group-hover:bg-[var(--surface-subtle)] group-hover:text-[var(--accent)]">
 										<ChevronDown
@@ -78,7 +78,7 @@ export function LegalHubView({
 								forceMount
 								className="pb-7 pr-0 md:pb-8 md:pr-16"
 							>
-								<p className="max-w-190 text-body font-normal leading-step-copy text-[var(--content-strong)] md:text-body-lg">
+								<p className="max-w-190 text-body font-normal text-[var(--content-strong)] md:text-body-lg">
 									{document.description}
 								</p>
 								<div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">

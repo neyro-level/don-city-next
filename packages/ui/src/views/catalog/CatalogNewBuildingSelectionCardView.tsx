@@ -57,10 +57,10 @@ function CatalogNewBuildingSelectionGridCard({
 				<div className="flex size-11 items-center justify-center rounded-lg bg-[var(--surface-card)] text-[var(--accent)] shadow-[var(--shadow-card)]">
 					<Building2 className="size-5" aria-hidden />
 				</div>
-				<h3 className="mt-5 text-h4 font-extrabold leading-tight-copy text-[var(--text-primary)]">
+				<h3 className="mt-5 text-h4 font-extrabold text-[var(--text-primary)]">
 					{copy.title}
 				</h3>
-				<p className="mt-3 text-body leading-step-copy text-[var(--text-secondary)]">
+				<p className="mt-3 text-body text-[var(--text-secondary)]">
 					{copy.description}
 				</p>
 				<Button
@@ -90,13 +90,13 @@ function CatalogNewBuildingSelectionListCard({
 		<article className="bg-transparent py-6">
 			<div className="grid gap-5 rounded-lg border border-[var(--border-default)] bg-[var(--accent-soft)] p-6 md:grid-cols-[minmax(0,1fr)_260px] md:items-end">
 				<div className="max-w-2xl">
-					<p className="text-caption font-bold uppercase tracking-caps text-[var(--accent)]">
+					<p className="text-caption font-bold uppercase text-[var(--accent)]">
 						{copy.eyebrow}
 					</p>
-					<h3 className="mt-3 text-h3 font-extrabold leading-card-title text-[var(--text-primary)]">
+					<h3 className="mt-3 text-h3 font-extrabold text-[var(--text-primary)]">
 						{copy.title}
 					</h3>
-					<p className="mt-3 text-body leading-step-copy text-[var(--text-secondary)]">
+					<p className="mt-3 text-body text-[var(--text-secondary)]">
 						{copy.description}
 					</p>
 				</div>

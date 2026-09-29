@@ -105,10 +105,10 @@ export function CatalogPageView({
 							))}
 						</nav>
 					) : null}
-					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
+					<p className="text-label font-bold uppercase text-action-primary">
 						{copy.eyebrow}
 					</p>
-					<h1 className="mt-4 text-h1 font-extrabold tracking-display">
+					<h1 className="mt-4 text-h1 font-extrabold">
 						{copy.title}
 					</h1>
 					<p className="mt-4 max-w-2xl text-body-lg text-content-default">

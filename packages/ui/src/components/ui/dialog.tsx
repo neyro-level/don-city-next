@@ -115,7 +115,7 @@ export function DialogDescription({
 		<DialogPrimitive.Description
 			data-slot="dialog-description"
 			className={cn(
-				"text-body leading-step-copy text-[var(--content-strong)]",
+				"text-body text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}

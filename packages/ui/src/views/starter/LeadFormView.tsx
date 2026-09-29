@@ -268,7 +268,7 @@ export function LeadFormView({
 									/>
 									<FieldLabel
 										htmlFor={ids.consent}
-										className="font-normal leading-step-copy"
+										className="font-normal "
 									>
 										<span id={`${ids.consent}-copy`}>
 											Даю согласие на обработку персональных данных в

@@ -66,12 +66,12 @@ export function PropertyChatView({
 			>
 				<div className="flex items-start justify-between gap-4">
 					<div>
-						<p className="text-caption font-semibold uppercase tracking-spaced text-[var(--accent)]">
+						<p className="text-caption font-semibold uppercase text-[var(--accent)]">
 							Сообщение по объекту
 						</p>
 						<h2
 							id="property-chat-title"
-							className="mt-3 max-w-100 text-h4 font-semibold leading-card-compact text-[var(--text-primary)] sm:text-h3"
+							className="mt-3 max-w-100 text-h4 font-semibold text-[var(--text-primary)] sm:text-h3"
 						>
 							Напишите сообщение ответственному специалисту
 						</h2>
@@ -113,10 +113,10 @@ export function PropertyChatView({
 					{lockMessage ? (
 						<div className="grid gap-2.5 text-body-sm font-semibold text-[var(--text-primary)]">
 							<span>Сообщение</span>
-							<div className="rounded-md border border-[var(--border)] bg-[var(--surface-card-soft)] px-3 py-3 text-body-sm font-normal leading-step-copy whitespace-pre-wrap text-[var(--text-primary)]">
+							<div className="rounded-md border border-[var(--border)] bg-[var(--surface-card-soft)] px-3 py-3 text-body-sm font-normal whitespace-pre-wrap text-[var(--text-primary)]">
 								{message}
 							</div>
-							<p className="text-caption font-medium leading-step-body text-[var(--text-muted)]">
+							<p className="text-caption font-medium text-[var(--text-muted)]">
 								Сообщение уже подготовлено. Оставьте телефон, и специалист
 								свяжется с вами по этому вопросу.
 							</p>
@@ -132,12 +132,12 @@ export function PropertyChatView({
 									value={message}
 									onChange={(event) => onMessageChange(event.target.value)}
 									rows={4}
-									className="min-h-32 w-full rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 py-3 text-body-sm font-normal leading-step-copy outline-none transition focus:border-[var(--accent)]"
+									className="min-h-32 w-full rounded-md border border-[var(--border)] bg-[var(--surface-card)] px-3 py-3 text-body-sm font-normal outline-none transition focus:border-[var(--accent)]"
 									placeholder="Здравствуйте, есть вопросы по этому объекту."
 								/>
 							</div>
 							{showInlineHint ? (
-								<span className="text-label font-normal leading-step-body text-[var(--text-muted)]">
+								<span className="text-label font-normal text-[var(--text-muted)]">
 									Здесь можно написать свое сообщение.
 								</span>
 							) : null}
@@ -169,7 +169,7 @@ export function PropertyChatView({
 						) : null}
 					</label>
 
-					<label className="mt-1 flex gap-3 text-caption leading-step-body text-[var(--text-secondary)]">
+					<label className="mt-1 flex gap-3 text-caption text-[var(--text-secondary)]">
 						<Checkbox
 							checked={consent}
 							onCheckedChange={(checked) => onConsentChange(checked === true)}

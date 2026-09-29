@@ -4,11 +4,11 @@ Status: Active — production live and publicly crawlable
 
 Updated: 2026-09-29
 
-Active execution contract: exact APPROVED plan
+Delivered execution contract: exact APPROVED plan
 `DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH` v1 in
-`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. EPIC-R1 is
-merged at `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`; EPIC-R2 owns exact
-production truth, final documentation and the conditional final release.
+`DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md`. EPIC-R1,
+EPIC-R2 and the single authorized rollout are complete. Exact release identity
+is proved by the SourceCraft release record plus read-only runtime labels.
 Runtime commands come only from the current root `package.json`.
 
 ## 1. Identity and profile

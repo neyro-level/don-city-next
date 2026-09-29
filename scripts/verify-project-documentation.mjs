@@ -62,6 +62,7 @@ const design = requireAll("docs/DESIGN.md", [
 	"## 4. UI Core 5.0 project policy",
 	"Container",
 	"prefers-reduced-motion",
+	"`text-*` role is compound",
 	"Journal",
 ]);
 assert.ok(!/^Status:\s*SUPERSEDED\s*$/im.test(design));
@@ -116,7 +117,7 @@ requireAll("docs/OPERATIONS.md", [
 	"Operational readiness",
 	"Real feed readiness",
 	"Lead delivery readiness",
-	"## Open production-readiness / operational evidence",
+	"## Open product operations (not production-readiness blockers)",
 	"## Manual Import and Suspicious Approval",
 	"## Interrupted Jobs and Orphan Recovery",
 	"## Lead Delivery Recovery and Channel Outage",
@@ -128,9 +129,9 @@ assert.equal(
 	"Observed public indexing must not be described as blocked before indexing.",
 );
 requireAll("docs/04_BACKLOG.md", [
-	"## NOW — Constitution Cleanup / Production Truth v1",
+	"## Delivered — Constitution Cleanup / Production Truth v1",
 	"EPIC-R1 merged through SourceCraft PR `#119`",
-	"already owner-authorized single release",
+	"EPIC-R2 merged through SourceCraft PR `#120`",
 ]);
 requireAll("docs/01_PRD.md", [
 	"Production live и публично индексируется",
@@ -141,7 +142,7 @@ requireAll("docs/02_PRODUCT_STRUCTURE.md", [
 	"registry/content gates",
 ]);
 requireAll("docs/05_RELEASE_CHECKLIST.md", [
-	"Status: Active — R2 final release convergence",
+	"Status: Active — delivered R2 baseline and reusable release contract",
 	"exact deployed SHA/image",
 	"## Constitution Cleanup / Production Truth v1 Entry",
 	"`Выпускаем production`",
@@ -151,18 +152,18 @@ requireAll("docs/DELIVERY_STATE.yaml", [
 	"program: DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
 	"plan_version: v1",
 	"reconciliation: CLEAN",
-	"current_wave: R2_PRODUCTION_TRUTH",
-	"current_epic: EPIC-R2",
-	"current_task: TASK-R2.3",
-	"next_action: gate-and-merge-r2-then-one-owner-authorized-release",
+	"current_wave: CONTINUOUS_MAINTENANCE",
+	"current_epic: none",
+	"current_task: none",
+	"next_action: none-program-complete",
 	"status: LIVE_PUBLIC_OBSERVED",
 	"release_target: exact SourceCraft origin/main attested by the manual release-main workflow",
 	"observed_public_state: LIVE_PUBLIC_OBSERVED",
-	"deployed_artifact_identity: \"revision fbc2dab7bf2fc408f2257bc280df0fb45970354e; RepoDigest sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6\"",
-	"operational_readiness: PARTIAL",
+	"deployed_artifact_identity: \"exact SourceCraft release record plus matching runtime revision label and pinned Compose RepoDigest\"",
+	"operational_readiness: READY",
 	"real_feed_readiness: DISABLED_NOT_READY",
 	"lead_delivery_readiness: DISABLED_NOT_READY",
-	"production_release_authorized: true",
+	"production_release_authorized: false",
 	"task: TASK-05.4",
 	"candidate_sha: 145b58b0ef436f8c0871647cf4c8d19d646a2403",
 	"seo_http_matrix: PASS",

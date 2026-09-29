@@ -1,7 +1,7 @@
 # Release Checklist
 
-Status: Active — R2 final release convergence
-Version: 1.6
+Status: Active — delivered R2 baseline and reusable release contract
+Version: 1.7
 Updated: 2026-09-29
 
 ## Historical Release Evidence
@@ -36,10 +36,10 @@ Updated: 2026-09-29
 - [x] The exact live-to-main delta contains four versioned migrations; release
       order is fresh backup → ephemeral jobs-off migration → single-runtime
       switch → bounded smoke, with no second database or persistent candidate.
-- [ ] Run one bounded production crawl for canonical, robots, sitemap, JSON-LD,
+- [x] Run one bounded production crawl for canonical, robots, sitemap, JSON-LD,
       Makeevka allowlisted routes and representative lifecycle responses inside
       `DC11-PROD-FINAL`; do not create a follow-up monitor.
-- [x] Public indexing is already observed; exact deployed SHA/image still requires factual reconciliation.
+- [x] Public indexing was already observed; exact deployed SHA/image was later reconciled by the R2 release.
 - [x] Prove the first-four-month sitemap/navigation/crawl contains only gated secondary apartments, houses, land, commercial real estate and approved legal-department pages.
 - [x] Prove `/novostroyki/*` and `/komplex/*` remain disabled, non-indexable and absent from sitemap/navigation.
 - [x] Prove `/donetsk/kommercheskaya/` and `/yurist/` are the only approved commercial/legal launch owners; no unsupported child legal route is exposed.
@@ -48,7 +48,8 @@ Updated: 2026-09-29
 
 ## Open Product Operations (not release blockers)
 
-- Production owner account remains an explicit owner-controlled setup action.
+- Production owner login and role were proved without recording credentials,
+  cookies or email.
 - Canonical NAP is owner-confirmed and matches the single repository/live source;
   unverified `geo` and `sameAs` remain omitted.
 - External uptime alerting is proved through SourceCraft run `145` and private
@@ -60,18 +61,17 @@ Updated: 2026-09-29
 ## Constitution Cleanup / Production Truth v1 Entry
 
 - [x] EPIC-R1 is merged through PR `#119`, exact-head RISKY gate `160` and main `1993a4efe0164ea9ab480cbf3b974fbffbbbe4a9`.
-- [x] Current production is bound read-only to revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e` and RepoDigest `sha256:423fc6671805bd92b958d9aa549e4049eb37264f59b5b862ae7ca862175b59f6`.
-- [ ] EPIC-R2 is merged through its exact-head SourceCraft RISKY gate.
-- [ ] Final `main` SHA is clean and unchanged before release.
-- [ ] When the diff requires staging, prove `EPHEMERAL_ON_DEMAND` isolation:
+- [x] Pre-release production was bound read-only and its difference from `main` triggered exactly one rollout.
+- [x] EPIC-R2 is merged through PR `#120` and exact-head SourceCraft RISKY gate `163`.
+- [x] Final `main` SHA was clean and unchanged before SourceCraft release run `164`.
+- [x] Staging was not required for the documentation/truth-only R2 diff; when a later diff requires it, prove `EPHEMERAL_ON_DEMAND` isolation:
       disposable DB/non-production secrets and storage, sanitized data,
       noindex/restricted access, explicit jobs ownership and cleanup.
-- [x] External monitoring, canonical NAP, backup, jobs ownership, rollback and current deployed identity are factually proved; production-owner access remains an owner-controlled operation and real integrations stay fail-closed.
+- [x] External monitoring, canonical NAP, backup, jobs ownership, rollback, production-owner login and deployed identity are factually proved; real integrations stay fail-closed.
 - [x] Owner issued the separate explicit command `Выпускаем production` on 2026-09-29;
       it applies to this completed exact candidate only.
-- [ ] Run one SourceCraft exact-main release workflow, one rollout and one
-      bounded live acceptance sequence; do not create an autonomous follow-up
-      monitoring task.
+- [x] SourceCraft release run `164`, one rollout and one bounded live acceptance
+      sequence completed; no autonomous follow-up monitoring task was created.
 
 ## Stop Conditions
 

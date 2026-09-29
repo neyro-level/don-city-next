@@ -25,16 +25,16 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 		>
 			<Container className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
 				<div>
-					<p className="text-label font-bold uppercase tracking-wide-role text-action-primary">
+					<p className="text-label font-bold uppercase text-action-primary">
 						{page.eyebrow}
 					</p>
 					<h1
 						id="home-hero-title"
-						className="mt-4 max-w-4xl text-h1 font-extrabold leading-display-tight tracking-display"
+						className="mt-4 max-w-4xl text-h1 font-extrabold "
 					>
 						{page.title}
 					</h1>
-					<p className="mt-5 max-w-2xl text-body-lg leading-step-relaxed text-content-default">
+					<p className="mt-5 max-w-2xl text-body-lg text-content-default">
 						{page.lead}
 					</p>
 					<div className="mt-7 flex flex-wrap gap-3">

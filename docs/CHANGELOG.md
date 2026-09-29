@@ -1,5 +1,17 @@
 # Contract changelog
 
+## 2026-09-29 — Compound typography and final R2 reconciliation
+
+- Every canonical `text-*` role now owns its size, line-height and
+  letter-spacing; public consumers no longer compose a parallel `leading-*` or
+  `tracking-*` scale, and the UI guard rejects regressions.
+- EPIC-R2 was delivered through SourceCraft PR `#120`, RISKY gate `163`, release
+  run `164`, one rollout and bounded live crawl with 61 requests / 21 sitemap
+  URLs / zero findings.
+- Production-owner login, canonical NAP, monitoring and exact release identity
+  are proved. Only lead delivery and real-feed activation remain fail-closed
+  product operations.
+
 ## 2026-09-29 — Constitution cleanup and production truth
 
 - EPIC-R1 merged through SourceCraft PR `#119`, exact-head RISKY gate run `160`

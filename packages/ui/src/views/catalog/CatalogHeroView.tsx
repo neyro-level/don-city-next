@@ -64,23 +64,23 @@ export function CatalogHeroView({
 		? "text-h2 lg:text-h1"
 		: "text-h1";
 	const titleClassName = isNewBuildingHero
-		? "text-h1 font-extrabold leading-page-title text-white"
+		? "text-h1 font-extrabold text-white"
 		: titleSize === "standard"
-			? `${mobileTitleClassName} font-extrabold leading-page-title text-white`
+			? `${mobileTitleClassName} font-extrabold text-white`
 			: isLongTitle
-				? `${mobileTitleClassName} font-extrabold leading-page-title text-white md:max-w-245${
+				? `${mobileTitleClassName} font-extrabold text-white md:max-w-245${
 						collapseTitleLinesOnDesktop
 							? " lg:max-w-none lg:whitespace-nowrap"
 							: ""
 					}`
-				: `${mobileTitleClassName} font-extrabold leading-page-title text-white lg:whitespace-nowrap`;
+				: `${mobileTitleClassName} font-extrabold text-white lg:whitespace-nowrap`;
 	const contentClassName = hasControlledLines ? "max-w-245" : "max-w-195";
 	const descriptionMaxWidth = hasControlledLines ? "max-w-245" : "max-w-190";
 	const descriptionClassName = isNewBuildingHero
-		? "mt-4 w-fit max-w-155 rounded-lg border border-white/20 bg-black/30 px-4 py-3 text-body-lg font-medium leading-step-copy text-white/92 shadow-[var(--shadow-raised)] backdrop-blur-md [text-wrap:pretty] sm:text-body-lg sm:leading-step-relaxed md:mt-5 md:px-5 md:py-4 md:text-body-lg lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none lg:backdrop-blur-none"
+		? "mt-4 w-fit max-w-155 rounded-lg border border-white/20 bg-black/30 px-4 py-3 text-body-lg font-medium text-white/92 shadow-[var(--shadow-raised)] backdrop-blur-md [text-wrap:pretty] sm:text-body-lg md:mt-5 md:px-5 md:py-4 md:text-body-lg lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none lg:backdrop-blur-none"
 		: descriptionVisibleAlways
-			? `mt-3 ${descriptionMaxWidth} text-body-lg font-medium leading-step-copy text-white/84 [text-wrap:pretty] sm:mt-4 sm:text-body-lg sm:leading-step-relaxed md:mt-5 md:text-body-lg`
-			: `mt-5 hidden ${descriptionMaxWidth} text-body-lg font-medium leading-step-relaxed text-white/84 [text-wrap:pretty] lg:block md:text-body-lg`;
+			? `mt-3 ${descriptionMaxWidth} text-body-lg font-medium text-white/84 [text-wrap:pretty] sm:mt-4 sm:text-body-lg md:mt-5 md:text-body-lg`
+			: `mt-5 hidden ${descriptionMaxWidth} text-body-lg font-medium text-white/84 [text-wrap:pretty] lg:block md:text-body-lg`;
 	const desktopHeightClassName = expandedDesktop
 		? "lg:min-h-115"
 		: "lg:min-h-97.5";
@@ -150,7 +150,7 @@ export function CatalogHeroView({
 						</p>
 					) : null}
 					{mobileDescription ? (
-						<p className="mt-3 max-w-155 text-body font-medium leading-step-copy text-white/84 [text-wrap:pretty] lg:hidden">
+						<p className="mt-3 max-w-155 text-body font-medium text-white/84 [text-wrap:pretty] lg:hidden">
 							{mobileDescription}
 						</p>
 					) : null}

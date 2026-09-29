@@ -119,7 +119,7 @@ export function SheetDescription({
 		<DialogPrimitive.Description
 			data-slot="sheet-description"
 			className={cn(
-				"text-body leading-step-copy text-[var(--content-strong)]",
+				"text-body text-[var(--content-strong)]",
 				className,
 			)}
 			{...props}

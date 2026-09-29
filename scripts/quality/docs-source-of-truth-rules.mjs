@@ -112,8 +112,8 @@ export function findDocsSourceOfTruthViolations(files) {
 	);
 	requireCurrent(
 		"docs/04_BACKLOG.md",
-		"## NOW — Constitution Cleanup / Production Truth v1",
-		"backlog must identify the current cleanup and production truth program",
+		"## Delivered — Constitution Cleanup / Production Truth v1",
+		"backlog must identify the delivered cleanup and production truth program",
 	);
 	requireCurrent(
 		"docs/DELIVERY_STATE.yaml",

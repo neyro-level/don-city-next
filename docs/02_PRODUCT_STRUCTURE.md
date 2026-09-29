@@ -62,7 +62,7 @@ Updated: 2026-09-27
 
 ## 6. SEO and Indexability
 
-Production публично индексируется. Page-level registry/content gates определяют, какие canonical URL доступны поиску; read-only HTTP evidence от 2026-09-27 подтверждает индексируемую homepage, crawl-allowed `robots.txt` и sitemap. Отдельное read-only evidence связывает текущее состояние с revision `fbc2dab7bf2fc408f2257bc280df0fb45970354e`; финальный release evidence должен связать новый exact `main` с immutable digest после rollout.
+Production публично индексируется. Page-level registry/content gates определяют, какие canonical URL доступны поиску; live crawl от 2026-09-29 подтвердил индексируемую homepage, crawl-allowed `robots.txt`, sitemap и 21 canonical URL без findings. Exact deployed revision/digest доказываются для каждого rollout через SourceCraft release record и read-only runtime identity; они не являются постоянной частью URL-политики.
 
 Первые четыре месяца после открытия индексации индексируются только вторичные квартиры, дома, земельные участки, коммерческая недвижимость и утверждённые страницы юридического отдела. `novostroyki`/ЖК остаются disabled/noindex, отсутствуют в sitemap и индексируемой навигации; `/novostroyki/*` и `/komplex/*` только резервируются до отдельного review.
 
