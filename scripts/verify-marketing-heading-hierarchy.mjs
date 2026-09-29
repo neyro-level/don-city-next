@@ -5,6 +5,8 @@ import { buildStaticMarketingPage } from "../src/project/static-page-composition
 
 const marketingViewPath =
 	"packages/ui/src/views/marketing/StarterMarketingPageView.tsx";
+const homeViewPath =
+	"packages/ui/src/views/home/StarterHomePageView.tsx";
 const cardPath = "packages/ui/src/components/ui/card.tsx";
 
 function parseTsx(path) {
@@ -63,6 +65,20 @@ assert.equal(
 	stringAttribute(sectionTitle, "as"),
 	"h2",
 	"Marketing section titles must render as h2",
+);
+
+const homeElements = jsxElements(parseTsx(homeViewPath));
+const homeHeroFallbackTitle = homeElements.find(
+	(element) => tagName(element) === "CardTitle",
+);
+assert.ok(
+	homeHeroFallbackTitle,
+	"Home hero fallback must expose a semantic card title",
+);
+assert.equal(
+	stringAttribute(homeHeroFallbackTitle, "as"),
+	"h2",
+	"Home hero fallback must not skip directly from the page h1 to h3",
 );
 
 const cardSource = readFileSync(cardPath, "utf8");

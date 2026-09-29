@@ -51,7 +51,7 @@ export function HomeHeroSection({ page, featured }: HomeSectionProps) {
 				) : (
 					<Card>
 						<CardHeader>
-							<CardTitle>Подберём объект под вашу задачу</CardTitle>
+							<CardTitle as="h2">Подберём объект под вашу задачу</CardTitle>
 							<CardDescription>
 								В каталоге пока нет опубликованных предложений. Оставьте заявку
 								— свяжемся и расскажем о ближайших вариантах.
