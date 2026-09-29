@@ -355,6 +355,45 @@ export const payloadJobTasks: GenericPayloadJobTask[] = [
 							feedSourceId,
 							transactionId,
 						),
+					recordUnchangedRun: async ({
+						importRunId,
+						feedSourceId,
+						now,
+						patch,
+					}) => {
+						const transactionId = await payload.db.beginTransaction();
+						if (transactionId == null) {
+							throw new Error(
+								"Payload Postgres did not start an unchanged-run bookkeeping transaction.",
+							);
+						}
+						try {
+							const transitioned = await finishImportRun(
+								payload,
+								{ importRunId, now, status: "unchanged" },
+								transactionId,
+							);
+							if (!transitioned) {
+								throw new Error(
+									"Import run unchanged transition rejected because it is no longer running.",
+								);
+							}
+							if (Object.keys(patch).length > 0) {
+								await systemPayload.update({
+									collection: "feed-sources",
+									id: feedSourceId,
+									data: patch,
+									req: { ...req, transactionID: transactionId } as PayloadRequest,
+								});
+							}
+							await payload.db.commitTransaction(transactionId);
+						} catch (error) {
+							await payload.db
+								.rollbackTransaction(transactionId)
+								.catch(() => undefined);
+							throw error;
+						}
+					},
 					finishRun: async (finish, transactionId) => {
 						const transitioned = await finishImportRun(
 							payload,

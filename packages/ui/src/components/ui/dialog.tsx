@@ -46,7 +46,7 @@ export function DialogContent({
 			<DialogPrimitive.Content
 				data-slot="dialog-content"
 				className={cn(
-					"fixed left-1/2 z-50 grid w-[var(--dialog-width)] -translate-x-1/2 gap-4 rounded-[var(--radius-lg)] border border-[var(--card-border,var(--border))] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-dialog)] outline-none md:p-8",
+					"fixed left-1/2 z-50 grid w-[var(--dialog-width)] -translate-x-1/2 gap-4 rounded-xl border border-[var(--card-border,var(--border))] bg-[var(--surface-card)] p-6 shadow-[var(--shadow-dialog)] outline-none md:p-8",
 					placement === "center" && "top-1/2 -translate-y-1/2",
 					placement === "bottom-mobile" &&
 						"bottom-2 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2",

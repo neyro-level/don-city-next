@@ -7,6 +7,10 @@ import {
 import { prepareLeadIntake } from "../src/core/leads/intake.ts";
 import { legalConsentConfig } from "../src/project/legal.config.ts";
 
+const prepareConfiguredLeadIntake = (
+	input: Parameters<typeof prepareLeadIntake>[0],
+) => prepareLeadIntake(input, { leadRetentionDays: 100 });
+
 const base = {
 	name: "Иван Петров",
 	phone: "+79491101010",
@@ -20,7 +24,7 @@ const base = {
 	requestAttemptId: "11111111-1111-4111-8111-111111111111",
 } as const;
 
-const legal = prepareLeadIntake({
+const legal = prepareConfiguredLeadIntake({
 	...base,
 	formKind: "generic",
 	context: {
@@ -47,7 +51,7 @@ if (legal.accepted) {
 	});
 }
 
-const catalog = prepareLeadIntake({
+const catalog = prepareConfiguredLeadIntake({
 	...base,
 	formKind: "consultation",
 	sourcePage: "/donetsk/kvartiry/kalininskiy/",
@@ -69,7 +73,7 @@ if (catalog.accepted) {
 	assert.equal(catalog.lead.context.city, "donetsk");
 }
 
-const property = prepareLeadIntake({
+const property = prepareConfiguredLeadIntake({
 	...base,
 	formKind: "property_request",
 	sourcePage: "/kvartiry/kalininskiy-2-komnatnaya-1042/",
@@ -90,7 +94,7 @@ if (property.accepted) {
 	assert.equal(property.lead.context.property, "1042");
 }
 
-const legacy = prepareLeadIntake({
+const legacy = prepareConfiguredLeadIntake({
 	...base,
 	formKind: "callback",
 	sourcePage: "/kontakty/",

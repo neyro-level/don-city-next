@@ -108,9 +108,9 @@ platform-error states are mandatory.
 Manrope is the only public typeface. The public scale is limited to `h1`, `h2`,
 `h3`, `h4`, `body-lg`, `body`, `body-sm`, `label` and `caption`; weight,
 line-height and tracking remain independent properties. Commercial pages keep
-one logical `h1`, while repeated sections own visible `h2` headings. The
-decorative `process-step` role is the only approved extra role and cannot be
-used for readable body copy.
+one logical `h1`, while repeated sections own visible `h2` headings. Decorative
+display text composes a canonical role with independent weight, tracking and
+line-height; project-only typography roles are not allowed.
 
 ### 4.4 Containers
 
@@ -134,9 +134,10 @@ shadow aliases require an approved exception.
 
 ### 4.7 Radii
 
-Primitives use the installed shadcn radius scale plus the proved semantic card
-and large-container roles. New aliases with the same value are forbidden.
-Oversized bubble forms conflict with the brand character.
+Primitives use the installed shadcn radius scale derived from the single
+`--radius` source: `sm`, `md`, `lg`, `xl` and `full`. Controls use `lg`; cards,
+dialogs and large media use `xl`. New aliases with the same value are
+forbidden. Oversized bubble forms conflict with the brand character.
 
 ### 4.8 Buttons
 

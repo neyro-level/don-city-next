@@ -1,19 +1,11 @@
 import type { MetadataRoute } from "next";
 import { clientReadinessConfig } from "./client-readiness.config.ts";
+import { publicCleanableQueryParameters } from "./public-query-grammar.ts";
 import { type ProjectKind, siteConfig } from "./site.config.ts";
 
 export type IndexingPolicy = "public" | "noindex";
 
-export const robotsCleanQueryParameters = [
-	"utm_source",
-	"utm_medium",
-	"utm_campaign",
-	"utm_term",
-	"utm_content",
-	"yclid",
-	"gclid",
-	"fbclid",
-] as const;
+export const robotsCleanQueryParameters = publicCleanableQueryParameters;
 
 export function resolveIndexingPolicy(input: {
 	projectKind: ProjectKind;

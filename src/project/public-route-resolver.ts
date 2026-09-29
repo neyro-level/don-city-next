@@ -24,6 +24,7 @@ import {
 	type InternalLink,
 } from "./navigation.ts";
 import { buildPublicPageIdentity } from "./public-page-identity.ts";
+import { publicSemanticQueryParameters } from "./public-query-grammar.ts";
 import {
 	seoRegistry,
 	seoRegistryByCanonicalPath,
@@ -377,15 +378,17 @@ function applyPaginationQuery(
 	if (result.kind !== "page" || !result.catalogQuery) {
 		return result;
 	}
-	const allowedKeys = new Set(["page"]);
+	const allowedKeys = new Set<string>([
+		publicSemanticQueryParameters.pagination,
+	]);
 	if (result.key.kind === "categoryGeo" && result.key.category === "kvartiry") {
-		allowedKeys.add("rooms");
+		allowedKeys.add(publicSemanticQueryParameters.apartmentRooms);
 	}
 	if (
 		(result.key.kind === "categoryRoot" || result.key.kind === "categoryGeo") &&
 		result.key.category === "doma"
 	) {
-		allowedKeys.add("houseType");
+		allowedKeys.add(publicSemanticQueryParameters.houseType);
 	}
 	const normalizedResult = Object.keys(searchParams).some(
 		(key) => !allowedKeys.has(key),

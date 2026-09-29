@@ -63,6 +63,12 @@ export type ImportFeedRuntimeDeps = {
 		transactionId: string | number,
 	) => FeedIngestRepository;
 	ingest?: typeof ingestNormalizedFeed;
+	recordUnchangedRun: (input: {
+		importRunId: string;
+		feedSourceId: string;
+		now: Date;
+		patch: FeedSourceBaselinePatch;
+	}) => Promise<void>;
 	finishRun: (
 		input: {
 			importRunId: string;
@@ -235,21 +241,19 @@ export async function runImportFeed(
 		});
 
 		if (fetched.status === "unchanged") {
-			await deps.finishRun({
+			const completedAt = deps.now();
+			await deps.recordUnchangedRun({
 				importRunId: input.importRunId,
-				now: deps.now(),
-				status: "unchanged",
-			});
-			await deps.recordSourceContact({
 				feedSourceId: source.id,
 				patch: buildFeedSourceBaselinePatch({
 					status: "unchanged",
 					parserCompleted: true,
 					criticalStructuralError: false,
-					nowIso: deps.now().toISOString(),
+					nowIso: completedAt.toISOString(),
 					etag: fetched.etag,
 					lastModified: fetched.lastModified,
 				}),
+				now: completedAt,
 			});
 			return { claimed: true, status: "unchanged" };
 		}

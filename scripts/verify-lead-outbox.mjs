@@ -49,24 +49,6 @@ assert.equal(
 	"zero outbound channels must not reject a safely persisted local lead",
 );
 
-const missingRetentionRepository = createRepository();
-await assert.rejects(
-	() =>
-		commitLeadOutbox({
-			intake: {
-				...intake,
-				lead: { ...intake.lead, retentionUntil: undefined },
-			},
-			channels,
-			repository: missingRetentionRepository,
-			nowIso: "2026-09-16T12:00:00.000Z",
-		}),
-	/Lead retention boundary is required/,
-);
-assert.equal(missingRetentionRepository.transactions, 0);
-assert.equal(missingRetentionRepository.leads.length, 0);
-assert.equal(missingRetentionRepository.deliveries.length, 0);
-
 const committed = await commitLeadOutbox({
 	intake,
 	channels,

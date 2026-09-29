@@ -20,7 +20,9 @@ export function isConfiguredRetentionDays(
 	return typeof value === "number" && Number.isInteger(value) && value >= 1;
 }
 
-export function planLeadRetentionRun(leadRetentionDays: number | null): LeadRetentionDecision {
+export function planLeadRetentionRun(
+	leadRetentionDays: number | null,
+): LeadRetentionDecision {
 	if (!isConfiguredRetentionDays(leadRetentionDays)) {
 		return {
 			destructive: false,
@@ -29,7 +31,8 @@ export function planLeadRetentionRun(leadRetentionDays: number | null): LeadRete
 				code: "retention_policy_missing",
 				severity: "warning",
 				component: "retention",
-				message: "Lead retention days are unset; destructive cleanup is skipped.",
+				message:
+					"Lead retention days are unset; destructive cleanup is skipped.",
 			},
 		};
 	}
@@ -63,7 +66,7 @@ export function evaluateProductionRetentionReadiness(input: {
 
 export type LeadRetentionCandidate = {
 	id: string;
-	retentionUntil: string | null;
+	retentionUntil: string;
 	retentionMode: "delete" | "anonymize";
 	piiPurgedAt: string | null;
 	phoneE164?: string | null;
@@ -79,7 +82,6 @@ export function leadIsDueForRetention(
 ): boolean {
 	if (!decision.destructive) return false;
 	if (lead.piiPurgedAt) return false;
-	if (!lead.retentionUntil) return false;
 	return lead.retentionUntil <= nowIso;
 }
 
@@ -102,9 +104,15 @@ export function assertNoPiiInDiagnostics(record: {
 	lastErrorRedacted: string | null;
 	sourceLead?: LeadRetentionCandidate;
 }): void {
-	const blob = JSON.stringify(record.attemptLog ?? "") + (record.lastErrorRedacted ?? "");
+	const blob =
+		JSON.stringify(record.attemptLog ?? "") + (record.lastErrorRedacted ?? "");
 	const lead = record.sourceLead;
-	for (const value of [lead?.phoneE164, lead?.email, lead?.message, lead?.name]) {
+	for (const value of [
+		lead?.phoneE164,
+		lead?.email,
+		lead?.message,
+		lead?.name,
+	]) {
 		if (value && blob.includes(value)) {
 			throw new Error("PII must not remain in delivery diagnostics.");
 		}

@@ -64,6 +64,13 @@ function parsePropertyId(value?: string): number | undefined {
 	return Number(value);
 }
 
+function requiredRetentionUntil(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new Error("Persisted lead is missing its retention boundary.");
+	}
+	return value;
+}
+
 function mapLead(doc: Record<string, unknown>): LeadRecord {
 	const consent = (doc.consent ?? {}) as {
 		accepted?: boolean;
@@ -105,8 +112,7 @@ function mapLead(doc: Record<string, unknown>): LeadRecord {
 			consentedAt: String(consent.consentedAt ?? ""),
 		},
 		idempotencyKey: String(doc.idempotencyKey),
-		retentionUntil:
-			typeof doc.retentionUntil === "string" ? doc.retentionUntil : undefined,
+		retentionUntil: requiredRetentionUntil(doc.retentionUntil),
 		fraudFingerprint:
 			typeof doc.fraudFingerprint === "string"
 				? doc.fraudFingerprint

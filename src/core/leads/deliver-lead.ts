@@ -67,7 +67,15 @@ function asLeadRecord(doc: Record<string, unknown>): LeadRecord {
 			consentedAt: String(consent.consentedAt ?? ""),
 		},
 		idempotencyKey: String(doc.idempotencyKey ?? ""),
+		retentionUntil: requiredRetentionUntil(doc.retentionUntil),
 	};
+}
+
+function requiredRetentionUntil(value: unknown): string {
+	if (typeof value !== "string" || value.length === 0) {
+		throw new Error("Persisted lead is missing its retention boundary.");
+	}
+	return value;
 }
 
 function optionalString(value: unknown): string | undefined {

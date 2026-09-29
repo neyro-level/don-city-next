@@ -37,6 +37,7 @@ assert.equal(normalizePhoneToE164("12"), undefined);
 
 const accepted = prepareLeadIntake(validPayload, {
 	nowIso: "2026-09-16T12:00:01.000Z",
+	leadRetentionDays: 100,
 });
 assert.equal(accepted.accepted, true);
 assert.equal(accepted.lead.phoneE164, "+79161234567");
@@ -46,6 +47,7 @@ assert.equal(
 );
 assert.equal(accepted.lead.consent.consentedAt, "2026-09-16T12:00:01.000Z");
 assert.equal(accepted.lead.idempotencyKey.startsWith("lead:"), true);
+assert.equal(accepted.lead.retentionUntil, "2026-12-25T12:00:01.000Z");
 assert.equal(accepted.lead.fraudFingerprint.startsWith("lead-fraud:"), true);
 assert.equal(accepted.safeDiagnostics.rawPiiIncluded, false);
 assert.equal(
@@ -65,7 +67,7 @@ for (const consentAccepted of [undefined, false]) {
 
 const callerTimestampIgnored = prepareLeadIntake(
 	{ ...validPayload, consentedAt: "2000-01-01T00:00:00.000Z" },
-	{ nowIso: "2026-09-16T12:00:02.000Z" },
+	{ nowIso: "2026-09-16T12:00:02.000Z", leadRetentionDays: 100 },
 );
 assert.equal(callerTimestampIgnored.accepted, true);
 assert.equal(
@@ -73,23 +75,37 @@ assert.equal(
 	"2026-09-16T12:00:02.000Z",
 );
 
-const exactRetry = prepareLeadIntake({
-	...validPayload,
-	renderedAt: "2026-09-16T12:29:50.000Z",
-	submittedAt: "2026-09-16T12:30:00.000Z",
-});
+const exactRetry = prepareLeadIntake(
+	{
+		...validPayload,
+		renderedAt: "2026-09-16T12:29:50.000Z",
+		submittedAt: "2026-09-16T12:30:00.000Z",
+	},
+	{ leadRetentionDays: 100 },
+);
 assert.equal(exactRetry.accepted, true);
 assert.equal(
 	exactRetry.lead.idempotencyKey,
 	accepted.lead.idempotencyKey,
 	"An exact HTTP retry must reuse the submission attempt identity.",
 );
-const newAttempt = prepareLeadIntake({
-	...validPayload,
-	requestAttemptId: "22222222-2222-4222-8222-222222222222",
-	renderedAt: "2026-09-16T12:29:50.000Z",
-	submittedAt: "2026-09-16T12:30:00.000Z",
-});
+const newAttempt = prepareLeadIntake(
+	{
+		...validPayload,
+		requestAttemptId: "22222222-2222-4222-8222-222222222222",
+		renderedAt: "2026-09-16T12:29:50.000Z",
+		submittedAt: "2026-09-16T12:30:00.000Z",
+	},
+	{ leadRetentionDays: 100 },
+);
+assert.throws(
+	() => prepareLeadIntake(validPayload),
+	/Lead retention policy must be configured/,
+);
+assert.throws(
+	() => prepareLeadIntake(validPayload, { leadRetentionDays: 0 }),
+	/Lead retention policy must be configured/,
+);
 assert.equal(newAttempt.accepted, true);
 assert.notEqual(newAttempt.lead.idempotencyKey, accepted.lead.idempotencyKey);
 

@@ -16,6 +16,10 @@ import {
 	metadataRobotsForPolicy,
 	robotsCleanQueryParameters,
 } from "../src/project/indexing-policy.ts";
+import {
+	publicCleanableQueryParameters,
+	publicSemanticQueryParameters,
+} from "../src/project/public-query-grammar.ts";
 import { resolveProjectPublicRoute } from "../src/project/public-route-resolver.ts";
 import { seoRegistry } from "../src/project/seo-registry.generated.ts";
 
@@ -41,7 +45,21 @@ assert.equal(
 	1,
 	"robots.txt must own one explicit query-cleaning directive",
 );
-assert.ok(robotsCleanQueryParameters.includes("fbclid"));
+assert.deepEqual(robotsCleanQueryParameters, publicCleanableQueryParameters);
+assert.deepEqual(robotsCleanQueryParameters, [
+	"utm_source",
+	"utm_medium",
+	"utm_campaign",
+	"utm_term",
+	"utm_content",
+	"yclid",
+	"gclid",
+	"fbclid",
+]);
+for (const semanticParameter of Object.values(publicSemanticQueryParameters)) {
+	assert.equal(robotsCleanQueryParameters.includes(semanticParameter), false);
+}
+assert.equal(robotsCleanQueryParameters.includes("sort"), false);
 assert.deepEqual(metadataRobotsForPolicy("noindex"), {
 	index: false,
 	follow: false,
@@ -228,6 +246,26 @@ assert.equal(unknownQuery.kind, "page");
 if (unknownQuery.kind === "page") {
 	assert.equal(unknownQuery.canonicalPath, "/donetsk/kvartiry/");
 	assert.equal(unknownQuery.robots.indexing, "noindex");
+}
+const trackingQuery = await resolveProjectPublicRoute(
+	["donetsk", "kvartiry"],
+	dependencies,
+	{ utm_source: "campaign" },
+);
+assert.equal(trackingQuery.kind, "page");
+if (trackingQuery.kind === "page") {
+	assert.equal(trackingQuery.canonicalPath, "/donetsk/kvartiry/");
+	assert.equal(trackingQuery.robots.indexing, "noindex");
+}
+const unsupportedSortQuery = await resolveProjectPublicRoute(
+	["donetsk", "kvartiry"],
+	dependencies,
+	{ sort: "price_asc" },
+);
+assert.equal(unsupportedSortQuery.kind, "page");
+if (unsupportedSortQuery.kind === "page") {
+	assert.equal(unsupportedSortQuery.canonicalPath, "/donetsk/kvartiry/");
+	assert.equal(unsupportedSortQuery.robots.indexing, "noindex");
 }
 
 const exactDay100 = new Date("2026-04-19T00:00:00.000Z");

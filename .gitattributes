@@ -12,4 +12,5 @@ scripts/task-manager/*.mjs text eol=lf
 "docs/AMS_MASTER_PLAN №4.md" text eol=crlf
 docs/orchestration/master-plan-2.inventory.json text eol=lf
 docs/orchestration/master-plan-4.inventory.json text eol=lf
-
+docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md whitespace=-trailing-space
+docs/archive/AMS_DON_CITY_FINAL_CONFORMANCE_DOCUMENTATION_MASTER_PLAN_V4_0_2026-09-27.md whitespace=-trailing-space

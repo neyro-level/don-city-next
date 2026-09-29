@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "react";
 import { cn } from "../../lib/utils";
 
 const cardVariants = cva(
-	"rounded-[var(--radius-lg)] border border-[var(--card-border,var(--border))] bg-[var(--card-bg,var(--surface))] text-[var(--text-primary)]",
+	"rounded-xl border border-[var(--card-border,var(--border))] bg-[var(--card-bg,var(--surface))] text-[var(--text-primary)]",
 	{
 		variants: {
 			elevation: {

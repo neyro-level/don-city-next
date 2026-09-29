@@ -320,6 +320,10 @@ assert.ok(
 );
 
 let ingestCalls = 0;
+let unchangedBookkeepingCalls = 0;
+let unchangedFinishCalls = 0;
+let unchangedSourceContactCalls = 0;
+let unchangedRepositoryCalls = 0;
 const successfulTransactionHooks = (transactionId) => ({
 	beginImportTransaction: async () => transactionId,
 	commitImportTransaction: async () => undefined,
@@ -345,13 +349,30 @@ const unchanged = await runImportFeed(
 			status: "unchanged",
 			etag: '"next"',
 		}),
-		createRepository: () => repository,
+		createRepository: () => {
+			unchangedRepositoryCalls += 1;
+			return repository;
+		},
 		ingest: async () => {
 			ingestCalls += 1;
 			throw new Error("ingest must not run on 304");
 		},
-		finishRun: async () => undefined,
-		recordSourceContact: async () => undefined,
+		recordUnchangedRun: async (input) => {
+			unchangedBookkeepingCalls += 1;
+			assert.equal(input.importRunId, "7");
+			assert.equal(input.feedSourceId, "11");
+			assert.equal(input.patch.lastEtag, '"next"');
+			assert.equal(
+				input.patch.lastSuccessfulRunAt,
+				"2026-09-18T06:00:00.000Z",
+			);
+		},
+		finishRun: async () => {
+			unchangedFinishCalls += 1;
+		},
+		recordSourceContact: async () => {
+			unchangedSourceContactCalls += 1;
+		},
 		allowedImageHosts: new Set(["img.allowed.example"]),
 	},
 	{ feedSourceId: "11", importRunId: "7" },
@@ -359,6 +380,47 @@ const unchanged = await runImportFeed(
 assert.equal(unchanged.claimed, true);
 assert.equal(unchanged.status, "unchanged");
 assert.equal(ingestCalls, 0);
+assert.equal(unchangedBookkeepingCalls, 1);
+assert.equal(unchangedFinishCalls, 0);
+assert.equal(unchangedSourceContactCalls, 0);
+assert.equal(unchangedRepositoryCalls, 0);
+
+let failedUnchangedTerminalCalls = 0;
+const failedUnchanged = await runImportFeed(
+	{
+		now: () => new Date("2026-09-18T06:00:00.000Z"),
+		claimQueuedImportRun: async () => "8",
+		touchHeartbeat: async () => undefined,
+		loadFeedSource: async () => ({
+			id: "12",
+			code: "b",
+			enabled: true,
+			market: "secondary",
+			feedUrlRef: "FEED_B_URL",
+			safetyThresholdPercent: 30,
+			maxDeactivationsPerRun: 50,
+		}),
+		resolveFeedUrl: () => "https://feeds.example.test/b.xml",
+		fetchFeed: async () => ({ status: "unchanged" }),
+		createRepository: () => {
+			throw new Error("repository must not be created on 304");
+		},
+		recordUnchangedRun: async () => {
+			throw new Error("atomic unchanged bookkeeping failed");
+		},
+		finishRun: async ({ status }) => {
+			assert.equal(status, "failed");
+			failedUnchangedTerminalCalls += 1;
+		},
+		recordSourceContact: async () => {
+			throw new Error("standalone source contact must not run on 304");
+		},
+		allowedImageHosts: new Set(),
+	},
+	{ feedSourceId: "12", importRunId: "8" },
+);
+assert.equal(failedUnchanged.status, "failed");
+assert.equal(failedUnchangedTerminalCalls, 1);
 
 const skipped = await runImportFeed(
 	{
@@ -377,6 +439,7 @@ const skipped = await runImportFeed(
 			throw new Error("fetch must not run if claim failed");
 		},
 		createRepository: () => repository,
+		recordUnchangedRun: async () => undefined,
 		finishRun: async () => undefined,
 		recordSourceContact: async () => undefined,
 		allowedImageHosts: new Set(),

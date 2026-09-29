@@ -233,6 +233,7 @@ assert.doesNotMatch(globals, /--motion-duration-/);
 assert.match(globals, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 const themeBoundary = globals.indexOf("\n@theme inline");
 const privateTypographyReference = /var\(--site-(?:type|leading|tracking)-/;
+const privateRadiusReference = /var\(--(?:site-radius|control-radius)[a-z0-9-]*/;
 if (themeBoundary < 0)
 	failures.push("semantic typography: @theme inline is missing");
 if (privateTypographyReference.test(globals.slice(0, themeBoundary))) {
@@ -240,27 +241,71 @@ if (privateTypographyReference.test(globals.slice(0, themeBoundary))) {
 		"semantic typography: private numeric source may only feed @theme roles",
 	);
 }
+if (/--(?:site-radius|control-radius)[a-z0-9-]*\s*:/.test(globals.slice(0, themeBoundary))) {
+	failures.push("semantic radii: private radius aliases are forbidden");
+}
 const themeEnd = globals.indexOf("\n}", themeBoundary);
 const themeBlock = globals.slice(themeBoundary, themeEnd);
 const typographyRoles = [...themeBlock.matchAll(/^\s*(--text-[a-z0-9-]+):/gm)]
 	.map((match) => match[1])
 	.sort();
+const canonicalTypographyRoles = [
+	"--text-body",
+	"--text-body-lg",
+	"--text-body-sm",
+	"--text-caption",
+	"--text-h1",
+	"--text-h2",
+	"--text-h3",
+	"--text-h4",
+	"--text-label",
+].sort();
+function hasOnlyCanonicalRoles(roles, canonicalRoles) {
+	return (
+		roles.length === canonicalRoles.length &&
+		roles.every((role, index) => role === canonicalRoles[index])
+	);
+}
 assert.deepEqual(
 	typographyRoles,
-	[
-		"--text-body",
-		"--text-body-lg",
-		"--text-body-sm",
-		"--text-caption",
-		"--text-h1",
-		"--text-h2",
-		"--text-h3",
-		"--text-h4",
-		"--text-label",
-		"--text-process-step",
-	].sort(),
-	"typography must expose only the canonical roles and the approved decorative step exception",
+	canonicalTypographyRoles,
+	"typography must expose only the canonical UI Core roles",
 );
+assert.equal(hasOnlyCanonicalRoles(typographyRoles, canonicalTypographyRoles), true);
+assert.equal(
+	hasOnlyCanonicalRoles(
+		[...canonicalTypographyRoles, "--text-unapproved-role"].sort(),
+		canonicalTypographyRoles,
+	),
+	false,
+	"an unapproved typography role must fail the allowlist",
+);
+const radiusRoles = [...themeBlock.matchAll(/^\s*(--radius-[a-z0-9-]+):/gm)]
+	.map((match) => match[1])
+	.sort();
+const canonicalRadiusRoles = [
+	"--radius-full",
+	"--radius-lg",
+	"--radius-md",
+	"--radius-sm",
+	"--radius-xl",
+].sort();
+assert.deepEqual(
+	radiusRoles,
+	canonicalRadiusRoles,
+	"radii must expose only the installed shadcn scale",
+);
+assert.equal(hasOnlyCanonicalRoles(radiusRoles, canonicalRadiusRoles), true);
+assert.equal(
+	hasOnlyCanonicalRoles(
+		[...canonicalRadiusRoles, "--radius-unapproved-alias"].sort(),
+		canonicalRadiusRoles,
+	),
+	false,
+	"an unapproved radius alias must fail the allowlist",
+);
+assert.match("rounded-[var(--site-radius-card)]", privateRadiusReference);
+assert.doesNotMatch("rounded-xl", privateRadiusReference);
 const exceptionStart = globals.indexOf("/* Approved component exceptions:");
 const exceptionEnd = globals.indexOf("/* End approved component exceptions. */");
 const componentExceptionTokens = [
@@ -287,6 +332,11 @@ for (const path of walk(join(root, "packages", "ui", "src"))) {
 	if (privateTypographyReference.test(source)) {
 		failures.push(
 			`semantic typography: UI consumer bypasses public role in ${relative(root, path).replaceAll("\\", "/")}`,
+		);
+	}
+	if (privateRadiusReference.test(source)) {
+		failures.push(
+			`semantic radii: UI consumer bypasses the shadcn scale in ${relative(root, path).replaceAll("\\", "/")}`,
 		);
 	}
 	if (legacyTypographyRole.test(source)) {

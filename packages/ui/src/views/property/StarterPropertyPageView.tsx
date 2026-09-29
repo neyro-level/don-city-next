@@ -59,7 +59,7 @@ export function PropertyPageView({
 						</nav>
 						<div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
 							<div>
-								<div className="relative aspect-[16/9] overflow-hidden rounded-[var(--radius-lg)] bg-surface-subtle">
+								<div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-surface-subtle">
 									<PublicPropertyMediaGallery
 										images={
 											property.gallery.length

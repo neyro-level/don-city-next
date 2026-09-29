@@ -1,0 +1,818 @@
+{
+  "schema_version": 2,
+  "beads_prefix": "dcrp",
+  "source": {
+    "plan_id": "DON-CITY-CONSTITUTION-CLEANUP-PRODUCTION-TRUTH",
+    "path": "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+    "version": "v1",
+    "status": "APPROVED",
+    "approved_by": "owner",
+    "approved_at": "2026-09-29T10:55:14+03:00",
+    "sha256": "a45dc90c65ef062097921550bb12a2a3c9cb181cefa73315531bff37d243f383",
+    "epic_anchors": [
+      "EPIC-R1",
+      "EPIC-R2"
+    ]
+  },
+  "repositories": [
+    {
+      "key": "don-city-next",
+      "remote": "https://git.sourcecraft.dev/integrator-p/don-city-next.git",
+      "default_branch": "main"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "EPIC-R1",
+      "title": "Constitution Cleanup",
+      "type": "epic",
+      "source_anchor": "EPIC-R1",
+      "goal": "Deliver the exact EPIC-R1 outcome from the approved plan.",
+      "scope": [
+        "EPIC-R1 uses one SourceCraft stream and one PR; production remains outside Developer role work."
+      ],
+      "acceptance_criteria": [
+        "All imported EPIC-R1 tasks close with concrete evidence."
+      ],
+      "depends_on": [],
+      "delivery_mode": "MERGE_AFTER_GATE",
+      "propagate_dependencies_to_children": false,
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive production action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:epic-r1"
+      ]
+    },
+    {
+      "key": "EPIC-R2",
+      "title": "Production Truth & Source of Truth",
+      "type": "epic",
+      "source_anchor": "EPIC-R2",
+      "goal": "Deliver the exact EPIC-R2 outcome from the approved plan.",
+      "scope": [
+        "EPIC-R2 uses one SourceCraft stream and one PR; production remains outside Developer role work."
+      ],
+      "acceptance_criteria": [
+        "All imported EPIC-R2 tasks close with concrete evidence."
+      ],
+      "depends_on": [
+        "TASK-R1-DELIVERY"
+      ],
+      "delivery_mode": "MERGE_AFTER_GATE",
+      "propagate_dependencies_to_children": false,
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive production action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:epic-r2"
+      ]
+    },
+    {
+      "key": "TASK-R1-DELIVERY",
+      "title": "Review, gate and merge EPIC-R1",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1-DELIVERY",
+      "goal": "Implement and prove TASK-R1-DELIVERY: Review, gate and merge EPIC-R1.",
+      "scope": [
+        "The exact TASK-R1-DELIVERY section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1-DELIVERY has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Review the full exact diff against the approved plan.",
+        "Run one exact-head SourceCraft RISKY gate before merge."
+      ],
+      "depends_on": [
+        "TASK-R1.1",
+        "TASK-R1.2",
+        "TASK-R1.3",
+        "TASK-R1.4",
+        "TASK-R1.5",
+        "TASK-R1.6",
+        "TASK-R1.7"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "test",
+        "commit",
+        "push",
+        "create_pr",
+        "merge_after_gate"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "delivery:merge-after-gate"
+      ]
+    },
+    {
+      "key": "TASK-R1.1",
+      "title": "Typography role contract",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.1",
+      "goal": "Implement and prove TASK-R1.1: Typography role contract.",
+      "scope": [
+        "The exact TASK-R1.1 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.1 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.1.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:1"
+      ]
+    },
+    {
+      "key": "TASK-R1.2",
+      "title": "Radius normalization",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.2",
+      "goal": "Implement and prove TASK-R1.2: Radius normalization.",
+      "scope": [
+        "The exact TASK-R1.2 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.2 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.2.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:2"
+      ]
+    },
+    {
+      "key": "TASK-R1.3",
+      "title": "UI guards",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.3",
+      "goal": "Implement and prove TASK-R1.3: UI guards.",
+      "scope": [
+        "The exact TASK-R1.3 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.3 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.3.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [
+        "TASK-R1.1",
+        "TASK-R1.2"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:3"
+      ]
+    },
+    {
+      "key": "TASK-R1.4",
+      "title": "304 bookkeeping",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.4",
+      "goal": "Implement and prove TASK-R1.4: 304 bookkeeping.",
+      "scope": [
+        "The exact TASK-R1.4 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.4 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.4.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:4"
+      ]
+    },
+    {
+      "key": "TASK-R1.5",
+      "title": "Retention typing",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.5",
+      "goal": "Implement and prove TASK-R1.5: Retention typing.",
+      "scope": [
+        "The exact TASK-R1.5 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.5 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.5.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:5"
+      ]
+    },
+    {
+      "key": "TASK-R1.6",
+      "title": "Clean-param hygiene",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.6",
+      "goal": "Implement and prove TASK-R1.6: Clean-param hygiene.",
+      "scope": [
+        "The exact TASK-R1.6 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.6 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.6.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:6"
+      ]
+    },
+    {
+      "key": "TASK-R1.7",
+      "title": "Historical loose-file hygiene and focused proof",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R1",
+      "source_anchor": "TASK-R1.7",
+      "goal": "Implement and prove TASK-R1.7: Historical loose-file hygiene and focused proof.",
+      "scope": [
+        "The exact TASK-R1.7 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R1.7 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R1.7.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [
+        "TASK-R1.1",
+        "TASK-R1.2",
+        "TASK-R1.3",
+        "TASK-R1.4",
+        "TASK-R1.5",
+        "TASK-R1.6"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r1",
+        "task:7"
+      ]
+    },
+    {
+      "key": "TASK-R2-DELIVERY",
+      "title": "Review, gate and merge EPIC-R2",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R2",
+      "source_anchor": "TASK-R2-DELIVERY",
+      "goal": "Implement and prove TASK-R2-DELIVERY: Review, gate and merge EPIC-R2.",
+      "scope": [
+        "The exact TASK-R2-DELIVERY section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R2-DELIVERY has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Review the full exact diff against the approved plan.",
+        "Run one exact-head SourceCraft RISKY gate before merge."
+      ],
+      "depends_on": [
+        "TASK-R2.1",
+        "TASK-R2.2",
+        "TASK-R2.3"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "test",
+        "commit",
+        "push",
+        "create_pr",
+        "merge_after_gate"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r2",
+        "delivery:merge-after-gate"
+      ]
+    },
+    {
+      "key": "TASK-R2.1",
+      "title": "Full proof of current exact main",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R2",
+      "source_anchor": "TASK-R2.1",
+      "goal": "Implement and prove TASK-R2.1: Full proof of current exact main.",
+      "scope": [
+        "The exact TASK-R2.1 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R2.1 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R2.1.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [
+        "TASK-R1-DELIVERY"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r2",
+        "task:1"
+      ]
+    },
+    {
+      "key": "TASK-R2.2",
+      "title": "Read-only production identity",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R2",
+      "source_anchor": "TASK-R2.2",
+      "goal": "Implement and prove TASK-R2.2: Read-only production identity.",
+      "scope": [
+        "The exact TASK-R2.2 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R2.2 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R2.2.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [
+        "TASK-R2.1"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r2",
+        "task:2"
+      ]
+    },
+    {
+      "key": "TASK-R2.3",
+      "title": "Synchronize active Source of Truth",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "don-city-next",
+      "parent_key": "EPIC-R2",
+      "source_anchor": "TASK-R2.3",
+      "goal": "Implement and prove TASK-R2.3: Synchronize active Source of Truth.",
+      "scope": [
+        "The exact TASK-R2.3 section in the approved plan is authoritative.",
+        "Do not expand into DNS, feed activation, new infrastructure or destructive production data work."
+      ],
+      "acceptance_criteria": [
+        "Every acceptance statement in TASK-R2.3 has concrete evidence.",
+        "EXECUTION_LEDGER_V1 records exact branch/base/head, files, checks and deviations."
+      ],
+      "required_checks": [
+        "Run the focused proof required by TASK-R2.3.",
+        "Map every acceptance item to observed evidence."
+      ],
+      "depends_on": [
+        "TASK-R2.2"
+      ],
+      "required_context": [
+        "docs/DON_CITY_CONSTITUTION_CLEANUP_PRODUCTION_TRUTH_MASTER_PLAN_V1_0.md",
+        "AGENTS.md",
+        "docs/README.md",
+        "docs/PROJECT.md",
+        "docs/03_ARCHITECTURE.md",
+        "docs/04_BACKLOG.md",
+        "docs/05_RELEASE_CHECKLIST.md",
+        "docs/DESIGN.md",
+        "docs/OPERATIONS.md",
+        "docs/DELIVERY_STATE.yaml",
+        "AMS_REALTY_PLATFORM_CORE_STANDARD_5.5_SOLO_AI_FINAL.md",
+        "AMS_UI_CORE_v5.0_FINAL.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "source or inventory drift",
+        "unapproved destructive or external action",
+        "secret or PII exposure"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:r1-r2-remediation",
+        "epic:r2",
+        "task:3"
+      ]
+    }
+  ]
+}

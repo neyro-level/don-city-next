@@ -1,6 +1,7 @@
 import { createHash, createHmac } from "node:crypto";
 import { z } from "zod";
 import { legalConsentConfig } from "../../project/legal.config.ts";
+import { isConfiguredRetentionDays } from "./retention.ts";
 
 export type LeadFormKind =
 	| "property_request"
@@ -53,7 +54,7 @@ export type LeadIntakeAccepted = {
 			consentedAt: string;
 		};
 		idempotencyKey: string;
-		retentionUntil?: string;
+		retentionUntil: string;
 		fraudFingerprint?: string;
 	};
 	safeDiagnostics: LeadIntakeDiagnostics;
@@ -317,11 +318,10 @@ export function deriveLeadFraudHmacKey(payloadSecret: string): string {
 		.digest("base64url");
 }
 
-function retentionUntil(
-	nowIso: string,
-	days?: number | null,
-): string | undefined {
-	if (!Number.isInteger(days) || !days || days <= 0) return undefined;
+function retentionUntil(nowIso: string, days?: number | null): string {
+	if (!isConfiguredRetentionDays(days)) {
+		throw new Error("Lead retention policy must be configured before intake.");
+	}
 	return new Date(new Date(nowIso).getTime() + days * 86_400_000).toISOString();
 }
 
